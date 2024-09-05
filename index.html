@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Clothing Design</title>
+    <!-- Include jsPDF from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <!-- Replace text with your logo -->
+        <img src="img/logo.png" alt="Vision Make Studio Logo" style="max-width: 200px;">
+    </header>
+
+    <section class="design-form">
+        <h2>Start Your Custom Design</h2>
+        <form id="custom-clothes-form">
+            <!-- Step 1: Customer Information -->
+            <div class="input-group">
+                <label for="first-name">First Name</label>
+                <input type="text" id="first-name" name="first-name" placeholder="Enter your first name" required>
+            </div>
+
+            <div class="input-group">
+                <label for="last-name">Last Name</label>
+                <input type="text" id="last-name" name="last-name" placeholder="Enter your last name" required>
+            </div>
+
+            <div class="input-group">
+                <label for="contact-info">Contact Information</label>
+                <input type="text" id="contact-info" name="contact-info" placeholder="Enter your phone number or email" required>
+            </div>
+
+            <!-- Step 2: Choose Clothing Blank -->
+            <div class="input-group">
+                <label for="clothing-item">Choose Clothing Blank</label>
+                <select id="clothing-item" name="clothing-item" required>
+                    <option value="" disabled selected>Select a clothing item</option>
+                    <option value="T-Shirt" data-price="25">T-Shirt ($25)</option>
+                    <option value="Hoodie" data-price="35">Hoodie ($35)</option>
+                </select>
+            </div>
+
+            <!-- Step 3: Choose Size -->
+            <div class="input-group">
+                <label for="clothing-size">Choose Size</label>
+                <select id="clothing-size" name="clothing-size" required>
+                    <option value="" disabled selected>Select a size</option>
+                    <option value="Small">Small</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Large">Large</option>
+                    <option value="X-Large">X-Large</option>
+                </select>
+            </div>
+
+            <!-- Step 4: Upload Design -->
+            <div class="input-group">
+                <label for="design-upload">Upload Your Design</label>
+                <input type="file" id="design-upload" name="design-upload" accept="image/*">
+                <p>Need a custom logo instead? Let us design it for you.</p>
+                <label class="custom-checkbox">
+                    <input type="checkbox" id="custom-logo-checkbox" name="custom-logo"> 
+                    <span>Request custom logo creation</span>
+                </label>
+            </div>
+
+            <!-- Step 5: Add Comments -->
+            <div class="input-group">
+                <label for="additional-comments">Additional Comments</label>
+                <textarea id="additional-comments" name="additional-comments" rows="4" placeholder="Enter any special requests or additional information here..."></textarea>
+            </div>
+
+            <!-- Step 6: Add to Selected Items -->
+            <div class="input-group">
+                <button type="button" id="add-item-btn">Add to Selected Items</button>
+            </div>
+        </form>
+    </section>
+
+    <section class="selected-items">
+        <h2>Selected Items</h2>
+        <table id="selected-items-table">
+            <thead>
+                <tr>
+                    <th>Clothing Item</th>
+                    <th>Size</th>
+                    <th>Design</th>
+                    <th>Custom Logo</th>
+                    <th>Comments</th>
+                    <th>Price</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="selected-items-list">
+                <!-- Selected items will be added here -->
+            </tbody>
+        </table>
+        <div class="total-cost">
+            <strong>Total Cost: $<span id="total-cost">0</span></strong>
+        </div>
+
+        <!-- Promo Code Section -->
+        <div class="promo-section">
+            <label for="promo-code">Promo Code:</label>
+            <input type="text" id="promo-code" placeholder="Enter promo code">
+            <button type="button" id="apply-promo-btn">Apply Promo</button>
+            <p id="promo-message" class="promo-message"></p>
+        </div>
+
+        <div class="discounted-cost" style="display: none;">
+            <strong>Discounted Cost: $<span id="discounted-cost">0</span></strong>
+        </div>
+
+        <button id="submit-all-btn">Submit All Items</button>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Vision Make Studio Co.</p>
+    </footer>
+
+    <script src="scripts.js"></script>
+</body>
+</html>
