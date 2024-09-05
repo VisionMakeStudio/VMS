@@ -14,6 +14,7 @@ body {
     align-items: center;
     justify-content: center;
     min-height: 100vh;
+    padding: 20px;
 }
 
 header {
@@ -21,24 +22,17 @@ header {
     margin: 40px 0;
 }
 
-header h1 {
-    font-weight: 600;
-    font-size: 2.5em;
-    color: #1c1c1e;
+header img {
+    max-width: 100%;
+    height: auto;
 }
 
-header p {
-    font-size: 1.2em;
-    color: #6e6e73;
-}
-
-/* Form Section */
 section.design-form {
     background-color: white;
     padding: 40px;
     border-radius: 20px;
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-    width: 90%;
+    width: 100%;
     max-width: 500px;
     margin: 20px auto;
 }
@@ -72,10 +66,7 @@ select, input[type="text"], input[type="file"], textarea {
     color: #1c1c1e;
     outline: none;
     transition: all 0.3s;
-}
-
-select:hover, input[type="text"]:hover, input[type="file"]:hover, textarea:hover {
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
 }
 
 button {
@@ -101,7 +92,7 @@ button:hover {
     padding: 20px;
     border-radius: 20px;
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-    width: 90%;
+    width: 100%;
     max-width: 900px;
     margin: auto;
 }
@@ -116,6 +107,7 @@ button:hover {
 .selected-items table {
     width: 100%;
     border-collapse: collapse;
+    font-size: 0.9em;
 }
 
 .selected-items th, .selected-items td {
@@ -143,7 +135,6 @@ button:hover {
     background-color: #d32f2f;
 }
 
-/* Total and Discount Cost Section */
 .total-cost, .discounted-cost {
     margin-top: 20px;
     font-size: 1.5em;
@@ -152,10 +143,6 @@ button:hover {
 
 .total-cost strong, .discounted-cost strong {
     color: #007aff;
-}
-
-.discounted-cost {
-    display: none;
 }
 
 /* Promo Code Section */
@@ -176,27 +163,19 @@ button:hover {
     font-size: 0.9em;
     outline: none;
     margin-right: 10px;
+    width: 70%; /* Adjusted width for mobile */
 }
 
 #apply-promo-btn {
     background-color: #007aff;
     color: white;
-    padding: 8px 15px; /* Smaller padding for a sleeker look */
+    padding: 8px 15px;
     border: none;
-    border-radius: 8px; /* Sleeker button with smaller radius */
-    font-size: 0.9em; /* Smaller font size */
+    border-radius: 8px;
+    font-size: 0.9em;
     cursor: pointer;
     transition: background-color 0.3s;
-    width: 25%;
-}
-
-#apply-promo-btn:hover {
-    background-color: #005fcc;
-}
-
-.promo-message {
-    margin-top: 10px;
-    font-size: 0.9em;
+    width: auto;
 }
 
 /* Submit Button */
@@ -217,7 +196,6 @@ button:hover {
     background-color: #005fcc;
 }
 
-/* Footer styling */
 footer {
     margin-top: 40px;
     padding: 20px;
@@ -225,7 +203,51 @@ footer {
     text-align: center;
 }
 
-footer p {
-    font-size: 0.9em;
-    margin: 0;
+/* Media Queries for responsiveness */
+@media (max-width: 768px) {
+    section.design-form, .selected-items {
+        padding: 20px;
+    }
+
+    .design-form h2, .selected-items h2 {
+        font-size: 1.5em;
+    }
+
+    button, #submit-all-btn {
+        font-size: 1.1em;
+        padding: 12px;
+    }
+
+    .selected-items table {
+        font-size: 0.8em;
+    }
+
+    .promo-section {
+        text-align: left;
+    }
+}
+
+@media (max-width: 480px) {
+    section.design-form, .selected-items {
+        width: 100%;
+    }
+
+    .design-form h2, .selected-items h2 {
+        font-size: 1.2em;
+    }
+
+    select, input[type="text"], input[type="file"], textarea {
+        padding: 10px;
+        font-size: 0.9em;
+    }
+
+    button, #submit-all-btn {
+        font-size: 1em;
+        padding: 10px;
+    }
+
+    #promo-code, #apply-promo-btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
 }
