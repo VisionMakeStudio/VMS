@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Clothing Blanks</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Header with Logo and Buttons -->
+    <header class="logo-header">
+        <div class="logo">
+            <img src="img/logo.png" alt="Logo">
+        </div>
+        <div class="controls">
+            <a href="index.html" class="button">Home</a>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main style="margin-top: 150px;">
+        <section class="admin-panel">
+            <h2 class="section-title">Upload New Item</h2>
+            <form id="upload-item-form" class="form-layout">
+                <label for="item-name">Item Name:</label>
+                <input type="text" id="item-name" class="input-field" required>
+
+                <label for="item-price">Item Price:</label>
+                <input type="number" id="item-price" class="input-field" required>
+
+                <label for="item-sizes">Available Sizes (comma separated):</label>
+                <input type="text" id="item-sizes" class="input-field" value="XS, S, M, L, XL" required>
+
+                <label for="item-images">Item Image URLs and Colors:</label>
+                <div id="image-urls-container">
+                    <div class="image-url-field">
+                        <input type="text" class="input-field image-url-input" placeholder="Enter image URL" required>
+                        <input type="text" class="input-field image-color-input" placeholder="Enter color" required>
+                        <button type="button" class="delete-button">Delete</button>
+                    </div>
+                </div>
+                <button type="button" id="add-image-button" class="button">Add Another Image</button>
+
+                <button type="submit" class="button">Add Item</button>
+            </form>
+
+            <h2 class="section-title">Edit Existing Items</h2>
+            <div id="existing-items" class="item-list">
+                <!-- Existing items will be dynamically loaded here -->
+            </div>
+        </section>
+    </main>
+
+    <script src="admin.js"></script>
+</body>
+</html>
