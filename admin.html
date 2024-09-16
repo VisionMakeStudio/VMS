@@ -1,57 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Clothing Blanks</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Admin - VISION MAKE STUDIO</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-    <!-- Header with Logo and Buttons -->
-    <header class="logo-header">
+  <!-- Admin Login (Password Protection) -->
+  <section id="admin-login" class="login-section">
+    <div class="container">
+      <div class="header-content">
         <div class="logo">
-            <img src="img/logo.png" alt="Logo">
+          <img src="img/logo.png" alt="VISION MAKE STUDIO Logo">
         </div>
-        <div class="controls">
-            <a href="index.html" class="button">Home</a>
+      </div>
+      <h2>Admin Login</h2>
+      <form id="admin-form" onsubmit="return checkPassword()">
+        <div class="form-group">
+          <label for="password">Enter Admin Password:</label>
+          <input type="password" id="password" required>
         </div>
-    </header>
+        <button type="submit" class="cta-button">Login</button>
+      </form>
+    </div>
+  </section>
 
-    <!-- Main Content Area -->
-    <main style="margin-top: 150px;">
-        <section class="admin-panel">
-            <h2 class="section-title">Upload New Item</h2>
-            <form id="upload-item-form" class="form-layout">
-                <label for="item-name">Item Name:</label>
-                <input type="text" id="item-name" class="input-field" required>
+  <!-- Admin Page (hidden until password is entered) -->
+  <section id="admin-page" class="admin-section" style="display: none;">
+    <div class="container">
+      <div class="header-content">
+        <div class="logo">
+          <img src="img/logo.png" alt="VISION MAKE STUDIO Logo">
+        </div>
+        <nav>
+          <ul>
+            <li><a href="index.html" class="cta-button">Back Home</a></li>
+          </ul>
+        </nav>
+      </div>
+      
+      <h2>Customer Requests</h2>
+      <table id="customer-data" class="table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Services</th>
+            <th>Message</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Customer data will be dynamically inserted here -->
+        </tbody>
+      </table>
+    </div>
+  </section>
 
-                <label for="item-price">Item Price:</label>
-                <input type="number" id="item-price" class="input-field" required>
+  <script>
+    // Simple password check function for admin login
+    function checkPassword() {
+      const password = document.getElementById('password').value;
+      if (password === 'admin123') { // You can change this password
+        document.getElementById('admin-login').style.display = 'none';
+        document.getElementById('admin-page').style.display = 'block';
+      } else {
+        alert('Incorrect password!');
+      }
+      return false; // Prevent form submission
+    }
 
-                <label for="item-sizes">Available Sizes (comma separated):</label>
-                <input type="text" id="item-sizes" class="input-field" value="XS, S, M, L, XL" required>
+    // Function to simulate loading customer data (replace with actual data fetching)
+    function loadCustomerData() {
+      const customerData = [
+        { name: 'John Doe', email: 'john@example.com', phone: '123-456-7890', services: 'Sports Graphic Design', message: 'Looking for a custom design.' },
+        { name: 'Jane Smith', email: 'jane@example.com', phone: '098-765-4321', services: 'Game Recording, Custom Merchandise', message: 'Please provide rates for both services.' }
+      ];
+      
+      const tableBody = document.querySelector('#customer-data tbody');
+      customerData.forEach(customer => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${customer.name}</td>
+          <td>${customer.email}</td>
+          <td>${customer.phone}</td>
+          <td>${customer.services}</td>
+          <td>${customer.message}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
 
-                <label for="item-images">Item Image URLs and Colors:</label>
-                <div id="image-urls-container">
-                    <div class="image-url-field">
-                        <input type="text" class="input-field image-url-input" placeholder="Enter image URL" required>
-                        <input type="text" class="input-field image-color-input" placeholder="Enter color" required>
-                        <button type="button" class="delete-button">Delete</button>
-                    </div>
-                </div>
-                <button type="button" id="add-image-button" class="button">Add Another Image</button>
+    // Load customer data when the page is visible
+    document.addEventListener('DOMContentLoaded', () => {
+      loadCustomerData();
+    });
+  </script>
 
-                <button type="submit" class="button">Add Item</button>
-            </form>
-
-            <h2 class="section-title">Edit Existing Items</h2>
-            <div id="existing-items" class="item-list">
-                <!-- Existing items will be dynamically loaded here -->
-            </div>
-        </section>
-    </main>
-
-    <script src="admin.js"></script>
 </body>
 </html>
+
