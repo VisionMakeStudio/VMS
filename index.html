@@ -17,7 +17,13 @@
           <img src="img/logo.png" alt="VISION MAKE STUDIO Logo">
         </div>
         <nav>
-          <ul>
+          <div class="hamburger" id="hamburger">
+            <!-- Hamburger Icon -->
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <ul id="nav-menu">
             <li><a href="#home">Home</a></li>
             <li><a href="#services">Services</a></li>
             <li><a href="#about">About Us</a></li>
@@ -101,37 +107,36 @@
           <input type="tel" id="contact-phone" name="contact-phone" required>
         </div>
 
-<!-- Service Checklist Section -->
-<div class="form-group">
-    <label for="services">Select the services you want:</label>
-    <div class="checkbox-container">
-      <div class="checkbox-group">
-        <input type="checkbox" id="graphic-design" name="services[]" value="Sports Graphic Design">
-        <label for="graphic-design">Sports Graphic Design</label>
-      </div>
-      <div class="checkbox-group">
-        <input type="checkbox" id="photoshoot" name="services[]" value="Professional Sports Players Photoshoots">
-        <label for="photoshoot">Professional Sports Players Photoshoots</label>
-      </div>
-      <div class="checkbox-group">
-        <input type="checkbox" id="video-highlights" name="services[]" value="Sports Video Highlights">
-        <label for="video-highlights">Sports Video Highlights</label>
-      </div>
-      <div class="checkbox-group">
-        <input type="checkbox" id="media-management" name="services[]" value="Sports Media Management">
-        <label for="media-management">Sports Media Management</label>
-      </div>
-      <div class="checkbox-group">
-        <input type="checkbox" id="game-recording" name="services[]" value="Game Recording">
-        <label for="game-recording">Game Recording</label>
-      </div>
-      <div class="checkbox-group">
-        <input type="checkbox" id="custom-merchandise" name="services[]" value="Custom Merchandise Design">
-        <label for="custom-merchandise">Custom Merchandise Design</label>
-      </div>
-    </div>
-  </div>
-  
+        <!-- Service Checklist -->
+        <div class="form-group">
+          <label for="services">Select the services you want:</label>
+          <div class="checkbox-container">
+            <div class="checkbox-group">
+              <input type="checkbox" id="graphic-design" name="services[]" value="Sports Graphic Design">
+              <label for="graphic-design">Sports Graphic Design</label>
+            </div>
+            <div class="checkbox-group">
+              <input type="checkbox" id="photoshoot" name="services[]" value="Professional Sports Players Photoshoots">
+              <label for="photoshoot">Professional Sports Players Photoshoots</label>
+            </div>
+            <div class="checkbox-group">
+              <input type="checkbox" id="video-highlights" name="services[]" value="Sports Video Highlights">
+              <label for="video-highlights">Sports Video Highlights</label>
+            </div>
+            <div class="checkbox-group">
+              <input type="checkbox" id="media-management" name="services[]" value="Sports Media Management">
+              <label for="media-management">Sports Media Management</label>
+            </div>
+            <div class="checkbox-group">
+              <input type="checkbox" id="game-recording" name="services[]" value="Game Recording">
+              <label for="game-recording">Game Recording</label>
+            </div>
+            <div class="checkbox-group">
+              <input type="checkbox" id="custom-merchandise" name="services[]" value="Custom Merchandise Design">
+              <label for="custom-merchandise">Custom Merchandise Design</label>
+            </div>
+          </div>
+        </div>
 
         <!-- Message Section -->
         <div class="form-group">
@@ -151,6 +156,18 @@
       <p>&copy; 2024 VISION MAKE STUDIO. All rights reserved.</p>
     </div>
   </footer>
+
+  <!-- JavaScript for the Hamburger Menu -->
+  <script>
+    // Get the hamburger icon and nav menu
+    const hamburger = document.getElementById('hamburger');
+    const navMenu = document.getElementById('nav-menu');
+
+    // Toggle the 'active' class on click
+    hamburger.addEventListener('click', () => {
+      navMenu.classList.toggle('active');
+    });
+  </script>
 
 </body>
 </html>
