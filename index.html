@@ -1,28 +1,156 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Page</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>VISION MAKE STUDIO</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-    <!-- Header Section -->
-    <header class="logo-header">
+  <!-- Header with logo and navigation -->
+  <header>
+    <div class="container">
+      <div class="header-content">
         <div class="logo">
-            <img src="img/logo.png" alt="Logo"> <!-- Ensure the correct path to your logo -->
+          <img src="img/logo.png" alt="VISION MAKE STUDIO Logo">
         </div>
-        <div class="controls">
-            <button id="admin-button">Admin</button> <!-- Admin button remains -->
-        </div>
-    </header>
-
-    <!-- Main Content: Grid of Items -->
-    <div id="items-grid">
-        <!-- Product items will be dynamically loaded here using JavaScript -->
+        <nav>
+          <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#about">About Us</a></li>
+            <li><a href="#quote">Request a Quote</a></li>
+            <li><a href="admin.html" class="admin-button">Admin</a></li> <!-- Admin Button -->
+          </ul>
+        </nav>
+      </div>
     </div>
+  </header>
 
-    <script src="scripts.js"></script>
+  <!-- Hero Section -->
+  <section id="home" class="hero-section">
+    <div class="container">
+      <div class="hero-content">
+        <h1>VISION MAKE STUDIO</h1>
+        <p>Premium Sports Media Solutions for Teams, Athletes, and Brands.</p>
+        <a href="#services" class="cta-button">Explore Services</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services Section -->
+  <section id="services" class="services-section">
+    <div class="container">
+      <h2>Our Services</h2>
+      <div class="service-row">
+        <div class="service-card">
+          <img src="img/graphic-design.jpg" alt="Graphic Design">
+          <h3>Sports Graphic Design</h3>
+          <p>Crafting visually stunning designs for athletes and teams.</p>
+        </div>
+        <div class="service-card">
+          <img src="img/photoshoot.jpg" alt="Photoshoots">
+          <h3>Professional Sports Players Photoshoots</h3>
+          <p>Capture professional moments with our expert photoshoot services.</p>
+        </div>
+        <div class="service-card">
+          <img src="img/video-highlights.jpg" alt="Video Highlights">
+          <h3>Sports Video Highlights</h3>
+          <p>Showcase your highlights with our high-quality video editing.</p>
+        </div>
+        <div class="service-card">
+          <img src="img/media-management.jpg" alt="Media Management">
+          <h3>Sports Media Management</h3>
+          <p>Build your brand with our dedicated social media solutions.</p>
+        </div>
+        <div class="service-card">
+          <img src="img/game-recording.jpg" alt="Game Recording">
+          <h3>Game Recording</h3>
+          <p>On-site game recording with professional equipment.</p>
+        </div>
+        <div class="service-card">
+          <img src="img/custom-merchandise.jpg" alt="Custom Merchandise">
+          <h3>Custom Merchandise Design</h3>
+          <p>Create personalized merchandise to represent your brand or team.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Request a Quote Section -->
+  <section id="quote" class="quote-section">
+    <div class="container">
+      <h2>Request a Quote</h2>
+      <form action="submit-quote.php" method="POST">
+        
+        <!-- Name and Contact Information -->
+        <div class="form-group">
+          <label for="contact-name">Name</label>
+          <input type="text" id="contact-name" name="contact-name" required>
+        </div>
+
+        <div class="form-group">
+          <label for="contact-email">Email</label>
+          <input type="email" id="contact-email" name="contact-email" required>
+        </div>
+
+        <div class="form-group">
+          <label for="contact-phone">Phone Number</label>
+          <input type="tel" id="contact-phone" name="contact-phone" required>
+        </div>
+
+<!-- Service Checklist Section -->
+<div class="form-group">
+    <label for="services">Select the services you want:</label>
+    <div class="checkbox-container">
+      <div class="checkbox-group">
+        <input type="checkbox" id="graphic-design" name="services[]" value="Sports Graphic Design">
+        <label for="graphic-design">Sports Graphic Design</label>
+      </div>
+      <div class="checkbox-group">
+        <input type="checkbox" id="photoshoot" name="services[]" value="Professional Sports Players Photoshoots">
+        <label for="photoshoot">Professional Sports Players Photoshoots</label>
+      </div>
+      <div class="checkbox-group">
+        <input type="checkbox" id="video-highlights" name="services[]" value="Sports Video Highlights">
+        <label for="video-highlights">Sports Video Highlights</label>
+      </div>
+      <div class="checkbox-group">
+        <input type="checkbox" id="media-management" name="services[]" value="Sports Media Management">
+        <label for="media-management">Sports Media Management</label>
+      </div>
+      <div class="checkbox-group">
+        <input type="checkbox" id="game-recording" name="services[]" value="Game Recording">
+        <label for="game-recording">Game Recording</label>
+      </div>
+      <div class="checkbox-group">
+        <input type="checkbox" id="custom-merchandise" name="services[]" value="Custom Merchandise Design">
+        <label for="custom-merchandise">Custom Merchandise Design</label>
+      </div>
+    </div>
+  </div>
+  
+
+        <!-- Message Section -->
+        <div class="form-group">
+          <label for="details">Message</label>
+          <textarea id="details" name="details" rows="4"></textarea>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="cta-button">Submit Request</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p>&copy; 2024 VISION MAKE STUDIO. All rights reserved.</p>
+    </div>
+  </footer>
+
 </body>
 </html>
