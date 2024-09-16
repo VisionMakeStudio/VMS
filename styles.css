@@ -1,417 +1,391 @@
 /* Global Styles */
 body {
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    background-color: #ffffff;
-    color: #333;
-  }
-  
-  /* Wrapper for consistent spacing */
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-  }
-  
-  /* Header Styles */
-  header {
-    background-color: transparent;
-    width: 100%;
-    top: 0;
-    z-index: 1000;
-  }
-  
-  .header-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 0;
-  }
-  
-  header .logo img {
-    width: 150px;
-  }
-  
-  nav ul {
-    list-style: none;
-    display: flex;
-    gap: 30px;
-  }
-  
-  nav ul li a {
-    color: #333;
-    text-decoration: none;
-    font-size: 16px;
-    font-weight: 500;
-  }
-  
-  nav ul li a:hover {
-    color: #007aff;
-  }
-  
-  /* Hero Section */
-  .hero-section {
-    background-image: url('img/hero-background.jpg');
-    background-size: cover;
-    background-position: center;
-    padding: 200px 20px;
-    text-align: center;
-    color: #050505;
-  }
-  
-  .hero-section h1 {
-    font-size: 4rem;
-    margin-bottom: 20px;
-    font-weight: 600;
-  }
-  
-  .hero-section p {
-    font-size: 1.5rem;
-    margin-bottom: 30px;
-    font-weight: 300;
-  }
-  
-  .cta-button {
-    padding: 15px 40px;
-    background-color: #007aff;
-    color: #fff;
-    border-radius: 8px;
-    text-decoration: none;
-    font-size: 1.2rem;
-    font-weight: 500;
-    transition: background-color 0.3s ease;
-  }
-  
-  .cta-button:hover {
-    background-color: #005bb5;
-  }
-  
-  /* Services Section */
-  .services-section {
-    padding: 50px 20px;
-    text-align: center;
-    background-color: #f9f9f9;
-  }
-  
-  .services-section h2 {
-    font-size: 2.5rem;
-    margin-bottom: 60px;
-    font-weight: 500;
-  }
-  
-  .service-row {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 20px;
-  }
-  
-  .service-card {
-    background-color: #fff;
-    padding: 50px;
-    width: 28%;
-    margin: 20px 0;
-    border-radius: 15px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
-  }
-  
-  .service-card:hover {
-    transform: translateY(-10px);
-  }
-  
-  .service-card img {
-    width: 100%;
-    border-radius: 12px;
-    margin-bottom: 20px;
-  }
-  
-  .service-card h3 {
-    font-size: 1.5rem;
-    font-weight: 500;
-  }
-  
-  .service-card p {
-    font-size: 1rem;
-    font-weight: 300;
-    margin-top: 10px;
-  }
-  
-  /* Request a Quote Section */
-  .quote-section {
-    padding: 80px 20px;
-    background-color: #f4f4f4;
-    text-align: center;
-  }
-  
-  .quote-section h2 {
-    font-size: 3rem;
-    font-weight: bold;
-    text-transform: uppercase;
-    margin-bottom: 40px;
-    color: #333;
-  }
-  
-  form {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 30px;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  }
-  
-  .form-group {
-    margin-bottom: 20px;
-    text-align: left;
-  }
-  
-  .form-group label {
-    font-size: 1.2rem;
-    margin-bottom: 5px;
-    display: block;
-    color: #555;
-  }
-  
-  .form-group input,
-  .form-group textarea,
-  .form-group select {
-    width: 100%;
-    padding: 15px;
-    font-size: 1rem;
-    border-radius: 5px;
-    border: 1px solid #ddd;
-    background-color: #f9f9f9;
-    box-sizing: border-box;
-  }
-  
-  /* Align checkboxes on one line */
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background-color: #ffffff;
+  color: #333;
+}
+
+/* Wrapper for consistent spacing */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Header Styles */
+header {
+  background-color: transparent;
+  width: 100%;
+  top: 0;
+  z-index: 1000;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+}
+
+header .logo img {
+  width: 150px;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 30px;
+}
+
+nav ul li a {
+  color: #333;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+nav ul li a:hover {
+  color: #007aff;
+}
+
+/* Hero Section */
+.hero-section {
+  background-image: url('img/hero-background.jpg');
+  background-size: cover;
+  background-position: center;
+  padding: 200px 20px;
+  text-align: center;
+  color: #050505;
+}
+
+.hero-section h1 {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.hero-section p {
+  font-size: 1.5rem;
+  margin-bottom: 30px;
+  font-weight: 300;
+}
+
+.cta-button {
+  padding: 15px 40px;
+  background-color: #007aff;
+  color: #fff;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 1.2rem;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.cta-button:hover {
+  background-color: #005bb5;
+}
+
+/* Services Section */
+.services-section {
+  padding: 50px 20px;
+  text-align: center;
+  background-color: #f9f9f9;
+}
+
+.services-section h2 {
+  font-size: 2.5rem;
+  margin-bottom: 60px;
+  font-weight: 500;
+}
+
+.service-row {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.service-card {
+  background-color: #fff;
+  padding: 50px;
+  width: 28%;
+  margin: 20px 0;
+  border-radius: 15px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.service-card:hover {
+  transform: translateY(-10px);
+}
+
+.service-card img {
+  width: 100%;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.service-card h3 {
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.service-card p {
+  font-size: 1rem;
+  font-weight: 300;
+  margin-top: 10px;
+}
+
+/* Request a Quote Section */
+.quote-section {
+  padding: 80px 20px;
+  background-color: #f4f4f4;
+  text-align: center;
+}
+
+.quote-section h2 {
+  font-size: 3rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-bottom: 40px;
+  color: #333;
+}
+
+form {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 30px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.form-group label {
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+  display: block;
+  color: #555;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 15px;
+  font-size: 1rem;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  background-color: #f9f9f9;
+  box-sizing: border-box;
+}
+
 /* Align checkboxes in two columns with proper alignment */
 .checkbox-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* Two equal columns */
-    gap: 15px; /* Space between the columns and rows */
-  }
-  
-  .checkbox-group {
-    display: grid;
-    grid-template-columns: auto 1fr; /* Fixed width for checkbox, flexible for label */
-    align-items: center; /* Ensure the checkbox and label are vertically aligned */
-  }
-  
-  .checkbox-group input {
-    margin-right: 10px; /* Space between checkbox and label */
-  }
-  
-  
-  .checkbox-group label {
-    font-size: 1rem;
-    font-weight: 400;
-    color: #333;
-  }
-  
- /* Admin page and admin login page logo adjustment */
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Two equal columns */
+  gap: 15px; /* Space between the columns and rows */
+}
+
+.checkbox-group {
+  display: grid;
+  grid-template-columns: auto 1fr; /* Fixed width for checkbox, flexible for label */
+  align-items: center; /* Ensure the checkbox and label are vertically aligned */
+}
+
+.checkbox-group input {
+  margin-right: 10px; /* Space between checkbox and label */
+}
+
+/* Admin Page and Login Page Logo Adjustment */
 .admin-section .logo img,
 .login-section .logo img {
-  width: 100px; /* Smaller width for both the admin login and admin pages */
+  width: 80px; /* Smaller width for the admin login and admin page logos */
   height: auto; /* Maintain aspect ratio */
 }
 
-  
-  /* Admin Page */
-  .admin-section {
-    padding: 60px 20px;
-    text-align: center;
+/* Admin Page */
+.admin-section {
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.admin-section h2 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+.admin-section table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.admin-section th, .admin-section td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.admin-section th {
+  background-color: #f9f9f9;
+  font-weight: bold;
+}
+
+.admin-section td {
+  font-size: 1rem;
+}
+
+/* Admin Login Section */
+.login-section {
+  padding: 80px 20px;
+  text-align: center;
+}
+
+.login-section h2 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.login-section form {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 30px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.login-section .form-group {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.login-section .form-group label {
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+  display: block;
+  color: #555;
+}
+
+.login-section .form-group input {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  background-color: #f9f9f9;
+}
+
+/* CTA Button Styling */
+.cta-button {
+  padding: 15px 40px;
+  background-color: #007aff;
+  color: white;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 20px;
+}
+
+.cta-button:hover {
+  background-color: #005bb5;
+}
+
+/* Footer */
+footer {
+  background-color: #ffffff;
+  color: #333;
+  padding: 80px;
+  text-align: center;
+}
+
+/* Responsive Design for Mobile Devices */
+@media (max-width: 1024px) {
+  header .logo img {
+    width: 120px;
   }
-  
-  .admin-section h2 {
-    font-size: 2.5rem;
-    margin-bottom: 20px;
-    font-weight: 500;
+
+  .hero-section h1 {
+    font-size: 3rem;
   }
-  
-  .admin-section table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
-  
-  .admin-section th, .admin-section td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-  }
-  
-  .admin-section th {
-    background-color: #f9f9f9;
-    font-weight: bold;
-  }
-  
-  .admin-section td {
-    font-size: 1rem;
-  }
-  
-  /* Admin Login Section */
-  .login-section {
-    padding: 80px 20px;
-    text-align: center;
-  }
-  
-  .login-section h2 {
-    font-size: 2.5rem;
-    margin-bottom: 20px;
-    font-weight: bold;
-  }
-  
-  .login-section form {
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 30px;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  }
-  
-  .login-section .form-group {
-    margin-bottom: 20px;
-    text-align: left;
-  }
-  
-  .login-section .form-group label {
+
+  .hero-section p {
     font-size: 1.2rem;
-    margin-bottom: 5px;
-    display: block;
-    color: #555;
   }
-  
-  .login-section .form-group input {
-    width: 100%;
-    padding: 12px;
-    font-size: 1rem;
-    border-radius: 5px;
-    border: 1px solid #ddd;
-    background-color: #f9f9f9;
-  }
-  
-  /* CTA Button Styling */
+
   .cta-button {
-    padding: 15px 40px;
-    background-color: #007aff;
-    color: white;
-    font-size: 1.2rem;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin-top: 20px;
+    padding: 12px 25px;
   }
-  
-  .cta-button:hover {
-    background-color: #005bb5;
+
+  .service-card {
+    width: 45%;
   }
-  
-  /* Footer */
-  footer {
-    background-color: #ffffff;
-    color: #333;
-    padding: 80px;
+
+  /* Admin page adjustments */
+  .admin-section .logo img {
+    width: 60px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
     text-align: center;
   }
-  /* Admin page logo adjustment */
-.admin-section .logo img {
-    width: 80px; /* Smaller width for the admin page logo */
-    height: auto; /* Maintain aspect ratio */
+
+  .hero-section {
+    padding: 150px 20px;
   }
-  
-  /* Responsive Design */
-  @media (max-width: 1024px) {
-    header .logo img {
-      width: 120px;
-    }
-  
-    .admin-section .logo img {
-      width: 100px;
-    }
-  
-    .hero-section h1 {
-      font-size: 3rem;
-    }
-  
-    .hero-section p {
-      font-size: 1.2rem;
-    }
-  
-    .service-card {
-      width: 45%;
-    }
+
+  .hero-section h1 {
+    font-size: 2.5rem;
   }
-  
-  @media (max-width: 768px) {
-    .header-content {
-      flex-direction: column;
-      text-align: center;
-    }
-  
-    .hero-section {
-      padding: 150px 20px;
-    }
-  
-    .hero-section h1 {
-      font-size: 2.5rem;
-    }
-  
-    .hero-section p {
-      font-size: 1.2rem;
-    }
-  
-    .service-card {
-      width: 100%;
-    }
-  
-    .cta-button {
-      padding: 12px 25px;
-      font-size: 1rem;
-    }
-  
-    footer {
-      padding: 30px;
-    }
+
+  .hero-section p {
+    font-size: 1.2rem;
   }
-  
-  @media (max-width: 480px) {
-    header {
-      padding: 10px 15px;
-    }
-  
-    .hero-section {
-      padding: 120px 15px;
-    }
-  
-    .hero-section h1 {
-      font-size: 2rem;
-    }
-  
-    .hero-section p {
-      font-size: 1rem;
-    }
-  
-    .service-card {
-      width: 100%;
-    }
-  
-    .cta-button {
-      padding: 10px 20px;
-      font-size: 1rem;
-    }
-  
-    form {
-      padding: 0 15px;
-    }
-  
-    footer {
-      padding: 20px;
-    }
+
+  .service-card {
+    width: 100%;
   }
-  
+
+  .cta-button {
+    padding: 12px 25px;
+    font-size: 1rem;
+  }
+
+  footer {
+    padding: 30px;
+  }
+
+  .admin-section .logo img {
+    width: 50px;
+  }
+}
+
+@media (max-width: 480px) {
+  header {
+    padding: 10px 15px;
+  }
+
+  .hero-section {
+    padding: 120px 15px;
+  }
+
+  .hero-section h1 {
+    font-size: 2rem;
+  }
+
+  .hero-section p
