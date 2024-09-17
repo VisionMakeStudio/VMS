@@ -21,6 +21,7 @@ header {
   width: 100%;
   top: 0;
   z-index: 1000;
+  position: relative;
 }
 
 .header-content {
@@ -30,6 +31,7 @@ header {
   padding: 20px 0;
 }
 
+/* Logo */
 header .logo img {
   width: 150px;
 }
@@ -49,7 +51,7 @@ header .logo img {
   border-radius: 5px;
 }
 
-/* Navigation Menu */
+/* Menu styles */
 nav ul {
   list-style: none;
   display: flex;
@@ -67,33 +69,21 @@ nav ul li a:hover {
   color: #007aff;
 }
 
-/* Hide menu on mobile by default */
-#nav-menu {
+/* Hide menu and logo on mobile by default */
+#nav-menu,
+header .logo {
+  display: none;
+}
+
+/* Show the hamburger menu on mobile */
+.hamburger {
   display: flex;
 }
 
-@media (max-width: 768px) {
-  nav ul {
-    display: none; /* Hide the menu by default on mobile */
-    flex-direction: column;
-    background-color: #fff;
-    position: absolute;
-    top: 60px;
-    left: 0;
-    right: 0;
-    padding: 10px;
-    text-align: center;
-  }
-
-  /* Show hamburger menu on mobile */
-  .hamburger {
-    display: flex;
-  }
-
-  /* Display the menu when it's active */
-  nav ul.active {
-    display: flex;
-  }
+/* Show the full menu and logo when 'active' class is added */
+nav ul.active,
+header .logo.active {
+  display: block;
 }
 
 /* Hero Section */
@@ -219,20 +209,7 @@ form {
   display: block;
   color: #555;
 }
-
-.form-group input,
-.form-group textarea,
-.form-group select {
-  width: 100%;
-  padding: 15px;
-  font-size: 1rem;
-  border-radius: 5px;
-  border: 1px solid #ddd;
-  background-color: #f9f9f9;
-  box-sizing: border-box;
-}
-
-/* Align checkboxes in two columns with proper alignment */
+/* Full check for syntax consistency */
 .checkbox-container {
   display: grid;
   grid-template-columns: 1fr 1fr; /* Two equal columns */
@@ -249,105 +226,6 @@ form {
   margin-right: 10px; /* Space between checkbox and label */
 }
 
-/* Admin Page and Login Page Logo Adjustment */
-.admin-section .logo img,
-.login-section .logo img {
-  width: 80px; /* Smaller width for the admin login and admin page logos */
-  height: auto; /* Maintain aspect ratio */
-}
-
-/* Admin Page */
-.admin-section {
-  padding: 60px 20px;
-  text-align: center;
-}
-
-.admin-section h2 {
-  font-size: 2.5rem;
-  margin-bottom: 20px;
-  font-weight: 500;
-}
-
-.admin-section table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-}
-
-.admin-section th, .admin-section td {
-  padding: 12px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-}
-
-.admin-section th {
-  background-color: #f9f9f9;
-  font-weight: bold;
-}
-
-.admin-section td {
-  font-size: 1rem;
-}
-
-/* Admin Login Section */
-.login-section {
-  padding: 80px 20px;
-  text-align: center;
-}
-
-.login-section h2 {
-  font-size: 2.5rem;
-  margin-bottom: 20px;
-  font-weight: bold;
-}
-
-.login-section form {
-  max-width: 400px;
-  margin: 0 auto;
-  padding: 30px;
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-}
-
-.login-section .form-group {
-  margin-bottom: 20px;
-  text-align: left;
-}
-
-.login-section .form-group label {
-  font-size: 1.2rem;
-  margin-bottom: 5px;
-  display: block;
-  color: #555;
-}
-
-.login-section .form-group input {
-  width: 100%;
-  padding: 12px;
-  font-size: 1rem;
-  border-radius: 5px;
-  border: 1px solid #ddd;
-  background-color: #f9f9f9;
-}
-
-/* CTA Button Styling */
-.cta-button {
-  padding: 15px 40px;
-  background-color: #007aff;
-  color: white;
-  font-size: 1.2rem;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.cta-button:hover {
-  background-color: #005bb5;
-}
-
-/* Footer */
 footer {
   background-color: #ffffff;
   color: #333;
@@ -385,4 +263,91 @@ footer {
 
 @media (max-width: 768px) {
   .header-content {
-    flex-direction:
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .hero-section {
+    padding: 150px 20px;
+  }
+
+  .hero-section h1 {
+    font-size: 2.5rem;
+  }
+
+  .hero-section p {
+    font-size: 1.2rem;
+  }
+
+  .service-card {
+    width: 100%;
+  }
+
+  .cta-button {
+    padding: 12px 25px;
+    font-size: 1rem;
+  }
+
+  footer {
+    padding: 30px;
+  }
+
+  .admin-section .logo img {
+    width: 50px;
+  }
+
+  /* Show the menu when the 'active' class is added */
+  nav ul.active,
+  header .logo.active {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  nav ul {
+    display: none; /* Hide the menu by default */
+    flex-direction: column;
+    background-color: #fff;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    right: 0;
+    padding: 10px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  header {
+    padding: 10px 15px;
+  }
+
+  .hero-section {
+    padding: 120px 15px;
+  }
+
+  .hero-section h1 {
+    font-size: 2rem;
+  }
+
+  .hero-section p {
+    font-size: 1rem;
+  }
+
+  .service-card {
+    width: 100%;
+  }
+
+  .cta-button {
+    padding: 10px 20px;
+    font-size: 1rem;
+  }
+
+  form {
+    padding: 0 15px;
+  }
+
+  footer {
+    padding: 20px;
+  }
+}
