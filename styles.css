@@ -34,6 +34,22 @@ header .logo img {
   width: 150px;
 }
 
+/* Hamburger Menu Styles */
+.hamburger {
+  display: none; /* Hidden on desktop */
+  flex-direction: column;
+  cursor: pointer;
+  gap: 5px;
+}
+
+.hamburger span {
+  width: 25px;
+  height: 3px;
+  background-color: #333;
+  border-radius: 5px;
+}
+
+/* Navigation Menu */
 nav ul {
   list-style: none;
   display: flex;
@@ -49,6 +65,35 @@ nav ul li a {
 
 nav ul li a:hover {
   color: #007aff;
+}
+
+/* Hide menu on mobile by default */
+#nav-menu {
+  display: flex;
+}
+
+@media (max-width: 768px) {
+  nav ul {
+    display: none; /* Hide the menu by default on mobile */
+    flex-direction: column;
+    background-color: #fff;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    right: 0;
+    padding: 10px;
+    text-align: center;
+  }
+
+  /* Show hamburger menu on mobile */
+  .hamburger {
+    display: flex;
+  }
+
+  /* Display the menu when it's active */
+  nav ul.active {
+    display: flex;
+  }
 }
 
 /* Hero Section */
@@ -296,7 +341,6 @@ form {
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  margin-top: 20px;
 }
 
 .cta-button:hover {
@@ -341,51 +385,4 @@ footer {
 
 @media (max-width: 768px) {
   .header-content {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .hero-section {
-    padding: 150px 20px;
-  }
-
-  .hero-section h1 {
-    font-size: 2.5rem;
-  }
-
-  .hero-section p {
-    font-size: 1.2rem;
-  }
-
-  .service-card {
-    width: 100%;
-  }
-
-  .cta-button {
-    padding: 12px 25px;
-    font-size: 1rem;
-  }
-
-  footer {
-    padding: 30px;
-  }
-
-  .admin-section .logo img {
-    width: 50px;
-  }
-}
-
-@media (max-width: 480px) {
-  header {
-    padding: 10px 15px;
-  }
-
-  .hero-section {
-    padding: 120px 15px;
-  }
-
-  .hero-section h1 {
-    font-size: 2rem;
-  }
-
-  .hero-section p
+    flex-direction:
