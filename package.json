@@ -1,0 +1,15 @@
+{
+  "name": "vision-make-studio",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "npx netlify-cli dev",
+    "build": "node scripts/validate-build.mjs && tsc -p tsconfig.json && node scripts/create-dist.mjs && node scripts/validate-dist.mjs",
+    "check": "npm run build",
+    "netlify:build": "npx netlify-cli build"
+  },
+  "devDependencies": {
+    "@netlify/functions": "5.3.0",
+    "typescript": "7.0.2"
+  }
+}

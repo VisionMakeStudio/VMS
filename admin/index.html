@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>VMS Admin — Dashboard</title>
+  <style>
+    :root{
+      --navy:#003049;
+      --navy-2:#12465f;
+      --cream:#FDF0D5;
+      --red:#C1121F;
+      --orange:#f15b2a;
+      --blue:#669BBC;
+      --green:#2f8b64;
+      --purple:#7656a8;
+      --ink:#08364b;
+      --text:#546e79;
+      --muted:#8ca0a9;
+      --line:#d8e4e8;
+      --soft:#f4f8f9;
+      --white:#fff;
+      --shadow:0 10px 28px rgba(0,48,73,.06);
+    }
+    *{box-sizing:border-box}
+    html{background:var(--soft);color-scheme:light}
+    body{margin:0;background:var(--soft);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;font-size:14px;min-height:100vh}
+    button,a{font:inherit}
+    button{cursor:pointer}
+    a{color:inherit}
+    :focus-visible{outline:3px solid rgba(102,155,188,.35);outline-offset:2px}
+
+    .app{display:grid;grid-template-columns:230px minmax(0,1fr);min-height:100vh}
+    .sidebar{position:sticky;top:0;height:100vh;background:var(--navy);color:#fff;padding:18px 14px 22px;display:flex;flex-direction:column;z-index:70;overflow:auto}
+    .brand{display:flex;align-items:center;gap:11px;padding:0 8px 16px;border-bottom:1px solid rgba(255,255,255,.14)}
+    .brand img{display:block;width:88px;height:auto;object-fit:contain;flex:0 0 auto}
+    .brand-copy{min-width:0}
+    .brand-copy strong{display:block;font-size:11px;line-height:1.2;white-space:nowrap}
+    .brand-copy span{display:block;margin-top:3px;color:#b4c8d1;font-size:8px;font-weight:900;letter-spacing:.12em}
+    .nav{display:grid;gap:4px;margin-top:16px}
+    .nav a{display:flex;align-items:center;min-height:34px;padding:9px 10px;border-radius:8px;color:#e5eef2;text-decoration:none;font-size:10px;font-weight:800;line-height:1.2;transition:.15s ease}
+    .nav a:hover{background:rgba(255,255,255,.06);color:#fff}
+    .nav a.active{color:#ff7a45;background:rgba(255,255,255,.09)}
+    .sidebar-foot{margin-top:auto;padding:18px 8px 0;color:#8fb0bf;font-size:8px;line-height:1.55}
+    .external-links{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px}
+    .external-links a{border:1px solid rgba(255,255,255,.16);border-radius:8px;padding:8px 7px;color:#dce9ee;text-decoration:none;text-align:center;font-size:7.5px;font-weight:850}
+
+    .main{min-width:0;min-height:100vh}
+    .topbar{position:sticky;top:0;z-index:50;min-height:64px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:16px;padding:11px 20px}
+    .topbar-title{display:flex;align-items:center;gap:9px;min-width:0}
+    .title-copy{min-width:0}
+    .title-copy small{display:block;color:#8ca0a9;font-size:8px;font-weight:950;letter-spacing:.12em}
+    .title-copy strong{display:block;margin-top:3px;color:var(--ink);font-size:19px;line-height:1.05;white-space:nowrap}
+    .top-actions{display:flex;align-items:center;gap:8px}
+    .status-chip{display:inline-flex;align-items:center;border:1px solid #cfe7dd;background:#eef8f4;color:#2f7d62;border-radius:999px;min-height:34px;padding:7px 11px;font-size:8px;font-weight:900;white-space:nowrap}
+    .btn{border:1px solid var(--line);background:#fff;color:#4f6975;border-radius:9px;min-height:38px;padding:8px 12px;font-size:9px;font-weight:900;transition:.15s ease}
+    .btn:hover{border-color:#b8cdd6;transform:translateY(-1px)}
+    .btn.primary{background:var(--navy);border-color:var(--navy);color:#fff}
+    .btn.subtle{background:#f7fafb}
+    .mobile-menu{display:none;width:42px;padding:0;font-size:18px;line-height:1}
+
+    .content{width:min(100%,1500px);margin:0 auto;padding:18px 20px 36px}
+    .overview{display:flex;align-items:center;justify-content:space-between;gap:18px;background:#fff;border:1px solid var(--line);border-radius:13px;padding:18px 20px;box-shadow:0 1px 0 rgba(0,48,73,.02)}
+    .overview-copy small{display:block;color:var(--blue);font-size:8px;font-weight:1000;letter-spacing:.13em}
+    .overview-copy h1{margin:5px 0 0;color:var(--ink);font-size:25px;line-height:1.08;letter-spacing:-.035em}
+    .overview-copy p{margin:7px 0 0;max-width:650px;color:#738994;font-size:10px;line-height:1.55}
+    .overview-meta{text-align:right;flex:0 0 auto}
+    .overview-meta strong{display:block;color:var(--ink);font-size:11px}
+    .overview-meta span{display:block;margin-top:5px;color:#91a2aa;font-size:8px}
+
+    .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:12px}
+    .stat{min-width:0;background:#fff;border:1px solid var(--line);border-top:3px solid var(--blue);border-radius:12px;padding:13px 14px;box-shadow:0 1px 0 rgba(0,48,73,.02)}
+    .stat.green{border-top-color:var(--green)}
+    .stat.orange{border-top-color:var(--orange)}
+    .stat.purple{border-top-color:var(--purple)}
+    .stat span{display:block;color:#84969f;font-size:8px;font-weight:950;letter-spacing:.04em}
+    .stat strong{display:block;margin-top:5px;color:var(--ink);font-size:23px;line-height:1;letter-spacing:-.03em}
+    .stat small{display:block;margin-top:5px;color:#91a3ab;font-size:8px;line-height:1.35;min-height:21px}
+
+    .pulse{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-top:10px;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+    .pulse-item{padding:12px 14px;border-right:1px solid #e5edef;min-width:0}
+    .pulse-item:last-child{border-right:0}
+    .pulse-item span{display:block;color:#8ca0a9;font-size:7.5px;font-weight:950;letter-spacing:.05em}
+    .pulse-item strong{display:block;margin-top:5px;color:#355361;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+    .dashboard-grid{display:grid;grid-template-columns:minmax(0,1.28fr) minmax(320px,.72fr);gap:12px;margin-top:12px;align-items:start}
+    .stack{display:grid;gap:12px}
+    .panel{background:#fff;border:1px solid var(--line);border-radius:13px;overflow:hidden;box-shadow:0 1px 0 rgba(0,48,73,.02)}
+    .panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-bottom:1px solid #e6edef}
+    .panel-title strong{display:block;color:var(--ink);font-size:14px;line-height:1.15}
+    .panel-title small{display:block;margin-top:4px;color:#8b9ea7;font-size:8px;line-height:1.4}
+    .panel-link{border:0;background:transparent;color:var(--ink);text-decoration:none;font-size:8.5px;font-weight:950;white-space:nowrap;padding:6px}
+    .panel-link:hover{text-decoration:underline}
+    .panel-body{padding:12px 14px}
+
+    .attention-list,.work-list,.activity-list{display:grid;gap:7px}
+    .feed-row{display:grid;grid-template-columns:5px minmax(0,1fr) auto;gap:10px;align-items:center;border:1px solid #e4ecef;background:#fbfdfd;border-radius:10px;min-height:56px;padding:9px 10px;text-decoration:none}
+    .feed-row:hover{border-color:#bfd1d9;background:#fff}
+    .feed-accent{align-self:stretch;border-radius:999px;background:var(--blue)}
+    .feed-row.urgent .feed-accent{background:var(--red)}
+    .feed-row.warning .feed-accent{background:var(--orange)}
+    .feed-row.success .feed-accent{background:var(--green)}
+    .feed-copy{min-width:0}
+    .feed-copy strong{display:block;color:#2d4b59;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .feed-copy span{display:block;margin-top:3px;color:#83969f;font-size:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .feed-meta{text-align:right;color:#7c9099;font-size:7.5px;font-weight:850;white-space:nowrap}
+    .empty{display:grid;place-items:center;min-height:132px;border:1px dashed #ccdade;border-radius:11px;color:#8b9da5;text-align:center;padding:20px;font-size:9px;line-height:1.55}
+    .empty strong{display:block;color:#4e6874;font-size:10px;margin-bottom:3px}
+
+    .billing-summary{display:grid;grid-template-columns:1.15fr .85fr;gap:8px}
+    .money-card{background:var(--navy);color:#fff;border-radius:12px;padding:15px}
+    .money-card span{display:block;color:#b8d0da;font-size:7.5px;font-weight:950;letter-spacing:.06em}
+    .money-card strong{display:block;margin-top:7px;font-size:28px;letter-spacing:-.04em}
+    .money-card small{display:block;margin-top:7px;color:#bcd1d9;font-size:8px;line-height:1.4}
+    .billing-mini{display:grid;gap:8px}
+    .mini-stat{border:1px solid #e2eaed;background:#fafcfc;border-radius:10px;padding:10px}
+    .mini-stat span{display:block;color:#8a9da6;font-size:7px;font-weight:950}
+    .mini-stat strong{display:block;margin-top:5px;color:var(--ink);font-size:16px}
+
+    .tools-panel{margin-top:12px}
+    .tool-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+    .tool-card{position:relative;display:flex;flex-direction:column;min-height:142px;border:1px solid #dfe8eb;background:#fff;border-radius:12px;padding:14px;text-decoration:none;overflow:hidden;transition:.15s ease}
+    .tool-card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--tool-color,var(--blue))}
+    .tool-card:hover{border-color:#bcd0d9;transform:translateY(-2px);box-shadow:var(--shadow)}
+    .tool-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+    .tool-kicker{display:inline-flex;align-items:center;min-height:23px;border:1px solid color-mix(in srgb,var(--tool-color,var(--blue)) 24%,#dfe8eb);background:color-mix(in srgb,var(--tool-color,var(--blue)) 7%,#fff);color:var(--tool-color,var(--blue));border-radius:999px;padding:5px 8px;font-size:7px;font-weight:1000;letter-spacing:.08em}
+    .tool-count{color:#6e8590;font-size:8px;font-weight:900;text-align:right}
+    .tool-card h3{margin:12px 0 0;color:var(--ink);font-size:13px;line-height:1.15}
+    .tool-card p{margin:6px 0 0;color:#82969f;font-size:8px;line-height:1.5}
+    .tool-open{margin-top:auto;padding-top:12px;color:var(--ink);font-size:8px;font-weight:950}
+
+    .bottom-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin-top:12px}
+    .shortcut-list{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .shortcut{border:1px solid #e0e9ec;border-radius:10px;background:#fafcfc;color:#3e5c68;min-height:52px;padding:10px;text-decoration:none;font-size:8.5px;font-weight:900;display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .shortcut:hover{background:#fff;border-color:#bed1d9}
+
+    .quick-menu{position:fixed;right:20px;top:58px;z-index:110;width:240px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 20px 55px rgba(0,48,73,.18);padding:8px;display:none}
+    .quick-menu.open{display:grid}
+    .quick-menu a{display:flex;align-items:center;justify-content:space-between;min-height:40px;padding:9px 10px;border-radius:8px;color:#375563;text-decoration:none;font-size:9px;font-weight:850}
+    .quick-menu a:hover{background:#f2f7f8;color:var(--ink)}
+    .quick-menu span{color:#9aabb2;font-size:8px}
+    .toast{position:fixed;left:50%;bottom:24px;z-index:150;transform:translate(-50%,18px);opacity:0;pointer-events:none;background:var(--navy);color:#fff;border-radius:999px;padding:9px 14px;font-size:9px;font-weight:900;transition:.18s ease;box-shadow:0 12px 28px rgba(0,48,73,.2)}
+    .toast.show{opacity:1;transform:translate(-50%,0)}
+    .drawer-backdrop{display:none;position:fixed;inset:0;background:rgba(7,35,48,.38);z-index:80}
+
+    @media(max-width:1100px){
+      .tool-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .dashboard-grid{grid-template-columns:1fr}
+      .stack.right{grid-template-columns:1fr 1fr}
+    }
+    @media(max-width:900px){
+      .app{grid-template-columns:1fr}
+      .sidebar{position:fixed;inset:0 auto 0 0;width:min(82vw,360px);height:100dvh;transform:translate3d(-105%,0,0);transition:none;z-index:90;box-shadow:18px 0 48px rgba(0,34,51,.22)}
+      .sidebar.open{transform:translate3d(0,0,0)}
+      .drawer-backdrop.show{display:block}
+      .mobile-menu{display:inline-flex;align-items:center;justify-content:center}
+      .content{padding:12px 12px 28px}
+      .topbar{padding:10px 12px;min-height:70px}
+      .status-chip{display:none}
+      body.menu-open{overflow:hidden}
+    }
+    @media(max-width:700px){
+      .title-copy strong{font-size:18px}
+      .top-actions .btn.subtle{display:none}
+      .overview{align-items:flex-start;padding:15px;flex-direction:column}
+      .overview-copy h1{font-size:22px;max-width:330px}
+      .overview-copy p{font-size:9px}
+      .overview-meta{text-align:left}
+      .stats{grid-template-columns:1fr 1fr;gap:8px}
+      .stat{padding:11px;min-height:105px}
+      .stat strong{font-size:21px}
+      .pulse{grid-template-columns:1fr 1fr}
+      .pulse-item:nth-child(2){border-right:0}
+      .pulse-item:nth-child(-n+2){border-bottom:1px solid #e5edef}
+      .stack.right{grid-template-columns:1fr}
+      .panel-head{padding:13px}
+      .panel-body{padding:10px}
+      .billing-summary{grid-template-columns:1fr}
+      .billing-mini{grid-template-columns:1fr 1fr}
+      .tool-grid{grid-template-columns:1fr}
+      .tool-card{min-height:124px}
+      .bottom-row{grid-template-columns:1fr}
+      .shortcut-list{grid-template-columns:1fr}
+      .feed-row{grid-template-columns:4px minmax(0,1fr)}
+      .feed-meta{grid-column:2;text-align:left;margin-top:-5px}
+      .quick-menu{top:70px;right:12px;left:12px;width:auto}
+    }
+    @media(max-width:390px){
+      .brand-copy strong{font-size:10px}
+      .top-actions .btn.primary{padding:8px 10px}
+      .stats{gap:7px}
+      .stat small{font-size:7.5px}
+    }
+  </style>
+<link rel="stylesheet" href="../assets/vms-suite.css"><script src="../assets/config.js"></script>  <link rel="stylesheet" href="vms-admin-shell.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar vms-admin-sidebar" id="sidebar">
+<div class="brand vms-admin-brand">
+  <img src="../assets/vms-logo.png" alt="Vision Make Studio">
+  <div class="brand-copy"><strong>Vision Make Studio</strong><span>ADMIN</span></div>
+</div>
+<nav class="nav vms-admin-nav" aria-label="VMS Admin tools">
+  <a class="active" href="index.html">Home</a>
+  <a href="audit.html">VMS Audit</a>
+  <a href="qr.html">QR Tools</a>
+  <a href="clients.html">Clients</a>
+  <a href="service-catalog.html">Service Catalog</a>
+  <a href="billing.html">Billing / Subscriptions</a>
+  <a href="promotions.html">Promotions</a>
+  <a href="projects.html">Projects & Requests</a>
+  <a href="files.html">Files & Assets</a>
+  <a href="activity.html">Notifications & Activity</a>
+  <a href="linkhub.html">VMS LinkHub</a>
+</nav>
+<div class="vms-admin-spacer"></div>
+<div class="vms-admin-sidebar-foot">
+  <div class="vms-admin-shortcuts">
+    <a href="../portal/index.html">Client Portal</a>
+    <a href="../index.html">Public Website</a>
+  </div>
+  Vision Make Studio · Admin Workspace
+</div>
+</aside>
+    <div class="drawer-backdrop" id="drawerBackdrop"></div>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-title">
+          <button class="btn mobile-menu" id="mobileMenuBtn" type="button" aria-label="Open admin menu" aria-expanded="false">☰</button>
+          <div class="title-copy"><small>VMS ADMIN</small><strong>Dashboard</strong></div>
+        </div>
+        <div class="top-actions">
+          <span class="status-chip" id="dataStatus">Ready</span>
+          <button class="btn subtle" id="refreshBtn" type="button">Refresh</button>
+          <button class="btn primary" id="quickActionBtn" type="button" aria-expanded="false">+ Quick Action</button>
+        </div>
+      </header>
+
+      <div class="content">
+        <section class="overview">
+          <div class="overview-copy">
+            <small>STUDIO OVERVIEW</small>
+            <h1>Everything in VMS, at a glance.</h1>
+            <p>Review clients, work, revenue, alerts, and activity here—then jump into the right tool when something needs action.</p>
+          </div>
+          <div class="overview-meta"><strong id="todayLabel">Today</strong><span id="updatedLabel">Updated just now</span></div>
+        </section>
+
+        <section class="stats" aria-label="Studio summary">
+          <article class="stat green"><span>ACTIVE CLIENTS</span><strong id="activeClientsStat">0</strong><small>Current client relationships</small></article>
+          <article class="stat orange"><span>NEEDS ATTENTION</span><strong id="attentionStat">0</strong><small>Payments, work, files, and service alerts</small></article>
+          <article class="stat"><span>MONTHLY RECURRING REVENUE</span><strong id="mrrStat">$0</strong><small>Active monthly subscriptions</small></article>
+          <article class="stat purple"><span>OPEN REQUESTS</span><strong id="requestsStat">0</strong><small>Client and VMS requests in progress</small></article>
+        </section>
+
+        <section class="pulse" aria-label="Operational pulse">
+          <div class="pulse-item"><span>ACTIVE PROJECTS</span><strong id="projectsPulse">0</strong></div>
+          <div class="pulse-item"><span>AUDITS TO REVIEW</span><strong id="auditsPulse">0</strong></div>
+          <div class="pulse-item"><span>QR SCANS THIS MONTH</span><strong id="qrScansPulse">0</strong></div>
+          <div class="pulse-item"><span>LINKHUB VIEWS</span><strong id="linkhubViewsPulse">0</strong></div>
+        </section>
+
+        <div class="dashboard-grid">
+          <div class="stack">
+            <section class="panel" id="attentionPanel">
+              <div class="panel-head">
+                <div class="panel-title"><strong>Needs Your Attention</strong><small>Important items collected from across VMS.</small></div>
+                <a class="panel-link" href="activity.html">Open Activity</a>
+              </div>
+              <div class="panel-body"><div class="attention-list" id="attentionList"></div></div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-head">
+                <div class="panel-title"><strong>Work Queue</strong><small>Upcoming requests and active projects.</small></div>
+                <a class="panel-link" href="projects.html">View All Work</a>
+              </div>
+              <div class="panel-body"><div class="work-list" id="workList"></div></div>
+            </section>
+          </div>
+
+          <div class="stack right">
+            <section class="panel">
+              <div class="panel-head">
+                <div class="panel-title"><strong>Revenue &amp; Billing</strong><small>Live summary from Billing &amp; Subscriptions.</small></div>
+                <a class="panel-link" href="billing.html">Open Billing</a>
+              </div>
+              <div class="panel-body">
+                <div class="billing-summary">
+                  <div class="money-card"><span>COLLECTED THIS MONTH</span><strong id="collectedMonth">$0</strong><small id="billingSummaryText">No payments recorded yet.</small></div>
+                  <div class="billing-mini">
+                    <div class="mini-stat"><span>ACTIVE SUBSCRIPTIONS</span><strong id="subscriptionsCount">0</strong></div>
+                    <div class="mini-stat"><span>UNPAID INVOICES</span><strong id="unpaidInvoices">0</strong></div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-head">
+                <div class="panel-title"><strong>Recent Activity</strong><small>The latest changes across your studio.</small></div>
+                <a class="panel-link" href="activity.html">See Activity</a>
+              </div>
+              <div class="panel-body"><div class="activity-list" id="activityList"></div></div>
+            </section>
+          </div>
+        </div>
+
+        <section class="panel tools-panel">
+          <div class="panel-head">
+            <div class="panel-title"><strong>VMS Tools</strong><small>Open and manage every part of the business from one place.</small></div>
+          </div>
+          <div class="panel-body"><div class="tool-grid" id="toolGrid"></div></div>
+        </section>
+
+        <div class="bottom-row">
+          <section class="panel">
+            <div class="panel-head"><div class="panel-title"><strong>Client Experience</strong><small>Preview what prospects and clients see outside Admin.</small></div></div>
+            <div class="panel-body shortcut-list">
+              <a class="shortcut" href="../portal/index.html"><span>Client Portal Preview</span><span>Open</span></a>
+              <a class="shortcut" href="../index.html"><span>Public VMS Website</span><span>Open</span></a>
+            </div>
+          </section>
+          <section class="panel">
+            <div class="panel-head"><div class="panel-title"><strong>System Snapshot</strong><small>What is currently available inside your Admin workspace.</small></div></div>
+            <div class="panel-body shortcut-list">
+              <a class="shortcut" href="service-catalog.html"><span id="publishedServicesText">0 published services</span><span>Catalog</span></a>
+              <a class="shortcut" href="promotions.html"><span id="activePromosText">0 active promotions</span><span>Promos</span></a>
+              <a class="shortcut" href="files.html"><span id="assetCountText">0 active assets</span><span>Files</span></a>
+              <a class="shortcut" href="linkhub.html"><span id="activeHubText">0 active LinkHubs</span><span>LinkHub</span></a>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="quick-menu" id="quickMenu" aria-hidden="true">
+    <a href="clients.html"><span>Add or open</span>Client</a>
+    <a href="audit.html"><span>Start</span>New Audit</a>
+    <a href="qr.html"><span>Create</span>QR Code</a>
+    <a href="billing.html"><span>Record</span>New Sale</a>
+    <a href="projects.html"><span>Add</span>Request / Project</a>
+    <a href="files.html"><span>Upload</span>File / Asset</a>
+    <a href="linkhub.html"><span>Create</span>LinkHub</a>
+    <a href="promotions.html"><span>Create</span>Promotion</a>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+  (function(){
+    const $=id=>document.getElementById(id);
+    const money=new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0});
+    const number=new Intl.NumberFormat('en-US');
+    const now=new Date();
+    let lastUpdated=now;
+
+    const storage={
+      clients:['vms_clients_final_v1'],
+      billing:['vms_billing_subscriptions_v3'],
+      work:['vms_work_admin_v2','vms_work_admin_v1'],
+      notifications:['vms_notifications_activity_v2','vms_notifications_activity_v1'],
+      files:['vms_files_assets_v2','vms_files_assets_v1'],
+      hubs:['vms_linkhub_admin_v2'],
+      promos:['vms_promotions_v2','vms_promotions_prototype_v1'],
+      catalog:['vms_service_catalog_v2','vms_service_catalog_demo_v1'],
+      audits:['vms_phase3_history_v1','vms_audit_history','vmsHistory','phase3_history','auditHistory'],
+      auditRequests:['vms_phase5_requests_v1'],
+      qr:['vms_qr_tools_v4','vms_qr_tools_final_v1','vms_qr_codes_v1','vms_saved_qrs_v1']
+    };
+
+    function parse(key){
+      try{const raw=localStorage.getItem(key);return raw?JSON.parse(raw):null}catch(e){return null}
+    }
+    function first(keys){for(const key of keys){const value=parse(key);if(value!==null)return value}return null}
+    function list(value,keys=[]){
+      if(Array.isArray(value))return value;
+      if(value&&typeof value==='object')for(const key of keys){if(Array.isArray(value[key]))return value[key]}
+      return [];
+    }
+    function text(value){return String(value??'').trim()}
+    function lower(value){return text(value).toLowerCase()}
+    function isDemo(item){
+      const combined=[item?.id,item?.client,item?.business,item?.name,item?.email].map(lower).join(' ');
+      return combined.includes('demo ')||combined.includes('demo-')||combined.includes('@example.')||combined.endsWith('.example');
+    }
+    function clean(items){return items.filter(item=>item&&!isDemo(item))}
+    function activeStatus(value){return !['archived','canceled','cancelled','completed','declined','deleted'].includes(lower(value))}
+    function isSameMonth(dateValue){const d=new Date(dateValue);return !Number.isNaN(d.getTime())&&d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth()}
+    function isOverdue(dateValue){if(!dateValue)return false;const d=new Date(String(dateValue).slice(0,10)+'T23:59:59');return !Number.isNaN(d.getTime())&&d<now}
+    function niceDate(value){
+      if(!value)return 'No date';
+      const d=new Date(value);if(Number.isNaN(d.getTime()))return text(value);
+      return d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    }
+    function toast(message){const el=$('toast');el.textContent=message;el.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove('show'),1800)}
+
+    function collect(){
+      const clients=clean(list(first(storage.clients),['clients']));
+      const activeClients=clients.filter(c=>!c.archived&&activeStatus(c.status||'Active'));
+
+      const billing=first(storage.billing)||{};
+      const subscriptions=clean(list(billing,['subscriptions'])).filter(s=>!s.archived);
+      const activeSubscriptions=subscriptions.filter(s=>['active','grace','past due','suspended','canceling'].includes(lower(s.status)));
+      const billingIssues=subscriptions.filter(s=>['past due','grace','suspended','failed','payment failed'].includes(lower(s.status)));
+      const mrr=activeSubscriptions.reduce((sum,s)=>{
+        const price=Number(s.price??s.recurringPrice??s.amount)||0;
+        const cycle=lower(s.cycle||s.cadence||'monthly');
+        return sum+(cycle.includes('year')?price/12:cycle.includes('week')?price*4.33:price);
+      },0);
+      const subscriptionPayments=subscriptions.flatMap(s=>Array.isArray(s.payments)?s.payments:[]);
+      const oneTime=list(billing,['oneTimePayments','payments']);
+      const payments=clean([...subscriptionPayments,...oneTime]);
+      const collected=payments.filter(p=>lower(p.status)==='paid'&&isSameMonth(p.date||p.paidAt||p.createdAt)).reduce((sum,p)=>sum+(Number(p.amount)||0),0);
+      const invoices=clean(list(billing,['invoices']));
+      const unpaidInvoices=invoices.filter(i=>!['paid','void','canceled','cancelled'].includes(lower(i.status)));
+
+      const work=first(storage.work)||{};
+      const requests=clean(list(work,['requests'])).filter(r=>activeStatus(r.status));
+      const projects=clean(list(work,['projects'])).filter(p=>activeStatus(p.status));
+      const overdueProjects=projects.filter(p=>isOverdue(p.dueDate));
+
+      const auditHistory=clean(list(first(storage.audits),['audits','history']));
+      const auditRequests=clean(list(first(storage.auditRequests),['requests'])).filter(r=>activeStatus(r.status));
+      const auditsToReview=auditRequests.length+auditHistory.filter(a=>['requested','needs review','in review','draft'].includes(lower(a.status))).length;
+
+      const qrs=clean(list(first(storage.qr),['qrs','saved','codes']));
+      const activeQrs=qrs.filter(q=>!q.archived&&activeStatus(q.status||'Active'));
+      const qrScans=activeQrs.reduce((sum,q)=>sum+(Number(q.scansThisMonth??q.monthlyScans??q.scans)||0),0);
+
+      const notifications=clean(list(first(storage.notifications),['items','activity'])).filter(n=>!n.deleted);
+      const notificationNeeds=notifications.filter(n=>n.needsAction&&!n.resolved);
+
+      const fileData=first(storage.files)||{};
+      const assets=clean(list(fileData,['assets'])).filter(a=>!a.archived);
+      const fileRequests=clean(list(fileData,['requests'])).filter(r=>!['fulfilled','received','complete','completed','canceled'].includes(lower(r.status)));
+
+      const hubs=clean(list(first(storage.hubs),['hubs']));
+      const activeHubs=hubs.filter(h=>!h.archived&&['active','published','live'].includes(lower(h.status||h.serviceStatus)));
+      const hubAttention=hubs.filter(h=>['grace','suspended','past due','disabled'].includes(lower(h.status||h.serviceStatus||h.billingStatus)));
+      const hubViews=activeHubs.reduce((sum,h)=>sum+(Number(h.analytics?.views??h.views)||0),0);
+
+      const promoData=first(storage.promos)||{};
+      const promos=clean(list(promoData,['promotions','items']));
+      const activePromos=promos.filter(p=>!p.archived&&lower(p.manualStatus||p.status)==='active');
+
+      const catalog=first(storage.catalog);
+      const catalogItems=clean(Array.isArray(catalog)?catalog:[...list(catalog,['services']),...list(catalog,['packages'])]);
+      const publishedServices=catalogItems.filter(s=>!s.archived&&['published','active'].includes(lower(s.status||'published')));
+
+      const attentionCount=billingIssues.length+overdueProjects.length+auditRequests.length+notificationNeeds.length+fileRequests.filter(r=>isOverdue(r.dueDate)||lower(r.status).includes('reminder')).length+hubAttention.length;
+      return {clients,activeClients,billing,subscriptions,activeSubscriptions,billingIssues,mrr,collected,invoices,unpaidInvoices,requests,projects,overdueProjects,auditHistory,auditRequests,auditsToReview,qrs,activeQrs,qrScans,notifications,notificationNeeds,assets,fileRequests,hubs,activeHubs,hubAttention,hubViews,promos,activePromos,publishedServices,attentionCount};
+    }
+
+    const tools=[
+      {label:'AUDIT',name:'VMS Audit',description:'Run Business Checkups, review requests, manage audit history, and prepare client reports.',href:'audit.html',color:'#669BBC',count:d=>`${d.auditsToReview} to review`},
+      {label:'QR',name:'QR Tools',description:'Create branded QR codes, manage destinations, reports, subscriptions, and scan activity.',href:'qr.html',color:'#7656a8',count:d=>`${d.activeQrs.length} active`},
+      {label:'CRM',name:'Clients',description:'Open client profiles, services, contacts, billing, projects, requests, notes, and activity.',href:'clients.html',color:'#2f8b64',count:d=>`${d.activeClients.length} active`},
+      {label:'OFFERS',name:'Service Catalog',description:'Manage VMS services, packages, visibility, pricing models, and sales rules.',href:'service-catalog.html',color:'#3f7894',count:d=>`${d.publishedServices.length} published`},
+      {label:'REVENUE',name:'Billing & Subscriptions',description:'Manage sales, invoices, payments, subscriptions, renewals, and billing issues.',href:'billing.html',color:'#f15b2a',count:d=>`${d.billingIssues.length} alerts`},
+      {label:'GROWTH',name:'Promotions',description:'Create promo codes, private offers, eligibility rules, and redemption history.',href:'promotions.html',color:'#C1121F',count:d=>`${d.activePromos.length} active`},
+      {label:'WORK',name:'Projects & Requests',description:'Review incoming requests, manage the work queue, due dates, and project progress.',href:'projects.html',color:'#d28a27',count:d=>`${d.projects.length} projects`},
+      {label:'ASSETS',name:'Files & Assets',description:'Organize client files, uploads, requested assets, projects, downloads, and archives.',href:'files.html',color:'#4e879d',count:d=>`${d.assets.length} assets`},
+      {label:'ACTIVITY',name:'Notifications & Activity',description:'See company-wide updates, action items, payment alerts, and record history.',href:'activity.html',color:'#3f7894',count:d=>`${d.notificationNeeds.length} need action`},
+      {label:'LINKHUB',name:'VMS LinkHub',description:'Manage client Smart Business Cards, publishing, permissions, billing, Wi-Fi, and menus.',href:'linkhub.html',color:'#7656a8',count:d=>`${d.activeHubs.length} active`}
+    ];
+
+    function empty(title,copy){return `<div class="empty"><div><strong>${title}</strong>${copy}</div></div>`}
+    function renderFeed(container,items,emptyTitle,emptyCopy){
+      container.innerHTML=items.length?items.map(item=>`<a class="feed-row ${item.level||''}" href="${item.href}"><span class="feed-accent"></span><span class="feed-copy"><strong>${item.title}</strong><span>${item.detail}</span></span><span class="feed-meta">${item.meta||'Open'}</span></a>`).join(''):empty(emptyTitle,emptyCopy);
+    }
+    function render(){
+      const d=collect();
+      $('activeClientsStat').textContent=number.format(d.activeClients.length);
+      $('attentionStat').textContent=number.format(d.attentionCount);
+      $('mrrStat').textContent=money.format(d.mrr);
+      $('requestsStat').textContent=number.format(d.requests.length);
+      $('projectsPulse').textContent=number.format(d.projects.length);
+      $('auditsPulse').textContent=number.format(d.auditsToReview);
+      $('qrScansPulse').textContent=number.format(d.qrScans);
+      $('linkhubViewsPulse').textContent=number.format(d.hubViews);
+      $('collectedMonth').textContent=money.format(d.collected);
+      $('subscriptionsCount').textContent=number.format(d.activeSubscriptions.length);
+      $('unpaidInvoices').textContent=number.format(d.unpaidInvoices.length);
+      $('billingSummaryText').textContent=d.collected?`${d.activeSubscriptions.length} active subscription${d.activeSubscriptions.length===1?'':'s'} contributing to recurring revenue.`:'No payments recorded this month yet.';
+
+      const attention=[];
+      d.billingIssues.forEach(s=>attention.push({level:'urgent',title:`Billing: ${s.client||s.service||'Subscription'} needs attention`,detail:`${s.status||'Payment issue'} · ${s.service||'Subscription'}`,meta:'Billing',href:'billing.html'}));
+      d.overdueProjects.forEach(p=>attention.push({level:'urgent',title:`Overdue: ${p.name||p.title||'Project'}`,detail:`${p.client||'Client'} · Due ${niceDate(p.dueDate)}`,meta:'Project',href:'projects.html'}));
+      d.auditRequests.forEach(a=>attention.push({level:'warning',title:`Audit request: ${a.businessName||a.business||a.client||'Business'}`,detail:a.status||'Needs review',meta:'Audit',href:'audit.html'}));
+      d.fileRequests.filter(r=>isOverdue(r.dueDate)||lower(r.status).includes('reminder')).forEach(r=>attention.push({level:'warning',title:`File needed: ${r.name||'Requested asset'}`,detail:`${r.client||'Client'} · ${r.status||'Waiting'}`,meta:'Files',href:'files.html'}));
+      d.hubAttention.forEach(h=>attention.push({level:'warning',title:`LinkHub: ${h.client||h.businessName||'Client'} needs attention`,detail:h.status||h.serviceStatus||h.billingStatus||'Service issue',meta:'LinkHub',href:'linkhub.html'}));
+      d.notificationNeeds.forEach(n=>attention.push({level:lower(n.priority)==='urgent'?'urgent':'warning',title:n.title||'Activity needs action',detail:n.client||n.source||'Notification',meta:'Activity',href:n.target||'activity.html'}));
+      renderFeed($('attentionList'),attention.slice(0,6),'You are all caught up.','Nothing needs your attention right now.');
+
+      const work=[
+        ...d.requests.map(r=>({type:'Request',title:r.title||r.name||'Request',client:r.client||'Client',status:r.status||'Open',due:r.dueDate,href:'projects.html'})),
+        ...d.projects.map(p=>({type:'Project',title:p.name||p.title||'Project',client:p.client||'Client',status:p.status||'Active',due:p.dueDate,href:'projects.html'}))
+      ].sort((a,b)=>(a.due||'9999').localeCompare(b.due||'9999')).slice(0,6).map(w=>({level:isOverdue(w.due)?'urgent':'',title:w.title,detail:`${w.client} · ${w.type} · ${w.status}`,meta:w.due?`Due ${niceDate(w.due)}`:'Open',href:w.href}));
+      renderFeed($('workList'),work,'No active work yet.','New requests and projects will appear here.');
+
+      const activity=d.notifications.slice().sort((a,b)=>new Date(b.createdAt||b.date||0)-new Date(a.createdAt||a.date||0)).slice(0,5).map(n=>({level:n.needsAction&&!n.resolved?'warning':'',title:n.title||n.type||'VMS activity',detail:[n.client,n.source].filter(Boolean).join(' · ')||n.detail||'Activity update',meta:n.createdAt?niceDate(n.createdAt):'Recent',href:n.target||'activity.html'}));
+      renderFeed($('activityList'),activity,'No activity recorded yet.','Updates from your VMS tools will collect here.');
+
+      $('toolGrid').innerHTML=tools.map(t=>`<a class="tool-card" href="${t.href}" style="--tool-color:${t.color}"><div class="tool-top"><span class="tool-kicker">${t.label}</span><span class="tool-count">${t.count(d)}</span></div><h3>${t.name}</h3><p>${t.description}</p><span class="tool-open">Open tool</span></a>`).join('');
+      $('publishedServicesText').textContent=`${d.publishedServices.length} published service${d.publishedServices.length===1?'':'s'}`;
+      $('activePromosText').textContent=`${d.activePromos.length} active promotion${d.activePromos.length===1?'':'s'}`;
+      $('assetCountText').textContent=`${d.assets.length} active asset${d.assets.length===1?'':'s'}`;
+      $('activeHubText').textContent=`${d.activeHubs.length} active LinkHub${d.activeHubs.length===1?'':'s'}`;
+      lastUpdated=new Date();
+      $('updatedLabel').textContent='Updated just now';
+      $('dataStatus').textContent=d.attentionCount?`${d.attentionCount} need attention`:'Ready';
+    }
+
+    function closeMenu(){
+      $('sidebar').classList.remove('open');$('drawerBackdrop').classList.remove('show');document.body.classList.remove('menu-open');$('mobileMenuBtn').setAttribute('aria-expanded','false');
+    }
+    $('mobileMenuBtn').addEventListener('click',()=>{
+      const open=!$('sidebar').classList.contains('open');$('sidebar').classList.toggle('open',open);$('drawerBackdrop').classList.toggle('show',open);document.body.classList.toggle('menu-open',open);$('mobileMenuBtn').setAttribute('aria-expanded',String(open));
+    });
+    $('drawerBackdrop').addEventListener('click',closeMenu);
+    document.querySelectorAll('.nav a').forEach(a=>a.addEventListener('click',closeMenu));
+
+    $('quickActionBtn').addEventListener('click',e=>{
+      e.stopPropagation();const open=!$('quickMenu').classList.contains('open');$('quickMenu').classList.toggle('open',open);$('quickMenu').setAttribute('aria-hidden',String(!open));$('quickActionBtn').setAttribute('aria-expanded',String(open));
+    });
+    document.addEventListener('click',e=>{if(!$('quickMenu').contains(e.target)&&e.target!==$('quickActionBtn')){$('quickMenu').classList.remove('open');$('quickMenu').setAttribute('aria-hidden','true');$('quickActionBtn').setAttribute('aria-expanded','false')}});
+    $('refreshBtn').addEventListener('click',()=>{render();toast('Dashboard refreshed')});
+    window.addEventListener('storage',render);
+    window.addEventListener('focus',render);
+    $('todayLabel').textContent=now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+    render();
+  })();
+  </script>
+<script src="../assets/vms-core.js"></script><script src="../assets/vms-state.js"></script><script>(async()=>{if(location.protocol!=='file:'){const user=await VMSAuth.requireSession('admin');if(!user)return;const state=await VMSState.start({scope:'admin',user});if(state?.reloading)return}})();</script>  <script src="vms-admin-shell.js"></script>
+</body>
+</html>

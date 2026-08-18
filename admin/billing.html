@@ -1,0 +1,3476 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>VMS Admin — Billing & Subscriptions</title>
+<style>
+:root{
+  --navy:#003049;
+  --navy2:#08283d;
+  --cream:#FDF0D5;
+  --red:#C1121F;
+  --blue:#669BBC;
+  --orange:#EB5E28;
+  --white:#fff;
+  --ink:#18303f;
+  --muted:#7b8d97;
+  --line:#e0e7ea;
+  --bg:#f5f7f8;
+  --green:#2b8c69;
+  --green-bg:#eaf8f2;
+  --amber:#b47a17;
+  --amber-bg:#fff7e7;
+  --red-bg:#fbeff0;
+  --shadow:0 16px 40px rgba(0,48,73,.08);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink)}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.shell{display:grid;grid-template-columns:220px minmax(0,1fr);min-height:100vh}
+.sidebar{
+  position:sticky;top:0;height:100vh;background:var(--navy);color:#fff;padding:18px 14px;display:flex;flex-direction:column;z-index:30
+}
+.brand{display:flex;align-items:center;gap:10px;padding:0 8px 18px}
+.brand img{width:58px;height:auto;display:block;object-fit:contain}
+.brand-copy strong{display:block;font-size:10px;color:#fff}
+.brand-copy span{display:block;color:#9eb9c4;font-size:7px;margin-top:2px;font-weight:850}
+.nav{display:grid;gap:5px}
+.nav a,.nav button{
+  text-decoration:none;border:0;background:transparent;color:#c7dae2;padding:10px 11px;border-radius:10px;
+  text-align:left;font-size:9px;font-weight:850;display:flex;align-items:center;justify-content:space-between
+}
+.nav a:hover,.nav button:hover{background:rgba(255,255,255,.08);color:#fff}
+.nav .active{background:rgba(255,255,255,.08);color:var(--orange)}
+.nav .soon{font-size:6px;padding:3px 5px;border-radius:999px;background:rgba(255,255,255,.1);color:#a9c3ce}
+.side-note{margin-top:auto;border-top:1px solid rgba(255,255,255,.12);padding:12px 8px 2px;color:#a9c3ce;font-size:7px;line-height:1.5}
+.main{min-width:0}
+.topbar{
+  height:66px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;
+  padding:0 22px;position:sticky;top:0;z-index:20
+}
+.topbar-left small{display:block;color:#91a1a8;font-size:8px;font-weight:950;letter-spacing:.07em}
+.topbar-left strong{display:block;color:var(--navy);font-size:18px;margin-top:2px;line-height:1.05}
+.topbar-actions{display:flex;align-items:center;gap:7px}
+.mobile-menu{display:none}
+.content{padding:16px 22px 40px;max-width:1380px;margin:0 auto}
+.intro{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:12px}
+.intro p{margin:0;max-width:820px;color:var(--muted);font-size:9px;line-height:1.55}
+.actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.btn{
+  border:1px solid #d7e2e7;background:#fff;color:var(--navy);border-radius:9px;min-height:38px;padding:0 12px;
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;font-size:9px;font-weight:900;line-height:1
+}
+.btn:hover{border-color:#aec6d1}
+.btn.primary{background:var(--navy);border-color:var(--navy);color:#fff}
+.btn.red{background:#fff;border-color:#efc8cc;color:var(--red)}
+.btn.green{background:var(--green);border-color:var(--green);color:#fff}
+.btn.orange{background:var(--orange);border-color:var(--orange);color:#fff}
+.btn.small{min-height:31px;padding:0 9px;font-size:8px}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-bottom:12px}
+.stat{
+  background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 13px;box-shadow:0 4px 15px rgba(0,48,73,.03)
+}
+.stat span{display:block;color:#8a9aa2;font-size:7px;font-weight:950;letter-spacing:.04em}
+.stat strong{display:block;color:var(--navy);font-size:21px;margin-top:5px;line-height:1}
+.stat small{display:block;color:#98a6ad;font-size:7px;margin-top:6px}
+.stat.green strong{color:var(--green)}
+.stat.red strong{color:var(--red)}
+.stat.orange strong{color:var(--orange)}
+.stat.blue strong{color:#3f7894}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.tab{
+  border:1px solid #dce5e9;background:#fff;color:#6d818b;border-radius:9px;min-height:36px;padding:0 11px;font-size:8px;font-weight:900
+}
+.tab.active{background:var(--navy);border-color:var(--navy);color:#fff}
+.toolbar{
+  display:grid;grid-template-columns:minmax(250px,1fr) 165px 165px 165px;gap:8px;margin-bottom:10px
+}
+.toolbar input,.toolbar select{
+  width:100%;min-height:39px;border:1px solid #d8e3e7;background:#fff;border-radius:9px;padding:0 10px;color:var(--ink);font-size:9px;outline:none
+}
+.toolbar input:focus,.toolbar select:focus{border-color:#77a4b9;box-shadow:0 0 0 3px rgba(102,155,188,.12)}
+.panel{background:#fff;border:1px solid var(--line);border-radius:13px;box-shadow:0 4px 16px rgba(0,48,73,.03);overflow:hidden}
+.panel-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 13px;border-bottom:1px solid #edf1f3}
+.panel-head h3{margin:0;color:var(--navy);font-size:10px}
+.panel-head span{font-size:7px;color:var(--muted)}
+.subscription-table-head,.subscription-row{
+  display:grid;grid-template-columns:minmax(260px,1.25fr) minmax(125px,.58fr) minmax(120px,.55fr) minmax(130px,.58fr) minmax(125px,.58fr) auto;
+  gap:10px;align-items:center
+}
+.subscription-table-head{padding:9px 12px;background:#fafcfc;border-bottom:1px solid #edf1f3;color:#8a9ba4;font-size:7px;font-weight:950}
+.subscription-row{padding:11px 12px;border-bottom:1px solid #edf1f3}
+.subscription-row:last-child{border-bottom:0}
+.client-main{display:flex;align-items:center;gap:10px;min-width:0}
+.avatar{width:40px;height:40px;border-radius:11px;background:#edf5f8;color:var(--navy);display:grid;place-items:center;font-size:10px;font-weight:1000;flex:0 0 auto}
+.client-copy{min-width:0}
+.client-copy strong{display:block;color:var(--navy);font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.client-copy span{display:block;color:var(--muted);font-size:7px;margin-top:3px;line-height:1.4}
+.cell span{display:block;color:#8c9da5;font-size:7px;font-weight:950}
+.cell strong{display:block;color:var(--navy);font-size:9px;margin-top:4px;line-height:1.35}
+.badge{
+  display:inline-flex;align-items:center;border-radius:999px;padding:4px 7px;font-size:7px;font-weight:950;background:#edf3f5;color:#647a85
+}
+.badge.green{background:var(--green-bg);color:var(--green)}
+.badge.red{background:var(--red-bg);color:#b13a43}
+.badge.orange{background:var(--amber-bg);color:var(--amber)}
+.badge.blue{background:#edf5f8;color:#447893}
+.badge.gray{background:#f0f3f4;color:#768991}
+.badges{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}
+.row-actions{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}
+.attention-strip{
+  background:#fff;border:1px solid #ead6d8;border-left:4px solid var(--red);border-radius:12px;padding:10px 12px;margin-bottom:10px;
+  display:flex;align-items:center;justify-content:space-between;gap:10px
+}
+.attention-strip strong{display:block;color:var(--red);font-size:9px}
+.attention-strip span{display:block;color:var(--muted);font-size:7px;margin-top:3px;line-height:1.4}
+.payment-list{display:grid}
+.payment-row{
+  display:grid;grid-template-columns:minmax(240px,1.2fr) minmax(120px,.55fr) minmax(110px,.5fr) minmax(125px,.55fr) auto;
+  gap:10px;align-items:center;padding:11px 12px;border-bottom:1px solid #edf1f3
+}
+.payment-row:last-child{border-bottom:0}
+.payment-main strong{display:block;color:var(--navy);font-size:9px}
+.payment-main span{display:block;color:var(--muted);font-size:7px;margin-top:3px}
+.empty{padding:36px;text-align:center;color:var(--muted);font-size:9px}
+.empty strong{display:block;color:var(--navy);font-size:13px;margin-bottom:5px}
+.modal-backdrop{
+  position:fixed;inset:0;background:rgba(4,27,39,.52);display:none;align-items:center;justify-content:center;padding:16px;z-index:100
+}
+.modal-backdrop.show{display:flex}
+.modal{width:min(760px,100%);max-height:94vh;overflow:auto;background:#fff;border-radius:15px;box-shadow:0 25px 80px rgba(0,0,0,.22)}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:14px 15px;border-bottom:1px solid var(--line)}
+.modal-head h3{margin:0;color:var(--navy);font-size:12px}
+.close{width:34px;height:34px;border:0;background:#f2f6f7;color:var(--navy);border-radius:9px;font-size:18px}
+.modal-body{padding:15px}
+.modal-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 15px;border-top:1px solid var(--line)}
+.modal-foot-right{display:flex;gap:7px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field{display:grid;gap:5px}
+.field.full{grid-column:1/-1}
+.field label{font-size:7px;font-weight:950;color:#778d98}
+.field input,.field select,.field textarea{
+  width:100%;border:1px solid #d8e3e7;background:#fff;border-radius:9px;min-height:40px;padding:8px 10px;color:var(--ink);font-size:9px;outline:none
+}
+.field textarea{min-height:78px;resize:vertical}
+.kv{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.kv-item{background:#f8fafb;border:1px solid #e5ecef;border-radius:10px;padding:9px}
+.kv-item span{display:block;color:#8c9da5;font-size:7px;font-weight:950}
+.kv-item strong{display:block;color:var(--navy);font-size:9px;margin-top:4px}
+.detail-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.detail-title h4{margin:0;color:var(--navy);font-size:11px}
+.detail-title p{margin:3px 0 0;color:var(--muted);font-size:8px}
+.history{display:grid;gap:7px}
+.history-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;border:1px solid #e6ecef;border-radius:10px;padding:9px}
+.history-item strong{display:block;color:var(--navy);font-size:9px}
+.history-item span{display:block;color:var(--muted);font-size:7px;margin-top:3px}
+.note{border:1px solid #f0dfb8;background:#fff8e9;color:#87631f;border-radius:11px;padding:9px 10px;font-size:8px;line-height:1.45}
+.toast{
+  position:fixed;right:18px;bottom:18px;background:#123a4d;color:#fff;border-radius:10px;padding:11px 13px;font-size:9px;font-weight:850;
+  box-shadow:var(--shadow);transform:translateY(90px);opacity:0;transition:.2s;z-index:160
+}
+.toast.show{transform:none;opacity:1}
+.drawer-backdrop{display:none}
+.short-label{display:none}
+
+@media(max-width:1100px){
+  .stats{grid-template-columns:repeat(3,1fr)}
+  .toolbar{grid-template-columns:1fr 1fr}
+  .subscription-table-head,.subscription-row{grid-template-columns:minmax(220px,1.1fr) .55fr .55fr .55fr auto}
+  .subscription-table-head>div:nth-child(5),.subscription-row>.renewal-cell{display:none}
+}
+@media(max-width:760px){
+  .shell{display:block}
+  .sidebar{position:fixed;left:-255px;top:0;width:240px;height:100vh;transition:left .2s ease;z-index:120}
+  .sidebar.open{left:0}
+  .drawer-backdrop{position:fixed;inset:0;background:rgba(0,25,38,.42);z-index:115}
+  .drawer-backdrop.show{display:block}
+  .mobile-menu{display:inline-flex}
+  .topbar{height:60px;padding:0 12px}
+  .topbar-left small{font-size:8px}
+  .topbar-left strong{font-size:16px}
+  .topbar-actions{gap:5px}
+  .topbar-actions .btn{min-height:34px;padding:0 8px;font-size:8px}
+  .topbar-actions .full-label{display:none}
+  .topbar-actions .short-label{display:inline}
+  .content{padding:10px 11px 28px}
+  .intro{display:block;margin-bottom:10px}
+  .intro p{font-size:9px}
+  .stats{grid-template-columns:1fr 1fr;gap:8px}
+  .stat{padding:11px}
+  .toolbar{grid-template-columns:1fr;gap:7px}
+  .tabs{display:grid;grid-template-columns:1fr 1fr}
+  .tab{width:100%;min-height:40px}
+  .subscription-table-head{display:none}
+  .subscription-row{display:block;padding:0}
+  .subscription-row .client-main{padding:11px;cursor:pointer}
+  .subscription-row .cell,.subscription-row .row-actions{display:none}
+  .subscription-row.expanded .cell{display:block;padding:9px 11px;border-top:1px solid #edf1f3}
+  .subscription-row.expanded .row-actions{display:grid;grid-template-columns:1fr 1fr;padding:10px 11px;border-top:1px solid #edf1f3}
+  .subscription-row.expanded .row-actions .btn{width:100%;min-height:40px}
+  .payment-row{grid-template-columns:1fr 1fr;padding:10px}
+  .payment-row .payment-main{grid-column:1/-1}
+  .payment-row>.btn{grid-column:1/-1;width:100%;min-height:40px}
+  .kv{grid-template-columns:1fr}
+  .form-grid{grid-template-columns:1fr}
+  .field.full{grid-column:auto}
+  .modal-backdrop{padding:8px}
+  .brand img{width:54px}
+}
+
+/* ===== LARGER / EASIER-TO-READ BILLING UI PROTOTYPE ===== */
+
+/* General readability */
+.brand-copy strong{font-size:12px}
+.brand-copy span{font-size:8px}
+.nav a,.nav button{font-size:10.5px}
+.nav .soon{font-size:7px}
+.side-note{font-size:8.5px}
+.topbar-left small{font-size:9px}
+.topbar-left strong{font-size:20px}
+.intro p{font-size:10.5px;line-height:1.6}
+.btn{font-size:10px;min-height:40px;padding-left:13px;padding-right:13px}
+.btn.small{font-size:9px;min-height:34px}
+.tab{font-size:9.5px;min-height:39px}
+.toolbar input,.toolbar select{font-size:10px;min-height:42px}
+
+.panel-head h3{font-size:12px}
+.panel-head span{font-size:8.5px}
+.subscription-table-head{font-size:8px}
+.avatar{width:44px;height:44px;font-size:11px}
+.client-copy strong{font-size:11.5px}
+.client-copy span{font-size:8.5px}
+.cell span{font-size:8px}
+.cell strong{font-size:10.5px}
+.badge{font-size:8px;padding:5px 8px}
+
+.attention-strip{padding:12px 13px}
+.attention-strip strong{font-size:10.5px}
+.attention-strip span{font-size:8.5px}
+
+.payment-main strong{font-size:10.5px}
+.payment-main span{font-size:8.5px}
+.empty{font-size:10px}
+.empty strong{font-size:15px}
+.modal-head h3{font-size:13px}
+.field label{font-size:8.5px}
+.field input,.field select,.field textarea{font-size:10px;min-height:43px}
+.kv-item span{font-size:8px}
+.kv-item strong{font-size:10.5px}
+.detail-title h4{font-size:12px}
+.detail-title p{font-size:9px}
+.history-item strong{font-size:10px}
+.history-item span{font-size:8px}
+.note{font-size:9px}
+
+/* Featured desktop stats layout:
+   large MRR card on the left, 4 supporting cards arranged 2x2. */
+.stats{
+  grid-template-columns:minmax(255px,1.1fr) repeat(2,minmax(190px,1fr));
+  grid-template-rows:repeat(2,minmax(102px,auto));
+  gap:10px;
+}
+.stat{
+  padding:14px 15px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.stat span{font-size:8px}
+.stat strong{font-size:25px;margin-top:7px}
+.stat small{font-size:8px;margin-top:7px}
+
+.mrr-feature{
+  grid-row:1 / span 2;
+  min-height:214px;
+  justify-content:center;
+  padding:22px;
+  border-radius:15px;
+}
+.mrr-feature span{font-size:10px}
+.mrr-feature strong{
+  font-size:44px;
+  margin-top:10px;
+  letter-spacing:-.035em;
+}
+.mrr-feature small{font-size:10px;margin-top:10px}
+
+/* Keep data rows airy without changing column alignment */
+.subscription-row{padding-top:13px;padding-bottom:13px}
+.payment-row{padding-top:13px;padding-bottom:13px}
+
+@media(max-width:1100px) and (min-width:761px){
+  .stats{
+    grid-template-columns:minmax(230px,1.05fr) repeat(2,1fr);
+    grid-template-rows:repeat(2,minmax(98px,auto));
+  }
+  .mrr-feature{min-height:206px}
+  .mrr-feature strong{font-size:39px}
+}
+
+/* Mobile: MRR full width, then the other four cards in a compact 2x2 grid. */
+@media(max-width:760px){
+  .topbar-left small{font-size:9px}
+  .topbar-left strong{font-size:17px}
+  .topbar-actions .btn{font-size:9px;min-height:36px}
+  .intro p{font-size:10.5px;line-height:1.55}
+
+  .stats{
+    grid-template-columns:1fr 1fr!important;
+    grid-template-rows:auto!important;
+    gap:8px;
+  }
+  .mrr-feature{
+    grid-column:1 / -1;
+    grid-row:auto;
+    min-height:132px;
+    padding:17px;
+    align-items:flex-start;
+  }
+  .mrr-feature span{font-size:9px}
+  .mrr-feature strong{font-size:34px}
+  .mrr-feature small{font-size:9px}
+
+  .stat{padding:12px;min-height:102px}
+  .stat span{font-size:8.5px}
+  .stat strong{font-size:24px}
+  .stat small{font-size:8.5px;line-height:1.35}
+
+  .stat.mrr-feature{
+    grid-column:1 / -1;
+    grid-row:auto;
+    min-height:132px;
+    padding:17px;
+    align-items:flex-start;
+  }
+  .stat.mrr-feature span{font-size:9px}
+  .stat.mrr-feature strong{font-size:34px}
+  .stat.mrr-feature small{font-size:9px}
+
+  .tabs .tab{font-size:10px;min-height:43px}
+  .toolbar input,.toolbar select{font-size:11px;min-height:44px}
+
+  .subscription-row .client-main{padding:13px}
+  .client-copy strong{font-size:13px}
+  .client-copy span{font-size:9.5px}
+  .badge{font-size:9px}
+  .subscription-row.expanded .cell{padding:11px 13px}
+  .subscription-row.expanded .row-actions{padding:11px 13px}
+  .subscription-row.expanded .row-actions .btn{font-size:10px;min-height:42px}
+
+  .cell span{font-size:8.5px}
+  .cell strong{font-size:11px}
+  .panel-head h3{font-size:12px}
+  .panel-head span{font-size:9px}
+  .attention-strip strong{font-size:11px}
+  .attention-strip span{font-size:9px}
+
+  .payment-main strong{font-size:11.5px}
+  .payment-main span{font-size:9px}
+  .field label{font-size:9px}
+  .field input,.field select,.field textarea{font-size:11px}
+  .note{font-size:9.5px}
+}
+
+
+/* ===== BILLING REVENUE / INVOICES PROTOTYPE ===== */
+.mobile-menu{display:none!important}
+@media(max-width:760px){.mobile-menu{display:inline-flex!important}}
+
+
+.mrr-feature{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 190px;
+  align-items:center!important;
+  gap:18px;
+}
+.mrr-copy{min-width:0}
+.mrr-subline{display:grid;gap:4px;margin-top:15px}
+.mrr-subline span{font-size:8px!important;color:#70858f!important;font-weight:800!important}
+.mrr-chart-wrap{display:grid;justify-items:center;gap:8px}
+.donut{
+  width:112px;height:112px;border-radius:50%;position:relative;
+  background:conic-gradient(#669BBC 0 100%);
+  display:grid;place-items:center;
+  box-shadow:inset 0 0 0 1px rgba(0,48,73,.05)
+}
+.donut-hole{
+  width:70px;height:70px;border-radius:50%;background:#fff;display:grid;place-items:center;align-content:center;text-align:center;
+  box-shadow:0 2px 10px rgba(0,48,73,.06)
+}
+.donut-hole strong{font-size:18px!important;margin:0!important;color:var(--navy)!important}
+.donut-hole span{font-size:6px!important;color:#8ca0a9!important;margin-top:2px}
+.donut-legend{width:100%;display:grid;gap:4px}
+.legend-row{display:flex;align-items:center;justify-content:space-between;gap:7px;font-size:7px}
+.legend-name{display:flex;align-items:center;gap:5px;color:#647984;min-width:0}
+.legend-name i{width:7px;height:7px;border-radius:50%;flex:0 0 auto}
+.legend-name span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.legend-row b{font-size:7px;color:var(--navy)}
+
+.support-stat{min-height:102px}
+.support-top{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%}
+.mini-ring{
+  width:54px;height:54px;border-radius:50%;display:grid;place-items:center;flex:0 0 auto;position:relative;
+  background:conic-gradient(var(--green) 0%, #e8eff1 0)
+}
+.mini-ring:after{content:"";position:absolute;width:36px;height:36px;background:#fff;border-radius:50%}
+.mini-ring b{position:relative;z-index:1;font-size:7px;color:var(--navy)}
+.red-ring{background:conic-gradient(var(--red) 0%, #f1e8e9 0)}
+.orange-ring{background:conic-gradient(var(--orange) 0%, #f4ebe7 0)}
+.mini-bars{width:62px;height:48px;display:flex;align-items:flex-end;gap:8px;justify-content:center}
+.mini-bars i{display:block;width:18px;border-radius:6px 6px 2px 2px;background:#dfe9ed;min-height:8px}
+.mini-bars i:first-child{background:var(--blue)}
+
+.revenue-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:-1px 0 12px}
+.revenue-card{background:#fff;border:1px solid var(--line);border-radius:11px;padding:11px 12px}
+.revenue-card span{display:block;color:#8a9aa2;font-size:8px;font-weight:950}
+.revenue-card strong{display:block;color:var(--navy);font-size:18px;margin-top:5px}
+.revenue-card small{display:block;color:#96a5ac;font-size:8px;margin-top:5px;line-height:1.35}
+
+.invoice-toolbar{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;background:#fff;border:1px solid var(--line);border-radius:12px;
+  padding:11px 12px;margin-bottom:9px
+}
+.invoice-toolbar strong{display:block;color:var(--navy);font-size:11px}
+.invoice-toolbar span{display:block;color:var(--muted);font-size:8px;margin-top:3px}
+.invoice-table-head,.invoice-row{
+  display:grid;grid-template-columns:minmax(240px,1.2fr) 110px 110px 125px auto;gap:10px;align-items:center
+}
+.invoice-table-head{padding:9px 12px;background:#fafcfc;border-bottom:1px solid #edf1f3;color:#8a9ba4;font-size:8px;font-weight:950}
+.invoice-row{padding:12px;border-bottom:1px solid #edf1f3}
+.invoice-row:last-child{border-bottom:0}
+.invoice-main strong{display:block;color:var(--navy);font-size:10.5px}
+.invoice-main span{display:block;color:var(--muted);font-size:8px;margin-top:3px}
+.invoice-items-head{display:flex;align-items:center;justify-content:space-between;margin:14px 0 8px}
+.invoice-items-head strong{color:var(--navy);font-size:10px}
+.invoice-item-row{display:grid;grid-template-columns:minmax(0,1fr) 80px 110px 38px;gap:7px;margin-bottom:7px}
+.invoice-item-row input{width:100%;border:1px solid #d8e3e7;border-radius:8px;min-height:40px;padding:8px;font-size:10px}
+.invoice-remove{border:1px solid #eed2d4;background:#fff;color:var(--red);border-radius:8px}
+.invoice-adjustments{display:grid;grid-template-columns:140px 140px minmax(180px,1fr);gap:8px;align-items:end;margin-top:10px}
+.invoice-total-box{background:var(--navy);color:#fff;border-radius:10px;padding:10px 12px;text-align:right}
+.invoice-total-box span{display:block;color:#b9ced8;font-size:7px;font-weight:950}
+.invoice-total-box strong{display:block;font-size:19px;margin-top:4px}
+.invoice-paper{background:#fff;color:#1b3340;padding:26px!important}
+.invoice-brand{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;border-bottom:2px solid var(--navy);padding-bottom:15px;margin-bottom:18px}
+.invoice-brand img{width:95px;height:auto}
+.invoice-brand h2{margin:0;color:var(--navy);font-size:24px}
+.invoice-brand p{margin:5px 0 0;color:#71858f;font-size:9px}
+.invoice-meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}
+.invoice-meta-grid h4{margin:0 0 5px;color:var(--navy);font-size:9px}
+.invoice-meta-grid p{margin:2px 0;color:#617782;font-size:9px;line-height:1.45}
+.invoice-lines{width:100%;border-collapse:collapse;margin:12px 0 16px;font-size:9px}
+.invoice-lines th{text-align:left;color:#81949d;font-size:8px;border-bottom:1px solid #dbe5e9;padding:8px 6px}
+.invoice-lines td{padding:9px 6px;border-bottom:1px solid #edf1f3}
+.invoice-lines th:nth-child(n+2),.invoice-lines td:nth-child(n+2){text-align:right}
+.invoice-totals{margin-left:auto;width:min(280px,100%);display:grid;gap:6px}
+.invoice-total-line{display:flex;justify-content:space-between;gap:12px;font-size:9px}
+.invoice-total-line.grand{font-size:13px;font-weight:1000;color:var(--navy);border-top:2px solid var(--navy);padding-top:8px}
+.invoice-note{margin-top:20px;border-top:1px solid #e0e8eb;padding-top:12px;color:#687d87;font-size:9px;line-height:1.55}
+
+@media(max-width:1100px){
+  .mrr-feature{grid-template-columns:minmax(0,1fr) 155px}
+  .donut{width:98px;height:98px}.donut-hole{width:62px;height:62px}
+  .revenue-strip{grid-template-columns:1fr 1fr}
+}
+@media(max-width:760px){
+  .mrr-feature{display:grid!important;grid-template-columns:1fr 118px;gap:10px;align-items:center!important}
+  .mrr-chart-wrap{gap:5px}
+  .donut{width:86px;height:86px}.donut-hole{width:54px;height:54px}
+  .donut-hole strong{font-size:15px!important}
+  .donut-legend{display:none}
+  .mrr-subline{margin-top:8px}
+  .mrr-subline span{font-size:7.5px!important}
+  .support-top{gap:7px}
+  .mini-ring{width:44px;height:44px}.mini-ring:after{width:30px;height:30px}
+  .mini-bars{width:45px;gap:5px}.mini-bars i{width:14px}
+  .revenue-strip{grid-template-columns:1fr 1fr;gap:8px}
+  .revenue-card{padding:10px}
+  .revenue-card span{font-size:7.5px}
+  .revenue-card strong{font-size:15px}
+  .revenue-card small{font-size:7.5px}
+  .invoice-toolbar{display:block}
+  .invoice-toolbar .btn{width:100%;margin-top:9px}
+  .invoice-table-head{display:none}
+  .invoice-row{display:block;padding:11px}
+  .invoice-row>.cell{display:grid;grid-template-columns:1fr auto;align-items:center;border-top:1px solid #edf1f3;padding:8px 0}
+  .invoice-row>.cell span,.invoice-row>.cell strong{margin:0}
+  .invoice-row>.row-actions{display:grid;grid-template-columns:1fr 1fr;margin-top:8px}
+  .invoice-row>.row-actions .btn{width:100%;min-height:40px}
+  .invoice-item-row{grid-template-columns:minmax(0,1fr) 62px 84px 36px}
+  .invoice-adjustments{grid-template-columns:1fr 1fr}
+  .invoice-total-box{grid-column:1/-1}
+  .invoice-paper{padding:16px!important}
+  .invoice-brand h2{font-size:20px}
+  .invoice-meta-grid{grid-template-columns:1fr}
+}
+/* legacy modal-print rules removed; dedicated print sheet used below */
+
+.accounting-note{
+  background:#f8fbfc;border:1px solid #dce7eb;border-radius:10px;padding:9px 11px;margin-bottom:10px;
+  color:#6f838d;font-size:8.5px;line-height:1.5
+}
+.accounting-note strong{color:var(--navy)}
+
+
+/* ===== CONSOLIDATED BILLING POLISH PROTOTYPE ===== */
+
+/* Keep the approved larger/readable typography */
+:root{--muted:#72858f}
+.mrr-feature .mrr-copy>strong#statMrr{
+  font-size:58px!important;
+  line-height:.95!important;
+  letter-spacing:-.045em!important;
+  margin-top:12px!important;
+}
+.mrr-feature .mrr-copy>small{font-size:10px!important;margin-top:12px!important}
+
+/* Cleaner Search + Filter toolbar */
+.toolbar.compact-toolbar{
+  display:grid!important;
+  grid-template-columns:minmax(280px,1fr) auto!important;
+  gap:8px!important;
+  align-items:center;
+}
+.filter-btn{min-width:94px}
+.filter-count{
+  min-width:20px;height:20px;border-radius:999px;place-items:center;
+  background:var(--orange);color:#fff;font-size:8px;font-weight:950;
+}
+.filter-btn.has-filters{border-color:#e8b59f;color:var(--orange)}
+.modal-subtitle{margin:3px 0 0;color:var(--muted);font-size:8.5px}
+.filter-modal{width:min(430px,100%)}
+.filter-body{display:grid;gap:11px}
+.filter-foot{justify-content:flex-end}
+.filter-foot .btn{min-width:110px}
+
+/* Desktop Payments: fixed, aligned columns */
+.payment-table-head,.payment-row{
+  display:grid;
+  grid-template-columns:minmax(330px,1.55fr) 120px 115px 130px 158px;
+  gap:14px;
+  align-items:center;
+}
+.payment-table-head{
+  padding:10px 13px;background:#fafcfc;border-bottom:1px solid #edf1f3;
+  color:#82959e;font-size:8px;font-weight:950;
+}
+.payment-row{padding:13px;border-bottom:1px solid #edf1f3}
+.payment-main{min-width:0}
+.payment-summary-copy{min-width:0}
+.payment-main strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.payment-status-cell{display:flex;align-items:center}
+.payment-actions{display:grid!important;grid-template-columns:1fr!important;width:158px}
+.payment-actions .btn{width:100%;min-width:0;min-height:36px}
+.mobile-only-status{display:none!important}
+
+/* Desktop Invoices: fixed aligned columns and equal action buttons */
+.invoice-table-head,.invoice-row{
+  grid-template-columns:minmax(320px,1.5fr) 110px 120px 135px 252px!important;
+  gap:14px!important;
+}
+.invoice-table-head{padding:10px 13px!important}
+.invoice-row{padding:13px!important}
+.invoice-main{min-width:0}
+.invoice-summary-copy{min-width:0}
+.invoice-main strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.invoice-status-cell{display:flex;align-items:center}
+.invoice-actions{
+  display:grid!important;
+  grid-template-columns:repeat(3,76px)!important;
+  gap:6px!important;
+  width:240px!important;
+  justify-content:end!important;
+}
+.invoice-actions .btn,.invoice-actions .action-placeholder{
+  width:76px!important;min-width:76px!important;min-height:36px!important;
+}
+.action-placeholder{display:block}
+
+/* Branded invoice header: clean white body + navy VMS header */
+.invoice-paper{padding:26px!important;background:#fff!important}
+.invoice-brand{
+  background:var(--navy)!important;
+  border-bottom:0!important;
+  border-radius:12px;
+  padding:18px 20px!important;
+  margin:-4px -4px 20px!important;
+  color:#fff!important;
+  align-items:center!important;
+}
+.invoice-brand img{width:105px!important;max-height:62px;object-fit:contain}
+.invoice-brand h2{color:#fff!important;font-size:25px!important}
+.invoice-brand p{color:#d9e7ed!important;font-size:9px!important}
+.invoice-brand-title{text-align:right}
+.invoice-brand-company{display:flex;align-items:center;gap:14px}
+.invoice-brand-company p{margin:0!important}
+
+/* Dedicated print sheet: not part of the app layout on screen */
+#invoicePrintSheet{display:none}
+
+/* Mobile standardization across ALL billing tabs */
+@media(max-width:760px){
+  .mrr-feature .mrr-copy>strong#statMrr{font-size:40px!important}
+  .mrr-feature .mrr-copy>small{font-size:9px!important}
+  .toolbar.compact-toolbar{
+    grid-template-columns:minmax(0,1fr) auto!important;
+    gap:7px!important;
+  }
+  .filter-btn{min-width:84px;height:44px}
+  .filter-backdrop.show{align-items:flex-end;padding:0}
+  .filter-modal{
+    width:100%;max-height:82vh;border-radius:18px 18px 0 0;
+  }
+  .filter-body{padding-top:13px}
+  .filter-body .field select{min-height:46px;font-size:11px}
+  .filter-foot{display:grid;grid-template-columns:1fr 1fr}
+  .filter-foot .btn{width:100%;min-height:44px}
+
+  /* Make 5-tab mobile layout feel intentional */
+  .tabs{grid-template-columns:1fr 1fr!important}
+  .tabs .tab:last-child{grid-column:1/-1}
+  .tabs .tab{font-size:10px!important;min-height:44px!important}
+
+  .payment-table-head,.invoice-table-head{display:none!important}
+
+  .payment-row,.invoice-row{
+    display:block!important;
+    padding:0!important;
+  }
+  .payment-row .mobile-summary,.invoice-row .mobile-summary{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:10px!important;
+    padding:13px!important;
+    cursor:pointer;
+  }
+  .payment-main strong,.invoice-main strong{
+    display:block;font-size:12.5px!important;white-space:normal!important;
+  }
+  .payment-main span:not(.badge),.invoice-main span:not(.badge){
+    display:block;font-size:9px!important;line-height:1.4;margin-top:4px
+  }
+  .mobile-only-status{display:inline-flex!important;flex:0 0 auto!important}
+
+  /* Hide details/actions until expanded */
+  .payment-row>.payment-amount,
+  .payment-row>.payment-status-cell,
+  .payment-row>.payment-method,
+  .payment-row>.payment-actions,
+  .invoice-row>.invoice-status-cell,
+  .invoice-row>.invoice-total-cell,
+  .invoice-row>.invoice-due-cell,
+  .invoice-row>.invoice-actions{
+    display:none!important;
+  }
+
+  .payment-row.expanded>.payment-amount,
+  .payment-row.expanded>.payment-status-cell,
+  .payment-row.expanded>.payment-method,
+  .invoice-row.expanded>.invoice-status-cell,
+  .invoice-row.expanded>.invoice-total-cell,
+  .invoice-row.expanded>.invoice-due-cell{
+    display:grid!important;
+    grid-template-columns:1fr auto!important;
+    align-items:center!important;
+    gap:10px!important;
+    padding:10px 13px!important;
+    border-top:1px solid #edf1f3!important;
+  }
+  .payment-row.expanded>.payment-status-cell,
+  .invoice-row.expanded>.invoice-status-cell{display:flex!important;justify-content:space-between!important}
+  .payment-row.expanded>.payment-status-cell:before,
+  .invoice-row.expanded>.invoice-status-cell:before{
+    content:"STATUS";font-size:8.5px;font-weight:950;color:#8c9da5;
+  }
+
+  .payment-row.expanded>.payment-actions{
+    display:grid!important;grid-template-columns:1fr!important;
+    width:auto!important;padding:11px 13px!important;border-top:1px solid #edf1f3!important
+  }
+  .invoice-row.expanded>.invoice-actions{
+    display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    width:auto!important;padding:11px 13px!important;border-top:1px solid #edf1f3!important
+  }
+  .payment-actions .btn,.invoice-actions .btn,.invoice-actions .action-placeholder{
+    width:100%!important;min-width:0!important;min-height:42px!important;
+  }
+  .invoice-actions .action-placeholder{display:none!important}
+
+  /* Existing subscription-style collapsed rows remain the reference */
+  .subscription-row .client-main{min-height:68px}
+}
+
+/* Strong one-page Letter print mode. Only the invoice sheet participates in layout. */
+@page{
+  size:Letter portrait;
+  margin:0.35in;
+}
+@media print{
+  html,body{
+    width:auto!important;height:auto!important;min-height:0!important;
+    margin:0!important;padding:0!important;background:#fff!important;overflow:visible!important;
+  }
+  body > *{display:none!important}
+  body > #invoicePrintSheet{
+    display:block!important;
+    width:100%!important;
+    max-width:7.8in!important;
+    height:auto!important;
+    max-height:10.25in!important;
+    margin:0 auto!important;
+    padding:0!important;
+    overflow:hidden!important;
+    break-inside:avoid!important;
+    page-break-inside:avoid!important;
+    break-after:avoid!important;
+    page-break-after:avoid!important;
+    background:#fff!important;
+  }
+  #invoicePrintSheet .invoice-brand{
+    -webkit-print-color-adjust:exact!important;
+    print-color-adjust:exact!important;
+    background:#003049!important;
+    color:#fff!important;
+    border-radius:0!important;
+    margin:0 0 18px!important;
+    padding:16px 18px!important;
+  }
+  #invoicePrintSheet .invoice-brand h2{color:#fff!important}
+  #invoicePrintSheet .invoice-brand p{color:#d9e7ed!important}
+  #invoicePrintSheet .invoice-meta-grid{margin-bottom:14px!important}
+  #invoicePrintSheet .invoice-lines{margin:10px 0 14px!important}
+  #invoicePrintSheet .invoice-note{margin-top:16px!important}
+}
+
+
+/* ===== SERVICE CATALOG BILLING FLOW + CLEANER MRR ===== */
+.mrr-feature{
+  grid-template-columns:minmax(0,1fr) 132px!important;
+  column-gap:54px!important;
+}
+.mrr-chart-wrap{
+  width:132px!important;
+  justify-self:end!important;
+  align-self:center!important;
+}
+.mrr-feature .mrr-copy{
+  min-width:0!important;
+  padding-right:4px!important;
+}
+.mrr-feature .mrr-copy>strong#statMrr{
+  font-size:56px!important;
+  white-space:nowrap!important;
+  letter-spacing:-.05em!important;
+}
+.mrr-feature .donut{
+  width:118px!important;height:118px!important;
+}
+.mrr-feature .donut-hole{
+  width:74px!important;height:74px!important;
+}
+.mrr-feature .donut-legend{display:none!important}
+
+.field-help{
+  display:block;
+  color:#8a9aa3;
+  font-size:8px;
+  line-height:1.35;
+  margin-top:1px;
+  font-weight:650;
+}
+#subServiceHint,#paymentServiceHint{color:#607985}
+#subCustomServiceField,#paymentCustomServiceField{align-content:start}
+#subscriptionModal .modal{width:min(820px,100%)}
+#subscriptionModal .form-grid{align-items:start}
+
+@media(max-width:1100px) and (min-width:761px){
+  .mrr-feature{grid-template-columns:minmax(0,1fr) 112px!important;column-gap:28px!important}
+  .mrr-chart-wrap{width:112px!important}
+  .mrr-feature .donut{width:104px!important;height:104px!important}
+  .mrr-feature .donut-hole{width:66px!important;height:66px!important}
+  .mrr-feature .mrr-copy>strong#statMrr{font-size:48px!important}
+}
+@media(max-width:760px){
+  .mrr-feature{
+    grid-template-columns:minmax(0,1fr) 92px!important;
+    column-gap:16px!important;
+  }
+  .mrr-chart-wrap{width:92px!important}
+  .mrr-feature .donut{width:86px!important;height:86px!important}
+  .mrr-feature .donut-hole{width:54px!important;height:54px!important}
+  .mrr-feature .mrr-copy>strong#statMrr{font-size:39px!important}
+  .field-help{font-size:8.5px}
+}
+
+
+/* ===== VMS MINI POS / CHECKOUT PROTOTYPE ===== */
+.pos-modal{width:min(980px,100%)!important}
+.pos-body{display:grid;gap:11px}
+.pos-section{border:1px solid #e2eaed;border-radius:12px;padding:12px;background:#fff}
+.pos-section-head{display:flex;align-items:center;gap:9px;margin-bottom:10px}
+.pos-section-head.compact{margin-bottom:9px}
+.pos-section-head>div{min-width:0}
+.pos-section-head strong{display:block;color:var(--navy);font-size:11px}
+.pos-section-head small{display:block;color:var(--muted);font-size:8.5px;margin-top:2px;line-height:1.4}
+.pos-step{width:24px;height:24px;border-radius:7px;background:#edf5f8;color:var(--navy);font-size:9px;font-weight:1000;display:grid;place-items:center;flex:0 0 auto}
+.segmented{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.segmented button{border:1px solid #d9e4e8;background:#fff;color:#71858f;border-radius:9px;min-height:40px;font-size:9.5px;font-weight:900}
+.segmented button.active{background:var(--navy);border-color:var(--navy);color:#fff}
+.segmented button:disabled{opacity:.45;cursor:not-allowed}
+.pos-block{margin-top:9px}
+.check-row{display:flex;align-items:flex-start;gap:9px;margin-top:10px;background:#f8fbfc;border:1px solid #e2eaed;border-radius:10px;padding:9px 10px}
+.check-row input{margin-top:2px;accent-color:var(--navy)}
+.check-row strong{display:block;color:var(--navy);font-size:9px}
+.check-row small{display:block;color:var(--muted);font-size:8px;line-height:1.4;margin-top:2px}
+.compact-check{margin-top:11px}
+.pos-sub-mode{margin-bottom:10px}
+.pos-cart-head{display:grid;gap:7px;color:#8699a2;font-size:7.5px;font-weight:950;padding:0 4px 6px}
+.one-time-cart-head{grid-template-columns:minmax(260px,1fr) 70px 105px 105px 36px}
+.subscription-cart-head{grid-template-columns:minmax(280px,1fr) 115px 115px 36px}
+.pos-items{display:grid;gap:7px}
+.pos-item-row{display:grid;gap:7px;align-items:center;background:#f9fbfc;border:1px solid #e3eaed;border-radius:10px;padding:8px}
+.pos-item-row.one-time{grid-template-columns:minmax(260px,1fr) 70px 105px 105px 36px}
+.pos-item-row.subscription{grid-template-columns:minmax(280px,1fr) 115px 115px 36px}
+.pos-item-service{display:grid;gap:5px;min-width:0}
+.pos-item-row select,.pos-item-row input{width:100%;min-width:0;border:1px solid #d6e1e6;background:#fff;border-radius:8px;min-height:38px;padding:7px 8px;font-size:9px;color:var(--ink)}
+.pos-custom-name{display:none}
+.pos-item-row.custom .pos-custom-name{display:block}
+.pos-line-total{text-align:right;color:var(--navy);font-size:10px;font-weight:950}
+.pos-remove{border:1px solid #efd0d3;background:#fff;color:var(--red);border-radius:8px;width:34px;height:36px;font-size:15px}
+.pos-add-row{margin-top:8px;min-width:120px}
+.pos-sub-settings{margin-top:11px}
+.pos-existing-sub-card{margin-top:9px;border:1px solid #e3eaed;background:#f8fbfc;border-radius:10px;padding:10px}
+.pos-existing-sub-card strong{display:block;color:var(--navy);font-size:10px}
+.pos-existing-sub-card span{display:block;color:var(--muted);font-size:8.5px;margin-top:3px;line-height:1.45}
+.pos-totals-grid{display:grid;grid-template-columns:180px minmax(260px,1fr);gap:10px;align-items:start}
+.pos-summary-card{background:#f8fbfc;border:1px solid #dfe8eb;border-radius:10px;padding:10px 11px;display:grid;gap:7px}
+.pos-summary-card>div{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:8.5px;color:#71858f}
+.pos-summary-card strong{color:var(--navy);font-size:10px}
+.pos-summary-card .grand{border-top:1px solid #dbe5e9;padding-top:8px;color:var(--navy);font-weight:950}
+.pos-summary-card .grand strong{font-size:17px}
+.pos-summary-card .after{background:#edf5f8;border-radius:8px;padding:7px 8px}
+.pos-footer-total{display:flex;align-items:baseline;gap:8px}
+.pos-footer-total span{font-size:7.5px;color:#8a9ca5;font-weight:950}
+.pos-footer-total strong{font-size:17px;color:var(--navy)}
+.sale-detail-total{max-width:330px;margin-left:auto}
+.payment-actions .view-sale{background:#fff}
+@media(max-width:760px){
+  .pos-modal{width:100%!important;max-height:96vh!important;border-radius:17px 17px 0 0!important}
+  #paymentModal.show{align-items:flex-end;padding:0}
+  .pos-body{padding:10px!important}
+  .pos-section{padding:10px}
+  .pos-section-head strong{font-size:11.5px}
+  .pos-section-head small{font-size:8.5px}
+  .segmented button{font-size:9.5px;min-height:42px}
+  .one-time-cart-head,.subscription-cart-head{display:none}
+  .pos-item-row.one-time,.pos-item-row.subscription{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:9px}
+  .pos-item-service{grid-column:1/-1}
+  .pos-item-row.one-time .pos-qty-wrap,.pos-item-row.one-time .pos-price-wrap,
+  .pos-item-row.subscription .pos-setup-wrap,.pos-item-row.subscription .pos-recurring-wrap{display:grid;gap:4px}
+  .pos-item-row.one-time .pos-qty-wrap:before{content:"QTY";font-size:7.5px;font-weight:950;color:#8b9ca4}
+  .pos-item-row.one-time .pos-price-wrap:before{content:"PRICE";font-size:7.5px;font-weight:950;color:#8b9ca4}
+  .pos-item-row.subscription .pos-setup-wrap:before{content:"ONE-TIME";font-size:7.5px;font-weight:950;color:#8b9ca4}
+  .pos-item-row.subscription .pos-recurring-wrap:before{content:"RECURRING";font-size:7.5px;font-weight:950;color:#8b9ca4}
+  .pos-item-row.one-time .pos-line-total{grid-column:1/2;text-align:left;font-size:11px}
+  .pos-item-row .pos-remove{grid-column:2/3;justify-self:end}
+  .pos-totals-grid{grid-template-columns:1fr}
+  .pos-foot{align-items:center}
+  .pos-footer-total{display:grid;gap:1px}
+  .pos-footer-total strong{font-size:15px}
+}
+
+
+/* ===== CONSOLIDATED POS: OFFERS, PACKAGES, PAYMENT AUTOMATION ===== */
+.pos-offer-included{
+  margin-top:1px;padding:6px 8px;border-radius:7px;background:#edf5f8;color:#607984;
+  font-size:7.7px;line-height:1.45;display:none
+}
+.pos-item-row.has-included .pos-offer-included{display:block}
+.pos-offer-included b{color:var(--navy)}
+.payment-path-card{
+  margin-top:9px;border:1px solid #dfe8eb;background:#f8fbfc;border-radius:11px;padding:11px;
+  display:grid;grid-template-columns:34px 1fr;gap:9px;align-items:start
+}
+.payment-path-card .payment-path-icon{
+  width:32px;height:32px;border-radius:9px;background:var(--navy);color:#fff;display:grid;place-items:center;font-size:15px;font-weight:950
+}
+.payment-path-card>div:nth-child(2)>strong{display:block;color:var(--navy);font-size:10px}
+.payment-path-card>div:nth-child(2)>span{display:block;color:#6f838d;font-size:8.5px;line-height:1.5;margin-top:3px}
+.payment-path-card .field{grid-column:1/-1}
+.compact-modal{width:min(520px,100%)!important}
+.payment-sent-hero{text-align:center;padding:4px 0 12px}
+.payment-sent-icon{width:40px;height:40px;margin:0 auto 8px;border-radius:50%;display:grid;place-items:center;background:#e9f7ef;color:#23814c;font-size:19px;font-weight:1000}
+.payment-sent-hero h4{margin:0;color:var(--navy);font-size:14px}
+.payment-sent-hero p{margin:3px 0 0;color:#71858f;font-size:9px}
+.processor-status-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0 11px}
+.processor-status-grid>div{background:#f8fbfc;border:1px solid #e0e8eb;border-radius:9px;padding:9px}
+.processor-status-grid span{display:block;color:#8799a2;font-size:7px;font-weight:950}
+.processor-status-grid strong{display:block;color:var(--navy);font-size:9.5px;margin-top:4px}
+.override-history-wrap{margin-top:13px}
+.override-history-wrap>h4{margin:0 0 7px;color:var(--navy);font-size:10px}
+.admin-payment-notification{
+  position:fixed;right:18px;top:18px;width:min(340px,calc(100vw - 30px));z-index:3000;
+  background:#fff;border:1px solid #dce7eb;border-radius:14px;box-shadow:0 18px 50px rgba(0,48,73,.18);
+  padding:14px 36px 14px 14px;display:none;pointer-events:none
+}
+.admin-payment-notification.show{display:block;animation:notifyIn .22s ease-out}
+@keyframes notifyIn{from{opacity:0;transform:translateY(-7px)}to{opacity:1;transform:none}}
+.admin-payment-notification button{position:absolute;right:10px;top:9px;border:0;background:transparent;color:#81949d;font-size:16px;pointer-events:auto}
+.notify-kicker{display:block;color:#23814c;font-size:7.5px;font-weight:1000;letter-spacing:.08em}
+.admin-payment-notification>strong{display:block;color:var(--navy);font-size:12px;margin-top:4px}
+.admin-payment-notification p{margin:4px 0;color:#526c78;font-size:9px;line-height:1.45}
+.admin-payment-notification small{display:block;color:#91a0a7;font-size:7.8px}
+.invoice-included{display:block;color:#738791;font-size:7.6px;line-height:1.45;margin-top:3px}
+.invoice-included b{color:#516974}
+.payment-awaiting-chip{background:#fff7e8!important;color:#9d6800!important;border-color:#f2ddb2!important}
+@media(max-width:760px){
+  .payment-path-card{grid-template-columns:30px 1fr}
+  .admin-payment-notification{right:10px;top:10px;width:calc(100vw - 20px)}
+  .processor-status-grid{grid-template-columns:1fr}
+}
+
+
+.invoice-pay-callout{margin:16px 0 0 auto;width:min(280px,100%);background:#edf5f8;border:1px solid #ccdee5;border-radius:9px;padding:9px 10px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.invoice-pay-callout strong{background:var(--navy);color:#fff;border-radius:7px;padding:7px 10px;font-size:8px}
+.invoice-pay-callout span{color:#536f7b;font-size:8px;font-weight:850;text-align:right}
+
+</style>
+<style id="vms-unified-ui">
+:root{--orange:#EB5E28;--bg:#f4f7f8;--line:#dfe7ea}
+html,body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:var(--bg)}
+.shell,.app{grid-template-columns:230px minmax(0,1fr)}
+.sidebar,.side{background:#003049;color:#fff}
+.nav a,.nav button{border-radius:8px}
+.nav a.active,.nav button.active,.nav .active,.side .nav button.active{color:#ff7a45;background:rgba(255,255,255,.08)}
+.topbar,.top{min-height:64px;background:#fff;border-bottom:1px solid var(--line)}
+.content{max-width:1500px;margin-left:auto;margin-right:auto}
+.panel,.card,.phase4-panel,.phase4-stat,.stat{border-color:var(--line);box-shadow:0 1px 0 rgba(0,48,73,.02)}
+.btn{border-radius:9px}
+@media(max-width:900px){.shell,.app{grid-template-columns:1fr}.mobile-menu{display:inline-flex}.sidebar.open{transform:translateX(0)}}
+</style>
+<link rel="stylesheet" href="../assets/vms-suite.css"><script src="../assets/config.js"></script><script src="../assets/vms-core.js"></script><script src="../assets/vms-catalog.js"></script><script src="../assets/vms-state.js"></script>  <link rel="stylesheet" href="vms-admin-shell.css">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar vms-admin-sidebar" id="sidebar">
+<div class="brand vms-admin-brand">
+  <img src="../assets/vms-logo.png" alt="Vision Make Studio">
+  <div class="brand-copy"><strong>Vision Make Studio</strong><span>ADMIN</span></div>
+</div>
+<nav class="nav vms-admin-nav" aria-label="VMS Admin tools">
+  <a href="index.html">Home</a>
+  <a href="audit.html">VMS Audit</a>
+  <a href="qr.html">QR Tools</a>
+  <a href="clients.html">Clients</a>
+  <a href="service-catalog.html">Service Catalog</a>
+  <a class="active" href="billing.html">Billing / Subscriptions</a>
+  <a href="promotions.html">Promotions</a>
+  <a href="projects.html">Projects & Requests</a>
+  <a href="files.html">Files & Assets</a>
+  <a href="activity.html">Notifications & Activity</a>
+  <a href="linkhub.html">VMS LinkHub</a>
+</nav>
+<div class="vms-admin-spacer"></div>
+<div class="vms-admin-sidebar-foot">
+  <div class="vms-admin-shortcuts">
+    <a href="../portal/index.html">Client Portal</a>
+    <a href="../index.html">Public Website</a>
+  </div>
+  Vision Make Studio · Admin Workspace
+</div>
+</aside>
+
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+
+  <main class="main">
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:9px">
+        <button class="btn mobile-menu" id="mobileMenuBtn" type="button">☰</button>
+        <div class="topbar-left">
+          <small>VMS ADMIN</small>
+          <strong>Billing & Subscriptions</strong>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn" id="recordPaymentTopBtn" type="button"><span class="full-label">New Sale</span><span class="short-label">Sale</span></button>
+        <button class="btn primary" id="addSubscriptionTopBtn" type="button"><span class="full-label">+ Add Subscription</span><span class="short-label">+ Add</span></button>
+      </div>
+    </header>
+
+    <div class="content">
+      <div class="intro">
+        <p>Company-wide billing control for Vision Make Studio. See recurring revenue, upcoming renewals, failed payments, cancellation requests, and service status without opening every client one by one.</p>
+      </div>
+
+      <section class="stats">
+        <div class="stat green mrr-feature">
+          <div class="mrr-copy">
+            <span>MONTHLY RECURRING</span>
+            <strong id="statMrr">$0</strong>
+            <small>Current recurring run-rate</small>
+          </div>
+          <div class="mrr-chart-wrap">
+            <div class="donut" id="mrrDonut"><div class="donut-hole"><strong id="donutServiceCount">0</strong><span>SERVICES</span></div></div>
+          </div>
+        </div>
+
+        <div class="stat green support-stat">
+          <div class="support-top"><div><span>ACTIVE SUBSCRIPTIONS</span><strong id="statActive">0</strong><small>Healthy recurring clients</small></div><div class="mini-ring green-ring" id="activeRing"><b id="activeRingText">0%</b></div></div>
+        </div>
+        <div class="stat red support-stat">
+          <div class="support-top"><div><span>NEEDS ATTENTION</span><strong id="statAttention">0</strong><small>Payment/account issues</small></div><div class="mini-ring red-ring" id="attentionRing"><b id="attentionRingText">0%</b></div></div>
+        </div>
+        <div class="stat blue support-stat">
+          <div class="support-top"><div><span>RENEWING SOON</span><strong id="statRenewing">0</strong><small>Next 30 days</small></div><div class="mini-bars"><i id="renewWeekBar"></i><i id="renewMonthBar"></i></div></div>
+        </div>
+        <div class="stat orange support-stat">
+          <div class="support-top"><div><span>CANCELING</span><strong id="statCanceling">0</strong><small>End-of-period cancels</small></div><div class="mini-ring orange-ring" id="cancelRing"><b id="cancelRingText">0%</b></div></div>
+        </div>
+      </section>
+
+      <section class="revenue-strip">
+        <div class="revenue-card"><span>COLLECTED THIS MONTH</span><strong id="statCollected">$0.00</strong><small>All successful payments received</small></div>
+        <div class="revenue-card"><span>RECURRING COLLECTED</span><strong id="statRecurringCollected">$0.00</strong><small>Subscription payments received</small></div>
+        <div class="revenue-card"><span>ONE-TIME REVENUE</span><strong id="statOneTime">$0.00</strong><small>Projects, add-ons, print & one-offs</small></div>
+        <div class="revenue-card"><span>OUTSTANDING INVOICES</span><strong id="statOutstanding">$0.00</strong><small>Sent/overdue invoices still unpaid</small></div>
+      </section>
+
+      <div class="accounting-note">
+        <strong>How VMS counts revenue:</strong>
+        MRR is the current recurring run-rate from active subscriptions (plus Canceling subscriptions until their paid-through date). Payments update collected revenue; active recurring subscriptions determine MRR. Online sales stay Awaiting Payment until the processor confirms payment. Packages charge the package price while invoices show included services without double-counting.
+      </div>
+
+      <div class="attention-strip" id="attentionStrip">
+        <div>
+          <strong id="attentionHeadline">No billing issues right now</strong>
+          <span id="attentionCopy">Past due, grace, suspended, or failed-payment clients will appear here automatically.</span>
+        </div>
+        <button class="btn small red" id="showAttentionBtn" type="button">View Attention</button>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" data-tab="subscriptions" type="button">Subscriptions</button>
+        <button class="tab" data-tab="payments" type="button">Payments</button>
+        <button class="tab" data-tab="invoices" type="button">Invoices</button>
+        <button class="tab" data-tab="attention" type="button">Needs Attention</button>
+        <button class="tab" data-tab="canceling" type="button">Canceling / Canceled</button>
+      </div>
+
+      <div id="subscriptionsTab">
+        <section class="toolbar compact-toolbar">
+          <input id="searchInput" placeholder="Search client, service, email, or promo">
+          <button class="btn filter-btn" id="filterBtn" type="button">
+            <span>Filter</span><span class="filter-count" id="filterCount" style="display:none">0</span>
+          </button>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <div><h3>Client Subscriptions</h3><span id="subscriptionCountText">0 subscriptions</span></div>
+          </div>
+          <div class="subscription-table-head">
+            <div>CLIENT / SERVICE</div><div>STATUS</div><div>PRICE</div><div>LAST PAYMENT</div><div>NEXT RENEWAL</div><div></div>
+          </div>
+          <div id="subscriptionList"></div>
+          <div class="empty" id="subscriptionEmpty" style="display:none"><strong>No subscriptions found</strong>Try another filter or add a subscription.</div>
+        </section>
+      </div>
+
+      <div id="paymentsTab" style="display:none">
+        <section class="panel">
+          <div class="panel-head"><div><h3>Payment History</h3><span>Recurring and one-time payments</span></div></div>
+          <div class="payment-table-head"><div>CLIENT / PAYMENT</div><div>AMOUNT</div><div>STATUS</div><div>METHOD</div><div>ACTION</div></div>
+          <div class="payment-list" id="paymentList"></div>
+          <div class="empty" id="paymentEmpty" style="display:none"><strong>No payments yet</strong>Recorded payments will appear here.</div>
+        </section>
+      </div>
+
+      <div id="invoicesTab" style="display:none">
+        <div class="invoice-toolbar">
+          <div>
+            <strong>VMS Invoices</strong>
+            <span>Create branded invoices, email them, and track Draft / Sent / Paid / Overdue status.</span>
+          </div>
+          <button class="btn primary" id="createInvoiceBtn" type="button">+ Create Invoice</button>
+        </div>
+        <section class="panel">
+          <div class="invoice-table-head"><div>INVOICE / CLIENT</div><div>STATUS</div><div>TOTAL</div><div>DUE DATE</div><div></div></div>
+          <div id="invoiceList"></div>
+          <div class="empty" id="invoiceEmpty" style="display:none"><strong>No invoices yet</strong>Create an invoice to begin tracking billing activity.</div>
+        </section>
+      </div>
+
+      <div id="attentionTab" style="display:none">
+        <section class="panel">
+          <div class="panel-head"><div><h3>Needs Attention</h3><span>Past due, grace, suspended, or failed-payment subscriptions</span></div></div>
+          <div id="attentionList"></div>
+          <div class="empty" id="attentionEmpty" style="display:none"><strong>Nothing needs attention</strong>Billing issues will appear here automatically.</div>
+        </section>
+      </div>
+
+      <div id="cancelingTab" style="display:none">
+        <section class="panel">
+          <div class="panel-head"><div><h3>Canceling / Canceled</h3><span>Retained for history and reactivation</span></div></div>
+          <div id="cancelingList"></div>
+          <div class="empty" id="cancelingEmpty" style="display:none"><strong>No cancellations</strong>Canceling and canceled subscriptions will appear here.</div>
+        </section>
+      </div>
+    </div>
+  </main>
+</div>
+
+
+<!-- FILTERS -->
+<div class="modal-backdrop filter-backdrop" id="filterModal">
+  <div class="modal filter-modal">
+    <div class="modal-head">
+      <div><h3>Filter Subscriptions</h3><p class="modal-subtitle">Narrow the subscription list without cluttering the page.</p></div>
+      <button class="close" data-close="filterModal" type="button">×</button>
+    </div>
+    <div class="modal-body filter-body">
+      <div class="field">
+        <label>STATUS</label>
+        <select id="statusFilter">
+          <option value="all">All statuses</option>
+          <option>Active</option>
+          <option>Past Due</option>
+          <option>Grace</option>
+          <option>Suspended</option>
+          <option>Canceling</option>
+          <option>Canceled</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>SERVICE</label>
+        <select id="serviceFilter"><option value="all">All services</option></select>
+      </div>
+      <div class="field">
+        <label>BILLING CYCLE</label>
+        <select id="billingFilter">
+          <option value="all">All billing cycles</option>
+          <option>Monthly</option>
+          <option>Annual</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-foot filter-foot">
+      <button class="btn" id="clearFiltersBtn" type="button">Clear Filters</button>
+      <button class="btn primary" id="applyFiltersBtn" type="button">Apply Filters</button>
+    </div>
+  </div>
+</div>
+
+<!-- DETAILS -->
+<div class="modal-backdrop" id="detailsModal">
+  <div class="modal">
+    <div class="modal-head"><h3 id="detailsTitle">Subscription Details</h3><button class="close" data-close="detailsModal" type="button">×</button></div>
+    <div class="modal-body">
+      <div class="detail-title">
+        <div><h4 id="detailClient"></h4><p id="detailService"></p></div>
+        <div id="detailStatus"></div>
+      </div>
+      <div class="kv">
+        <div class="kv-item"><span>RECURRING PRICE</span><strong id="detailPrice"></strong></div>
+        <div class="kv-item"><span>CATALOG RATE</span><strong id="detailStandard"></strong></div>
+        <div class="kv-item"><span>ONE-TIME CHARGE</span><strong id="detailSetup"></strong></div>
+        <div class="kv-item"><span>BILLING CYCLE</span><strong id="detailCycle"></strong></div>
+        <div class="kv-item"><span>START DATE</span><strong id="detailStart"></strong></div>
+        <div class="kv-item"><span>NEXT RENEWAL</span><strong id="detailNext"></strong></div>
+        <div class="kv-item"><span>LAST PAYMENT</span><strong id="detailLast"></strong></div>
+        <div class="kv-item"><span>PROMO</span><strong id="detailPromo"></strong></div>
+      </div>
+      <div class="note" id="detailServiceNote" style="margin-top:10px"></div>
+      <div style="margin-top:13px">
+        <div class="detail-title"><div><h4>Payment History</h4><p>Payments tied to this subscription</p></div></div>
+        <div class="history" id="detailHistory"></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn red" id="detailReminderBtn" type="button">Send Reminder</button>
+      <div class="modal-foot-right">
+        <button class="btn" id="detailRecordPaymentBtn" type="button">Record Payment</button>
+        <button class="btn primary" id="detailManageBtn" type="button">Manage Status</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD / EDIT SUB -->
+<div class="modal-backdrop" id="subscriptionModal">
+  <div class="modal">
+    <div class="modal-head"><h3 id="subscriptionModalTitle">Add Subscription</h3><button class="close" data-close="subscriptionModal" type="button">×</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field"><label>CLIENT / BUSINESS</label><input id="subClientInput" placeholder="Business name"></div>
+        <div class="field"><label>CLIENT EMAIL</label><input id="subEmailInput" type="email" placeholder="client@example.com"></div>
+        <div class="field">
+          <label>SERVICE / PLAN</label>
+          <select id="subServiceSelect"></select>
+          <small class="field-help" id="subServiceHint">Choose a service from VMS Service Catalog.</small>
+        </div>
+        <div class="field" id="subCustomServiceField" style="display:none">
+          <label>CUSTOM / MANUAL SERVICE</label>
+          <input id="subCustomServiceInput" placeholder="Enter service or plan name">
+          <small class="field-help">Use this only when the service is not in Service Catalog.</small>
+        </div>
+        <div class="field"><label>STATUS</label><select id="subStatusInput"><option>Active</option><option>Past Due</option><option>Grace</option><option>Suspended</option><option>Canceling</option><option>Canceled</option></select></div>
+        <div class="field">
+          <label>OPTIONAL ONE-TIME CHARGE</label>
+          <input id="subSetupInput" inputmode="decimal" placeholder="0.00">
+          <small class="field-help">Usually $0. Use only when a specific offer has a separate one-time charge. QR and LinkHub memberships have no mandatory setup fee.</small>
+        </div>
+        <div class="field">
+          <label>CLIENT RECURRING PRICE</label>
+          <input id="subPriceInput" inputmode="decimal" placeholder="19.00">
+          <small class="field-help">This is the amount that counts toward MRR for this client.</small>
+        </div>
+        <div class="field">
+          <label>CATALOG RECURRING PRICE</label>
+          <input id="subStandardInput" inputmode="decimal" placeholder="19.00">
+          <small class="field-help">Default catalog rate. Keep or override for a special client price.</small>
+        </div>
+        <div class="field"><label>BILLING CYCLE</label><select id="subCycleInput"><option>Monthly</option><option>Annual</option></select></div>
+        <div class="field"><label>PROMO CODE</label><input id="subPromoInput" placeholder="Optional"></div>
+        <div class="field">
+          <label>SUBSCRIPTION START DATE</label>
+          <input id="subStartInput" type="date">
+          <small class="field-help">When this recurring service begins.</small>
+        </div>
+        <div class="field">
+          <label>NEXT RENEWAL</label>
+          <input id="subNextInput" type="date">
+          <small class="field-help">Calculated from Start Date + Billing Cycle, but you can edit it.</small>
+        </div>
+        <div class="field full"><label>PRIVATE BILLING NOTE</label><textarea id="subNoteInput" placeholder="Anything VMS should remember about this subscription."></textarea></div>
+      </div>
+      <div class="note" style="margin-top:10px">Service / Plan pulls from the VMS Service Catalog. Catalog pricing and billing cadence auto-fill as a starting point, but VMS can override them for an individual client. Any optional one-time labor or add-on charge can be recorded separately through Payments or an Invoice.</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn red" id="deleteSubscriptionBtn" type="button" style="visibility:hidden">Archive Subscription</button>
+      <div class="modal-foot-right"><button class="btn" data-close="subscriptionModal" type="button">Cancel</button><button class="btn primary" id="saveSubscriptionBtn" type="button">Save Subscription</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- PAYMENT / POINT OF SALE -->
+<div class="modal-backdrop" id="paymentModal">
+  <div class="modal pos-modal">
+    <div class="modal-head">
+      <div>
+        <h3>New Sale / Record Payment</h3>
+        <p class="modal-subtitle">Build a one-time sale, collect a subscription payment, or create a new recurring package.</p>
+      </div>
+      <button class="close" data-close="paymentModal" type="button">×</button>
+    </div>
+
+    <div class="modal-body pos-body">
+      <section class="pos-section">
+        <div class="pos-section-head"><span class="pos-step">1</span><div><strong>Customer</strong><small>Use an existing client or enter a brand-new customer.</small></div></div>
+
+        <div class="segmented" id="posCustomerMode">
+          <button class="active" data-value="existing" type="button">Existing Customer</button>
+          <button data-value="new" type="button">New Customer</button>
+        </div>
+
+        <div id="posExistingCustomerArea" class="pos-block">
+          <div class="field">
+            <label>EXISTING CLIENT / BUSINESS</label>
+            <select id="posExistingCustomerSelect"></select>
+            <small class="field-help" id="posExistingCustomerHint">Choose a customer already in VMS Billing or Clients.</small>
+          </div>
+        </div>
+
+        <div id="posNewCustomerArea" class="pos-block" style="display:none">
+          <div class="form-grid">
+            <div class="field"><label>BUSINESS / CUSTOMER NAME</label><input id="posNewBusinessInput" placeholder="Business or customer name"></div>
+            <div class="field"><label>CONTACT NAME</label><input id="posNewContactInput" placeholder="Optional contact person"></div>
+            <div class="field"><label>EMAIL</label><input id="posNewEmailInput" type="email" placeholder="client@example.com"></div>
+            <div class="field"><label>PHONE</label><input id="posNewPhoneInput" inputmode="tel" placeholder="(555) 555-5555"></div>
+          </div>
+        </div>
+
+        <label class="check-row">
+          <input id="posSyncClientCheckbox" type="checkbox" checked>
+          <span><strong>Sync this sale to Clients</strong><small>Create a new Client profile when needed, or attach the sale to an existing matching client.</small></span>
+        </label>
+      </section>
+
+      <section class="pos-section">
+        <div class="pos-section-head"><span class="pos-step">2</span><div><strong>Sale Type</strong><small>Choose whether this is a one-time purchase or subscription.</small></div></div>
+        <div class="segmented" id="posSaleType">
+          <button class="active" data-value="one-time" type="button">One-Time Purchase</button>
+          <button data-value="subscription" type="button">Subscription</button>
+        </div>
+      </section>
+
+      <section id="posOneTimeSection" class="pos-section">
+        <div class="pos-section-head compact"><span class="pos-step">3</span><div><strong>Items / Services</strong><small>Add eligible one-time services, packages, products, or custom items.</small></div></div>
+        <div class="pos-cart-head one-time-cart-head"><div>ITEM / SERVICE / PACKAGE</div><div>QTY</div><div>PRICE</div><div>TOTAL</div><div></div></div>
+        <div id="posOneTimeItems" class="pos-items"></div>
+        <button class="btn pos-add-row" id="posAddOneTimeItemBtn" type="button">+ Add Item</button>
+      </section>
+
+      <section id="posSubscriptionSection" class="pos-section" style="display:none">
+        <div class="pos-section-head compact"><span class="pos-step">3</span><div><strong>Subscription</strong><small>Pay an existing subscription or build a new recurring package.</small></div></div>
+
+        <div class="segmented pos-sub-mode" id="posSubscriptionMode">
+          <button class="active" data-value="new" type="button">New Subscription / Bundle</button>
+          <button data-value="existing" type="button">Existing Subscription Payment</button>
+        </div>
+
+        <div id="posExistingSubscriptionArea" style="display:none">
+          <div class="field">
+            <label>CLIENT SUBSCRIPTION</label>
+            <select id="posExistingSubscriptionSelect"></select>
+            <small class="field-help">Only subscriptions belonging to the selected existing customer appear here.</small>
+          </div>
+          <div class="pos-existing-sub-card" id="posExistingSubscriptionSummary"></div>
+        </div>
+
+        <div id="posNewSubscriptionArea">
+          <div class="pos-cart-head subscription-cart-head"><div>SERVICE / PACKAGE / PLAN</div><div>ONE-TIME</div><div>RECURRING</div><div></div></div>
+          <div id="posSubscriptionItems" class="pos-items"></div>
+          <button class="btn pos-add-row" id="posAddSubscriptionItemBtn" type="button">+ Add Service / Package</button>
+
+          <div class="form-grid pos-sub-settings">
+            <div class="field">
+              <label>BILLING CYCLE</label>
+              <select id="posSubscriptionCycle"><option>Monthly</option><option>Annual</option></select>
+            </div>
+            <div class="field">
+              <label>START DATE</label>
+              <input id="posSubscriptionStart" type="date">
+            </div>
+            <div class="field">
+              <label>NEXT RENEWAL</label>
+              <input id="posSubscriptionRenewal" type="date">
+            </div>
+            <div class="field">
+              <label>PROMO CODE</label>
+              <input id="posSubscriptionPromo" placeholder="Optional">
+            </div>
+          </div>
+
+          <label class="check-row compact-check">
+            <input id="posChargeFirstCycle" type="checkbox" checked>
+            <span><strong>Charge the first recurring cycle today</strong><small>Due today = any one-time charges + the first recurring cycle + the $4.99 activation fee when applicable. Bundles/packages waive the activation fee.</small></span>
+          </label>
+        </div>
+      </section>
+
+      <section class="pos-section">
+        <div class="pos-section-head compact"><span class="pos-step">4</span><div><strong>Totals</strong><small>VMS calculates the sale as you add or edit items.</small></div></div>
+
+        <div class="pos-totals-grid">
+          <div class="field">
+            <label>SALE DISCOUNT ($)</label>
+            <input id="posDiscountInput" inputmode="decimal" value="0">
+          </div>
+          <div class="pos-summary-card" id="posOneTimeTotals">
+            <div><span>Subtotal</span><strong id="posOneTimeSubtotal">$0.00</strong></div>
+            <div><span>VMS Activation Fee</span><strong id="posOneTimeActivation">$0.00</strong></div>
+            <div><span>Discount</span><strong id="posOneTimeDiscount">-$0.00</strong></div>
+            <div class="grand"><span>Total Due</span><strong id="posOneTimeTotal">$0.00</strong></div>
+          </div>
+          <div class="pos-summary-card" id="posSubscriptionTotals" style="display:none">
+            <div><span>One-Time Charges</span><strong id="posSetupTotal">$0.00</strong></div>
+            <div><span>Recurring</span><strong id="posRecurringTotal">$0.00</strong></div>
+            <div><span>VMS Activation Fee</span><strong id="posSubscriptionActivation">$0.00</strong></div>
+            <div><span>Discount Today</span><strong id="posSubscriptionDiscount">-$0.00</strong></div>
+            <div class="grand"><span>Due Today</span><strong id="posSubscriptionDueToday">$0.00</strong></div>
+            <div class="after"><span>Then</span><strong id="posSubscriptionAfter">$0.00/mo</strong></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="pos-section">
+        <div class="pos-section-head compact"><span class="pos-step">5</span><div><strong>Payment</strong><small>Send a secure payment request or record money received manually.</small></div></div>
+
+        <div class="segmented" id="posPaymentPath">
+          <button data-value="online" type="button" disabled title="Connect a payment processor before enabling online checkout">Online Checkout · Connect Provider</button>
+          <button class="active" data-value="manual" type="button">Manual Payment</button>
+        </div>
+
+        <div id="posOnlinePaymentArea" class="payment-path-card" style="display:none">
+          <div class="payment-path-icon">↗</div>
+          <div>
+            <strong>Online / Card Payment</strong>
+            <span>Online checkout activates after a payment processor is connected. Until then, VMS can create invoices and record Card, Cash, Zelle, Bank Transfer, or other payments manually without pretending a checkout link exists.</span>
+          </div>
+          <div class="field full" style="margin-top:8px">
+            <label>SEND TO EMAIL</label>
+            <input id="posPaymentEmail" type="email" placeholder="Uses the customer email above">
+          </div>
+        </div>
+
+        <div id="posManualPaymentArea" class="payment-path-card" style="display:grid">
+          <div class="form-grid">
+            <div class="field"><label>METHOD</label><select id="posPaymentMethod"><option>Cash</option><option>Zelle</option><option>Bank Transfer</option><option>Other</option></select></div>
+            <div class="field"><label>MANUAL STATUS</label><select id="posPaymentStatus"><option>Paid</option><option>Pending</option></select></div>
+            <div class="field"><label>PAYMENT DATE</label><input id="posPaymentDate" type="date"></div>
+            <div class="field"><label>REFERENCE / NOTE</label><input id="posPaymentNote" placeholder="Optional payment note"></div>
+          </div>
+        </div>
+
+        <label class="check-row">
+          <input id="posCreateInvoiceCheckbox" type="checkbox" checked>
+          <span><strong>Create VMS invoice / receipt</strong><small>For online payment this is required and contains the Pay Now request. Manual payments can still create a receipt/invoice.</small></span>
+        </label>
+      </section>
+    </div>
+
+    <div class="modal-foot pos-foot">
+      <div class="pos-footer-total"><span id="posFooterLabel">TOTAL DUE</span><strong id="posFooterTotal">$0.00</strong></div>
+      <div class="modal-foot-right">
+        <button class="btn" data-close="paymentModal" type="button">Cancel</button>
+        <button class="btn primary" id="savePaymentBtn" type="button">Complete Sale</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SALE DETAILS -->
+<div class="modal-backdrop" id="saleDetailsModal">
+  <div class="modal">
+    <div class="modal-head"><h3>Sale Details</h3><button class="close" data-close="saleDetailsModal" type="button">×</button></div>
+    <div class="modal-body">
+      <div class="detail-title"><div><h4 id="saleDetailClient"></h4><p id="saleDetailMeta"></p></div><div id="saleDetailStatus"></div></div>
+      <div class="processor-status-grid">
+        <div><span>PROCESSOR STATUS</span><strong id="saleProcessorStatus">—</strong></div>
+        <div><span>VMS STATUS</span><strong id="saleVmsStatus">—</strong></div>
+      </div>
+      <div class="history" id="saleDetailItems"></div>
+      <div class="override-history-wrap"><h4>Admin Override History</h4><div id="saleOverrideHistory" class="history"></div></div>
+      <div class="pos-summary-card sale-detail-total" style="margin-top:12px">
+        <div class="grand"><span>Total</span><strong id="saleDetailTotal">$0.00</strong></div>
+      </div>
+    </div>
+    <div class="modal-foot"><button class="btn" id="saleAdminOverrideBtn" type="button">Admin Override</button><div class="modal-foot-right"><button class="btn primary" data-close="saleDetailsModal" type="button">Done</button></div></div>
+  </div>
+</div>
+
+
+<!-- ONLINE CHECKOUT STATUS -->
+<div class="modal-backdrop" id="paymentLinkModal">
+  <div class="modal compact-modal">
+    <div class="modal-head"><h3>Online Checkout</h3><button class="close" data-close="paymentLinkModal" type="button">×</button></div>
+    <div class="modal-body">
+      <div class="payment-sent-hero">
+        <div class="payment-sent-icon">✓</div>
+        <h4 id="paymentSentClient">Customer</h4>
+        <p id="paymentSentEmail"></p>
+      </div>
+      <div class="kv">
+        <div class="kv-item"><span>INVOICE</span><strong id="paymentSentInvoice"></strong></div>
+        <div class="kv-item"><span>AMOUNT DUE</span><strong id="paymentSentAmount"></strong></div>
+        <div class="kv-item"><span>STATUS</span><strong>Awaiting Payment</strong></div>
+        <div class="kv-item"><span>PAYMENT</span><strong>Payment provider required</strong></div>
+      </div>
+      <div class="note" style="margin-top:10px">Connect a supported payment provider before using online checkout. Manual invoices and payment recording remain available now.</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" data-close="paymentLinkModal" type="button">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN PAYMENT STATUS OVERRIDE -->
+<div class="modal-backdrop" id="paymentOverrideModal">
+  <div class="modal compact-modal">
+    <div class="modal-head"><div><h3>Admin Status Override</h3><p class="modal-subtitle">Automatic processor status remains in history. This creates a separate VMS admin override.</p></div><button class="close" data-close="paymentOverrideModal" type="button">×</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field"><label>CURRENT VMS STATUS</label><input id="overrideCurrentStatus" disabled></div>
+        <div class="field"><label>NEW STATUS</label><select id="overrideNewStatus"><option>Paid</option><option>Awaiting Payment</option><option>Failed</option><option>Pending</option><option>Refunded</option></select></div>
+        <div class="field full"><label>REASON</label><select id="overrideReason"><option value="">Choose reason</option><option>Cash Received</option><option>Zelle Received</option><option>Payment Confirmed Outside VMS</option><option>Processor / Webhook Error</option><option>Bank Transfer</option><option>Correction</option><option>Refund / Chargeback Adjustment</option><option>Other</option></select></div>
+        <div class="field full"><label>REQUIRED NOTE</label><textarea id="overrideNote" placeholder="Explain why you are changing the status manually."></textarea></div>
+      </div>
+      <div class="note" style="margin-top:10px">Every override is added to the audit trail with the previous status, new status, reason, note, and time. You can correct a prior override by making another logged override.</div>
+    </div>
+    <div class="modal-foot"><button class="btn" data-close="paymentOverrideModal" type="button">Cancel</button><button class="btn primary" id="savePaymentOverrideBtn" type="button">Apply Override</button></div>
+  </div>
+</div>
+
+<div class="admin-payment-notification" id="adminPaymentNotification">
+  <button id="closeAdminNotification" type="button">×</button>
+  <span class="notify-kicker">PAYMENT RECEIVED</span>
+  <strong id="adminNotifyClient"></strong>
+  <p id="adminNotifyDetail"></p>
+  <small id="adminNotifyMeta"></small>
+</div>
+
+<!-- INVOICE BUILDER -->
+<div class="modal-backdrop" id="invoiceModal">
+  <div class="modal invoice-editor">
+    <div class="modal-head"><h3>Create VMS Invoice</h3><button class="close" data-close="invoiceModal" type="button">×</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field"><label>CLIENT / COMPANY</label><input id="invoiceClientInput" placeholder="Client business name"></div>
+        <div class="field"><label>CLIENT EMAIL</label><input id="invoiceEmailInput" type="email" placeholder="client@example.com"></div>
+        <div class="field full"><label>CLIENT BILLING ADDRESS</label><input id="invoiceAddressInput" placeholder="Optional billing address"></div>
+        <div class="field"><label>INVOICE NUMBER</label><input id="invoiceNumberInput"></div>
+        <div class="field"><label>REVENUE TYPE</label><select id="invoiceRevenueTypeInput"><option>One-Time</option><option>Recurring</option></select></div>
+        <div class="field"><label>ISSUE DATE</label><input id="invoiceIssueInput" type="date"></div>
+        <div class="field"><label>DUE DATE</label><input id="invoiceDueInput" type="date"></div>
+      </div>
+
+      <div class="invoice-items-head"><strong>Invoice Items</strong><button class="btn small" id="addInvoiceItemBtn" type="button">+ Add Item</button></div>
+      <div id="invoiceItems"></div>
+
+      <div class="invoice-adjustments">
+        <div class="field"><label>DISCOUNT ($)</label><input id="invoiceDiscountInput" inputmode="decimal" value="0"></div>
+        <div class="field"><label>TAX (%)</label><input id="invoiceTaxInput" inputmode="decimal" value="0"></div>
+        <div class="invoice-total-box"><span>INVOICE TOTAL</span><strong id="invoiceBuilderTotal">$0.00</strong></div>
+      </div>
+
+      <div class="field" style="margin-top:10px"><label>NOTES / PAYMENT TERMS</label><textarea id="invoiceNotesInput" placeholder="Thank you for choosing Vision Make Studio. Payment due by the date above."></textarea></div>
+    </div>
+    <div class="modal-foot"><span></span><div class="modal-foot-right"><button class="btn" data-close="invoiceModal" type="button">Cancel</button><button class="btn primary" id="saveInvoiceBtn" type="button">Save Draft</button></div></div>
+  </div>
+</div>
+
+<!-- INVOICE PREVIEW -->
+<div class="modal-backdrop" id="invoicePreviewModal">
+  <div class="modal invoice-preview-modal">
+    <div class="modal-head no-print"><h3>Invoice Preview</h3><button class="close" data-close="invoicePreviewModal" type="button">×</button></div>
+    <div class="modal-body invoice-paper" id="invoicePaper"></div>
+    <div class="modal-foot no-print">
+      <button class="btn" id="invoiceEmailBtn" type="button">Email Invoice</button>
+      <div class="modal-foot-right">
+        <button class="btn" id="invoicePrintBtn" type="button">Print / Save PDF</button>
+        <button class="btn green" id="invoiceMarkPaidBtn" type="button">Mark Paid</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MANAGE STATUS -->
+<div class="modal-backdrop" id="manageModal">
+  <div class="modal">
+    <div class="modal-head"><h3>Manage Subscription Status</h3><button class="close" data-close="manageModal" type="button">×</button></div>
+    <div class="modal-body">
+      <div class="field"><label>NEW STATUS</label><select id="manageStatusInput"><option>Active</option><option>Past Due</option><option>Grace</option><option>Suspended</option><option>Canceling</option><option>Canceled</option></select></div>
+      <div class="field" style="margin-top:10px"><label>NOTE / REASON</label><textarea id="manageNoteInput" placeholder="Example: Card failed; 7-day grace period started."></textarea></div>
+      <div class="note" style="margin-top:10px">Smart QR behavior: Active / Past Due / Grace keep service available; Suspended pauses Dynamic redirect/tracking; Canceling stays active until the paid-through date; Canceled retains the QR ID/history for future reactivation.</div>
+    </div>
+    <div class="modal-foot"><span></span><div class="modal-foot-right"><button class="btn" data-close="manageModal" type="button">Cancel</button><button class="btn primary" id="saveStatusBtn" type="button">Update Status</button></div></div>
+  </div>
+</div>
+
+
+<div id="invoicePrintSheet" aria-hidden="true"></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  const STORAGE='vms_billing_subscriptions_v3';
+
+  const defaultData={subscriptions:[],oneTimePayments:[],invoices:[]};
+
+
+
+
+  let cloudCatalog=[];
+
+  function mapSharedOffer(s){
+    const isPackage=s.kind==='package'||s.category==='Bundles';
+    const recurring=s.pricingModel==='Recurring'||s.pricingModel==='Setup + Recurring';
+    const oneTime=s.pricingModel==='One-Time'||s.pricingModel==='Setup + Recurring';
+    return {
+      id:s.id,name:s.name,offerType:isPackage?'package':'service',saleTypes:[...(oneTime?['one-time']:[]),...(recurring?['subscription']:[])],
+      pricingModel:s.pricingModel,oneTimePrice:s.oneTimePrice??'',setupPrice:s.pricingModel==='Setup + Recurring'?(s.oneTimePrice??0):0,
+      recurringPrice:s.recurringPrice??'',cadence:s.cadence||'',status:s.status,archived:false,description:s.description||'',included:Array.isArray(s.included)?[...s.included]:[],
+      metadata:s.metadata||{},order:s.displayOrder||999,category:s.category||'General'
+    };
+  }
+  function sharedDefaults(){
+    const src=(window.VMSCatalog?.DEFAULTS||[]).filter(s=>s.kind!=='internal'&&s.pricingModel!=='Free'&&s.status==='Published');
+    return src.map(mapSharedOffer);
+  }
+  const initialOffers=sharedDefaults();
+  const fallbackBillingCatalog=initialOffers.filter(x=>x.offerType==='service');
+  const fallbackBillingPackages=initialOffers.filter(x=>x.offerType==='package');
+
+  function normalizeCatalogService(raw){
+    const fallback=fallbackBillingCatalog.find(x=>x.id===raw.id || x.name===raw.name) || {};
+    const service={...fallback,...raw,offerType:'service'};
+    if(service.name==='Local Presence')service.name='Local Presence';
+    if(service.id==='google-presence')service.id='local-presence';
+    if(service.name==='Local Presence'){
+      service.description='Improve how a business appears across Google, Yelp, Apple Maps, Bing, Facebook, and other local listings.';
+    }
+    if(!Array.isArray(service.saleTypes)){
+      if(service.pricingModel==='Recurring' || service.pricingModel==='Setup + Recurring')service.saleTypes=['subscription'];
+      else service.saleTypes=['one-time'];
+    }
+    if((service.oneTimePrice==='' || service.oneTimePrice==null) && service.saleTypes.includes('one-time')){
+      const setup=Number(service.setupPrice);
+      if(Number.isFinite(setup) && setup>0)service.oneTimePrice=setup;
+    }
+    return service;
+  }
+
+  function getBillingCatalogServices(){
+    const source=(cloudCatalog.length?cloudCatalog.map(mapSharedOffer):fallbackBillingCatalog).filter(x=>x.offerType==='service');
+    return source.filter(x=>!x.archived&&x.status!=='Hidden'&&x.status!=='Draft').map(normalizeCatalogService).sort((a,b)=>(Number(a.order)||999)-(Number(b.order)||999)||String(a.name).localeCompare(String(b.name)));
+  }
+
+  function getBillingPackages(){
+    const source=(cloudCatalog.length?cloudCatalog.map(mapSharedOffer):fallbackBillingPackages).filter(x=>x.offerType==='package');
+    return source.filter(x=>!x.archived&&x.status!=='Hidden'&&x.status!=='Draft').sort((a,b)=>(Number(a.order)||999)-(Number(b.order)||999)||String(a.name).localeCompare(String(b.name)));
+  }
+
+  function offerKey(offer){return `${offer.offerType||'service'}:${offer.id}`}
+
+  function getBillingOffers(saleType){
+    const services=getBillingCatalogServices().filter(x=>(x.saleTypes||[]).includes(saleType));
+    const packages=getBillingPackages().filter(x=>(x.saleTypes||[]).includes(saleType));
+    return [...services,...packages];
+  }
+
+  function billingOfferByKey(key){
+    const [type,id]=String(key||'').split(':');
+    if(type==='package')return getBillingPackages().find(x=>x.id===id);
+    if(type==='service')return getBillingCatalogServices().find(x=>x.id===id);
+    return getBillingCatalogServices().find(x=>x.id===key) || getBillingPackages().find(x=>x.id===key);
+  }
+
+  function catalogServiceById(id){
+    return getBillingCatalogServices().find(x=>x.id===id);
+  }
+
+  function catalogServiceByName(name){
+    return getBillingCatalogServices().find(x=>x.name===name);
+  }
+
+  function catalogPriceValue(v){
+    if(v==='' || v===null || v===undefined)return '';
+    const n=Number(v);
+    return Number.isFinite(n)?n:'';
+  }
+
+  function localTodayISO(){
+    const d=new Date();
+    const y=d.getFullYear();
+    const m=String(d.getMonth()+1).padStart(2,'0');
+    const day=String(d.getDate()).padStart(2,'0');
+    return `${y}-${m}-${day}`;
+  }
+
+  function addMonthsSafe(dateStr,months){
+    if(!dateStr)return '';
+    const [y,m,d]=dateStr.split('-').map(Number);
+    if(!y||!m||!d)return '';
+    const targetMonth=(m-1)+months;
+    const targetYear=y+Math.floor(targetMonth/12);
+    const normalizedMonth=((targetMonth%12)+12)%12;
+    const lastDay=new Date(targetYear,normalizedMonth+1,0).getDate();
+    const day=Math.min(d,lastDay);
+    return `${targetYear}-${String(normalizedMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+  }
+
+  function renewalFromStart(startDate,cycle){
+    if(!startDate)return '';
+    return cycle==='Annual' ? addMonthsSafe(startDate,12) : addMonthsSafe(startDate,1);
+  }
+
+
+  let data=load();
+  let editingId=null;
+  let activeDetailId=null;
+  let manageId=null;
+  let currentTab='subscriptions';
+
+  const $=id=>document.getElementById(id);
+  const esc=str=>String(str??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+
+  function load(){
+    try{
+      const raw=localStorage.getItem(STORAGE);
+      if(raw){
+        const parsed=JSON.parse(raw);
+        return {
+          subscriptions:Array.isArray(parsed.subscriptions)?parsed.subscriptions:[],
+          oneTimePayments:Array.isArray(parsed.oneTimePayments)?parsed.oneTimePayments:[],
+          invoices:Array.isArray(parsed.invoices)?parsed.invoices:[]
+        };
+      }
+    }catch(e){}
+    return structuredClone(defaultData);
+  }
+
+  function persist(){
+    try{localStorage.setItem(STORAGE,JSON.stringify(data));}catch(e){}
+  }
+
+  function toast(message){
+    const t=$('toast');
+    t.textContent=message;
+    t.classList.add('show');
+    clearTimeout(window.__billingToast);
+    window.__billingToast=setTimeout(()=>t.classList.remove('show'),2200);
+  }
+
+  function money(v){
+    const n=Number(v)||0;
+    return new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',minimumFractionDigits:2}).format(n);
+  }
+
+  function dateLabel(v){
+    if(!v)return '—';
+    const d=new Date(v+'T12:00:00');
+    return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  }
+
+  function initials(name){
+    return String(name||'VMS').split(/\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase();
+  }
+
+  function statusClass(status){
+    if(status==='Active')return 'green';
+    if(['Past Due','Suspended'].includes(status))return 'red';
+    if(['Grace','Canceling','Awaiting Payment'].includes(status))return 'orange';
+    return 'gray';
+  }
+
+  function needsAttention(s){
+    if(['Past Due','Grace','Suspended'].includes(s.status))return true;
+    const payments=s.payments||[];
+    const latest=payments.length?payments[payments.length-1]:null;
+    return latest?.status==='Failed';
+  }
+
+  function countsInMrr(s){
+    if(s.archived)return false;
+    if(s.status==='Active')return true;
+    if(s.status==='Canceling'){
+      const effective=s.cancelEffectiveDate||s.nextRenewal;
+      return !!effective && daysUntil(effective)>=0;
+    }
+    return false;
+  }
+
+  function monthlyEquivalent(s){
+    if(!countsInMrr(s))return 0;
+    return s.cycle==='Annual' ? (Number(s.price)||0)/12 : (Number(s.price)||0);
+  }
+
+  function daysUntil(date){
+    if(!date)return 9999;
+    const now=new Date('2026-08-14T12:00:00');
+    const d=new Date(date+'T12:00:00');
+    return Math.ceil((d-now)/86400000);
+  }
+
+  function invoiceTotal(inv){
+    const subtotal=(inv.items||[]).reduce((sum,i)=>sum+(Number(i.qty)||0)*(Number(i.price)||0),0);
+    const discounted=Math.max(0,subtotal-(Number(inv.discount)||0));
+    return discounted + discounted*((Number(inv.tax)||0)/100);
+  }
+
+  function monthKey(date){ return String(date||'').slice(0,7); }
+
+  function currentMonthPayments(){
+    const month='2026-08';
+    return allPayments().filter(p=>p.status==='Paid' && monthKey(p.date)===month);
+  }
+
+  function recurringCollectedThisMonth(){
+    return currentMonthPayments()
+      .filter(p=>p.revenueType==='Recurring')
+      .reduce((sum,p)=>sum+(Number(p.recurringPortion ?? p.amount)||0),0);
+  }
+
+  function oneTimeCollectedThisMonth(){
+    return currentMonthPayments()
+      .filter(p=>p.revenueType==='One-Time')
+      .reduce((sum,p)=>sum+(Number(p.amount)||0),0)
+      + currentMonthPayments()
+        .filter(p=>p.revenueType==='Recurring' && Number(p.oneTimePortion)>0)
+        .reduce((sum,p)=>sum+Number(p.oneTimePortion||0),0);
+  }
+
+  function serviceMrrBreakdown(){
+    const map={};
+    data.subscriptions.filter(countsInMrr).forEach(s=>{
+      map[s.service]=(map[s.service]||0)+monthlyEquivalent(s);
+    });
+    return Object.entries(map).map(([name,value])=>({name,value})).sort((a,b)=>b.value-a.value);
+  }
+
+  function updateStats(){
+    const subs=data.subscriptions.filter(s=>!s.archived);
+    const mrr=subs.reduce((sum,s)=>sum+monthlyEquivalent(s),0);
+    const activeCount=subs.filter(s=>s.status==='Active').length;
+    const attention=subs.filter(needsAttention).length;
+    const renewing=subs.filter(s=>['Active','Grace','Past Due','Canceling'].includes(s.status) && daysUntil(s.nextRenewal)>=0 && daysUntil(s.nextRenewal)<=30).length;
+    const renewingWeek=subs.filter(s=>['Active','Grace','Past Due','Canceling'].includes(s.status) && daysUntil(s.nextRenewal)>=0 && daysUntil(s.nextRenewal)<=7).length;
+    const canceling=subs.filter(s=>s.status==='Canceling').length;
+    const recurringCount=subs.filter(countsInMrr).length;
+    const totalRecurring=Math.max(1,subs.filter(s=>['Active','Past Due','Grace','Suspended','Canceling'].includes(s.status)).length);
+
+    const payments=currentMonthPayments();
+    const collected=payments.reduce((sum,p)=>sum+(Number(p.amount)||0),0);
+    const recurringCollected=recurringCollectedThisMonth();
+    const oneTime=oneTimeCollectedThisMonth();
+    const outstanding=(data.invoices||[])
+      .filter(i=>['Sent','Overdue'].includes(i.status))
+      .reduce((sum,i)=>sum+invoiceTotal(i),0);
+
+    $('statMrr').textContent=money(mrr);
+    $('statActive').textContent=activeCount;
+    $('statAttention').textContent=attention;
+    $('statRenewing').textContent=renewing;
+    $('statCanceling').textContent=canceling;
+    $('statCollected').textContent=money(collected);
+    $('statRecurringCollected').textContent=money(recurringCollected);
+    $('statOneTime').textContent=money(oneTime);
+    $('statOutstanding').textContent=money(outstanding);
+
+    const healthyPct=Math.round((activeCount/totalRecurring)*100);
+    const attentionPct=Math.round((attention/totalRecurring)*100);
+    const cancelPct=Math.round((canceling/totalRecurring)*100);
+
+    $('activeRing').style.background=`conic-gradient(var(--green) 0 ${healthyPct}%, #e8eff1 ${healthyPct}% 100%)`;
+    $('attentionRing').style.background=`conic-gradient(var(--red) 0 ${attentionPct}%, #f1e8e9 ${attentionPct}% 100%)`;
+    $('cancelRing').style.background=`conic-gradient(var(--orange) 0 ${cancelPct}%, #f4ebe7 ${cancelPct}% 100%)`;
+    $('activeRingText').textContent=`${healthyPct}%`;
+    $('attentionRingText').textContent=`${attentionPct}%`;
+    $('cancelRingText').textContent=`${cancelPct}%`;
+
+    $('renewWeekBar').style.height=`${Math.max(8,Math.min(46,renewingWeek*12))}px`;
+    $('renewMonthBar').style.height=`${Math.max(8,Math.min(46,renewing*8))}px`;
+
+    const breakdown=serviceMrrBreakdown();
+    $('donutServiceCount').textContent=breakdown.length;
+    const palette=['#669BBC','#2b8c69','#EB5E28','#C1121F','#8a9aa2','#6d7f95'];
+    if(!breakdown.length || mrr<=0){
+      $('mrrDonut').style.background='#e8eff1';
+    }else{
+      let cursor=0;
+      const stops=[];
+      breakdown.forEach((item,i)=>{
+        const pct=(item.value/mrr)*100;
+        stops.push(`${palette[i%palette.length]} ${cursor}% ${cursor+pct}%`);
+        cursor+=pct;
+      });
+      $('mrrDonut').style.background=`conic-gradient(${stops.join(',')})`;
+    }
+
+    if(attention){
+      $('attentionHeadline').textContent=`${attention} subscription${attention===1?'':'s'} need attention`;
+      $('attentionCopy').textContent='Payment/account issues are waiting for VMS follow-up.';
+    }else{
+      $('attentionHeadline').textContent='No billing issues right now';
+      $('attentionCopy').textContent='Past due, grace, suspended, or failed-payment clients will appear here automatically.';
+    }
+  }
+
+  function fillServiceFilter(){
+    const current=$('serviceFilter').value||'all';
+    const names=[...new Set(data.subscriptions.filter(s=>!s.archived).map(s=>s.service).filter(Boolean))].sort();
+    $('serviceFilter').innerHTML='<option value="all">All services</option>'+names.map(n=>`<option>${esc(n)}</option>`).join('');
+    $('serviceFilter').value=names.includes(current)?current:'all';
+  }
+
+  function filteredSubscriptions(){
+    const q=$('searchInput').value.trim().toLowerCase();
+    const status=$('statusFilter').value;
+    const service=$('serviceFilter').value;
+    const cycle=$('billingFilter').value;
+    return data.subscriptions.filter(s=>!s.archived).filter(s=>{
+      const hay=`${s.client} ${s.email} ${s.service} ${s.promo}`.toLowerCase();
+      return (!q||hay.includes(q))
+        && (status==='all'||s.status===status)
+        && (service==='all'||s.service===service)
+        && (cycle==='all'||s.cycle===cycle);
+    });
+  }
+
+  function subscriptionMarkup(s){
+    return `
+      <div class="subscription-row" data-id="${s.id}">
+        <div class="client-main mobile-summary">
+          <div class="avatar">${esc(initials(s.client))}</div>
+          <div class="client-copy">
+            <strong>${esc(s.client)}</strong>
+            <span>${esc(s.service)} · ${esc(s.email||'No email')}</span>
+            <div class="badges">
+              <span class="badge ${statusClass(s.status)}">${esc(s.status)}</span>
+              ${s.promo?`<span class="badge blue">${esc(s.promo)}</span>`:''}
+            </div>
+          </div>
+        </div>
+        <div class="cell"><span>STATUS</span><strong>${esc(s.status)}</strong></div>
+        <div class="cell"><span>PRICE</span><strong>${money(s.price)}/${s.cycle==='Annual'?'yr':'mo'}</strong></div>
+        <div class="cell"><span>LAST PAYMENT</span><strong>${dateLabel(s.lastPayment)}</strong></div>
+        <div class="cell renewal-cell"><span>NEXT RENEWAL</span><strong>${dateLabel(s.nextRenewal)}</strong></div>
+        <div class="row-actions">
+          <button class="btn small view-details" data-id="${s.id}" type="button">Details</button>
+          <button class="btn small record-payment" data-id="${s.id}" type="button">Payment</button>
+          <button class="btn small manage-status" data-id="${s.id}" type="button">Manage</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderSubscriptions(){
+    fillServiceFilter();
+    const list=filteredSubscriptions();
+    $('subscriptionCountText').textContent=`${list.length} subscription${list.length===1?'':'s'}`;
+    $('subscriptionList').innerHTML=list.map(subscriptionMarkup).join('');
+    $('subscriptionEmpty').style.display=list.length?'none':'block';
+    updateFilterButton();
+  }
+
+  function allPayments(){
+    const rows=[];
+    data.subscriptions.filter(s=>!s.archived).forEach(s=>{
+      (s.payments||[]).forEach(p=>rows.push({
+        ...p,
+        subscriptionId:s.id,
+        client:s.client,
+        service:s.service,
+        revenueType:'Recurring'
+      }));
+    });
+    (data.oneTimePayments||[]).forEach(p=>rows.push({...p,revenueType:'One-Time'}));
+    return rows.sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+  }
+
+  function renderPayments(){
+    const payments=allPayments();
+    $('paymentList').innerHTML=payments.map(p=>{
+      const badgeClass=paymentBadgeClass(p.status);
+      const itemCount=Array.isArray(p.items)?p.items.length:0;
+      const awaiting=p.status==='Awaiting Payment';
+      return `
+      <div class="payment-row" data-payment-id="${p.id}">
+        <div class="payment-main mobile-summary">
+          <div class="payment-summary-copy">
+            <strong>${esc(p.client)} · ${esc(p.service)}</strong>
+            <span>${itemCount?`${itemCount} item${itemCount===1?'':'s'} · `:''}${esc(p.description||'Payment')} · ${dateLabel(p.date)} · ${esc(p.revenueType||'Payment')}</span>
+          </div>
+          <span class="badge ${badgeClass} ${awaiting?'payment-awaiting-chip':''} mobile-only-status">${esc(p.status)}</span>
+        </div>
+        <div class="cell payment-amount"><span>AMOUNT</span><strong>${money(p.amount)}</strong></div>
+        <div class="payment-status-cell"><span class="badge ${badgeClass} ${awaiting?'payment-awaiting-chip':''}">${esc(p.status)}</span></div>
+        <div class="cell payment-method"><span>METHOD</span><strong>${esc(p.method||'Other')}</strong></div>
+        <div class="row-actions payment-actions">
+          ${itemCount?`<button class="btn small view-sale" data-payment-id="${p.id}" type="button">View Sale</button>`:''}
+          ${!itemCount && p.subscriptionId?`<button class="btn small payment-open-sub" data-id="${p.subscriptionId}" type="button">Open Subscription</button>`:''}
+        </div>
+      </div>`;
+    }).join('');
+    $('paymentEmpty').style.display=payments.length?'none':'block';
+  }
+
+  function renderAttention(){
+    const list=data.subscriptions.filter(s=>!s.archived && needsAttention(s));
+    $('attentionList').innerHTML=list.map(subscriptionMarkup).join('');
+    $('attentionEmpty').style.display=list.length?'none':'block';
+  }
+
+  function renderCanceling(){
+    const list=data.subscriptions.filter(s=>!s.archived && ['Canceling','Canceled'].includes(s.status));
+    $('cancelingList').innerHTML=list.map(subscriptionMarkup).join('');
+    $('cancelingEmpty').style.display=list.length?'none':'block';
+  }
+
+
+  function invoiceStatusClass(status){
+    if(status==='Paid')return 'green';
+    if(status==='Overdue')return 'red';
+    if(status==='Sent')return 'blue';
+    return 'gray';
+  }
+
+  function renderInvoices(){
+    const list=[...(data.invoices||[])].sort((a,b)=>String(b.issueDate).localeCompare(String(a.issueDate)));
+    $('invoiceList').innerHTML=list.map(inv=>`
+      <div class="invoice-row" data-id="${inv.id}">
+        <div class="invoice-main mobile-summary">
+          <div class="invoice-summary-copy">
+            <strong>${esc(inv.number)} · ${esc(inv.client)}</strong>
+            <span>${esc(inv.revenueType||'One-Time')} · ${esc(inv.email||'No email')}</span>
+          </div>
+          <span class="badge ${invoiceStatusClass(inv.status)} mobile-only-status">${esc(inv.status)}</span>
+        </div>
+        <div class="invoice-status-cell"><span class="badge ${invoiceStatusClass(inv.status)}">${esc(inv.status)}</span></div>
+        <div class="cell invoice-total-cell"><span>TOTAL</span><strong>${money(invoiceTotal(inv))}</strong></div>
+        <div class="cell invoice-due-cell"><span>DUE DATE</span><strong>${dateLabel(inv.dueDate)}</strong></div>
+        <div class="row-actions invoice-actions">
+          <button class="btn small view-invoice" data-id="${inv.id}" type="button">View</button>
+          <button class="btn small email-invoice" data-id="${inv.id}" type="button">Email</button>
+          ${inv.status!=='Paid'
+            ? `<button class="btn small mark-invoice-paid" data-id="${inv.id}" type="button">Mark Paid</button>`
+            : `<span class="action-placeholder" aria-hidden="true"></span>`}
+        </div>
+      </div>
+    `).join('');
+    $('invoiceEmpty').style.display=list.length?'none':'block';
+  }
+
+  function render(){
+    updateStats();
+    renderSubscriptions();
+    renderPayments();
+    renderInvoices();
+    renderAttention();
+    renderCanceling();
+  }
+
+  function setTab(name){
+    currentTab=name;
+    document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));
+    ['subscriptions','payments','invoices','attention','canceling'].forEach(t=>$(t+'Tab').style.display=t===name?'block':'none');
+  }
+
+
+  function updateFilterButton(){
+    const values=[$('statusFilter').value,$('serviceFilter').value,$('billingFilter').value];
+    const count=values.filter(v=>v && v!=='all').length;
+    $('filterCount').textContent=count;
+    $('filterCount').style.display=count?'inline-grid':'none';
+    $('filterBtn').classList.toggle('has-filters',!!count);
+  }
+
+  function openFilters(){
+    $('filterModal').classList.add('show');
+  }
+
+  function applyFilters(){
+    updateFilterButton();
+    renderSubscriptions();
+    closeModal('filterModal');
+  }
+
+  function clearFilters(){
+    $('statusFilter').value='all';
+    $('serviceFilter').value='all';
+    $('billingFilter').value='all';
+    updateFilterButton();
+    renderSubscriptions();
+  }
+
+  function openDetails(id){
+    const s=data.subscriptions.find(x=>x.id===id);if(!s)return;
+    activeDetailId=id;
+    $('detailClient').textContent=s.client;
+    $('detailService').textContent=s.service;
+    $('detailStatus').innerHTML=`<span class="badge ${statusClass(s.status)}">${esc(s.status)}</span>`;
+    $('detailPrice').textContent=money(s.price);
+    $('detailStandard').textContent=money(s.standardPrice);
+    $('detailSetup').textContent=money(s.setupPrice||0);
+    $('detailCycle').textContent=s.cycle;
+    $('detailStart').textContent=dateLabel(s.startDate);
+    $('detailLast').textContent=dateLabel(s.lastPayment);
+    $('detailNext').textContent=dateLabel(s.nextRenewal);
+    $('detailPromo').textContent=s.promo||'None';
+    $('detailServiceNote').textContent=s.note||'No private billing note.';
+    $('detailHistory').innerHTML=(s.payments||[]).length ? [...s.payments].sort((a,b)=>String(b.date).localeCompare(String(a.date))).map(p=>`
+      <div class="history-item">
+        <div><strong>${esc(p.description||'Payment')}</strong><span>${dateLabel(p.date)} · ${esc(p.method||'Other')}</span></div>
+        <div><strong>${money(p.amount)}</strong><span class="badge ${p.status==='Paid'?'green':p.status==='Failed'?'red':p.status==='Refunded'?'orange':'gray'}">${esc(p.status)}</span></div>
+      </div>
+    `).join('') : '<div class="empty">No payment history.</div>';
+    $('detailsModal').classList.add('show');
+  }
+
+
+  function populateSubscriptionServiceOptions(selectedName=''){
+    const list=getBillingCatalogServices();
+    const select=$('subServiceSelect');
+    select.innerHTML=
+      '<option value="">Choose a VMS service / plan</option>'+
+      list.map(x=>`<option value="${esc(x.id)}">${esc(x.name)}</option>`).join('')+
+      '<option value="__custom__">+ Custom / Manual Service</option>';
+
+    const match=catalogServiceByName(selectedName);
+    if(match){
+      select.value=match.id;
+      $('subCustomServiceField').style.display='none';
+      $('subCustomServiceInput').value='';
+    }else if(selectedName){
+      select.value='__custom__';
+      $('subCustomServiceField').style.display='grid';
+      $('subCustomServiceInput').value=selectedName;
+    }else{
+      select.value='';
+      $('subCustomServiceField').style.display='none';
+      $('subCustomServiceInput').value='';
+    }
+  }
+
+  function selectedSubscriptionServiceName(){
+    const value=$('subServiceSelect').value;
+    if(value==='__custom__')return $('subCustomServiceInput').value.trim();
+    const item=catalogServiceById(value);
+    return item?.name||'';
+  }
+
+  function applyCatalogServiceToSubscription({preserveExisting=false}={}){
+    const value=$('subServiceSelect').value;
+    const isCustom=value==='__custom__';
+    $('subCustomServiceField').style.display=isCustom?'grid':'none';
+
+    if(!value){
+      $('subServiceHint').textContent='Choose a service from VMS Service Catalog.';
+      if(!preserveExisting){
+        $('subSetupInput').value='';
+        $('subPriceInput').value='';
+        $('subStandardInput').value='';
+      }
+      return;
+    }
+
+    if(isCustom){
+      $('subServiceHint').textContent='Custom service — enter the name and set pricing manually.';
+      if(!preserveExisting){
+        $('subSetupInput').value='';
+        $('subPriceInput').value='';
+        $('subStandardInput').value='';
+      }
+      return;
+    }
+
+    const service=catalogServiceById(value);
+    if(!service)return;
+    $('subServiceHint').textContent=`${service.pricingModel||'Catalog service'} · ${service.description||'VMS Service Catalog'}`;
+
+    if(!preserveExisting){
+      const setup=catalogPriceValue(service.setupPrice);
+      const recurring=catalogPriceValue(service.recurringPrice);
+      $('subSetupInput').value=setup;
+      $('subPriceInput').value=recurring;
+      $('subStandardInput').value=recurring;
+      if(['Monthly','Annual'].includes(service.cadence))$('subCycleInput').value=service.cadence;
+      updateSubscriptionRenewal();
+    }
+  }
+
+  function updateSubscriptionRenewal(){
+    const start=$('subStartInput').value;
+    const cycle=$('subCycleInput').value;
+    if(start)$('subNextInput').value=renewalFromStart(start,cycle);
+  }
+
+  function openSubscription(id=null){
+    editingId=id;
+    const sub=id?data.subscriptions.find(x=>x.id===id):null;
+    $('subscriptionModalTitle').textContent=sub?'Edit Subscription':'Add Subscription';
+    $('deleteSubscriptionBtn').style.visibility=sub?'visible':'hidden';
+
+    $('subClientInput').value=sub?.client||'';
+    $('subEmailInput').value=sub?.email||'';
+    populateSubscriptionServiceOptions(sub?.service||'');
+    $('subStatusInput').value=sub?.status||'Active';
+    $('subSetupInput').value=sub?.setupPrice??'';
+    $('subPriceInput').value=sub?.price??'';
+    $('subStandardInput').value=sub?.standardPrice??'';
+    $('subCycleInput').value=sub?.cycle||'Monthly';
+    $('subPromoInput').value=sub?.promo||'';
+    $('subStartInput').value=sub?.startDate||(!sub?localTodayISO():'');
+    $('subNextInput').value=sub?.nextRenewal||'';
+    $('subNoteInput').value=sub?.note||'';
+
+    applyCatalogServiceToSubscription({preserveExisting:!!sub});
+
+    if(!sub){
+      // Apply defaults for a newly selected service only after the user chooses one.
+      $('subServiceHint').textContent='Choose a service from VMS Service Catalog. Pricing will fill automatically.';
+      updateSubscriptionRenewal();
+    }
+
+    $('subscriptionModal').classList.add('show');
+  }
+
+  function saveSubscription(){
+    const client=$('subClientInput').value.trim();
+    const service=selectedSubscriptionServiceName();
+    if(!client){toast('Enter a client/business name');return}
+    if(!service){toast('Choose a service/plan or enter a custom service');return}
+
+    const catalogItem=$('subServiceSelect').value && $('subServiceSelect').value!=='__custom__'
+      ? catalogServiceById($('subServiceSelect').value)
+      : null;
+
+    const rec={
+      client,
+      email:$('subEmailInput').value.trim(),
+      service,
+      catalogServiceId:catalogItem?.id||'',
+      pricingModel:catalogItem?.pricingModel||'Custom',
+      status:$('subStatusInput').value,
+      setupPrice:Number($('subSetupInput').value)||0,
+      price:Number($('subPriceInput').value)||0,
+      standardPrice:Number($('subStandardInput').value)||Number($('subPriceInput').value)||0,
+      cycle:$('subCycleInput').value,
+      promo:$('subPromoInput').value.trim(),
+      startDate:$('subStartInput').value,
+      nextRenewal:$('subNextInput').value,
+      note:$('subNoteInput').value.trim()
+    };
+
+    if(editingId){
+      const i=data.subscriptions.findIndex(x=>x.id===editingId);
+      if(i>-1)data.subscriptions[i]={...data.subscriptions[i],...rec};
+    }else{
+      data.subscriptions.push({...rec,id:'sub-'+Date.now(),lastPayment:'',archived:false,payments:[]});
+    }
+    persist();render();closeModal('subscriptionModal');toast('Subscription saved');
+  }
+
+
+  const CLIENTS_STORAGE_KEY='vms_clients_final_v1';
+  let posCustomerMode='existing';
+  let posSaleType='one-time';
+  let posSubscriptionMode='new';
+  let posPaymentPath='manual';
+  let lastSentPaymentId=null;
+  let activeSalePaymentId=null;
+  let overridePaymentId=null;
+  let posItemCounter=0;
+
+  function readClientStore(){
+    try{
+      const raw=localStorage.getItem(CLIENTS_STORAGE_KEY);
+      const parsed=raw?JSON.parse(raw):[];
+      return Array.isArray(parsed)?parsed:[];
+    }catch(e){return []}
+  }
+
+  function writeClientStore(list){
+    try{localStorage.setItem(CLIENTS_STORAGE_KEY,JSON.stringify(list));}catch(e){}
+  }
+
+  async function syncClientCloudFromBilling(client){
+    if(location.protocol==='file:'||!client?.email||!window.VMSAuth)return;
+    try{
+      const sb=await VMSAuth.client();const {data:{session}}=await sb.auth.getSession();if(!session)return;
+      const r=await fetch('/api/client-account',{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${session.access_token}`},body:JSON.stringify({action:'sync-services',client})});
+      if(!r.ok){const data=await r.json().catch(()=>({}));throw new Error(data.error||'Client Portal service sync failed.')}
+    }catch(e){console.warn(e.message||e)}
+  }
+
+  function normText(v){return String(v||'').trim().toLowerCase()}
+
+  function knownPosCustomers(){
+    const map=new Map();
+    const add=(business,email='',phone='',contact='',address='',id='')=>{
+      if(!business)return;
+      const key=normText(business);
+      const old=map.get(key)||{};
+      map.set(key,{
+        id:id||old.id||'',
+        business:business||old.business||'',
+        email:email||old.email||'',
+        phone:phone||old.phone||'',
+        contact:contact||old.contact||'',
+        address:address||old.address||''
+      });
+    };
+    readClientStore().forEach(c=>add(c.business,c.email,c.phone,c.contact,c.address,c.id));
+    data.subscriptions.filter(x=>!x.archived).forEach(x=>add(x.client,x.email));
+    (data.oneTimePayments||[]).forEach(x=>add(x.client,x.email,x.phone));
+    return [...map.values()].sort((a,b)=>a.business.localeCompare(b.business));
+  }
+
+  function refreshPosCustomers(selectedBusiness=''){
+    const list=knownPosCustomers();
+    $('posExistingCustomerSelect').innerHTML=
+      '<option value="">Choose an existing customer</option>'+
+      list.map(c=>`<option value="${esc(c.business)}">${esc(c.business)}${c.email?` · ${esc(c.email)}`:''}</option>`).join('');
+    if(selectedBusiness && list.some(c=>c.business===selectedBusiness))$('posExistingCustomerSelect').value=selectedBusiness;
+    updateExistingCustomerHint();
+    refreshExistingSubscriptionSelect();
+  }
+
+  function updateExistingCustomerHint(){
+    const business=$('posExistingCustomerSelect').value;
+    const c=knownPosCustomers().find(x=>x.business===business);
+    $('posExistingCustomerHint').textContent=c
+      ? [c.email,c.phone].filter(Boolean).join(' · ') || 'Existing VMS customer'
+      : 'Choose a customer already in VMS Billing or Clients.';
+  }
+
+  function setSegment(containerId,value){
+    document.querySelectorAll(`#${containerId} button[data-value]`).forEach(b=>b.classList.toggle('active',b.dataset.value===value));
+  }
+
+  function setPosCustomerMode(mode){
+    posCustomerMode=mode;
+    setSegment('posCustomerMode',mode);
+    $('posExistingCustomerArea').style.display=mode==='existing'?'block':'none';
+    $('posNewCustomerArea').style.display=mode==='new'?'block':'none';
+
+    const existingSubBtn=document.querySelector('#posSubscriptionMode button[data-value="existing"]');
+    existingSubBtn.disabled=mode==='new';
+    if(mode==='new' && posSubscriptionMode==='existing')setPosSubscriptionMode('new');
+    refreshExistingSubscriptionSelect();
+  }
+
+  function setPosSaleType(type){
+    posSaleType=type;
+    setSegment('posSaleType',type);
+    $('posOneTimeSection').style.display=type==='one-time'?'block':'none';
+    $('posSubscriptionSection').style.display=type==='subscription'?'block':'none';
+    $('posOneTimeTotals').style.display=type==='one-time'?'grid':'none';
+    $('posSubscriptionTotals').style.display=type==='subscription'?'grid':'none';
+    updatePosTotals();
+  }
+
+  function setPosSubscriptionMode(mode){
+    if(mode==='existing' && posCustomerMode==='new'){
+      toast('Choose Existing Customer before paying an existing subscription');
+      return;
+    }
+    posSubscriptionMode=mode;
+    setSegment('posSubscriptionMode',mode);
+    $('posExistingSubscriptionArea').style.display=mode==='existing'?'block':'none';
+    $('posNewSubscriptionArea').style.display=mode==='new'?'block':'none';
+    refreshExistingSubscriptionSelect();
+    updatePosTotals();
+  }
+
+  function setPosPaymentPath(path){
+    if(path==='online'){toast('Connect a payment provider before enabling online checkout');return}
+    posPaymentPath=path;
+    setSegment('posPaymentPath',path);
+    $('posOnlinePaymentArea').style.display=path==='online'?'grid':'none';
+    $('posManualPaymentArea').style.display=path==='manual'?'grid':'none';
+    $('posCreateInvoiceCheckbox').checked=true;
+    $('posCreateInvoiceCheckbox').disabled=path==='online';
+    $('savePaymentBtn').textContent=path==='online'?'Send Invoice / Payment Link':'Complete Sale';
+    syncPosPaymentEmail();
+  }
+
+  function syncPosPaymentEmail(){
+    const c=posCustomer();
+    if(posPaymentPath==='online' && c?.email && !$('posPaymentEmail').value)$('posPaymentEmail').value=c.email;
+  }
+
+  function posCustomer(){
+    if(posCustomerMode==='new'){
+      return {
+        business:$('posNewBusinessInput').value.trim(),
+        contact:$('posNewContactInput').value.trim(),
+        email:$('posNewEmailInput').value.trim(),
+        phone:$('posNewPhoneInput').value.trim(),
+        address:''
+      };
+    }
+    const business=$('posExistingCustomerSelect').value;
+    return knownPosCustomers().find(x=>x.business===business)||{business:'',email:'',phone:'',contact:'',address:''};
+  }
+
+  function catalogOptions(saleType){
+    const offers=getBillingOffers(saleType);
+    const services=offers.filter(x=>x.offerType!=='package');
+    const packages=offers.filter(x=>x.offerType==='package');
+    return '<option value="">Choose eligible service / package</option>'+
+      (services.length?`<optgroup label="Services">${services.map(x=>`<option value="${esc(offerKey(x))}">${esc(x.name)}</option>`).join('')}</optgroup>`:'')+
+      (packages.length?`<optgroup label="Packages / Plans">${packages.map(x=>`<option value="${esc(offerKey(x))}">PACKAGE · ${esc(x.name)}</option>`).join('')}</optgroup>`:'')+
+      '<option value="__custom__">+ Custom / Manual</option>';
+  }
+
+  function offerIncludedMarkup(offer){
+    const included=Array.isArray(offer?.included)?offer.included:[];
+    return included.length?`<b>Includes:</b> ${included.map(esc).join(' · ')}`:'';
+  }
+
+  function addPosOneTimeItem(seed={}){
+    posItemCounter++;
+    const row=document.createElement('div');
+    row.className='pos-item-row one-time';
+    row.dataset.rowId='ot-'+posItemCounter;
+    row.innerHTML=`
+      <div class="pos-item-service">
+        <select class="pos-item-select">${catalogOptions('one-time')}</select>
+        <input class="pos-custom-name" placeholder="Custom service / item name">
+        <div class="pos-offer-included"></div>
+      </div>
+      <div class="pos-qty-wrap"><input class="pos-item-qty" inputmode="decimal" value="${Number(seed.qty)||1}"></div>
+      <div class="pos-price-wrap"><input class="pos-item-price" inputmode="decimal" placeholder="0.00" value="${seed.price??''}"></div>
+      <div class="pos-line-total">$0.00</div>
+      <button class="pos-remove" type="button" aria-label="Remove item">×</button>
+    `;
+    $('posOneTimeItems').appendChild(row);
+
+    const select=row.querySelector('.pos-item-select');
+    const seedKey=seed.offerKey || (seed.catalogId?`service:${seed.catalogId}`:'');
+    if(seedKey && [...select.options].some(o=>o.value===seedKey))select.value=seedKey;
+    else if(seed.name){
+      select.value='__custom__';
+      row.classList.add('custom');
+      row.querySelector('.pos-custom-name').value=seed.name;
+    }
+
+    function applySelection(){
+      const value=select.value;
+      const isCustom=value==='__custom__';
+      row.classList.toggle('custom',isCustom);
+      row.classList.remove('has-included');
+      row.querySelector('.pos-offer-included').innerHTML='';
+      if(value && !isCustom){
+        const offer=billingOfferByKey(value);
+        if(offer){
+          const price=Number(offer.oneTimePrice ?? offer.setupPrice);
+          if(Number.isFinite(price))row.querySelector('.pos-item-price').value=price;
+          if(Array.isArray(offer.included) && offer.included.length){
+            row.classList.add('has-included');
+            row.querySelector('.pos-offer-included').innerHTML=offerIncludedMarkup(offer);
+          }
+        }
+      }
+      updatePosTotals();
+    }
+
+    select.addEventListener('change',applySelection);
+    row.querySelector('.pos-custom-name').addEventListener('input',updatePosTotals);
+    row.querySelector('.pos-item-qty').addEventListener('input',updatePosTotals);
+    row.querySelector('.pos-item-price').addEventListener('input',updatePosTotals);
+    row.querySelector('.pos-remove').onclick=()=>{row.remove();if(!$('posOneTimeItems').children.length)addPosOneTimeItem();updatePosTotals()};
+    if(seedKey)applySelection();
+    updatePosTotals();
+  }
+
+  function addPosSubscriptionItem(seed={}){
+    posItemCounter++;
+    const row=document.createElement('div');
+    row.className='pos-item-row subscription';
+    row.dataset.rowId='sub-'+posItemCounter;
+    row.innerHTML=`
+      <div class="pos-item-service">
+        <select class="pos-item-select">${catalogOptions('subscription')}</select>
+        <input class="pos-custom-name" placeholder="Custom recurring service / plan">
+        <div class="pos-offer-included"></div>
+      </div>
+      <div class="pos-setup-wrap"><input class="pos-item-setup" inputmode="decimal" placeholder="0.00" value="${seed.setup??''}"></div>
+      <div class="pos-recurring-wrap"><input class="pos-item-recurring" inputmode="decimal" placeholder="0.00" value="${seed.recurring??''}"></div>
+      <button class="pos-remove" type="button" aria-label="Remove service">×</button>
+    `;
+    $('posSubscriptionItems').appendChild(row);
+
+    const select=row.querySelector('.pos-item-select');
+    const seedKey=seed.offerKey || (seed.catalogId?`service:${seed.catalogId}`:'');
+    if(seedKey && [...select.options].some(o=>o.value===seedKey))select.value=seedKey;
+    else if(seed.name){
+      select.value='__custom__';
+      row.classList.add('custom');
+      row.querySelector('.pos-custom-name').value=seed.name;
+    }
+
+    function applySelection(){
+      const value=select.value;
+      const isCustom=value==='__custom__';
+      row.classList.toggle('custom',isCustom);
+      row.classList.remove('has-included');
+      row.querySelector('.pos-offer-included').innerHTML='';
+      if(value && !isCustom){
+        const offer=billingOfferByKey(value);
+        if(offer){
+          const setup=catalogPriceValue(offer.setupPrice);
+          const recurring=catalogPriceValue(offer.recurringPrice);
+          row.querySelector('.pos-item-setup').value=setup;
+          row.querySelector('.pos-item-recurring').value=recurring;
+          if(['Monthly','Annual'].includes(offer.cadence))$('posSubscriptionCycle').value=offer.cadence;
+          if(Array.isArray(offer.included) && offer.included.length){
+            row.classList.add('has-included');
+            row.querySelector('.pos-offer-included').innerHTML=offerIncludedMarkup(offer);
+          }
+        }
+      }
+      updatePosRenewal();
+      updatePosTotals();
+    }
+
+    select.addEventListener('change',applySelection);
+    row.querySelector('.pos-custom-name').addEventListener('input',updatePosTotals);
+    row.querySelector('.pos-item-setup').addEventListener('input',updatePosTotals);
+    row.querySelector('.pos-item-recurring').addEventListener('input',updatePosTotals);
+    row.querySelector('.pos-remove').onclick=()=>{row.remove();if(!$('posSubscriptionItems').children.length)addPosSubscriptionItem();updatePosTotals()};
+    if(seedKey)applySelection();
+    updatePosTotals();
+  }
+
+  function posRowOffer(row){
+    const value=row.querySelector('.pos-item-select').value;
+    if(!value || value==='__custom__')return null;
+    return billingOfferByKey(value);
+  }
+
+  function posRowName(row){
+    const value=row.querySelector('.pos-item-select').value;
+    if(value==='__custom__')return row.querySelector('.pos-custom-name').value.trim();
+    return posRowOffer(row)?.name||'';
+  }
+
+  function oneTimeCartItems(){
+    return [...$('posOneTimeItems').querySelectorAll('.pos-item-row')].map(row=>{
+      const qty=Number(row.querySelector('.pos-item-qty').value)||0;
+      const price=Number(row.querySelector('.pos-item-price').value)||0;
+      const offer=posRowOffer(row);
+      return {
+        name:posRowName(row),qty,price,total:qty*price,
+        offerKey:offer?offerKey(offer):'',
+        catalogId:offer?.offerType==='service'?offer.id:'',
+        offerType:offer?.offerType||'custom',
+        included:Array.isArray(offer?.included)?[...offer.included]:[],
+        activationFeeWaived:!!offer?.metadata?.activationFeeWaived
+      };
+    }).filter(x=>x.name && x.qty>0);
+  }
+
+  function subscriptionCartItems(){
+    return [...$('posSubscriptionItems').querySelectorAll('.pos-item-row')].map(row=>{
+      const setup=Number(row.querySelector('.pos-item-setup').value)||0;
+      const recurring=Number(row.querySelector('.pos-item-recurring').value)||0;
+      const offer=posRowOffer(row);
+      return {
+        name:posRowName(row),setup,recurring,
+        offerKey:offer?offerKey(offer):'',
+        catalogId:offer?.offerType==='service'?offer.id:'',
+        offerType:offer?.offerType||'custom',
+        included:Array.isArray(offer?.included)?[...offer.included]:[],
+        activationFeeWaived:!!offer?.metadata?.activationFeeWaived
+      };
+    }).filter(x=>x.name);
+  }
+
+  function selectedExistingSubscription(){
+    return data.subscriptions.find(x=>x.id===$('posExistingSubscriptionSelect').value);
+  }
+
+  function refreshExistingSubscriptionSelect(selectedId=''){
+    const business=posCustomerMode==='existing' ? $('posExistingCustomerSelect').value : '';
+    const subs=data.subscriptions.filter(x=>!x.archived && (!business || x.client===business));
+    $('posExistingSubscriptionSelect').innerHTML=
+      '<option value="">Choose an existing subscription</option>'+
+      subs.map(x=>`<option value="${x.id}">${esc(x.service)} · ${money(x.price)}/${x.cycle==='Annual'?'yr':'mo'} · ${esc(x.status)}</option>`).join('');
+    if(selectedId && subs.some(x=>x.id===selectedId))$('posExistingSubscriptionSelect').value=selectedId;
+    updateExistingSubscriptionSummary();
+  }
+
+  function updateExistingSubscriptionSummary(){
+    const sub=selectedExistingSubscription();
+    $('posExistingSubscriptionSummary').innerHTML=sub
+      ? `<strong>${esc(sub.client)} · ${esc(sub.service)}</strong><span>${money(sub.price)}/${sub.cycle==='Annual'?'year':'month'} · ${esc(sub.status)} · Next renewal ${dateLabel(sub.nextRenewal)}</span>`
+      : '<span>Choose a subscription to record its payment.</span>';
+    updatePosTotals();
+  }
+
+  function updatePosRenewal(){
+    $('posSubscriptionRenewal').value=renewalFromStart($('posSubscriptionStart').value,$('posSubscriptionCycle').value);
+    updatePosTotals();
+  }
+
+  function posDiscount(){return Math.max(0,Number($('posDiscountInput').value)||0)}
+
+  const VMS_ACTIVATION_FEE=4.99;
+  function customerHasPaidOrder(customer){
+    const key=String(customer?.business||'').trim().toLowerCase();if(!key)return false;
+    if((data.oneTimePayments||[]).some(p=>String(p.client||'').trim().toLowerCase()===key&&p.status==='Paid'))return true;
+    if((data.subscriptions||[]).some(s=>String(s.client||'').trim().toLowerCase()===key&&(s.payments||[]).some(p=>p.status==='Paid')))return true;
+    if((data.invoices||[]).some(i=>String(i.client||'').trim().toLowerCase()===key&&i.status==='Paid'))return true;
+    return false;
+  }
+  function activationFeeFor(customer,items){
+    if(!items?.length||customerHasPaidOrder(customer))return 0;
+    if(items.some(i=>i.offerType==='package'||i.activationFeeWaived))return 0;
+    return VMS_ACTIVATION_FEE;
+  }
+
+  function oneTimeSubtotal(){return oneTimeCartItems().reduce((sum,x)=>sum+x.total,0)}
+
+  function subscriptionTotals(){
+    if(posSubscriptionMode==='existing'){
+      const sub=selectedExistingSubscription();
+      return {setup:0,recurring:sub?Number(sub.price)||0:0,activation:0,due:Math.max(0,(sub?Number(sub.price)||0:0)-posDiscount()),after:sub?Number(sub.price)||0:0};
+    }
+    const items=subscriptionCartItems();
+    const setup=items.reduce((sum,x)=>sum+x.setup,0);
+    const recurring=items.reduce((sum,x)=>sum+x.recurring,0);
+    const first=$('posChargeFirstCycle').checked?recurring:0;
+    const activation=activationFeeFor(posCustomer(),items);
+    const due=Math.max(0,setup+first-posDiscount())+activation;
+    return {setup,recurring,activation,due,after:recurring};
+  }
+
+  function updatePosTotals(){
+    [...$('posOneTimeItems').querySelectorAll('.pos-item-row')].forEach(row=>{
+      const qty=Number(row.querySelector('.pos-item-qty').value)||0;
+      const price=Number(row.querySelector('.pos-item-price').value)||0;
+      row.querySelector('.pos-line-total').textContent=money(qty*price);
+    });
+
+    if(posSaleType==='one-time'){
+      const items=oneTimeCartItems();
+      const subtotal=items.reduce((sum,x)=>sum+x.total,0);
+      const activation=activationFeeFor(posCustomer(),items);
+      const discount=Math.min(posDiscount(),subtotal);
+      const total=Math.max(0,subtotal-discount)+activation;
+      $('posOneTimeSubtotal').textContent=money(subtotal);
+      $('posOneTimeActivation').textContent=money(activation);
+      $('posOneTimeDiscount').textContent='-'+money(discount);
+      $('posOneTimeTotal').textContent=money(total);
+      $('posFooterLabel').textContent='TOTAL DUE';
+      $('posFooterTotal').textContent=money(total);
+    }else{
+      const t=subscriptionTotals();
+      const discount=Math.min(posDiscount(),t.setup+($('posChargeFirstCycle').checked?t.recurring:0));
+      $('posSetupTotal').textContent=money(t.setup);
+      $('posRecurringTotal').textContent=money(t.recurring);
+      $('posSubscriptionActivation').textContent=money(t.activation||0);
+      $('posSubscriptionDiscount').textContent='-'+money(discount);
+      $('posSubscriptionDueToday').textContent=money(t.due);
+      const suffix=$('posSubscriptionCycle').value==='Annual'?'/yr':'/mo';
+      $('posSubscriptionAfter').textContent=money(t.after)+suffix;
+      $('posFooterLabel').textContent=posSubscriptionMode==='existing'?'PAYMENT DUE':'DUE TODAY';
+      $('posFooterTotal').textContent=money(t.due);
+    }
+  }
+
+  function resetPos(){
+    posItemCounter=0;
+    $('posOneTimeItems').innerHTML='';
+    $('posSubscriptionItems').innerHTML='';
+    $('posNewBusinessInput').value='';
+    $('posNewContactInput').value='';
+    $('posNewEmailInput').value='';
+    $('posNewPhoneInput').value='';
+    $('posSyncClientCheckbox').checked=true;
+    $('posDiscountInput').value='0';
+    $('posPaymentStatus').value='Paid';
+    $('posPaymentMethod').value='Cash';
+    $('posPaymentEmail').value='';
+    $('posPaymentDate').value=localTodayISO();
+    $('posPaymentNote').value='';
+    $('posCreateInvoiceCheckbox').checked=true;
+    $('posSubscriptionCycle').value='Monthly';
+    $('posSubscriptionStart').value=localTodayISO();
+    $('posSubscriptionPromo').value='';
+    $('posChargeFirstCycle').checked=true;
+    updatePosRenewal();
+    refreshPosCustomers();
+    addPosOneTimeItem();
+    addPosSubscriptionItem();
+    setPosCustomerMode('existing');
+    setPosSaleType('one-time');
+    setPosSubscriptionMode('new');
+    setPosPaymentPath('manual');
+  }
+
+  function openPayment(subscriptionId=null){
+    resetPos();
+
+    if(subscriptionId){
+      const sub=data.subscriptions.find(x=>x.id===subscriptionId);
+      if(sub){
+        setPosCustomerMode('existing');
+        refreshPosCustomers(sub.client);
+        setPosSaleType('subscription');
+        setPosSubscriptionMode('existing');
+        refreshExistingSubscriptionSelect(subscriptionId);
+      }
+    }
+    $('paymentModal').classList.add('show');
+  }
+
+  function slugPosId(text){
+    return String(text||'client').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,45)+'-'+Date.now();
+  }
+
+  function clientServiceRecords(items,{recurring=false,cycle='Monthly',startDate='',status='Active'}={}){
+    return items.map((item,i)=>({
+      id:'service-pos-'+Date.now()+'-'+i,
+      name:item.name,
+      catalogType:item.catalogId||item.name,
+      billingType:recurring?cycle:'One-time',
+      price:recurring?(Number(item.recurring)||0):(Number(item.price)||0),
+      status:recurring?status:'Completed',
+      startDate:startDate||localTodayISO(),
+      note:'Added from VMS Billing point-of-sale',
+      createdAt:new Date().toISOString()
+    }));
+  }
+
+  function syncSaleToClient(customer,services,billingUpdate=null,activityDetail=''){
+    if(!$('posSyncClientCheckbox').checked || !customer.business)return null;
+
+    const clients=readClientStore();
+    const emailKey=normText(customer.email);
+    const businessKey=normText(customer.business);
+    let c=clients.find(x=>(emailKey && normText(x.email)===emailKey) || normText(x.business)===businessKey);
+
+    if(!c){
+      c={
+        id:slugPosId(customer.business),
+        business:customer.business,
+        status:'Active',
+        industry:'',
+        website:'',
+        contact:customer.contact||'',
+        email:customer.email||'',
+        phone:customer.phone||'',
+        since:localTodayISO(),
+        address:customer.address||'',
+        note:'',
+        logo:'',
+        services:[],
+        auditLinks:[],qrLinks:[],projects:[],requests:[],activity:[],
+        billing:{plan:'',status:'Not Set',amount:'',standardAmount:'',cycle:'Monthly',lastPayment:'',nextPayment:'',note:'',promo:null,payments:[]},
+        products:[],
+        source:'Billing POS',
+        preArchiveStatus:''
+      };
+      clients.unshift(c);
+    }else{
+      if(customer.email && !c.email)c.email=customer.email;
+      if(customer.phone && !c.phone)c.phone=customer.phone;
+      if(customer.contact && !c.contact)c.contact=customer.contact;
+    }
+
+    c.services=Array.isArray(c.services)?c.services:[];
+    services.forEach(s=>{
+      if(!c.services.some(x=>x.name===s.name && x.status===s.status && x.startDate===s.startDate))c.services.unshift(s);
+    });
+
+    if(billingUpdate)c.billing={...(c.billing||{}),...billingUpdate};
+    c.activity=Array.isArray(c.activity)?c.activity:[];
+    c.activity.unshift({
+      id:'activity-pos-'+Date.now(),
+      type:'billing',
+      title:'VMS sale recorded',
+      detail:activityDetail||'Sale completed through Billing',
+      date:new Date().toISOString()
+    });
+
+    writeClientStore(clients);
+    syncClientCloudFromBilling(c);
+    return c.id;
+  }
+
+  function createPosInvoice(customer,{revenueType,items,discount,total,status,paymentDate,notes='',paymentMode='manual'}) {
+    if(!$('posCreateInvoiceCheckbox').checked && paymentMode!=='online')return null;
+    const invoice={
+      id:'inv-pos-'+Date.now()+'-'+Math.floor(Math.random()*1000),
+      number:nextInvoiceNumber(),
+      client:customer.business,
+      email:customer.email||$('posPaymentEmail')?.value||'',
+      address:customer.address||'',
+      status:status==='Paid'?'Paid':status==='Failed'?'Overdue':'Sent',
+      paymentStatus:status,
+      paymentMode,
+      paymentLink:'',
+      revenueType,
+      issueDate:paymentDate||localTodayISO(),
+      dueDate:paymentDate||localTodayISO(),
+      items:items.map(x=>({
+        description:x.description,
+        qty:x.qty||1,
+        price:Number(x.price)||0,
+        included:Array.isArray(x.included)?[...x.included]:[],
+        offerType:x.offerType||'service'
+      })),
+      discount:Number(discount)||0,
+      tax:0,
+      notes:notes||'Created from VMS Billing point-of-sale.'
+    };
+    if(status==='Paid')invoice.paidDate=paymentDate||localTodayISO();
+    data.invoices=data.invoices||[];
+    data.invoices.push(invoice);
+    return invoice.id;
+  }
+
+  function paymentBadgeClass(status){
+    return status==='Paid'?'green':status==='Failed'?'red':status==='Refunded'?'orange':status==='Awaiting Payment'||status==='Pending'?'orange':'gray';
+  }
+
+  function savePayment(){
+    const customer=posCustomer();
+    if(!customer.business){
+      toast(posCustomerMode==='new'?'Enter the new customer/business name':'Choose an existing customer');
+      return;
+    }
+
+    if(posPaymentPath==='online'){
+      const payEmail=$('posPaymentEmail').value.trim() || customer.email;
+      if(!payEmail){toast('Add an email so VMS can send the payment link');return}
+      customer.email=payEmail;
+    }
+
+    const paymentStatus=posPaymentPath==='online'?'Awaiting Payment':$('posPaymentStatus').value;
+    const paymentMethod=posPaymentPath==='online'?'Online Payment Link':$('posPaymentMethod').value;
+    const paymentDate=$('posPaymentDate').value||localTodayISO();
+    const paymentNote=$('posPaymentNote').value.trim();
+    const discount=posDiscount();
+    const processorStatus=posPaymentPath==='online'?'Awaiting Payment':'Manual / N/A';
+
+    function finishOnline(payment,invoiceId){
+      lastSentPaymentId=payment.id;
+      $('paymentSentClient').textContent=customer.business;
+      $('paymentSentEmail').textContent=`Sent to ${customer.email}`;
+      const inv=(data.invoices||[]).find(i=>i.id===invoiceId);
+      $('paymentSentInvoice').textContent=inv?.number||'VMS Invoice';
+      $('paymentSentAmount').textContent=money(payment.amount);
+      $('paymentLinkModal').classList.add('show');
+      toast('Invoice and secure payment link sent');
+    }
+
+    if(posSaleType==='one-time'){
+      const items=oneTimeCartItems();
+      if(!items.length){toast('Add at least one eligible item, package, or custom service');return}
+      const subtotal=items.reduce((sum,x)=>sum+x.total,0);
+      const activationFee=activationFeeFor(customer,items);
+      const appliedDiscount=Math.min(discount,subtotal);
+      const total=Math.max(0,subtotal-appliedDiscount)+activationFee;
+      const lineItems=items.map(x=>({
+        description:x.name,qty:x.qty,price:x.price,included:x.included,offerType:x.offerType
+      }));
+      if(activationFee>0)lineItems.push({description:'VMS Activation Fee',qty:1,price:activationFee,included:[],offerType:'fee'});
+
+      const invoiceId=createPosInvoice(customer,{
+        revenueType:'One-Time',items:lineItems,discount:appliedDiscount,total,
+        status:paymentStatus,paymentDate,notes:paymentNote,paymentMode:posPaymentPath
+      });
+
+      data.oneTimePayments=data.oneTimePayments||[];
+      const payment={
+        id:'p-pos-'+Date.now(),
+        client:customer.business,email:customer.email||'',phone:customer.phone||'',
+        service:items.length===1?items[0].name:`${items.length} item VMS sale`,
+        items:items.map(x=>({...x})),
+        subtotal,activationFee,discount:appliedDiscount,amount:total,
+        status:paymentStatus,processorStatus,date:paymentDate,method:paymentMethod,
+        description:paymentNote||`${items.length} item one-time VMS sale`,
+        invoiceId,paymentMode:posPaymentPath,auditTrail:[]
+      };
+      data.oneTimePayments.push(payment);
+
+      const clientServices=clientServiceRecords(items,{recurring:false,startDate:paymentDate});
+      syncSaleToClient(customer,clientServices,null,`${items.length} one-time item${items.length===1?'':'s'} · ${money(total)} · ${paymentStatus}`);
+
+      persist();render();closeModal('paymentModal');setTab('payments');
+      if(posPaymentPath==='online')finishOnline(payment,invoiceId);
+      else toast(`Manual sale recorded · ${money(total)}${invoiceId?' · receipt created':''}`);
+      return;
+    }
+
+    if(posSubscriptionMode==='existing'){
+      const sub=selectedExistingSubscription();
+      if(!sub){toast('Choose the client subscription to pay');return}
+      const amount=Math.max(0,(Number(sub.price)||0)-discount);
+      const payment={
+        id:'p-pos-'+Date.now(),amount,status:paymentStatus,processorStatus,date:paymentDate,method:paymentMethod,
+        description:paymentNote||`${sub.service} subscription payment`,
+        items:[{name:sub.service,qty:1,price:Number(sub.price)||0,total:Number(sub.price)||0,included:sub.bundleItems?.flatMap(x=>x.included||[])||[]}],
+        discount,paymentMode:posPaymentPath,auditTrail:[]
+      };
+      sub.payments=sub.payments||[];
+      sub.payments.push(payment);
+      if(paymentStatus==='Paid'){
+        sub.lastPayment=paymentDate;
+        if(['Past Due','Grace','Awaiting Payment'].includes(sub.status))sub.status='Active';
+      }else if(paymentStatus==='Failed' && sub.status==='Active'){
+        sub.status='Past Due';
+      }
+
+      const invoiceId=createPosInvoice(customer,{
+        revenueType:'Recurring',
+        items:[{description:`${sub.service} subscription`,qty:1,price:Number(sub.price)||0,included:sub.bundleItems?.flatMap(x=>x.included||[])||[],offerType:sub.pricingModel==='Package'?'package':'service'}],
+        discount,total:amount,status:paymentStatus,paymentDate,notes:paymentNote,paymentMode:posPaymentPath
+      });
+      payment.invoiceId=invoiceId;
+
+      syncSaleToClient(customer,[],{
+        plan:sub.service,status:sub.status,amount:sub.price,standardAmount:sub.standardPrice,
+        cycle:sub.cycle,lastPayment:sub.lastPayment,nextPayment:sub.nextRenewal,note:sub.note,promo:sub.promo||null
+      },`${sub.service} payment · ${money(amount)} · ${paymentStatus}`);
+
+      persist();render();closeModal('paymentModal');setTab('payments');
+      if(posPaymentPath==='online')finishOnline(payment,invoiceId);
+      else toast('Manual subscription payment recorded · MRR unchanged');
+      return;
+    }
+
+    const items=subscriptionCartItems();
+    if(!items.length){toast('Add at least one eligible recurring service or package');return}
+    const cycle=$('posSubscriptionCycle').value;
+    const startDate=$('posSubscriptionStart').value||paymentDate;
+    const nextRenewal=$('posSubscriptionRenewal').value||renewalFromStart(startDate,cycle);
+    const promo=$('posSubscriptionPromo').value.trim();
+    const chargeFirst=$('posChargeFirstCycle').checked;
+    const setupTotal=items.reduce((sum,x)=>sum+x.setup,0);
+    const recurringTotal=items.reduce((sum,x)=>sum+x.recurring,0);
+    if(recurringTotal<=0){toast('Add a recurring price to the subscription');return}
+
+    const activationFee=activationFeeFor(customer,items);
+    const grossToday=setupTotal+(chargeFirst?recurringTotal:0);
+    const appliedDiscount=Math.min(discount,grossToday);
+    const dueToday=Math.max(0,grossToday-appliedDiscount)+activationFee;
+
+    let remainingDiscount=appliedDiscount;
+    const oneTimePortion=Math.max(0,setupTotal-remainingDiscount);
+    remainingDiscount=Math.max(0,remainingDiscount-setupTotal);
+    const recurringPortion=Math.max(0,(chargeFirst?recurringTotal:0)-remainingDiscount);
+
+    const packageItems=items.filter(x=>x.offerType==='package');
+    const serviceName=items.length===1?items[0].name:
+      packageItems.length===1 && items.length===1?packageItems[0].name:
+      `Custom Subscription Bundle — ${items.length} offers`;
+
+    const subStatus=paymentStatus==='Paid'?'Active':
+      paymentStatus==='Failed'?'Past Due':
+      paymentStatus==='Awaiting Payment'?'Awaiting Payment':'Grace';
+
+    const subscription={
+      id:'sub-pos-'+Date.now(),
+      client:customer.business,email:customer.email||'',
+      service:serviceName,
+      catalogServiceId:items.length===1?items[0].catalogId:'',
+      pricingModel:items.length===1 && items[0].offerType==='package'?'Package':
+        items.length===1?'Catalog / Custom':'Custom Bundle',
+      bundleItems:items,
+      status:subStatus,
+      setupPrice:setupTotal,price:recurringTotal,standardPrice:recurringTotal,
+      cycle,promo,startDate,nextRenewal,
+      lastPayment:paymentStatus==='Paid'?paymentDate:'',
+      note:`${items.length>1?'Bundle: '+items.map(x=>x.name).join(', '):'Created from VMS Billing POS.'}`,
+      archived:false,payments:[]
+    };
+
+    const paymentItems=[];
+    items.forEach(x=>{
+      if(x.setup>0)paymentItems.push({
+        name:`${x.name} — Setup`,qty:1,price:x.setup,total:x.setup,catalogId:x.catalogId,
+        included:x.included,offerType:x.offerType
+      });
+      if(chargeFirst && x.recurring>0)paymentItems.push({
+        name:`${x.name} — First ${cycle==='Annual'?'Year':'Month'}`,qty:1,price:x.recurring,total:x.recurring,catalogId:x.catalogId,
+        included:x.included,offerType:x.offerType
+      });
+    });
+
+    if(activationFee>0)paymentItems.push({name:'VMS Activation Fee',qty:1,price:activationFee,total:activationFee,catalogId:'vms-activation-fee',included:[],offerType:'fee'});
+
+    const payment={
+      id:'p-pos-'+Date.now(),amount:dueToday,status:paymentStatus,processorStatus,date:paymentDate,method:paymentMethod,
+      description:paymentNote||`${serviceName} signup`,
+      items:paymentItems,discount:appliedDiscount,
+      oneTimePortion,recurringPortion,paymentMode:posPaymentPath,auditTrail:[]
+    };
+    subscription.payments.push(payment);
+    data.subscriptions.push(subscription);
+
+    const invoiceId=createPosInvoice(customer,{
+      revenueType:'Recurring',
+      items:paymentItems.map(x=>({description:x.name,qty:x.qty,price:x.price,included:x.included,offerType:x.offerType})),
+      discount:appliedDiscount,total:dueToday,status:paymentStatus,paymentDate,
+      notes:paymentNote||`${serviceName} · recurring ${money(recurringTotal)}/${cycle==='Annual'?'year':'month'}`,
+      paymentMode:posPaymentPath
+    });
+    payment.invoiceId=invoiceId;
+
+    const clientServices=clientServiceRecords(items,{recurring:true,cycle,startDate,status:subStatus==='Active'?'Active':'Pending'});
+    syncSaleToClient(customer,clientServices,{
+      plan:serviceName,status:subStatus,amount:recurringTotal,standardAmount:recurringTotal,
+      cycle,lastPayment:subscription.lastPayment,nextPayment:nextRenewal,note:subscription.note,promo:promo||null,payments:[]
+    },`${serviceName} · ${money(recurringTotal)}/${cycle==='Annual'?'year':'month'} · ${paymentStatus}`);
+
+    persist();render();closeModal('paymentModal');
+    if(posPaymentPath==='online'){
+      setTab('payments');
+      finishOnline(payment,invoiceId);
+    }else{
+      setTab('subscriptions');
+      toast(`Subscription created · ${subStatus}${subStatus==='Active'?` · ${money(recurringTotal)}/${cycle==='Annual'?'year':'month'} now in MRR`:''}`);
+    }
+  }
+
+  function openSaleDetails(payment){
+    if(!payment)return;
+    activeSalePaymentId=payment.id;
+    const rec=findPaymentRecord(payment.id);
+    const actual=rec?.payment||payment;
+    $('saleDetailClient').textContent=payment.client||rec?.subscription?.client||'VMS Customer';
+    $('saleDetailMeta').textContent=`${dateLabel(actual.date)} · ${actual.method||'Other'}${actual.invoiceId?' · Invoice created':''}`;
+    $('saleDetailStatus').innerHTML=`<span class="badge ${paymentBadgeClass(actual.status)}">${esc(actual.status||'Payment')}</span>`;
+    $('saleProcessorStatus').textContent=actual.processorStatus||'Manual / N/A';
+    $('saleVmsStatus').textContent=actual.status||'—';
+    const items=Array.isArray(actual.items)?actual.items:[];
+    $('saleDetailItems').innerHTML=items.length?items.map(i=>`
+      <div class="history-item">
+        <div><strong>${esc(i.name||i.description||'Item')}</strong><span>${Number(i.qty)||1} × ${money(i.price||0)}${Array.isArray(i.included)&&i.included.length?` · Includes: ${i.included.map(esc).join(', ')}`:''}</span></div>
+        <div><strong>${money(i.total??((Number(i.qty)||1)*(Number(i.price)||0)))}</strong></div>
+      </div>
+    `).join(''):`<div class="history-item"><div><strong>${esc(payment.service||actual.description||'Payment')}</strong></div><div><strong>${money(actual.amount||0)}</strong></div></div>`;
+    $('saleDetailTotal').textContent=money(actual.amount||0);
+    const trail=Array.isArray(actual.auditTrail)?actual.auditTrail:[];
+    $('saleOverrideHistory').innerHTML=trail.length?[...trail].reverse().map(x=>`
+      <div class="history-item"><div><strong>${esc(x.from)} → ${esc(x.to)}</strong><span>${esc(x.reason)} · ${esc(x.note)}</span></div><div><span>${new Date(x.at).toLocaleString()}</span></div></div>
+    `).join(''):'<div class="empty">No manual overrides. Status is using the normal payment flow.</div>';
+    $('saleDetailsModal').classList.add('show');
+  }
+
+  function findPaymentRecord(id){
+    for(const sub of data.subscriptions){
+      const payment=(sub.payments||[]).find(p=>p.id===id);
+      if(payment)return {payment,subscription:sub};
+    }
+    const payment=(data.oneTimePayments||[]).find(p=>p.id===id);
+    return payment?{payment,subscription:null}:null;
+  }
+
+  function findPaymentById(id){
+    return allPayments().find(p=>p.id===id);
+  }
+
+  function updateClientAfterPayment(payment,subscription){
+    const clients=readClientStore();
+    const c=clients.find(x=>normText(x.business)===normText(subscription?.client||payment.client));
+    if(!c)return;
+    c.activity=Array.isArray(c.activity)?c.activity:[];
+    c.activity.unshift({
+      id:'activity-payment-'+Date.now(),type:'billing',title:'Payment received',
+      detail:`${money(payment.amount)} · ${payment.description||subscription?.service||'VMS sale'}`,
+      date:new Date().toISOString()
+    });
+    if(subscription){
+      c.status='Active';
+      c.billing={...(c.billing||{}),plan:subscription.service,status:subscription.status,amount:subscription.price,
+        standardAmount:subscription.standardPrice,cycle:subscription.cycle,lastPayment:subscription.lastPayment,
+        nextPayment:subscription.nextRenewal,promo:subscription.promo||null};
+      (c.services||[]).forEach(x=>{if(subscription.bundleItems?.some(i=>i.name===x.name))x.status='Active'});
+    }
+    writeClientStore(clients);
+  }
+
+  function showAdminPaymentNotification(payment,subscription,invoice){
+    const client=subscription?.client||payment.client||'Customer';
+    const itemNames=(payment.items||[]).map(x=>x.name).slice(0,3).join(', ');
+    $('adminNotifyClient').textContent=client;
+    $('adminNotifyDetail').textContent=`${money(payment.amount)} paid · ${itemNames||payment.description||'VMS sale'}`;
+    $('adminNotifyMeta').textContent=`${invoice?.number||'Payment'} · ${subscription?'Recurring / Subscription':'One-Time'} · Paid`;
+    $('adminPaymentNotification').classList.add('show');
+    clearTimeout(showAdminPaymentNotification.t);
+    showAdminPaymentNotification.t=setTimeout(()=>$('adminPaymentNotification').classList.remove('show'),5000);
+  }
+
+  function markPaymentPaid(id,{source='processor'}={}){
+    const rec=findPaymentRecord(id);if(!rec)return;
+    const {payment,subscription}=rec;
+    const old=payment.status;
+    payment.status='Paid';
+    if(source==='processor')payment.processorStatus='Paid';
+    payment.date=localTodayISO();
+
+    const invoice=(data.invoices||[]).find(i=>i.id===payment.invoiceId);
+    if(invoice){
+      invoice.status='Paid';
+      invoice.paymentStatus='Paid';
+      invoice.paidDate=localTodayISO();
+    }
+
+    if(subscription){
+      subscription.status='Active';
+      subscription.lastPayment=localTodayISO();
+      if(!subscription.nextRenewal)subscription.nextRenewal=renewalFromStart(subscription.startDate||localTodayISO(),subscription.cycle||'Monthly');
+    }
+    updateClientAfterPayment(payment,subscription);
+    persist();render();
+    showAdminPaymentNotification(payment,subscription,invoice);
+    if(source==='processor')toast(`${subscription?.client||payment.client||'Customer'} paid · Billing updated automatically`);
+    return {payment,subscription,invoice,old};
+  }
+
+
+  function openPaymentOverride(id){
+    const rec=findPaymentRecord(id);if(!rec)return;
+    overridePaymentId=id;
+    $('overrideCurrentStatus').value=rec.payment.status||'';
+    $('overrideNewStatus').value=rec.payment.status==='Paid'?'Paid':'Paid';
+    $('overrideReason').value='';
+    $('overrideNote').value='';
+    $('paymentOverrideModal').classList.add('show');
+  }
+
+  function applyPaymentOverride(){
+    const rec=findPaymentRecord(overridePaymentId);if(!rec)return;
+    const reason=$('overrideReason').value;
+    const note=$('overrideNote').value.trim();
+    if(!reason){toast('Choose a reason for the manual override');return}
+    if(!note){toast('Add a note explaining the manual override');return}
+
+    const {payment,subscription}=rec;
+    const old=payment.status;
+    const next=$('overrideNewStatus').value;
+    payment.auditTrail=Array.isArray(payment.auditTrail)?payment.auditTrail:[];
+    payment.auditTrail.push({
+      from:old,to:next,reason,note,
+      at:new Date().toISOString(),
+      admin:'VMS Admin'
+    });
+    payment.status=next;
+
+    const invoice=(data.invoices||[]).find(i=>i.id===payment.invoiceId);
+    if(invoice){
+      invoice.status=next==='Paid'?'Paid':next==='Failed'?'Overdue':next==='Refunded'?'Void':'Sent';
+      invoice.paymentStatus=next;
+      if(next==='Paid')invoice.paidDate=localTodayISO();
+    }
+
+    if(subscription){
+      if(next==='Paid'){
+        subscription.status='Active';
+        subscription.lastPayment=localTodayISO();
+      }else if(next==='Failed'){
+        subscription.status='Past Due';
+      }else if(next==='Awaiting Payment' || next==='Pending'){
+        if(!subscription.lastPayment)subscription.status='Awaiting Payment';
+      }
+    }
+
+    if(next==='Paid')updateClientAfterPayment(payment,subscription);
+    persist();render();closeModal('paymentOverrideModal');closeModal('saleDetailsModal');
+    toast(`${old} → ${next} · manual override logged`);
+  }
+
+  function archiveSubscription(){
+    const s=data.subscriptions.find(x=>x.id===editingId);if(!s)return;
+    if(!confirm(`Archive ${s.client} · ${s.service}?`))return;
+    s.archived=true;persist();render();closeModal('subscriptionModal');toast('Subscription archived');
+  }
+
+
+
+
+
+
+
+
+
+  function openManage(id){
+    const s=data.subscriptions.find(x=>x.id===id);if(!s)return;
+    manageId=id;
+    $('manageStatusInput').value=s.status;
+    $('manageNoteInput').value='';
+    $('manageModal').classList.add('show');
+  }
+
+  function saveStatus(){
+    const s=data.subscriptions.find(x=>x.id===manageId);if(!s)return;
+    const old=s.status;
+    s.status=$('manageStatusInput').value;
+    const note=$('manageNoteInput').value.trim();
+    if(note)s.note=note;
+    if(s.status==='Canceling'){
+      if(!s.nextRenewal)s.nextRenewal='2026-09-14';
+      s.cancelEffectiveDate=s.nextRenewal;
+    }
+    if(s.status==='Canceled')s.cancelEffectiveDate='2026-08-14';
+    if(s.status==='Active')s.cancelEffectiveDate='';
+    persist();render();closeModal('manageModal');
+    toast(`${old} → ${s.status}`);
+  }
+
+  function sendReminder(id){
+    const s=data.subscriptions.find(x=>x.id===id);if(!s)return;
+    toast(`Payment reminder queued for ${s.client}`);
+  }
+
+
+  let activeInvoiceId=null;
+
+  function nextInvoiceNumber(){
+    const nums=(data.invoices||[]).map(i=>Number(String(i.number||'').replace(/\D/g,''))).filter(Number.isFinite);
+    const next=(nums.length?Math.max(...nums):1000)+1;
+    return `VMS-${next}`;
+  }
+
+  function addInvoiceItem(item={description:'',qty:1,price:0}){
+    const row=document.createElement('div');
+    row.className='invoice-item-row';
+    row.innerHTML=`
+      <input class="invoice-item-description" placeholder="Service or item" value="${esc(item.description)}">
+      <input class="invoice-item-qty" inputmode="decimal" value="${Number(item.qty)||1}">
+      <input class="invoice-item-price" inputmode="decimal" value="${Number(item.price)||0}">
+      <button class="invoice-remove" type="button">×</button>
+    `;
+    row.querySelectorAll('input').forEach(i=>i.addEventListener('input',updateInvoiceBuilderTotal));
+    row.querySelector('.invoice-remove').onclick=()=>{row.remove();updateInvoiceBuilderTotal()};
+    $('invoiceItems').appendChild(row);
+    updateInvoiceBuilderTotal();
+  }
+
+  function invoiceBuilderData(){
+    const items=[...$('invoiceItems').querySelectorAll('.invoice-item-row')].map(row=>({
+      description:row.querySelector('.invoice-item-description').value.trim(),
+      qty:Number(row.querySelector('.invoice-item-qty').value)||0,
+      price:Number(row.querySelector('.invoice-item-price').value)||0
+    })).filter(i=>i.description);
+    return {
+      number:$('invoiceNumberInput').value.trim(),
+      client:$('invoiceClientInput').value.trim(),
+      email:$('invoiceEmailInput').value.trim(),
+      address:$('invoiceAddressInput').value.trim(),
+      status:'Draft',
+      revenueType:$('invoiceRevenueTypeInput').value,
+      issueDate:$('invoiceIssueInput').value,
+      dueDate:$('invoiceDueInput').value,
+      items,
+      discount:Number($('invoiceDiscountInput').value)||0,
+      tax:Number($('invoiceTaxInput').value)||0,
+      notes:$('invoiceNotesInput').value.trim()
+    };
+  }
+
+  function updateInvoiceBuilderTotal(){
+    const inv=invoiceBuilderData();
+    $('invoiceBuilderTotal').textContent=money(invoiceTotal(inv));
+  }
+
+  function openInvoiceBuilder(){
+    $('invoiceClientInput').value='';
+    $('invoiceEmailInput').value='';
+    $('invoiceAddressInput').value='';
+    $('invoiceNumberInput').value=nextInvoiceNumber();
+    $('invoiceRevenueTypeInput').value='One-Time';
+    $('invoiceIssueInput').value='2026-08-14';
+    $('invoiceDueInput').value='2026-08-28';
+    $('invoiceDiscountInput').value='0';
+    $('invoiceTaxInput').value='0';
+    $('invoiceNotesInput').value='Thank you for choosing Vision Make Studio. Payment is due by the date above.';
+    $('invoiceItems').innerHTML='';
+    addInvoiceItem({description:'',qty:1,price:0});
+    $('invoiceModal').classList.add('show');
+  }
+
+  function saveInvoice(){
+    const inv=invoiceBuilderData();
+    if(!inv.client){toast('Enter the client/company name');return}
+    if(!inv.number){toast('Enter an invoice number');return}
+    if(!inv.items.length){toast('Add at least one invoice item');return}
+    data.invoices=data.invoices||[];
+    data.invoices.push({...inv,id:'inv-'+Date.now()});
+    persist();render();closeModal('invoiceModal');toast('Invoice saved as Draft');
+    setTab('invoices');
+  }
+
+  function renderInvoicePaper(inv){
+    const subtotal=(inv.items||[]).reduce((sum,i)=>sum+(Number(i.qty)||0)*(Number(i.price)||0),0);
+    const discounted=Math.max(0,subtotal-(Number(inv.discount)||0));
+    const taxAmount=discounted*((Number(inv.tax)||0)/100);
+    const total=invoiceTotal(inv);
+    const paymentCallout='';
+    $('invoicePaper').innerHTML=`
+      <div class="invoice-brand">
+        <div class="invoice-brand-company"><img src="${document.querySelector('.brand img').src}" alt="Vision Make Studio"><p>Vision Make Studio<br>VisionMakeStudio.com</p></div>
+        <div class="invoice-brand-title"><h2>INVOICE</h2><p>${esc(inv.number)}<br>${esc(inv.status)}</p></div>
+      </div>
+      <div class="invoice-meta-grid">
+        <div><h4>BILL TO</h4><p><strong>${esc(inv.client)}</strong></p><p>${esc(inv.email||'')}</p><p>${esc(inv.address||'')}</p></div>
+        <div><h4>INVOICE DETAILS</h4><p>Issue date: ${dateLabel(inv.issueDate)}</p><p>Due date: ${dateLabel(inv.dueDate)}</p><p>Revenue type: ${esc(inv.revenueType||'One-Time')}</p></div>
+      </div>
+      <table class="invoice-lines">
+        <thead><tr><th>DESCRIPTION</th><th>QTY</th><th>PRICE</th><th>AMOUNT</th></tr></thead>
+        <tbody>${(inv.items||[]).map(i=>`
+          <tr>
+            <td>${esc(i.description)}${Array.isArray(i.included)&&i.included.length?`<span class="invoice-included"><b>Included:</b> ${i.included.map(esc).join(' · ')}</span>`:''}</td>
+            <td>${Number(i.qty)||0}</td>
+            <td>${money(i.price)}</td>
+            <td>${money((Number(i.qty)||0)*(Number(i.price)||0))}</td>
+          </tr>`).join('')}</tbody>
+      </table>
+      <div class="invoice-totals">
+        <div class="invoice-total-line"><span>Subtotal</span><strong>${money(subtotal)}</strong></div>
+        <div class="invoice-total-line"><span>Discount</span><strong>-${money(inv.discount||0)}</strong></div>
+        <div class="invoice-total-line"><span>Tax</span><strong>${money(taxAmount)}</strong></div>
+        <div class="invoice-total-line grand"><span>Total</span><strong>${money(total)}</strong></div>
+      </div>
+      ${paymentCallout}
+      <div class="invoice-note">${esc(inv.notes||'Thank you for choosing Vision Make Studio.')}</div>
+    `;
+  }
+
+  function openInvoice(id){
+    const inv=(data.invoices||[]).find(i=>i.id===id);if(!inv)return;
+    activeInvoiceId=id;
+    renderInvoicePaper(inv);
+    $('invoiceMarkPaidBtn').style.display=inv.status==='Paid'?'none':'inline-flex';
+    $('invoicePreviewModal').classList.add('show');
+  }
+
+  function emailInvoice(id){
+    const inv=(data.invoices||[]).find(i=>i.id===id);if(!inv)return;
+    if(inv.status==='Draft')inv.status='Sent';
+    persist();render();
+    toast(`Invoice ${inv.number} email queued to ${inv.email||'client'} with PDF`);
+  }
+
+  function markInvoicePaid(id){
+    const inv=(data.invoices||[]).find(i=>i.id===id);if(!inv)return;
+    if(inv.status==='Paid')return;
+    inv.status='Paid';
+    inv.paidDate='2026-08-14';
+    const total=invoiceTotal(inv);
+    if(inv.revenueType==='One-Time'){
+      data.oneTimePayments=data.oneTimePayments||[];
+      if(!data.oneTimePayments.some(p=>p.invoiceId===inv.id)){
+        data.oneTimePayments.push({
+          id:'invoice-payment-'+Date.now(),
+          invoiceId:inv.id,
+          client:inv.client,
+          service:`Invoice ${inv.number}`,
+          amount:total,status:'Paid',date:'2026-08-14',method:'Card',
+          description:`Payment for ${inv.number}`
+        });
+      }
+    }
+    persist();render();renderInvoicePaper(inv);
+    $('invoiceMarkPaidBtn').style.display='none';
+    toast('Invoice marked Paid · collected revenue updated');
+  }
+
+  function prepareInvoicePrintSheet(){
+    const sheet=$('invoicePrintSheet');
+    sheet.innerHTML=$('invoicePaper').innerHTML;
+    return sheet;
+  }
+
+  function printInvoice(){
+    prepareInvoicePrintSheet();
+    window.print();
+  }
+
+
+  function closeModal(id){$(id).classList.remove('show')}
+
+  document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>closeModal(b.dataset.close));
+  document.querySelectorAll('.modal-backdrop').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('show')}));
+
+  document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
+  $('showAttentionBtn').onclick=()=>setTab('attention');
+  $('filterBtn').onclick=openFilters;
+  $('applyFiltersBtn').onclick=applyFilters;
+  $('clearFiltersBtn').onclick=clearFilters;
+
+
+  $('searchInput').addEventListener('input',renderSubscriptions);
+
+  $('addSubscriptionTopBtn').onclick=()=>openSubscription();
+  $('recordPaymentTopBtn').onclick=()=>openPayment();
+  $('saveSubscriptionBtn').onclick=saveSubscription;
+  $('subServiceSelect').addEventListener('change',()=>applyCatalogServiceToSubscription());
+  $('subStartInput').addEventListener('change',updateSubscriptionRenewal);
+  $('subCycleInput').addEventListener('change',updateSubscriptionRenewal);
+
+  $('deleteSubscriptionBtn').onclick=archiveSubscription;
+  $('savePaymentBtn').onclick=savePayment;
+  document.querySelectorAll('#posPaymentPath button[data-value]').forEach(b=>b.onclick=()=>setPosPaymentPath(b.dataset.value));
+  $('saleAdminOverrideBtn').onclick=()=>openPaymentOverride(activeSalePaymentId);
+  $('savePaymentOverrideBtn').onclick=applyPaymentOverride;
+  $('closeAdminNotification').onclick=()=>$('adminPaymentNotification').classList.remove('show');
+  $('posExistingCustomerSelect').addEventListener('change',syncPosPaymentEmail);
+  $('posNewEmailInput').addEventListener('input',()=>{if(posPaymentPath==='online')$('posPaymentEmail').value=$('posNewEmailInput').value});
+
+  document.querySelectorAll('#posCustomerMode button[data-value]').forEach(b=>b.onclick=()=>setPosCustomerMode(b.dataset.value));
+  document.querySelectorAll('#posSaleType button[data-value]').forEach(b=>b.onclick=()=>setPosSaleType(b.dataset.value));
+  document.querySelectorAll('#posSubscriptionMode button[data-value]').forEach(b=>b.onclick=()=>setPosSubscriptionMode(b.dataset.value));
+  $('posExistingCustomerSelect').addEventListener('change',()=>{updateExistingCustomerHint();refreshExistingSubscriptionSelect();});
+  $('posExistingSubscriptionSelect').addEventListener('change',updateExistingSubscriptionSummary);
+  $('posAddOneTimeItemBtn').onclick=()=>addPosOneTimeItem();
+  $('posAddSubscriptionItemBtn').onclick=()=>addPosSubscriptionItem();
+  $('posDiscountInput').addEventListener('input',updatePosTotals);
+  $('posChargeFirstCycle').addEventListener('change',updatePosTotals);
+  $('posSubscriptionCycle').addEventListener('change',updatePosRenewal);
+  $('posSubscriptionStart').addEventListener('change',updatePosRenewal);
+
+  $('saveStatusBtn').onclick=saveStatus;
+
+  function handleSubscriptionActions(e){
+    const details=e.target.closest('.view-details');
+    const pay=e.target.closest('.record-payment');
+    const manage=e.target.closest('.manage-status');
+    if(details)return openDetails(details.dataset.id);
+    if(pay)return openPayment(pay.dataset.id);
+    if(manage)return openManage(manage.dataset.id);
+
+    if(window.matchMedia('(max-width:760px)').matches){
+      const summary=e.target.closest('.mobile-summary');
+      if(summary){
+        const row=summary.closest('.subscription-row');
+        const was=row.classList.contains('expanded');
+        document.querySelectorAll('.subscription-row.expanded').forEach(x=>x.classList.remove('expanded'));
+        row.classList.toggle('expanded',!was);
+      }
+    }
+  }
+
+  ['subscriptionList','attentionList','cancelingList'].forEach(id=>$(id).addEventListener('click',handleSubscriptionActions));
+
+
+  $('createInvoiceBtn').onclick=openInvoiceBuilder;
+  $('addInvoiceItemBtn').onclick=()=>addInvoiceItem();
+  $('saveInvoiceBtn').onclick=saveInvoice;
+  ['invoiceDiscountInput','invoiceTaxInput'].forEach(id=>$(id).addEventListener('input',updateInvoiceBuilderTotal));
+
+  $('invoiceList').onclick=e=>{
+    const view=e.target.closest('.view-invoice');
+    const email=e.target.closest('.email-invoice');
+    const paid=e.target.closest('.mark-invoice-paid');
+    if(view)return openInvoice(view.dataset.id);
+    if(email)return emailInvoice(email.dataset.id);
+    if(paid)return markInvoicePaid(paid.dataset.id);
+
+    if(window.matchMedia('(max-width:760px)').matches){
+      const summary=e.target.closest('.mobile-summary');
+      if(summary){
+        const row=summary.closest('.invoice-row');
+        const was=row.classList.contains('expanded');
+        document.querySelectorAll('.invoice-row.expanded').forEach(x=>x.classList.remove('expanded'));
+        row.classList.toggle('expanded',!was);
+      }
+    }
+  };
+
+  $('invoiceEmailBtn').onclick=()=>emailInvoice(activeInvoiceId);
+  $('invoiceMarkPaidBtn').onclick=()=>markInvoicePaid(activeInvoiceId);
+  $('invoicePrintBtn').onclick=printInvoice;
+
+  $('paymentList').onclick=e=>{
+    const sale=e.target.closest('.view-sale');
+    if(sale)return openSaleDetails(findPaymentById(sale.dataset.paymentId));
+
+    const b=e.target.closest('.payment-open-sub');
+    if(b)return openDetails(b.dataset.id);
+
+    if(window.matchMedia('(max-width:760px)').matches){
+      const summary=e.target.closest('.mobile-summary');
+      if(summary){
+        const row=summary.closest('.payment-row');
+        const was=row.classList.contains('expanded');
+        document.querySelectorAll('.payment-row.expanded').forEach(x=>x.classList.remove('expanded'));
+        row.classList.toggle('expanded',!was);
+      }
+    }
+  };
+
+  $('detailRecordPaymentBtn').onclick=()=>{closeModal('detailsModal');openPayment(activeDetailId)};
+  $('detailManageBtn').onclick=()=>{closeModal('detailsModal');openManage(activeDetailId)};
+  $('detailReminderBtn').onclick=()=>sendReminder(activeDetailId);
+
+
+  $('mobileMenuBtn').onclick=()=>{$('sidebar').classList.add('open');$('drawerBackdrop').classList.add('show')};
+  $('drawerBackdrop').onclick=()=>{$('sidebar').classList.remove('open');$('drawerBackdrop').classList.remove('show')};
+
+  render();
+  (async()=>{try{if(window.VMSCatalog){cloudCatalog=(await VMSCatalog.load()).filter(s=>s.kind!=='internal'&&s.pricingModel!=='Free'&&s.status==='Published');render();}}catch(err){console.warn('Billing catalog sync failed',err)}})();
+})();
+</script>
+<script>(async()=>{if(location.protocol!=='file:'){const user=await VMSAuth.requireSession('admin');if(!user)return;const state=await VMSState.start({scope:'admin',user});if(state?.reloading)return}})();</script>  <script src="vms-admin-shell.js"></script>
+</body>
+</html>
