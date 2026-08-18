@@ -21,13 +21,24 @@
   }
   async function signOut(){const sb=await client();if(sb)await sb.auth.signOut();localStorage.removeItem('vms_local_portal_session');localStorage.removeItem('vms_local_admin_session');}
   async function requireSession(kind='client'){
-    if(isLocal)return {email:kind==='client'?TEST_EMAIL:'preview@visionmakestudio.com',role:kind};
-    const sb=await client();if(!sb){location.href=kind==='admin'?'/admin/login.html':'/?portal=1';return null}
-    const {data:{session}}=await sb.auth.getSession();if(!session){location.href=kind==='admin'?'/admin/login.html':'/?portal=1';return null}
+    const reveal=()=>document.documentElement.classList.remove('vms-auth-pending');
+    const adminFail=code=>{location.replace('/admin/login.html?error='+encodeURIComponent(code));return null};
+    const portalFail=code=>{location.replace('/?portal=1&portal_error='+encodeURIComponent(code));return null};
+    if(isLocal){reveal();return {email:kind==='client'?TEST_EMAIL:'preview@visionmakestudio.com',role:kind}}
+    let sb;
+    try{sb=await client()}catch(e){console.error('VMS auth client failed',e)}
+    if(!sb)return kind==='admin'?adminFail('configuration'):portalFail('configuration');
+    let session=null;
+    try{({data:{session}}=await sb.auth.getSession())}catch(e){console.error('VMS session lookup failed',e)}
+    if(!session)return kind==='admin'?adminFail('session_required'):portalFail('session_required');
     if(kind==='admin'){
-      const {data:profile}=await sb.from('profiles').select('role').eq('id',session.user.id).maybeSingle();
-      if(profile?.role!=='admin'){await sb.auth.signOut();location.href='/admin/login.html?error=unauthorized';return null}
+      try{
+        const {data:profile,error}=await sb.from('profiles').select('role').eq('id',session.user.id).maybeSingle();
+        if(error)throw error;
+        if(profile?.role!=='admin'){await sb.auth.signOut();return adminFail('unauthorized')}
+      }catch(e){console.error('VMS admin verification failed',e);return adminFail('verification_failed')}
     }
+    reveal();
     return session.user;
   }
   async function api(path,options={}){const r=await fetch(path,{...options,headers:{'Content-Type':'application/json',...(options.headers||{})}});if(!r.ok){let m='Request failed';try{m=(await r.json()).error||m}catch{}throw new Error(m)}return r.json()}
