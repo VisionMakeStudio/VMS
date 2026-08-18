@@ -7,6 +7,7 @@
     "dev": "vite",
     "prepare:suite": "node scripts/prepare-vms-suite.mjs",
     "build": "npm run prepare:suite && vite build && node scripts/prepare-sites-build.mjs",
+    "build:netlify": "npm run prepare:suite && vite build",
     "preview": "vite preview",
     "qa:suite": "node scripts/qa-vms-suite.mjs",
     "test:sites": "node --test tests/sites-worker.test.mjs"
