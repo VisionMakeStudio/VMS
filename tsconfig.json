@@ -8,9 +8,8 @@
     "noEmit": true,
     "skipLibCheck": true,
     "strict": false,
-    "baseUrl": ".",
     "paths": {
-      "@netlify/functions": ["types/netlify-functions.d.ts"]
+      "@netlify/functions": ["./types/netlify-functions.d.ts"]
     }
   },
   "include": ["types/**/*.d.ts", "netlify/functions/**/*.mts"]
