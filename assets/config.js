@@ -1,5 +1,5 @@
-// Public browser configuration. Do NOT put service-role or OpenAI keys here.
+// Public browser configuration. Safe to expose: project URL + publishable key only.
 window.VMS_CONFIG = {
-  supabaseUrl: 'PASTE_SUPABASE_PROJECT_URL',
-  supabaseAnonKey: 'PASTE_SUPABASE_ANON_KEY'
+  supabaseUrl: 'https://ncfynulcljtdafbuvzeb.supabase.co',
+  supabaseAnonKey: 'sb_publishable_mlH8b3vONTCm-PcGQdPKKw_s0xeXxZp'
 };
