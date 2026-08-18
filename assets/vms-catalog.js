@@ -52,7 +52,7 @@
     },
     {
       id:'linkhub-core',name:'VMS LinkHub Core',kind:'service',category:'LinkHub',icon:'LH',status:'Published',featured:true,displayOrder:50,
-      description:'A polished digital business card with your profile, contact actions, links, social icons, colors, and Visit Us page.',pricingModel:'One-Time',oneTimePrice:19.99,recurringPrice:null,cadence:null,startingAt:false,salesMode:'Buy Now',websiteVisible:true,portalVisible:true,promoEligible:true,
+      description:'A polished digital business card with your profile, contact actions, links, social icons, colors, and Visit Us page.',pricingModel:'Recurring',oneTimePrice:null,recurringPrice:5.99,cadence:'Monthly',startingAt:false,salesMode:'Buy Now',websiteVisible:true,portalVisible:true,promoEligible:true,
       features:['Business profile and contact actions','Custom links and social icons','Theme and brand colors','Visit Us / Directions page','QR code to your LinkHub'],included:[],metadata:{family:'linkhub',plan:'core'}
     },
     {
@@ -159,5 +159,25 @@
     if(s.pricingModel==='Setup + Recurring')return `${s.oneTimePrice!=null?money(s.oneTimePrice)+' + ':''}${s.recurringPrice!=null?money(s.recurringPrice)+'/mo':'Request pricing'}`;
     return 'Request pricing';
   }
+  function tidyPublicLinkHubPricing(){
+    if(!document?.body)return;
+    document.querySelectorAll('.pricing-group-head').forEach(head=>{
+      const eyebrow=head.querySelector('.eyebrow');
+      if((eyebrow?.textContent||'').trim()==='VMS LinkHub'){
+        const title=head.querySelector('h3');
+        const copy=head.querySelector('p');
+        if(title)title.textContent='Choose Core or unlock Pro.';
+        if(copy)copy.textContent='LinkHub Core is $5.99/month. Wi‑Fi and Restaurant Menu are optional one-time add-ons for Core, or upgrade to LinkHub Pro for both features, Smart Scan Activity, analytics, and ongoing management.';
+      }
+    });
+    document.querySelectorAll('body *').forEach(el=>{
+      const text=(el.textContent||'').trim();
+      if((text.startsWith('First standalone order:')||text.startsWith('Prices are controlled from VMS Admin')) && el.children.length===0){
+        el.remove();
+      }
+    });
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',tidyPublicLinkHubPricing,{once:true});
+  else tidyPublicLinkHubPricing();
   window.VMSCatalog={DEFAULTS:clone(DEFAULTS),LOCAL_KEY,load,save,remove,normalize,priceLabel,money,configReady};
 })();
