@@ -1,0 +1,894 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>VMS Admin — Service Catalog</title>
+<style>
+:root{
+  --navy:#003049;
+  --navy2:#08283d;
+  --cream:#FDF0D5;
+  --red:#C1121F;
+  --blue:#669BBC;
+  --white:#fff;
+  --ink:#18303f;
+  --muted:#7b8d97;
+  --line:#e0e7ea;
+  --bg:#f5f7f8;
+  --green:#2b8c69;
+  --green-bg:#eaf8f2;
+  --amber:#b47a17;
+  --amber-bg:#fff7e7;
+  --shadow:0 16px 40px rgba(0,48,73,.08);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink)}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.shell{display:grid;grid-template-columns:220px minmax(0,1fr);min-height:100vh}
+.sidebar{
+  position:sticky;top:0;height:100vh;background:var(--navy);color:#fff;padding:18px 14px;display:flex;flex-direction:column;z-index:30
+}
+.brand{display:flex;align-items:center;gap:10px;padding:2px 8px 18px}
+.brand-mark{
+  width:36px;height:36px;border-radius:10px;background:var(--cream);color:var(--navy);display:grid;place-items:center;font-size:11px;font-weight:1000
+}
+.brand-copy strong{display:block;font-size:11px}
+.brand-copy span{display:block;color:#9eb9c4;font-size:7px;margin-top:2px;font-weight:850}
+.nav{display:grid;gap:5px}
+.nav a,.nav button{
+  text-decoration:none;border:0;background:transparent;color:#c7dae2;padding:10px 11px;border-radius:10px;
+  text-align:left;font-size:9px;font-weight:850;display:flex;align-items:center;justify-content:space-between
+}
+.nav a:hover,.nav button:hover,.nav .active{background:rgba(255,255,255,.1);color:#fff}
+.nav .soon{font-size:6px;padding:3px 5px;border-radius:999px;background:rgba(255,255,255,.1);color:#a9c3ce}
+.side-note{margin-top:auto;border-top:1px solid rgba(255,255,255,.12);padding:12px 8px 2px;color:#a9c3ce;font-size:7px;line-height:1.5}
+.main{min-width:0}
+.topbar{
+  height:66px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;
+  padding:0 22px;position:sticky;top:0;z-index:20
+}
+.topbar-left small{display:block;color:#91a1a8;font-size:8px;font-weight:950;letter-spacing:.07em}
+.topbar-left strong{display:block;color:var(--navy);font-size:18px;margin-top:2px;line-height:1.05}
+.topbar-actions{display:flex;align-items:center;gap:7px}
+.mobile-menu{display:none}
+.content{padding:16px 22px 40px;max-width:1360px;margin:0 auto}
+.intro{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:14px
+}
+.intro p{margin:0;max-width:790px;color:var(--muted);font-size:9px;line-height:1.55}
+.actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.btn{
+  border:1px solid #d7e2e7;background:#fff;color:var(--navy);border-radius:9px;min-height:38px;padding:0 12px;
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;font-size:9px;font-weight:900;line-height:1
+}
+.btn:hover{border-color:#aec6d1}
+.btn.primary{background:var(--navy);border-color:var(--navy);color:#fff}
+.btn.red{background:#fff;border-color:#efc8cc;color:var(--red)}
+.btn.green{background:var(--green);border-color:var(--green);color:#fff}
+.btn.small{min-height:31px;padding:0 9px;font-size:8px}
+.status-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-bottom:13px}
+.stat{
+  background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 13px;box-shadow:0 4px 15px rgba(0,48,73,.03)
+}
+.stat span{display:block;color:#8a9aa2;font-size:7px;font-weight:950;letter-spacing:.04em}
+.stat strong{display:block;color:var(--navy);font-size:21px;margin-top:5px;line-height:1}
+.stat small{display:block;color:#98a6ad;font-size:7px;margin-top:6px}
+.stat.green strong{color:var(--green)}
+.stat.blue strong{color:#3f7894}
+.stat.orange strong{color:var(--amber)}
+.toolbar{
+  display:grid;grid-template-columns:minmax(240px,1fr) 170px 170px 170px;gap:8px;margin-bottom:11px
+}
+.toolbar input,.toolbar select{
+  width:100%;min-height:39px;border:1px solid #d8e3e7;background:#fff;border-radius:9px;padding:0 10px;color:var(--ink);font-size:9px;outline:none
+}
+.toolbar input:focus,.toolbar select:focus{border-color:#77a4b9;box-shadow:0 0 0 3px rgba(102,155,188,.12)}
+.catalog{display:grid;gap:9px}
+.service-row{
+  background:#fff;border:1px solid var(--line);border-radius:13px;padding:11px;display:grid;
+  grid-template-columns:minmax(250px,1.25fr) minmax(135px,.55fr) minmax(150px,.6fr) minmax(160px,.7fr) auto;
+  gap:10px;align-items:center;box-shadow:0 4px 14px rgba(0,48,73,.025)
+}
+.service-main{display:flex;align-items:center;gap:11px;min-width:0}
+.service-icon{
+  width:44px;height:44px;border-radius:11px;background:#edf5f8;color:var(--navy);display:grid;place-items:center;
+  font-size:11px;font-weight:1000;flex:0 0 auto
+}
+.service-copy{min-width:0}
+.service-copy strong{display:block;color:var(--navy);font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.service-copy span{display:block;color:var(--muted);font-size:7px;line-height:1.45;margin-top:3px}
+.cell span{display:block;color:#8b9ca4;font-size:7px;font-weight:900}
+.cell strong{display:block;color:var(--navy);font-size:9px;margin-top:4px;line-height:1.35}
+.badges{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+.badge{
+  display:inline-flex;align-items:center;border-radius:999px;padding:4px 7px;font-size:7px;font-weight:950;background:#edf3f5;color:#647a85
+}
+.badge.green{background:var(--green-bg);color:var(--green)}
+.badge.blue{background:#edf5f8;color:#447893}
+.badge.orange{background:var(--amber-bg);color:var(--amber)}
+.badge.red{background:#fbeff0;color:#b13a43}
+.badge.gray{background:#f0f3f4;color:#768991}
+.row-actions{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}
+.empty{
+  background:#fff;border:1px dashed #d3e0e5;border-radius:13px;padding:36px;text-align:center;color:var(--muted);font-size:9px
+}
+.empty strong{display:block;color:var(--navy);font-size:14px;margin-bottom:5px}
+.drawer-backdrop{display:none}
+.modal-backdrop{
+  position:fixed;inset:0;background:rgba(4,27,39,.52);display:none;align-items:center;justify-content:center;padding:16px;z-index:100
+}
+.modal-backdrop.show{display:flex}
+.modal{
+  width:min(800px,100%);max-height:94vh;overflow:auto;background:#fff;border-radius:15px;box-shadow:0 25px 80px rgba(0,0,0,.22)
+}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:14px 15px;border-bottom:1px solid var(--line)}
+.modal-head h3{margin:0;color:var(--navy);font-size:12px}
+.close{width:34px;height:34px;border:0;background:#f2f6f7;color:var(--navy);border-radius:9px;font-size:18px}
+.modal-body{padding:15px}
+.modal-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 15px;border-top:1px solid var(--line)}
+.modal-foot-right{display:flex;gap:7px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field{display:grid;gap:5px}
+.field.full{grid-column:1/-1}
+.field label{font-size:7px;font-weight:950;color:#778d98}
+.field label span{font-weight:700;color:#9aa9b0;margin-left:4px}
+.field input,.field select,.field textarea{
+  width:100%;border:1px solid #d8e3e7;background:#fff;border-radius:9px;min-height:40px;padding:8px 10px;color:var(--ink);font-size:9px;outline:none
+}
+.field textarea{min-height:84px;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:#77a4b9;box-shadow:0 0 0 3px rgba(102,155,188,.12)}
+.switch-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.switch-card{
+  border:1px solid #e0e8eb;border-radius:11px;padding:10px;display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fbfcfc
+}
+.switch-copy strong{display:block;color:var(--navy);font-size:9px}
+.switch-copy span{display:block;color:var(--muted);font-size:7px;margin-top:3px;line-height:1.35}
+.switch{position:relative;width:42px;height:24px;flex:0 0 auto}
+.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;inset:0;background:#ccd8dd;border-radius:999px;transition:.18s}
+.slider:before{content:"";position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.18s;box-shadow:0 1px 4px rgba(0,0,0,.18)}
+.switch input:checked+.slider{background:var(--green)}
+.switch input:checked+.slider:before{transform:translateX(18px)}
+.price-preview{
+  margin-top:10px;border:1px solid #dce7eb;background:#f8fbfc;border-radius:12px;padding:11px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px
+}
+.price-box{background:#fff;border:1px solid #e5ecef;border-radius:10px;padding:9px}
+.price-box span{display:block;color:#8d9da5;font-size:7px;font-weight:950}
+.price-box strong{display:block;color:var(--navy);font-size:11px;margin-top:4px}
+.preview-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.preview-card{
+  border:1px solid #e0e8eb;border-radius:14px;padding:15px;background:#fff
+}
+.preview-label{font-size:7px;font-weight:950;color:#8799a2;margin-bottom:8px}
+.preview-service-icon{width:48px;height:48px;border-radius:12px;background:#edf5f8;color:var(--navy);display:grid;place-items:center;font-size:12px;font-weight:1000}
+.preview-card h4{margin:10px 0 5px;color:var(--navy);font-size:13px}
+.preview-card p{margin:0;color:var(--muted);font-size:8px;line-height:1.5}
+.preview-price{margin-top:10px;color:var(--navy);font-size:13px;font-weight:1000}
+.preview-card .btn{margin-top:11px;width:100%}
+.sync-note{
+  display:flex;align-items:flex-start;gap:8px;border:1px solid #d8e9df;background:#f4fbf7;color:#39765e;border-radius:11px;padding:10px;font-size:8px;line-height:1.5;margin-top:10px
+}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--green);margin-top:3px;flex:0 0 auto}
+.toast{
+  position:fixed;right:18px;bottom:18px;background:#123a4d;color:#fff;border-radius:10px;padding:11px 13px;font-size:9px;font-weight:850;
+  box-shadow:var(--shadow);transform:translateY(90px);opacity:0;transition:.2s;z-index:160
+}
+.toast.show{transform:none;opacity:1}
+.demo-note{
+  border:1px solid #f0dfb8;background:#fff8e9;color:#87631f;border-radius:11px;padding:9px 10px;font-size:8px;line-height:1.45;margin-bottom:12px
+}
+
+@media(max-width:1050px){
+  .status-strip{grid-template-columns:repeat(3,1fr)}
+  .toolbar{grid-template-columns:1fr 1fr}
+  .service-row{grid-template-columns:minmax(220px,1.2fr) .65fr .7fr auto}
+  .service-row .portal-cell{display:none}
+}
+@media(max-width:760px){
+  .shell{display:block}
+  .sidebar{position:fixed;left:-255px;top:0;width:240px;height:100vh;transition:left .2s ease;z-index:120}
+  .sidebar.open{left:0}
+  .drawer-backdrop{position:fixed;inset:0;background:rgba(0,25,38,.42);z-index:115}
+  .drawer-backdrop.show{display:block}
+  .mobile-menu{display:inline-flex}
+  .topbar{height:60px;padding:0 12px}
+  .topbar-left small{font-size:8px}
+  .topbar-left strong{font-size:16px}
+  .topbar-actions .desktop-only{display:none}
+  .content{padding:10px 11px 28px}
+  .intro{display:block;margin-bottom:10px}
+  .intro p{font-size:9px}
+  .intro .actions{display:grid;grid-template-columns:1fr 1fr;margin-top:10px}
+  .intro .actions .btn{width:100%;min-height:42px}
+  .status-strip{grid-template-columns:1fr 1fr;gap:8px}
+  .stat{padding:11px}
+  .toolbar{grid-template-columns:1fr;gap:7px}
+  .service-row{
+    display:block;padding:0;overflow:hidden
+  }
+  .service-main{padding:11px}
+  .mobile-summary{cursor:pointer}
+  .service-row .cell,.service-row .row-actions{display:none}
+  .service-row.expanded .cell{display:block;padding:9px 11px;border-top:1px solid #edf1f3}
+  .service-row.expanded .row-actions{
+    display:grid;grid-template-columns:1fr 1fr;padding:10px 11px;border-top:1px solid #edf1f3
+  }
+  .service-row.expanded .row-actions .btn{width:100%;min-height:40px}
+  .service-copy strong{font-size:12px}
+  .service-copy span{font-size:9px}
+  .badges .badge{font-size:8px}
+  .form-grid{grid-template-columns:1fr}
+  .field.full{grid-column:auto}
+  .switch-grid{grid-template-columns:1fr}
+  .price-preview{grid-template-columns:1fr}
+  .preview-grid{grid-template-columns:1fr}
+  .modal-backdrop{padding:8px}
+}
+
+/* ===== CLEAN SINGLE ACTION ROW ===== */
+.short-label{display:none}
+
+@media(max-width:760px){
+  .topbar-actions{
+    gap:5px!important;
+    flex:0 0 auto;
+  }
+  .topbar-actions .btn{
+    min-height:34px!important;
+    padding:0 8px!important;
+    font-size:8px!important;
+  }
+  .topbar-actions .full-label{display:none}
+  .topbar-actions .short-label{display:inline}
+  .intro{
+    margin-bottom:10px!important;
+  }
+}
+
+</style>
+<style id="vms-unified-ui">
+:root{--orange:#EB5E28}
+.brand img{width:92px;height:auto;max-height:52px;object-fit:contain}.brand{border-bottom:1px solid rgba(255,255,255,.12);padding:3px 7px 17px}.nav{margin-top:14px}.nav a,.nav button{font-size:9.5px}.nav a:hover,.nav button:hover{background:rgba(255,255,255,.07)}.topbar-left small{font-size:8px}.topbar-left strong{font-size:18px}.content{padding:18px 20px 30px}.btn{font-size:9.5px}.intro p,.toolbar input,.toolbar select{font-size:9.5px}
+:root{--orange:#EB5E28;--bg:#f4f7f8;--line:#dfe7ea}
+html,body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:var(--bg)}
+.shell,.app{grid-template-columns:230px minmax(0,1fr)}
+.sidebar,.side{background:#003049;color:#fff}
+.nav a,.nav button{border-radius:8px}
+.nav a.active,.nav button.active,.nav .active,.side .nav button.active{color:#ff7a45;background:rgba(255,255,255,.08)}
+.topbar,.top{min-height:64px;background:#fff;border-bottom:1px solid var(--line)}
+.content{max-width:1500px;margin-left:auto;margin-right:auto}
+.panel,.card,.phase4-panel,.phase4-stat,.stat{border-color:var(--line);box-shadow:0 1px 0 rgba(0,48,73,.02)}
+.btn{border-radius:9px}
+#demoSignupBtn,#loadDemoBtn,#simulateCustomerPaymentBtn,.phase5-demo-btn{display:none!important}
+@media(max-width:900px){.shell,.app{grid-template-columns:1fr}.mobile-menu{display:inline-flex}.sidebar.open{transform:translateX(0)}}
+</style>
+<link rel="stylesheet" href="../assets/vms-suite.css"><script src="../assets/config.js"></script></head>
+<body>
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <img src="../assets/vms-logo.png" alt="Vision Make Studio">
+      <div class="brand-copy"><strong>Vision Make Studio</strong><span>ADMIN</span></div>
+    </div>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="audit.html">VMS Audit</a>
+      <a href="qr.html">QR Tools</a>
+      <a href="clients.html">Clients</a>
+      <button class="active" type="button">Service Catalog</button>
+      <button type="button" id="billingNavBtn">Billing / Subscriptions <span class="soon">LATER</span></button>
+      <button type="button" id="promotionsNavBtn">Promotions <span class="soon">LATER</span></button>
+    </nav>
+    <div class="side-note">Service Catalog is the source of truth for what VMS offers on the website and inside the Client Portal.</div>
+  </aside>
+
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+
+  <main class="main">
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:9px">
+        <button class="btn mobile-menu" id="mobileMenuBtn" type="button">☰</button>
+        <div class="topbar-left">
+          <small>VMS ADMIN</small>
+          <strong>Service Catalog</strong>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn" id="previewCatalogBtn" type="button"><span class="full-label">Preview Catalog</span><span class="short-label">Preview</span></button>
+        <button class="btn primary" id="topAddServiceBtn" type="button"><span class="full-label">+ Add Service</span><span class="short-label">+ Add</span></button>
+      </div>
+    </header>
+
+    <div class="content">
+      <div class="intro">
+        <p>Create and manage every service Vision Make Studio sells. Publish once here, then the real VMS website and Client Portal can pull the same service, pricing, availability, and sales rules automatically.</p>
+      </div>
+
+
+      <section class="status-strip">
+        <div class="stat"><span>TOTAL SERVICES</span><strong id="statTotal">0</strong><small>Catalog entries</small></div>
+        <div class="stat green"><span>PUBLISHED</span><strong id="statPublished">0</strong><small>Available to use</small></div>
+        <div class="stat blue"><span>ON WEBSITE</span><strong id="statWebsite">0</strong><small>Public Services area</small></div>
+        <div class="stat blue"><span>IN CLIENT PORTAL</span><strong id="statPortal">0</strong><small>Add More Services</small></div>
+        <div class="stat orange"><span>RECURRING</span><strong id="statRecurring">0</strong><small>Subscription services</small></div>
+      </section>
+
+      <section class="toolbar">
+        <input id="searchInput" placeholder="Search services or categories">
+        <select id="statusFilter">
+          <option value="all">All statuses</option>
+          <option value="Published">Published</option>
+          <option value="Draft">Draft</option>
+          <option value="Hidden">Hidden</option>
+        </select>
+        <select id="channelFilter">
+          <option value="all">All visibility</option>
+          <option value="website">Website</option>
+          <option value="portal">Client Portal</option>
+          <option value="both">Website + Portal</option>
+        </select>
+        <select id="salesFilter">
+          <option value="all">All sales modes</option>
+          <option value="Request Only">Request Only</option>
+          <option value="Buy Now">Buy Now</option>
+        </select>
+      </section>
+
+      <section class="catalog" id="catalogList"></section>
+      <div class="empty" id="emptyState" style="display:none">
+        <strong>No services found</strong>
+        Try another filter or create a new service.
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- SERVICE EDITOR -->
+<div class="modal-backdrop" id="serviceModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="serviceModalTitle">Add Service</h3>
+      <button class="close" data-close="serviceModal" type="button">×</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field">
+          <label>SERVICE NAME <span>Required</span></label>
+          <input id="serviceNameInput" placeholder="Example: Website Revamp">
+        </div>
+        <div class="field">
+          <label>CATEGORY</label>
+          <input id="categoryInput" placeholder="Example: Websites">
+        </div>
+        <div class="field">
+          <label>SHORT LABEL / ICON</label>
+          <input id="iconInput" maxlength="6" placeholder="WEB">
+        </div>
+        <div class="field">
+          <label>CATALOG STATUS</label>
+          <select id="statusInput">
+            <option>Draft</option>
+            <option>Published</option>
+            <option>Hidden</option>
+          </select>
+        </div>
+        <div class="field full">
+          <label>PUBLIC DESCRIPTION <span>Website + Portal copy</span></label>
+          <textarea id="descriptionInput" placeholder="Explain what the client gets and why it helps their business."></textarea>
+        </div>
+
+        <div class="field">
+          <label>PRICING MODEL</label>
+          <select id="pricingModelInput">
+            <option value="Quote Only">Custom Quote</option>
+            <option value="One-Time">One-Time</option>
+            <option value="Recurring">Recurring</option>
+            <option value="Setup + Recurring">Setup + Recurring</option>
+            <option value="Free">Free</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>SALES MODE</label>
+          <select id="salesModeInput">
+            <option>Request Only</option>
+            <option>Buy Now</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>ONE-TIME / SETUP PRICE</label>
+          <input id="setupPriceInput" inputmode="decimal" placeholder="0.00">
+        </div>
+        <div class="field">
+          <label>RECURRING PRICE</label>
+          <input id="recurringPriceInput" inputmode="decimal" placeholder="0.00">
+        </div>
+        <div class="field">
+          <label>BILLING CADENCE</label>
+          <select id="cadenceInput">
+            <option>Monthly</option>
+            <option>Annual</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>DISPLAY ORDER</label>
+          <input id="orderInput" type="number" min="1" step="1" value="1">
+        </div>
+      </div>
+
+      <div class="price-preview">
+        <div class="price-box"><span>WEBSITE PRICE</span><strong id="pricePreview">$0</strong></div>
+        <div class="price-box"><span>CLIENT ACTION</span><strong id="actionPreview">Request Service</strong></div>
+        <div class="price-box"><span>STATUS</span><strong id="statusPreview">Draft</strong></div>
+      </div>
+
+      <div class="switch-grid" style="margin-top:10px">
+        <div class="switch-card">
+          <div class="switch-copy"><strong>Show on VMS Website</strong><span>Appear in the public Services area when published.</span></div>
+          <label class="switch"><input id="websiteVisibleInput" type="checkbox"><span class="slider"></span></label>
+        </div>
+        <div class="switch-card">
+          <div class="switch-copy"><strong>Show in Client Portal</strong><span>Appear under Add More Services for existing clients.</span></div>
+          <label class="switch"><input id="portalVisibleInput" type="checkbox"><span class="slider"></span></label>
+        </div>
+        <div class="switch-card">
+          <div class="switch-copy"><strong>Allow Promo Codes</strong><span>Eligible for VMS promotions when checkout supports them.</span></div>
+          <label class="switch"><input id="promoEligibleInput" type="checkbox"><span class="slider"></span></label>
+        </div>
+        <div class="switch-card">
+          <div class="switch-copy"><strong>Featured Service</strong><span>Highlight this offer ahead of standard services.</span></div>
+          <label class="switch"><input id="featuredInput" type="checkbox"><span class="slider"></span></label>
+        </div>
+      </div>
+
+      <div class="sync-note">
+        <div class="sync-dot"></div>
+        <div>Publishing a service controls its catalog availability. Website/Portal visibility switches decide where a published service appears. Draft and Hidden services never appear publicly.</div>
+      </div>
+    </div>
+
+    <div class="modal-foot">
+      <button class="btn red" id="archiveServiceBtn" type="button" style="visibility:hidden">Archive Service</button>
+      <div class="modal-foot-right">
+        <button class="btn" data-close="serviceModal" type="button">Cancel</button>
+        <button class="btn primary" id="saveServiceBtn" type="button">Save Service</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CATALOG PREVIEW -->
+<div class="modal-backdrop" id="previewModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Published Catalog Preview</h3>
+      <button class="close" data-close="previewModal" type="button">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="preview-grid">
+        <div>
+          <div class="preview-label">VISIONMAKESTUDIO.COM · SERVICES</div>
+          <div id="websitePreview"></div>
+        </div>
+        <div>
+          <div class="preview-label">CLIENT PORTAL · ADD MORE SERVICES</div>
+          <div id="portalPreview"></div>
+        </div>
+      </div>
+      <div class="sync-note">
+        <div class="sync-dot"></div>
+        <div>This preview uses the same catalog records. In the real hosted version, the website and portal would query the backend and update automatically after you publish a change.</div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn primary" data-close="previewModal" type="button">Done</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  const STORAGE='vms_service_catalog_v2';
+
+  const initialServices=[
+    {
+      id:'smart-qr',
+      name:'VMS Smart QR',
+      category:'QR & Growth',
+      icon:'QR',
+      description:'A branded Dynamic QR managed by Vision Make Studio with destination changes, scan tracking, and client reporting.',
+      status:'Published',
+      pricingModel:'Setup + Recurring',
+      setupPrice:99,
+      recurringPrice:19,
+      cadence:'Monthly',
+      salesMode:'Buy Now',
+      websiteVisible:true,
+      portalVisible:true,
+      promoEligible:true,
+      featured:true,
+      order:1,
+      archived:false
+    },
+    {
+      id:'website-revamp',
+      name:'Website Revamp',
+      category:'Websites',
+      icon:'WEB',
+      description:'A modern redesign of an existing business website, planned and built directly with Vision Make Studio.',
+      status:'Published',
+      pricingModel:'Quote Only',
+      setupPrice:'',
+      recurringPrice:'',
+      cadence:'Monthly',
+      salesMode:'Request Only',
+      websiteVisible:true,
+      portalVisible:true,
+      promoEligible:false,
+      featured:true,
+      order:2,
+      archived:false
+    },
+    {
+      id:'vms-audit',
+      name:'VMS Business & Website Audit',
+      category:'Business Review',
+      icon:'AUD',
+      description:'A structured review of the business website, digital presence, trust signals, customer path, and improvement opportunities.',
+      status:'Published',
+      pricingModel:'Quote Only',
+      setupPrice:'',
+      recurringPrice:'',
+      cadence:'Monthly',
+      salesMode:'Request Only',
+      websiteVisible:true,
+      portalVisible:true,
+      promoEligible:false,
+      featured:false,
+      order:3,
+      archived:false
+    },
+    {
+      id:'local-presence',
+      name:'Local Presence',
+      category:'Local Growth',
+      icon:'LOCAL',
+      description:'Improve how the business appears across Google with profile cleanup, information updates, and visibility recommendations.',
+      status:'Draft',
+      pricingModel:'Quote Only',
+      setupPrice:'',
+      recurringPrice:'',
+      cadence:'Monthly',
+      salesMode:'Request Only',
+      websiteVisible:true,
+      portalVisible:true,
+      promoEligible:false,
+      featured:false,
+      order:4,
+      archived:false
+    }
+  ];
+
+  let services=load();
+  let editingId=null;
+
+  const $=id=>document.getElementById(id);
+  const esc=str=>String(str??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+
+  function load(){
+    try{
+      const raw=localStorage.getItem(STORAGE);
+      if(raw)return JSON.parse(raw);
+    }catch(e){}
+    return structuredClone(initialServices);
+  }
+
+  function persist(){
+    try{localStorage.setItem(STORAGE,JSON.stringify(services));}catch(e){}
+  }
+
+  function toast(message){
+    const t=$('toast');
+    t.textContent=message;
+    t.classList.add('show');
+    clearTimeout(window.__vmsCatalogToast);
+    window.__vmsCatalogToast=setTimeout(()=>t.classList.remove('show'),2200);
+  }
+
+  function money(v){
+    const n=Number(v);
+    return Number.isFinite(n)?new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',minimumFractionDigits:n%1?2:0}).format(n):'$0';
+  }
+
+  function slug(name){
+    return String(name||'service').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')+'-'+Date.now();
+  }
+
+  function publicVisible(s,channel){
+    return !s.archived && s.status==='Published' && !!s[channel];
+  }
+
+  function priceLabel(s){
+    switch(s.pricingModel){
+      case 'Free': return 'Free';
+      case 'One-Time': return s.setupPrice!==''?money(s.setupPrice):'Price not set';
+      case 'Recurring': return `${money(s.recurringPrice)}/${s.cadence==='Annual'?'yr':'mo'}`;
+      case 'Setup + Recurring':
+        return `${money(s.setupPrice)} setup + ${money(s.recurringPrice)}/${s.cadence==='Annual'?'yr':'mo'}`;
+      default: return 'Custom Quote';
+    }
+  }
+
+  function statusBadge(s){
+    const cls=s.status==='Published'?'green':s.status==='Draft'?'orange':'gray';
+    return `<span class="badge ${cls}">${esc(s.status)}</span>`;
+  }
+
+  function filtered(){
+    const q=$('searchInput').value.trim().toLowerCase();
+    const status=$('statusFilter').value;
+    const channel=$('channelFilter').value;
+    const sales=$('salesFilter').value;
+
+    return services
+      .filter(s=>!s.archived)
+      .filter(s=>{
+        const hay=`${s.name} ${s.category} ${s.description}`.toLowerCase();
+        const channelMatch=
+          channel==='all'
+          || (channel==='website' && s.websiteVisible)
+          || (channel==='portal' && s.portalVisible)
+          || (channel==='both' && s.websiteVisible && s.portalVisible);
+
+        return (!q||hay.includes(q))
+          && (status==='all'||s.status===status)
+          && channelMatch
+          && (sales==='all'||s.salesMode===sales);
+      })
+      .sort((a,b)=>(Number(a.order)||999)-(Number(b.order)||999)||a.name.localeCompare(b.name));
+  }
+
+  function updateStats(){
+    const active=services.filter(s=>!s.archived);
+    $('statTotal').textContent=active.length;
+    $('statPublished').textContent=active.filter(s=>s.status==='Published').length;
+    $('statWebsite').textContent=active.filter(s=>publicVisible(s,'websiteVisible')).length;
+    $('statPortal').textContent=active.filter(s=>publicVisible(s,'portalVisible')).length;
+    $('statRecurring').textContent=active.filter(s=>['Recurring','Setup + Recurring'].includes(s.pricingModel)).length;
+  }
+
+  function render(){
+    updateStats();
+    const list=filtered();
+    $('emptyState').style.display=list.length?'none':'block';
+    $('catalogList').innerHTML=list.map(s=>`
+      <article class="service-row" data-id="${s.id}">
+        <div class="service-main mobile-summary">
+          <div class="service-icon">${esc((s.icon||'VMS').toUpperCase())}</div>
+          <div class="service-copy">
+            <strong>${esc(s.name)}</strong>
+            <span>${esc(s.category||'Uncategorized')} · ${esc(s.description||'No description')}</span>
+            <div class="badges">
+              ${statusBadge(s)}
+              <span class="badge ${s.salesMode==='Buy Now'?'blue':'gray'}">${esc(s.salesMode)}</span>
+              ${s.featured?'<span class="badge orange">Featured</span>':''}
+            </div>
+          </div>
+        </div>
+
+        <div class="cell">
+          <span>PRICE</span>
+          <strong>${esc(priceLabel(s))}</strong>
+        </div>
+
+        <div class="cell">
+          <span>CHANNELS</span>
+          <div class="badges">
+            ${s.websiteVisible?'<span class="badge blue">Website</span>':''}
+            ${s.portalVisible?'<span class="badge blue">Portal</span>':''}
+            ${!s.websiteVisible&&!s.portalVisible?'<span class="badge gray">Internal only</span>':''}
+          </div>
+        </div>
+
+        <div class="cell portal-cell">
+          <span>PROMOS / ORDER</span>
+          <strong>${s.promoEligible?'Promo eligible':'No promos'} · #${Number(s.order)||'-'}</strong>
+        </div>
+
+        <div class="row-actions">
+          <button class="btn small preview-one" data-id="${s.id}" type="button">Preview</button>
+          <button class="btn small edit-service" data-id="${s.id}" type="button">Edit</button>
+          <button class="btn small duplicate-service" data-id="${s.id}" type="button">Duplicate</button>
+          <button class="btn small toggle-publish" data-id="${s.id}" type="button">${s.status==='Published'?'Hide':'Publish'}</button>
+        </div>
+      </article>
+    `).join('');
+  }
+
+  function openServiceModal(id=null){
+    editingId=id;
+    const s=id?services.find(x=>x.id===id):null;
+    $('serviceModalTitle').textContent=s?'Edit Service':'Add Service';
+    $('archiveServiceBtn').style.visibility=s?'visible':'hidden';
+
+    $('serviceNameInput').value=s?.name||'';
+    $('categoryInput').value=s?.category||'';
+    $('iconInput').value=s?.icon||'';
+    $('statusInput').value=s?.status||'Draft';
+    $('descriptionInput').value=s?.description||'';
+    $('pricingModelInput').value=s?.pricingModel||'Quote Only';
+    $('salesModeInput').value=s?.salesMode||'Request Only';
+    $('setupPriceInput').value=s?.setupPrice??'';
+    $('recurringPriceInput').value=s?.recurringPrice??'';
+    $('cadenceInput').value=s?.cadence||'Monthly';
+    $('orderInput').value=s?.order||Math.max(1,services.filter(x=>!x.archived).length+1);
+    $('websiteVisibleInput').checked=s?.websiteVisible??true;
+    $('portalVisibleInput').checked=s?.portalVisible??true;
+    $('promoEligibleInput').checked=s?.promoEligible??false;
+    $('featuredInput').checked=s?.featured??false;
+
+    updateEditorPreview();
+    $('serviceModal').classList.add('show');
+  }
+
+  function closeModal(id){$(id).classList.remove('show')}
+
+  function editorData(){
+    return {
+      name:$('serviceNameInput').value.trim(),
+      category:$('categoryInput').value.trim(),
+      icon:$('iconInput').value.trim(),
+      status:$('statusInput').value,
+      description:$('descriptionInput').value.trim(),
+      pricingModel:$('pricingModelInput').value,
+      salesMode:$('salesModeInput').value,
+      setupPrice:$('setupPriceInput').value.trim()===''?'':Number($('setupPriceInput').value),
+      recurringPrice:$('recurringPriceInput').value.trim()===''?'':Number($('recurringPriceInput').value),
+      cadence:$('cadenceInput').value,
+      order:Number($('orderInput').value)||1,
+      websiteVisible:$('websiteVisibleInput').checked,
+      portalVisible:$('portalVisibleInput').checked,
+      promoEligible:$('promoEligibleInput').checked,
+      featured:$('featuredInput').checked
+    };
+  }
+
+  function updateEditorPreview(){
+    const s={...editorData(),id:'preview',archived:false};
+    $('pricePreview').textContent=priceLabel(s);
+    $('actionPreview').textContent=s.salesMode==='Buy Now'?'Buy Now':'Request Service';
+    $('statusPreview').textContent=s.status;
+  }
+
+  function saveService(){
+    const d=editorData();
+    if(!d.name){toast('Enter a service name');$('serviceNameInput').focus();return}
+
+    if(d.salesMode==='Buy Now' && d.pricingModel==='Quote Only'){
+      toast('Buy Now needs a fixed pricing model');
+      $('pricingModelInput').focus();
+      return;
+    }
+
+    if(editingId){
+      const i=services.findIndex(x=>x.id===editingId);
+      if(i>-1)services[i]={...services[i],...d,updatedAt:new Date().toISOString()};
+    }else{
+      services.push({...d,id:slug(d.name),archived:false,createdAt:new Date().toISOString()});
+    }
+
+    persist();render();closeModal('serviceModal');
+    toast(d.status==='Published'?'Service saved · published channels refreshed':'Service saved');
+  }
+
+  function archiveService(){
+    const s=services.find(x=>x.id===editingId);
+    if(!s)return;
+    if(!confirm(`Archive "${s.name}"? It will disappear from the website and client portal.`))return;
+    s.archived=true;
+    persist();render();closeModal('serviceModal');toast('Service archived');
+  }
+
+  function duplicateService(id){
+    const s=services.find(x=>x.id===id);if(!s)return;
+    services.push({...structuredClone(s),id:slug(s.name),name:s.name+' Copy',status:'Draft',featured:false,order:services.length+1,createdAt:new Date().toISOString()});
+    persist();render();toast('Service duplicated as Draft');
+  }
+
+  function togglePublish(id){
+    const s=services.find(x=>x.id===id);if(!s)return;
+    s.status=s.status==='Published'?'Hidden':'Published';
+    persist();render();
+    toast(s.status==='Published'?'Service published · website/portal can sync':'Service hidden from public channels');
+  }
+
+  function previewCard(s,channel){
+    const button=s.salesMode==='Buy Now'?'Buy Now':'Request Service';
+    return `
+      <div class="preview-card">
+        <div class="preview-service-icon">${esc((s.icon||'VMS').toUpperCase())}</div>
+        <h4>${esc(s.name)}</h4>
+        <p>${esc(s.description||'')}</p>
+        <div class="preview-price">${esc(priceLabel(s))}</div>
+        <button class="btn ${s.salesMode==='Buy Now'?'primary':''}" type="button">${button}</button>
+      </div>
+    `;
+  }
+
+  function renderPreview(focusId=null){
+    const web=services.filter(s=>publicVisible(s,'websiteVisible')).sort((a,b)=>(a.order||999)-(b.order||999));
+    const portal=services.filter(s=>publicVisible(s,'portalVisible')).sort((a,b)=>(a.order||999)-(b.order||999));
+
+    const only = id => focusId ? id===focusId : true;
+    const webShow=web.filter(s=>only(s.id));
+    const portalShow=portal.filter(s=>only(s.id));
+
+    $('websitePreview').innerHTML=webShow.length?webShow.map(s=>previewCard(s,'website')).join('<div style="height:8px"></div>'):'<div class="empty">Nothing published to the website.</div>';
+    $('portalPreview').innerHTML=portalShow.length?portalShow.map(s=>previewCard(s,'portal')).join('<div style="height:8px"></div>'):'<div class="empty">Nothing published to the Client Portal.</div>';
+    $('previewModal').classList.add('show');
+  }
+
+  // Modal/editor events
+  $('topAddServiceBtn').onclick=()=>openServiceModal();
+  $('previewCatalogBtn').onclick=()=>renderPreview();
+  $('saveServiceBtn').onclick=saveService;
+  $('archiveServiceBtn').onclick=archiveService;
+
+  document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>closeModal(b.dataset.close));
+  document.querySelectorAll('.modal-backdrop').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('show')}));
+
+  [
+    'pricingModelInput','salesModeInput','setupPriceInput','recurringPriceInput','cadenceInput',
+    'statusInput','websiteVisibleInput','portalVisibleInput'
+  ].forEach(id=>$(id).addEventListener('input',updateEditorPreview));
+
+  // Catalog actions + mobile expand
+  $('catalogList').addEventListener('click',e=>{
+    const edit=e.target.closest('.edit-service');
+    const dup=e.target.closest('.duplicate-service');
+    const pub=e.target.closest('.toggle-publish');
+    const prev=e.target.closest('.preview-one');
+
+    if(edit)return openServiceModal(edit.dataset.id);
+    if(dup)return duplicateService(dup.dataset.id);
+    if(pub)return togglePublish(pub.dataset.id);
+    if(prev)return renderPreview(prev.dataset.id);
+
+    if(window.matchMedia('(max-width:760px)').matches){
+      const summary=e.target.closest('.mobile-summary');
+      if(summary){
+        const row=summary.closest('.service-row');
+        const was=row.classList.contains('expanded');
+        document.querySelectorAll('.service-row.expanded').forEach(x=>x.classList.remove('expanded'));
+        row.classList.toggle('expanded',!was);
+      }
+    }
+  });
+
+  // Filters
+  ['searchInput','statusFilter','channelFilter','salesFilter'].forEach(id=>{
+    $(id).addEventListener(id==='searchInput'?'input':'change',render);
+  });
+
+  // Mobile drawer
+  $('mobileMenuBtn').onclick=()=>{
+    $('sidebar').classList.add('open');
+    $('drawerBackdrop').classList.add('show');
+  };
+  $('drawerBackdrop').onclick=()=>{
+    $('sidebar').classList.remove('open');
+    $('drawerBackdrop').classList.remove('show');
+  };
+
+  $('billingNavBtn').onclick=()=>toast('Billing / Subscriptions will be its own VMS Admin tool later');
+  $('promotionsNavBtn').onclick=()=>toast('Promotions will connect to Service Catalog later');
+
+  render();
+})();
+</script>
+<script src="../assets/vms-core.js"></script><script>(async()=>{if(location.protocol!=='file:'){await VMSAuth.requireSession('admin')}})();</script></body>
+</html>

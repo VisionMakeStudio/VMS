@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VMS Admin — Projects & Requests</title>
+<style>
+:root{
+  --navy:#003049;--cream:#FDF0D5;--red:#C1121F;--blue:#669BBC;--orange:#EB5E28;
+  --ink:#243b46;--muted:#748791;--line:#dfe7ea;--bg:#f4f7f8;
+  --green:#23814c;--greenBg:#eaf7ef;--orangeBg:#fff5ea;--redBg:#fff0f1;--blueBg:#edf5f8;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.shell{min-height:100vh;display:grid;grid-template-columns:230px minmax(0,1fr)}
+.sidebar{
+  position:sticky;top:0;height:100vh;background:var(--navy);color:#fff;padding:18px 14px;
+  display:flex;flex-direction:column;z-index:80
+}
+.brand{display:flex;align-items:center;gap:10px;padding:3px 7px 17px;border-bottom:1px solid rgba(255,255,255,.12)}
+.brand img{width:92px;height:auto;max-height:52px;object-fit:contain}
+.brand-copy{display:grid;gap:1px}
+.brand-copy strong{font-size:9px;line-height:1.1}
+.brand-copy span{font-size:7px;color:#a9c5d2;font-weight:850;letter-spacing:.08em}
+.nav{display:grid;gap:4px;margin-top:14px}
+.nav a,.nav button{
+  text-decoration:none;text-align:left;border:0;background:transparent;color:#d9e7ed;
+  border-radius:8px;padding:10px 10px;font-size:9px;font-weight:850
+}
+.nav a:hover,.nav button:hover{background:rgba(255,255,255,.07)}
+.nav .active{color:#ff7a45;background:rgba(255,255,255,.08)}
+.side-note{margin-top:auto;color:#9ab6c4;font-size:7.5px;line-height:1.55;padding:10px 8px}
+.drawer-backdrop{display:none}
+.main{min-width:0}
+.topbar{
+  height:64px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;
+  justify-content:space-between;padding:0 22px;position:sticky;top:0;z-index:60
+}
+.topbar-left{display:grid;gap:2px}
+.topbar-left small{font-size:7px;color:#8c9da5;font-weight:950;letter-spacing:.1em}
+.topbar-left strong{font-size:14px;color:var(--navy)}
+.top-actions{display:flex;align-items:center;gap:7px}
+.mobile-menu{display:none!important}
+.content{padding:18px 20px 30px;max-width:1500px;margin:0 auto}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:13px 14px;min-width:0}
+.stat span{display:block;font-size:7.5px;color:#84969f;font-weight:950;letter-spacing:.04em}
+.stat strong{display:block;font-size:22px;color:var(--navy);margin-top:5px;letter-spacing:-.03em}
+.stat small{display:block;color:#8ea0a8;font-size:7.5px;margin-top:4px}
+.stat.requests{border-top:3px solid var(--blue)}
+.stat.projects{border-top:3px solid var(--green)}
+.stat.due{border-top:3px solid var(--orange)}
+.stat.attention{border-top:3px solid var(--red)}
+.panel{background:#fff;border:1px solid var(--line);border-radius:13px;overflow:hidden}
+.panel-head{padding:12px 13px;border-bottom:1px solid #edf1f3;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.panel-head-left{display:grid;gap:2px}
+.panel-head strong{color:var(--navy);font-size:11px}
+.panel-head small{color:#83949c;font-size:8px}
+.btn{
+  border:1px solid #d8e2e6;background:#fff;color:#526e79;border-radius:9px;padding:9px 11px;
+  min-height:36px;font-size:8.5px;font-weight:900
+}
+.btn:hover{border-color:#bdcfd6}
+.btn.primary{background:var(--navy);border-color:var(--navy);color:#fff}
+.btn.red{background:#fff;border-color:#efc8cd;color:var(--red)}
+.btn.orange{background:#fff6f0;border-color:#f1c9b7;color:#c55226}
+.btn.green{background:#eff9f3;border-color:#cde7d6;color:var(--green)}
+.btn.small{min-height:32px;padding:7px 9px;font-size:8px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.toolbar{display:grid;grid-template-columns:minmax(260px,1fr) auto auto auto;gap:8px;padding:11px 13px;border-bottom:1px solid #edf1f3}
+.search-wrap{position:relative}
+.search-wrap input{width:100%;min-height:39px;border:1px solid #d9e3e7;border-radius:9px;padding:8px 10px 8px 31px;color:var(--ink);font-size:9px;background:#fff}
+.search-wrap:before{content:"⌕";position:absolute;left:11px;top:9px;color:#8ca0a9;font-size:15px}
+.tabs{display:flex;gap:5px;padding:9px 13px;border-bottom:1px solid #edf1f3;overflow:auto}
+.tab{border:1px solid #dfe7ea;background:#fff;color:#6f838d;border-radius:999px;padding:7px 10px;font-size:8px;font-weight:900;white-space:nowrap}
+.tab.active{background:var(--navy);border-color:var(--navy);color:#fff}
+.filter-bar{display:none;padding:10px 13px;background:#fafcfc;border-bottom:1px solid #edf1f3;grid-template-columns:repeat(4,minmax(0,1fr)) auto;gap:8px}
+.filter-bar.show{display:grid}
+.field{display:grid;gap:5px;align-content:start}
+.field label{font-size:7px;color:#81949d;font-weight:950;letter-spacing:.04em}
+.field input,.field select,.field textarea{
+  width:100%;border:1px solid #d7e2e6;background:#fff;border-radius:9px;min-height:39px;
+  padding:8px 9px;color:var(--ink);font-size:9px;outline:none
+}
+.field textarea{min-height:86px;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(102,155,188,.13)}
+.field-help{font-size:7.5px;color:#8b9da5;line-height:1.4}
+.badge{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;border:1px solid #dbe4e8;padding:5px 7px;font-size:7.5px;font-weight:950;white-space:nowrap}
+.badge.green{background:var(--greenBg);border-color:#c8e8d4;color:var(--green)}
+.badge.orange{background:var(--orangeBg);border-color:#f1d6b9;color:#a96514}
+.badge.red{background:var(--redBg);border-color:#efc9cd;color:var(--red)}
+.badge.blue{background:var(--blueBg);border-color:#cddfe7;color:#3d718c}
+.badge.gray{background:#f4f6f7;color:#71828a}
+.badge.navy{background:#edf2f4;border-color:#cdd9de;color:var(--navy)}
+.work-head,.work-row{
+  display:grid;grid-template-columns:minmax(250px,1.5fr) 155px 110px 110px 115px 110px 96px;
+  gap:11px;align-items:center
+}
+.work-head{padding:10px 13px;background:#fafcfc;border-bottom:1px solid #edf1f3;color:#82949d;font-size:7.5px;font-weight:950}
+.work-row{padding:12px 13px;border-bottom:1px solid #edf1f3;cursor:pointer}
+.work-row:hover{background:#fbfdfd}
+.work-row:last-child{border-bottom:0}
+.work-main{min-width:0}
+.work-main strong{display:block;color:var(--navy);font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.work-main span{display:block;color:#7d9099;font-size:8px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cell span{display:block;color:#899aa2;font-size:7px;font-weight:900}
+.cell strong{display:block;color:#39535f;font-size:8.5px;margin-top:3px;line-height:1.35}
+.status-cell,.priority-cell{text-align:center}
+.date-stack{display:grid;gap:2px}
+.date-stack b{font-size:8px;color:#39535f}
+.date-stack small{font-size:7px;color:#8799a2}
+.row-actions{display:flex;justify-content:center}
+.action-dots{
+  width:30px;min-width:30px;height:30px;min-height:30px;padding:0!important;display:grid;place-items:center;
+  font-size:10px!important;font-weight:650!important;letter-spacing:-1px!important;line-height:1!important;border-radius:8px!important
+}
+.mobile-summary{cursor:default}
+.mobile-status{display:none}
+.empty{display:none;padding:32px 16px;text-align:center;color:#85979f;font-size:9px}
+.attention-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px}
+.attention-card{border:1px solid #e2eaed;border-radius:11px;overflow:hidden}
+.attention-card-head{padding:10px 11px;border-bottom:1px solid #edf1f3;background:#fafcfc;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.attention-card-head strong{color:var(--navy);font-size:10px}
+.attention-card-head span{font-size:7px;color:#899ba3}
+.attention-item{display:flex;justify-content:space-between;gap:10px;padding:9px 10px;border-bottom:1px solid #edf1f3;cursor:pointer}
+.attention-item:last-child{border-bottom:0}
+.attention-item:hover{background:#fbfdfd}
+.attention-item strong{display:block;color:var(--navy);font-size:8.7px}
+.attention-item span{display:block;color:#82949c;font-size:7.6px;margin-top:2px;line-height:1.4}
+.attention-tag{flex:0 0 auto}
+.progress-wrap{display:grid;gap:4px}
+.progress-line{height:7px;background:#edf1f3;border-radius:999px;overflow:hidden}
+.progress-bar{height:100%;background:var(--blue);border-radius:999px}
+.progress-meta{display:flex;justify-content:space-between;gap:5px;color:#80939c;font-size:7px}
+.modal-backdrop{
+  position:fixed;inset:0;background:rgba(0,32,48,.44);display:none;align-items:center;justify-content:center;
+  padding:16px;z-index:400
+}
+.modal-backdrop.show{display:flex}
+.modal{width:min(760px,100%);max-height:92vh;background:#fff;border-radius:15px;box-shadow:0 22px 70px rgba(0,28,43,.24);overflow:hidden;display:flex;flex-direction:column}
+.modal.small{width:min(560px,100%)}
+.modal-head{padding:13px 15px;border-bottom:1px solid #e7edef;display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.modal-head h3{margin:0;color:var(--navy);font-size:13px}
+.modal-head p{margin:3px 0 0;color:#82949d;font-size:8px}
+.close{border:0;background:transparent;color:#7f9199;font-size:20px;line-height:1}
+.modal-body{padding:13px 15px;overflow:auto}
+.modal-foot{padding:11px 15px;border-top:1px solid #e7edef;display:flex;align-items:center;justify-content:space-between;gap:9px}
+.modal-foot-right{display:flex;gap:7px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.field.full{grid-column:1/-1}
+.detail-hero{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+.detail-hero h4{margin:0;color:var(--navy);font-size:14px}
+.detail-hero p{margin:3px 0 0;color:#7d9099;font-size:8.5px}
+.kv{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.kv-item{background:#f8fbfc;border:1px solid #e1e9ec;border-radius:9px;padding:8px}
+.kv-item span{display:block;color:#8799a2;font-size:6.8px;font-weight:950}
+.kv-item strong{display:block;color:var(--navy);font-size:9px;margin-top:4px;line-height:1.4}
+.detail-note{background:#f8fbfc;border:1px solid #e1e9ec;border-radius:9px;padding:9px;color:#647d88;font-size:8.2px;line-height:1.5;margin-top:9px;white-space:pre-wrap}
+.timeline{display:grid;gap:6px;margin-top:10px}
+.timeline-item{display:flex;justify-content:space-between;gap:10px;border:1px solid #e2eaed;border-radius:9px;padding:8px 9px}
+.timeline-item strong{display:block;color:var(--navy);font-size:8.5px}
+.timeline-item span{display:block;color:#82949c;font-size:7.6px;margin-top:2px;line-height:1.4}
+.floating-menu{
+  position:fixed;z-index:99999;width:158px;display:none;background:#fff;border:1px solid #dce6ea;
+  border-radius:10px;box-shadow:0 16px 42px rgba(0,48,73,.18);padding:5px;overflow:hidden
+}
+.floating-menu.show{display:grid}
+.floating-menu button{
+  width:100%;min-height:34px;border:0;background:#fff;color:#4f6975;text-align:left;padding:8px 9px;
+  border-radius:7px;font-size:8px;font-weight:850
+}
+.floating-menu button:hover{background:#f3f7f8}
+.floating-menu button.danger{color:var(--red)}
+.toast{position:fixed;left:50%;bottom:18px;transform:translate(-50%,14px);opacity:0;pointer-events:none;background:var(--navy);color:#fff;border-radius:10px;padding:10px 13px;font-size:8.5px;font-weight:850;z-index:900;transition:.18s}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:1100px) and (min-width:761px){
+  .work-head,.work-row{grid-template-columns:minmax(180px,1.4fr) 120px 92px 90px 95px 90px 70px;gap:7px}
+  .content{padding-left:12px;padding-right:12px}
+}
+@media(max-width:760px){
+  .shell{display:block}
+  .sidebar{position:fixed;left:0;top:0;width:260px;transform:translateX(-102%);transition:.2s;box-shadow:10px 0 34px rgba(0,25,38,.2)}
+  .sidebar.open{transform:none}
+  .drawer-backdrop{position:fixed;inset:0;background:rgba(0,25,38,.36);z-index:70;display:none}
+  .drawer-backdrop.show{display:block}
+  .topbar{height:59px;padding:0 11px}
+  .mobile-menu{display:inline-flex!important;align-items:center;justify-content:center;width:39px;padding:0;font-size:14px}
+  .topbar-left strong{font-size:12px}
+  .content{padding:11px 9px 24px}
+  .stats{grid-template-columns:1fr 1fr;gap:7px}
+  .stat{padding:10px}
+  .stat strong{font-size:18px}
+  .toolbar{grid-template-columns:minmax(0,1fr) auto;padding:9px}
+  .toolbar .new-request,.toolbar .new-project{grid-column:auto}
+  .toolbar .new-request,.toolbar .new-project{font-size:0;min-width:42px;padding:0}
+  .toolbar .new-request:after{content:"+ Request";font-size:8px}
+  .toolbar .new-project:after{content:"+ Project";font-size:8px}
+  .filter-bar.show{grid-template-columns:1fr 1fr;padding:9px}
+  .filter-bar .btn{grid-column:1/-1}
+  .work-head{display:none}
+  .work-row{display:block;padding:0}
+  .work-row .mobile-summary{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 10px}
+  .work-row>.cell,.work-row>.status-cell,.work-row>.priority-cell,.work-row>.row-actions{display:none}
+  .work-row.expanded>.cell,.work-row.expanded>.priority-cell{display:grid;grid-template-columns:95px 1fr;align-items:center;border-top:1px solid #edf1f3;padding:8px 10px}
+  .work-row.expanded>.status-cell{display:none!important}
+  .work-row.expanded>.row-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;border-top:1px solid #edf1f3;padding:9px 10px}
+  .work-row.expanded>.row-actions .btn{width:100%;min-height:40px}
+  .mobile-status{display:inline-flex}
+  .action-dots{display:none!important}
+  .attention-grid{grid-template-columns:1fr;padding:9px}
+  .form-grid{grid-template-columns:1fr}
+  .field.full{grid-column:auto}
+  .kv{grid-template-columns:1fr 1fr}
+  .modal-backdrop.show{align-items:flex-end;padding:0}
+  .modal{width:100%;max-height:94vh;border-radius:17px 17px 0 0}
+  .modal-body{padding:11px}
+  .modal-foot{padding:10px}
+  .modal-foot-right{flex:1;display:grid;grid-template-columns:1fr 1fr}
+  .modal-foot-right .btn{width:100%}
+}
+
+/* ===== CROSS-TAB NARROW DESKTOP TABLE PROTECTION ===== */
+@media(min-width:761px) and (max-width:1100px){
+  .work-head,.work-row{
+    grid-template-columns:minmax(145px,1.35fr) 96px 82px 78px 84px 76px 52px!important;
+    gap:5px!important;
+    padding-left:9px!important;
+    padding-right:9px!important;
+  }
+  .work-main strong{font-size:9.2px}
+  .work-main span{font-size:7.4px}
+  .cell strong{font-size:7.7px}
+  .cell span{font-size:6.6px}
+  .status-cell .badge,.priority-cell .badge{font-size:6.8px;padding:4px 5px}
+}
+@media(min-width:761px) and (max-width:960px){
+  .work-head,.work-row{
+    grid-template-columns:minmax(122px,1.25fr) 78px 70px 66px 72px 64px 40px!important;
+    gap:4px!important;
+    padding-left:7px!important;
+    padding-right:7px!important;
+  }
+  .work-main strong{font-size:8.8px}
+  .work-main span{font-size:7px}
+  .cell strong{font-size:7.1px}
+  .status-cell .badge,.priority-cell .badge{font-size:6.4px;padding:4px}
+  .action-dots{width:28px!important;min-width:28px!important;height:28px!important;min-height:28px!important}
+}
+
+
+/* Mobile inline actions must never participate in the desktop table layout. */
+@media(min-width:761px){
+  .mobile-edit,
+  .mobile-convert,
+  .mobile-complete{
+    display:none!important;
+  }
+  .work-row>.row-actions{
+    overflow:visible;
+    align-items:center;
+    justify-content:center;
+  }
+}
+
+
+/* ===== VMS LARGER / READABLE TYPE SCALE ===== */
+/* Restores the larger VMS Admin sizing used in Billing and gives section
+   headings stronger hierarchy across Requests, Projects, Attention, and modals. */
+
+.topbar-left small{font-size:8px!important}
+.topbar-left strong{font-size:18px!important;line-height:1.08!important}
+
+.panel-head strong{font-size:14px!important;line-height:1.15!important}
+.panel-head small{font-size:9px!important;line-height:1.45!important}
+
+.stat span{font-size:8px!important}
+.stat strong{font-size:22px!important}
+.stat small{font-size:8px!important;line-height:1.35!important}
+
+.btn{font-size:9.5px!important;min-height:38px!important}
+.btn.small{font-size:9px!important;min-height:34px!important}
+.tab{font-size:9.5px!important;padding:8px 12px!important}
+
+.search-wrap input{font-size:10px!important;min-height:41px!important}
+.field label{font-size:8px!important}
+.field input,.field select,.field textarea{font-size:10px!important;min-height:41px!important}
+.field-help{font-size:8.5px!important}
+
+.work-head{font-size:8px!important}
+.work-main strong{font-size:11.5px!important;line-height:1.25!important}
+.work-main span{font-size:9px!important;line-height:1.35!important}
+.cell span{font-size:7.5px!important}
+.cell strong{font-size:9.5px!important;line-height:1.4!important}
+.date-stack b{font-size:9px!important}
+.date-stack small{font-size:8px!important}
+.badge{font-size:8px!important;padding:5px 8px!important}
+
+.attention-card-head{padding:12px 12px!important}
+.attention-card-head strong{
+  font-size:13px!important;
+  line-height:1.2!important;
+  letter-spacing:-.01em;
+}
+.attention-card-head span{font-size:8px!important}
+.attention-item{padding:11px 11px!important}
+.attention-item strong{font-size:10.5px!important;line-height:1.25!important}
+.attention-item span{font-size:8.7px!important;line-height:1.4!important}
+
+.modal-head h3{font-size:15px!important}
+.modal-head p{font-size:9px!important;line-height:1.45!important}
+.detail-hero h4{font-size:16px!important}
+.detail-hero p{font-size:9.5px!important}
+.kv-item span{font-size:7.5px!important}
+.kv-item strong{font-size:10px!important}
+.detail-note{font-size:9.5px!important;line-height:1.55!important}
+.timeline-item strong{font-size:9.5px!important}
+.timeline-item span{font-size:8.5px!important;line-height:1.45!important}
+.floating-menu button{font-size:9px!important}
+
+/* Mobile-only summary status must never become a long desktop bar. */
+@media(min-width:761px){
+  .work-main .mobile-status{display:none!important}
+}
+
+/* Stronger hierarchy on mobile without making the rows bulky. */
+@media(max-width:760px){
+  .topbar-left small{font-size:8px!important}
+  .topbar-left strong{font-size:16px!important}
+  .panel-head strong{font-size:15px!important}
+  .panel-head small{font-size:9px!important}
+
+  .tab{font-size:10px!important;padding:9px 12px!important}
+  .work-row .mobile-summary{padding:13px 11px!important}
+  .work-main strong{font-size:12px!important;line-height:1.25!important}
+  .work-main span{font-size:9.5px!important}
+  .mobile-status{font-size:8px!important}
+
+  .attention-card-head{padding:13px 12px!important}
+  .attention-card-head strong{font-size:14px!important}
+  .attention-card-head span{font-size:8.5px!important}
+  .attention-item{padding:12px 11px!important}
+  .attention-item strong{font-size:11.5px!important}
+  .attention-item span{font-size:9px!important}
+
+  .work-row.expanded>.cell,
+  .work-row.expanded>.priority-cell{
+    grid-template-columns:100px 1fr!important;
+    padding:9px 11px!important;
+  }
+  .cell span{font-size:8px!important}
+  .cell strong{font-size:10px!important}
+
+  .modal-head h3{font-size:16px!important}
+  .modal-head p{font-size:9.5px!important}
+  .field label{font-size:8px!important}
+  .field input,.field select,.field textarea{font-size:10.5px!important}
+  .detail-hero h4{font-size:17px!important}
+
+  /* Preserve the compact mobile toolbar labels despite the larger global button type. */
+  .toolbar .new-request,.toolbar .new-project{font-size:0!important}
+  .toolbar .new-request:after,.toolbar .new-project:after{font-size:9px!important}
+}
+
+</style>
+<style id="vms-unified-ui">
+:root{--orange:#EB5E28;--bg:#f4f7f8;--line:#dfe7ea}
+html,body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:var(--bg)}
+.shell,.app{grid-template-columns:230px minmax(0,1fr)}
+.sidebar,.side{background:#003049;color:#fff}
+.nav a,.nav button{border-radius:8px}
+.nav a.active,.nav button.active,.nav .active,.side .nav button.active{color:#ff7a45;background:rgba(255,255,255,.08)}
+.topbar,.top{min-height:64px;background:#fff;border-bottom:1px solid var(--line)}
+.content{max-width:1500px;margin-left:auto;margin-right:auto}
+.panel,.card,.phase4-panel,.phase4-stat,.stat{border-color:var(--line);box-shadow:0 1px 0 rgba(0,48,73,.02)}
+.btn{border-radius:9px}
+#demoSignupBtn,#loadDemoBtn,#simulateCustomerPaymentBtn,.phase5-demo-btn{display:none!important}
+@media(max-width:900px){.shell,.app{grid-template-columns:1fr}.mobile-menu{display:inline-flex}.sidebar.open{transform:translateX(0)}}
+</style>
+<link rel="stylesheet" href="../assets/vms-suite.css"><script src="../assets/config.js"></script></head>
+<body>
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <img src="../assets/vms-logo.png" alt="Vision Make Studio">
+      <div class="brand-copy"><strong>Vision Make Studio</strong><span>ADMIN</span></div>
+    </div>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="audit.html">VMS Audit</a>
+      <a href="qr.html">QR Tools</a>
+      <a href="clients.html">Clients</a>
+      <a href="service-catalog.html">Service Catalog</a>
+      <a href="billing.html">Billing / Subscriptions</a>
+      <a href="promotions.html">Promotions</a>
+      <button class="active" type="button">Projects & Requests</button>
+    </nav>
+    <div class="side-note">Company-wide VMS work queue for client requests, active projects, due dates, and items needing attention.</div>
+  </aside>
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+
+  <main class="main">
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:8px">
+        <button class="btn mobile-menu" id="mobileMenuBtn" type="button">☰</button>
+        <div class="topbar-left"><small>VMS ADMIN</small><strong>Projects & Requests</strong></div>
+      </div>
+      <div class="top-actions">
+        <button class="btn" id="newRequestTopBtn" type="button">+ New Request</button>
+        <button class="btn primary" id="newProjectTopBtn" type="button">+ New Project</button>
+      </div>
+    </header>
+
+    <div class="content">
+      <div class="stats">
+        <div class="stat requests"><span>OPEN REQUESTS</span><strong id="statRequests">0</strong><small>Not completed or declined</small></div>
+        <div class="stat projects"><span>ACTIVE PROJECTS</span><strong id="statProjects">0</strong><small>Currently in the work queue</small></div>
+        <div class="stat due"><span>DUE THIS WEEK</span><strong id="statDue">0</strong><small>Projects and requests</small></div>
+        <div class="stat attention"><span>NEEDS MY ATTENTION</span><strong id="statAttention">0</strong><small>New, urgent, overdue, or blocked</small></div>
+      </div>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div class="panel-head-left"><strong>VMS Work Queue</strong><small>Manage work across all clients from one place.</small></div>
+        </div>
+
+        <div class="toolbar">
+          <div class="search-wrap"><input id="searchInput" placeholder="Search client, project, request, service, or note"></div>
+          <button class="btn" id="filterBtn" type="button">Filter</button>
+          <button class="btn new-request" id="newRequestBtn" type="button">+ New Request</button>
+          <button class="btn primary new-project" id="newProjectBtn" type="button">+ New Project</button>
+        </div>
+
+        <div class="filter-bar" id="filterBar">
+          <div class="field"><label>CLIENT</label><select id="clientFilter"><option value="">All clients</option></select></div>
+          <div class="field"><label>STATUS</label><select id="statusFilter"><option value="">All statuses</option></select></div>
+          <div class="field"><label>PRIORITY</label><select id="priorityFilter"><option value="">All priorities</option><option>Urgent</option><option>High</option><option>Normal</option><option>Low</option></select></div>
+          <div class="field"><label>DUE</label><select id="dueFilter"><option value="">Any due date</option><option value="overdue">Overdue</option><option value="week">Due this week</option><option value="none">No due date</option></select></div>
+          <button class="btn" id="clearFiltersBtn" type="button">Clear</button>
+        </div>
+
+        <div class="tabs">
+          <button class="tab active" data-view="requests" type="button">Requests <span id="requestTabCount"></span></button>
+          <button class="tab" data-view="projects" type="button">Projects <span id="projectTabCount"></span></button>
+          <button class="tab" data-view="attention" type="button">Needs My Attention <span id="attentionTabCount"></span></button>
+        </div>
+
+        <div id="requestsView">
+          <div class="work-head"><div>REQUEST / CLIENT</div><div>PRIORITY</div><div>STATUS</div><div>REQUESTED</div><div>DUE</div><div>SOURCE</div><div>ACTIONS</div></div>
+          <div id="requestRows"></div>
+          <div class="empty" id="requestEmpty">No requests match this view.</div>
+        </div>
+
+        <div id="projectsView" style="display:none">
+          <div class="work-head"><div>PROJECT / CLIENT</div><div>TYPE</div><div>STATUS</div><div>PROGRESS</div><div>DUE</div><div>LINKED REQUEST</div><div>ACTIONS</div></div>
+          <div id="projectRows"></div>
+          <div class="empty" id="projectEmpty">No projects match this view.</div>
+        </div>
+
+        <div id="attentionView" style="display:none">
+          <div class="attention-grid">
+            <div class="attention-card"><div class="attention-card-head"><strong>New & Urgent Requests</strong><span id="attRequestCount">0</span></div><div id="attRequests"></div></div>
+            <div class="attention-card"><div class="attention-card-head"><strong>Overdue Work</strong><span id="attOverdueCount">0</span></div><div id="attOverdue"></div></div>
+            <div class="attention-card"><div class="attention-card-head"><strong>Waiting on Client</strong><span id="attWaitingCount">0</span></div><div id="attWaiting"></div></div>
+            <div class="attention-card"><div class="attention-card-head"><strong>Due This Week</strong><span id="attWeekCount">0</span></div><div id="attWeek"></div></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- REQUEST EDITOR -->
+<div class="modal-backdrop" id="requestModal">
+  <div class="modal">
+    <div class="modal-head"><div><h3 id="requestModalTitle">New Request</h3><p>Track a client request before it becomes VMS work.</p></div><button class="close" data-close="requestModal" type="button">×</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field"><label>CLIENT / BUSINESS</label><select id="requestClient"></select></div>
+        <div class="field"><label>REQUEST TITLE</label><input id="requestTitle" placeholder="Example: Update homepage photos"></div>
+        <div class="field"><label>PRIORITY</label><select id="requestPriority"><option>Normal</option><option>High</option><option>Urgent</option><option>Low</option></select></div>
+        <div class="field"><label>STATUS</label><select id="requestStatus"><option>New</option><option>Reviewing</option><option>Approved</option><option>In Progress</option><option>Waiting on Client</option><option>Completed</option><option>Declined</option><option>Canceled</option></select></div>
+        <div class="field"><label>REQUESTED DATE</label><input id="requestDate" type="date"></div>
+        <div class="field"><label>DUE DATE</label><input id="requestDue" type="date"></div>
+        <div class="field"><label>SOURCE</label><select id="requestSource"><option>Client Portal</option><option>Website</option><option>Phone / Text</option><option>Email</option><option>VMS Admin</option><option>POS / Sale</option></select></div>
+        <div class="field"><label>SERVICE / AREA</label><input id="requestService" placeholder="Website Care, Smart QR, Local Presence, etc."></div>
+        <div class="field full"><label>REQUEST DETAILS</label><textarea id="requestDetail" placeholder="What is the client asking for?"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn red" id="deleteRequestBtn" type="button" style="visibility:hidden">Delete</button>
+      <div class="modal-foot-right"><button class="btn" data-close="requestModal" type="button">Cancel</button><button class="btn primary" id="saveRequestBtn" type="button">Save Request</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- PROJECT EDITOR -->
+<div class="modal-backdrop" id="projectModal">
+  <div class="modal">
+    <div class="modal-head"><div><h3 id="projectModalTitle">New Project</h3><p>Create and track active VMS work.</p></div><button class="close" data-close="projectModal" type="button">×</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field"><label>CLIENT / BUSINESS</label><select id="projectClient"></select></div>
+        <div class="field"><label>PROJECT NAME</label><input id="projectName" placeholder="Example: Website Revamp"></div>
+        <div class="field"><label>PROJECT TYPE</label><select id="projectType"><option>Website</option><option>Smart QR</option><option>Local Presence</option><option>Review Growth</option><option>VMS LinkHub</option><option>Audit</option><option>Print / Design</option><option>Other</option></select></div>
+        <div class="field"><label>STATUS</label><select id="projectStatus"><option>Not Started</option><option>In Progress</option><option>Waiting on Client</option><option>Review</option><option>On Hold</option><option>Completed</option></select></div>
+        <div class="field"><label>START DATE</label><input id="projectStart" type="date"></div>
+        <div class="field"><label>DUE DATE</label><input id="projectDue" type="date"></div>
+        <div class="field"><label>PROGRESS</label><select id="projectProgress"><option value="0">0%</option><option value="25">25%</option><option value="50">50%</option><option value="75">75%</option><option value="100">100%</option></select></div>
+        <div class="field"><label>LINKED REQUEST</label><select id="projectLinkedRequest"><option value="">None</option></select></div>
+        <div class="field full"><label>PROJECT NOTES</label><textarea id="projectNote" placeholder="Scope, next steps, dependencies, or anything VMS should remember."></textarea></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn red" id="deleteProjectBtn" type="button" style="visibility:hidden">Delete</button>
+      <div class="modal-foot-right"><button class="btn" data-close="projectModal" type="button">Cancel</button><button class="btn primary" id="saveProjectBtn" type="button">Save Project</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- REQUEST DETAILS -->
+<div class="modal-backdrop" id="requestDetailModal">
+  <div class="modal small">
+    <div class="modal-head"><h3>Request Details</h3><button class="close" data-close="requestDetailModal" type="button">×</button></div>
+    <div class="modal-body">
+      <div class="detail-hero"><div><h4 id="rdTitle"></h4><p id="rdClient"></p></div><div id="rdStatus"></div></div>
+      <div class="kv">
+        <div class="kv-item"><span>PRIORITY</span><strong id="rdPriority"></strong></div>
+        <div class="kv-item"><span>REQUESTED</span><strong id="rdRequested"></strong></div>
+        <div class="kv-item"><span>DUE</span><strong id="rdDue"></strong></div>
+        <div class="kv-item"><span>SOURCE</span><strong id="rdSource"></strong></div>
+        <div class="kv-item"><span>SERVICE / AREA</span><strong id="rdService"></strong></div>
+        <div class="kv-item"><span>LINKED PROJECT</span><strong id="rdProject"></strong></div>
+      </div>
+      <div class="detail-note" id="rdDetail"></div>
+      <div class="timeline" id="rdTimeline"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn green" id="convertRequestBtn" type="button">Convert to Project</button>
+      <div class="modal-foot-right"><button class="btn" id="editRequestDetailBtn" type="button">Edit</button><button class="btn primary" data-close="requestDetailModal" type="button">Done</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- PROJECT DETAILS -->
+<div class="modal-backdrop" id="projectDetailModal">
+  <div class="modal small">
+    <div class="modal-head"><h3>Project Details</h3><button class="close" data-close="projectDetailModal" type="button">×</button></div>
+    <div class="modal-body">
+      <div class="detail-hero"><div><h4 id="pdTitle"></h4><p id="pdClient"></p></div><div id="pdStatus"></div></div>
+      <div class="kv">
+        <div class="kv-item"><span>TYPE</span><strong id="pdType"></strong></div>
+        <div class="kv-item"><span>START</span><strong id="pdStart"></strong></div>
+        <div class="kv-item"><span>DUE</span><strong id="pdDue"></strong></div>
+        <div class="kv-item"><span>PROGRESS</span><strong id="pdProgress"></strong></div>
+        <div class="kv-item"><span>LINKED REQUEST</span><strong id="pdRequest"></strong></div>
+        <div class="kv-item"><span>ATTENTION</span><strong id="pdAttention"></strong></div>
+      </div>
+      <div class="detail-note" id="pdNote"></div>
+      <div class="timeline" id="pdTimeline"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn green" id="completeProjectBtn" type="button">Mark Completed</button>
+      <div class="modal-foot-right"><button class="btn" id="editProjectDetailBtn" type="button">Edit</button><button class="btn primary" data-close="projectDetailModal" type="button">Done</button></div>
+    </div>
+  </div>
+</div>
+
+<div class="floating-menu" id="floatingMenu"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  const STORAGE='vms_work_admin_v2';
+  const CLIENTS_STORAGE='vms_clients_final_v1';
+  const $=id=>document.getElementById(id);
+  const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const niceDate=v=>v?new Date(v+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';
+  const todayISO=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
+  const nowIso=()=>new Date().toISOString();
+
+  const fallbackClients=[{id:'client-vms-test',business:'VMS Test Client',email:'info@visionmakestudio.com'}];
+
+  const starter={requests:[],projects:[]};
+
+  let data=load();
+  let currentView='requests';
+  let editingRequestId=null;
+  let editingProjectId=null;
+  let detailRequestId=null;
+  let detailProjectId=null;
+  let floatingContext=null;
+
+  function load(){
+    try{
+      const raw=localStorage.getItem(STORAGE);
+      if(raw){
+        const p=JSON.parse(raw);
+        if(p&&Array.isArray(p.requests)&&Array.isArray(p.projects))return p;
+      }
+    }catch(e){}
+    return structuredClone(starter);
+  }
+  function persist(){
+    try{localStorage.setItem(STORAGE,JSON.stringify(data))}catch(e){}
+    syncNestedClientWork();
+  }
+  function clientStore(){
+    try{
+      const raw=localStorage.getItem(CLIENTS_STORAGE);
+      const p=raw?JSON.parse(raw):[];
+      return Array.isArray(p)?p:[];
+    }catch(e){return []}
+  }
+  function clients(){
+    const map=new Map();
+    clientStore().forEach(c=>{if(c?.business)map.set(c.business,{id:c.id||'',business:c.business,email:c.email||''})});
+    [...data.requests,...data.projects].forEach(x=>{if(x.client)map.set(x.client,{id:x.clientId||'',business:x.client,email:''})});
+    return [...map.values()].sort((a,b)=>a.business.localeCompare(b.business));
+  }
+  function syncNestedClientWork(){
+    const store=clientStore();
+    if(!store.length)return;
+    let changed=false;
+    store.forEach(c=>{
+      if(!c?.business)return;
+      const requests=data.requests.filter(x=>x.client===c.business).map(x=>({
+        id:x.id,title:x.title,priority:x.priority,status:x.status,requestedDate:x.requestedDate,dueDate:x.dueDate,
+        detail:x.detail,source:x.source,service:x.service,linkedProjectId:x.linkedProjectId||'',createdAt:x.createdAt,updatedAt:x.updatedAt
+      }));
+      const projects=data.projects.filter(x=>x.client===c.business).map(x=>({
+        id:x.id,name:x.name,type:x.type,status:x.status,startDate:x.startDate,dueDate:x.dueDate,note:x.note,
+        progress:x.progress,linkedRequestId:x.linkedRequestId||'',createdAt:x.createdAt,updatedAt:x.updatedAt
+      }));
+      c.requests=requests;c.projects=projects;changed=true;
+    });
+    if(changed)try{localStorage.setItem(CLIENTS_STORAGE,JSON.stringify(store))}catch(e){}
+  }
+
+  function toast(msg){$('toast').textContent=msg;$('toast').classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>$('toast').classList.remove('show'),1600)}
+  function closeModal(id){$(id).classList.remove('show')}
+  function dateObj(v){return v?new Date(v+'T12:00:00'):null}
+  function dayDiff(a,b){return Math.round((b-a)/(1000*60*60*24))}
+  function isClosedRequest(r){return ['Completed','Declined','Canceled'].includes(r.status)}
+  function isClosedProject(p){return p.status==='Completed'}
+  function overdue(item){
+    if(!item.dueDate)return false;
+    const due=dateObj(item.dueDate),today=dateObj(todayISO());
+    return due<today && !(item.title?isClosedRequest(item):isClosedProject(item));
+  }
+  function dueThisWeek(item){
+    if(!item.dueDate)return false;
+    const today=dateObj(todayISO()),due=dateObj(item.dueDate);
+    const d=dayDiff(today,due);
+    return d>=0&&d<=7 && !(item.title?isClosedRequest(item):isClosedProject(item));
+  }
+  function attentionReason(item){
+    if(overdue(item))return 'Overdue';
+    if(item.title && item.priority==='Urgent' && !isClosedRequest(item))return 'Urgent';
+    if(item.title && item.status==='New')return 'New Request';
+    if(item.status==='Waiting on Client')return 'Waiting on Client';
+    if(dueThisWeek(item))return 'Due This Week';
+    return '';
+  }
+  function attentionItems(){
+    return [...data.requests,...data.projects].filter(x=>attentionReason(x));
+  }
+  function statusClass(status){
+    if(['Completed','Approved'].includes(status))return 'green';
+    if(['New','Reviewing','Review','In Progress'].includes(status))return 'blue';
+    if(['Urgent','High','Waiting on Client','On Hold'].includes(status))return 'orange';
+    if(['Declined','Canceled'].includes(status))return 'red';
+    return 'gray';
+  }
+  function priorityClass(p){
+    if(p==='Urgent')return 'red';if(p==='High')return 'orange';if(p==='Low')return 'gray';return 'blue';
+  }
+  function populateClientOptions(){
+    const opts=clients();
+    const html=opts.map(c=>`<option value="${esc(c.business)}">${esc(c.business)}</option>`).join('');
+    $('requestClient').innerHTML=html;
+    $('projectClient').innerHTML=html;
+    $('clientFilter').innerHTML='<option value="">All clients</option>'+html;
+  }
+  function populateStatusFilter(){
+    const values=currentView==='projects'
+      ? ['Not Started','In Progress','Waiting on Client','Review','On Hold','Completed']
+      : ['New','Reviewing','Approved','In Progress','Waiting on Client','Completed','Declined','Canceled'];
+    $('statusFilter').innerHTML='<option value="">All statuses</option>'+values.map(x=>`<option>${x}</option>`).join('');
+  }
+  function updateStats(){
+    const openReq=data.requests.filter(x=>!isClosedRequest(x)).length;
+    const activeProj=data.projects.filter(x=>!isClosedProject(x)).length;
+    const week=[...data.requests,...data.projects].filter(dueThisWeek).length;
+    const att=attentionItems().length;
+    $('statRequests').textContent=openReq;$('statProjects').textContent=activeProj;$('statDue').textContent=week;$('statAttention').textContent=att;
+    $('requestTabCount').textContent=`(${data.requests.length})`;$('projectTabCount').textContent=`(${data.projects.length})`;$('attentionTabCount').textContent=`(${att})`;
+  }
+
+  function commonFilter(item,type){
+    const q=$('searchInput').value.trim().toLowerCase();
+    const client=$('clientFilter').value;
+    const status=$('statusFilter').value;
+    const priority=$('priorityFilter').value;
+    const due=$('dueFilter').value;
+    if(client&&item.client!==client)return false;
+    if(status&&item.status!==status)return false;
+    if(type==='request'&&priority&&item.priority!==priority)return false;
+    if(type==='project'&&priority)return false;
+    if(due==='overdue'&&!overdue(item))return false;
+    if(due==='week'&&!dueThisWeek(item))return false;
+    if(due==='none'&&item.dueDate)return false;
+    const hay=type==='request'
+      ? [item.title,item.client,item.priority,item.status,item.source,item.service,item.detail].join(' ').toLowerCase()
+      : [item.name,item.client,item.type,item.status,item.note].join(' ').toLowerCase();
+    return !q||hay.includes(q);
+  }
+  function filteredRequests(){return data.requests.filter(x=>commonFilter(x,'request')).sort((a,b)=>String(a.dueDate||'9999').localeCompare(String(b.dueDate||'9999')))}
+  function filteredProjects(){return data.projects.filter(x=>commonFilter(x,'project')).sort((a,b)=>String(a.dueDate||'9999').localeCompare(String(b.dueDate||'9999')))}
+
+  function dueMarkup(item){
+    if(!item.dueDate)return '<span>—</span>';
+    const reason=overdue(item)?'Overdue':dueThisWeek(item)?'Due soon':'';
+    return `<div class="date-stack"><b>${niceDate(item.dueDate)}</b>${reason?`<small style="color:${reason==='Overdue'?'var(--red)':'#a96514'}">${reason}</small>`:''}</div>`;
+  }
+
+  function requestRow(r){
+    return `<div class="work-row" data-kind="request" data-id="${r.id}">
+      <div class="work-main mobile-summary"><div><strong>${esc(r.title)}</strong><span>${esc(r.client)} · ${esc(r.service||'General Request')}</span></div><span class="badge ${statusClass(r.status)} mobile-status">${esc(r.status)}</span></div>
+      <div class="priority-cell"><span class="badge ${priorityClass(r.priority)}">${esc(r.priority)}</span></div>
+      <div class="status-cell"><span class="badge ${statusClass(r.status)}">${esc(r.status)}</span></div>
+      <div class="cell"><span>REQUESTED</span><strong>${niceDate(r.requestedDate)}</strong></div>
+      <div class="cell"><span>DUE</span><strong>${dueMarkup(r)}</strong></div>
+      <div class="cell"><span>SOURCE</span><strong>${esc(r.source||'—')}</strong></div>
+      <div class="row-actions">
+        <button class="btn small mobile-edit request-edit" data-id="${r.id}" type="button">Edit</button>
+        ${!r.linkedProjectId&&!isClosedRequest(r)?`<button class="btn small green mobile-convert request-convert" data-id="${r.id}" type="button">Create Project</button>`:''}
+        <button class="btn action-dots work-menu-btn" data-kind="request" data-id="${r.id}" type="button" aria-label="Request actions">•••</button>
+      </div>
+    </div>`;
+  }
+
+  function projectRow(p){
+    const request=data.requests.find(x=>x.id===p.linkedRequestId);
+    return `<div class="work-row" data-kind="project" data-id="${p.id}">
+      <div class="work-main mobile-summary"><div><strong>${esc(p.name)}</strong><span>${esc(p.client)} · ${esc(p.type)}</span></div><span class="badge ${statusClass(p.status)} mobile-status">${esc(p.status)}</span></div>
+      <div class="cell"><span>TYPE</span><strong>${esc(p.type)}</strong></div>
+      <div class="status-cell"><span class="badge ${statusClass(p.status)}">${esc(p.status)}</span></div>
+      <div class="cell"><span>PROGRESS</span><div class="progress-wrap"><div class="progress-line"><div class="progress-bar" style="width:${Math.max(0,Math.min(100,Number(p.progress)||0))}%"></div></div><div class="progress-meta"><span>${Number(p.progress)||0}%</span></div></div></div>
+      <div class="cell"><span>DUE</span><strong>${dueMarkup(p)}</strong></div>
+      <div class="cell"><span>LINKED REQUEST</span><strong>${request?esc(request.title):'—'}</strong></div>
+      <div class="row-actions">
+        <button class="btn small mobile-edit project-edit" data-id="${p.id}" type="button">Edit</button>
+        ${!isClosedProject(p)?`<button class="btn small green mobile-complete project-complete" data-id="${p.id}" type="button">Complete</button>`:''}
+        <button class="btn action-dots work-menu-btn" data-kind="project" data-id="${p.id}" type="button" aria-label="Project actions">•••</button>
+      </div>
+    </div>`;
+  }
+
+  function renderRequests(){
+    const rows=filteredRequests();$('requestRows').innerHTML=rows.map(requestRow).join('');$('requestEmpty').style.display=rows.length?'none':'block'
+  }
+  function renderProjects(){
+    const rows=filteredProjects();$('projectRows').innerHTML=rows.map(projectRow).join('');$('projectEmpty').style.display=rows.length?'none':'block'
+  }
+  function attentionItemMarkup(item){
+    const isReq=!!item.title;const title=isReq?item.title:item.name;const reason=attentionReason(item);
+    const cls=reason==='Overdue'||reason==='Urgent'?'red':reason==='Waiting on Client'?'orange':'blue';
+    return `<div class="attention-item" data-kind="${isReq?'request':'project'}" data-id="${item.id}">
+      <div><strong>${esc(title)}</strong><span>${esc(item.client)} · ${isReq?'Request':'Project'}${item.dueDate?` · Due ${niceDate(item.dueDate)}`:''}</span></div>
+      <span class="badge ${cls} attention-tag">${esc(reason)}</span>
+    </div>`;
+  }
+  function renderAttention(){
+    const newUrgent=data.requests.filter(r=>!isClosedRequest(r)&&(r.status==='New'||r.priority==='Urgent'));
+    const over=[...data.requests,...data.projects].filter(overdue);
+    const waiting=[...data.requests,...data.projects].filter(x=>x.status==='Waiting on Client');
+    const week=[...data.requests,...data.projects].filter(x=>dueThisWeek(x)&&!overdue(x));
+    $('attRequestCount').textContent=newUrgent.length;$('attOverdueCount').textContent=over.length;$('attWaitingCount').textContent=waiting.length;$('attWeekCount').textContent=week.length;
+    $('attRequests').innerHTML=newUrgent.length?newUrgent.map(attentionItemMarkup).join(''):'<div class="empty" style="display:block;padding:14px">Nothing new or urgent.</div>';
+    $('attOverdue').innerHTML=over.length?over.map(attentionItemMarkup).join(''):'<div class="empty" style="display:block;padding:14px">No overdue work.</div>';
+    $('attWaiting').innerHTML=waiting.length?waiting.map(attentionItemMarkup).join(''):'<div class="empty" style="display:block;padding:14px">Nothing waiting on a client.</div>';
+    $('attWeek').innerHTML=week.length?week.map(attentionItemMarkup).join(''):'<div class="empty" style="display:block;padding:14px">Nothing due this week.</div>';
+  }
+  function render(){populateClientOptions();updateStats();renderRequests();renderProjects();renderAttention()}
+
+  function setView(v){
+    currentView=v;document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.view===v));
+    $('requestsView').style.display=v==='requests'?'block':'none';$('projectsView').style.display=v==='projects'?'block':'none';$('attentionView').style.display=v==='attention'?'block':'none';
+    $('priorityFilter').disabled=v==='projects';populateStatusFilter();render()
+  }
+
+  function requestFor(id){return data.requests.find(x=>x.id===id)}
+  function projectFor(id){return data.projects.find(x=>x.id===id)}
+
+  function openRequestEditor(id=null){
+    editingRequestId=id;const r=id?requestFor(id):null;
+    $('requestModalTitle').textContent=r?'Edit Request':'New Request';$('deleteRequestBtn').style.visibility=r?'visible':'hidden';
+    populateClientOptions();
+    $('requestClient').value=r?.client||clients()[0]?.business||'';$('requestTitle').value=r?.title||'';$('requestPriority').value=r?.priority||'Normal';$('requestStatus').value=r?.status||'New';
+    $('requestDate').value=r?.requestedDate||todayISO();$('requestDue').value=r?.dueDate||'';$('requestSource').value=r?.source||'VMS Admin';$('requestService').value=r?.service||'';$('requestDetail').value=r?.detail||'';
+    $('requestModal').classList.add('show')
+  }
+  function saveRequest(){
+    const title=$('requestTitle').value.trim();if(!title){toast('Add a request title');return}
+    const client=$('requestClient').value;const old=editingRequestId?requestFor(editingRequestId):null;
+    const c=clients().find(x=>x.business===client);
+    const rec={
+      id:editingRequestId||'req-'+Date.now(),clientId:c?.id||old?.clientId||'',client,title,priority:$('requestPriority').value,status:$('requestStatus').value,
+      requestedDate:$('requestDate').value,dueDate:$('requestDue').value,source:$('requestSource').value,service:$('requestService').value.trim(),detail:$('requestDetail').value.trim(),
+      linkedProjectId:old?.linkedProjectId||'',createdAt:old?.createdAt||nowIso(),updatedAt:nowIso(),history:Array.isArray(old?.history)?old.history:[]
+    };
+    rec.history.push({at:nowIso(),title:old?'Request updated':'Request created',detail:`${rec.status} · ${rec.priority}`});
+    if(old)data.requests[data.requests.findIndex(x=>x.id===editingRequestId)]=rec;else data.requests.unshift(rec);
+    persist();render();closeModal('requestModal');toast(old?'Request updated':'Request created')
+  }
+  function deleteRequest(){
+    const r=requestFor(editingRequestId);if(!r)return;if(!confirm(`Delete "${r.title}"?`))return;
+    data.requests=data.requests.filter(x=>x.id!==r.id);
+    data.projects.forEach(p=>{if(p.linkedRequestId===r.id)p.linkedRequestId=''});
+    persist();render();closeModal('requestModal');toast('Request deleted')
+  }
+
+  function linkedRequestOptions(client,selected=''){
+    const rs=data.requests.filter(x=>x.client===client);
+    return '<option value="">None</option>'+rs.map(r=>`<option value="${r.id}" ${r.id===selected?'selected':''}>${esc(r.title)}</option>`).join('')
+  }
+  function openProjectEditor(id=null,seed={}){
+    editingProjectId=id;const p=id?projectFor(id):null;
+    $('projectModalTitle').textContent=p?'Edit Project':'New Project';$('deleteProjectBtn').style.visibility=p?'visible':'hidden';
+    populateClientOptions();
+    const client=p?.client||seed.client||clients()[0]?.business||'';$('projectClient').value=client;$('projectName').value=p?.name||seed.name||'';$('projectType').value=p?.type||seed.type||'Other';
+    $('projectStatus').value=p?.status||seed.status||'Not Started';$('projectStart').value=p?.startDate||seed.startDate||todayISO();$('projectDue').value=p?.dueDate||seed.dueDate||'';
+    $('projectProgress').value=String(p?.progress??seed.progress??0);$('projectNote').value=p?.note||seed.note||'';
+    $('projectLinkedRequest').innerHTML=linkedRequestOptions(client,p?.linkedRequestId||seed.linkedRequestId||'');
+    $('projectModal').classList.add('show')
+  }
+  function saveProject(){
+    const name=$('projectName').value.trim();if(!name){toast('Add a project name');return}
+    const client=$('projectClient').value;const old=editingProjectId?projectFor(editingProjectId):null;const c=clients().find(x=>x.business===client);
+    const rec={
+      id:editingProjectId||'proj-'+Date.now(),clientId:c?.id||old?.clientId||'',client,name,type:$('projectType').value,status:$('projectStatus').value,
+      progress:Number($('projectProgress').value)||0,startDate:$('projectStart').value,dueDate:$('projectDue').value,linkedRequestId:$('projectLinkedRequest').value,
+      note:$('projectNote').value.trim(),createdAt:old?.createdAt||nowIso(),updatedAt:nowIso(),history:Array.isArray(old?.history)?old.history:[]
+    };
+    if(rec.status==='Completed')rec.progress=100;
+    rec.history.push({at:nowIso(),title:old?'Project updated':'Project created',detail:`${rec.status} · ${rec.progress}%`});
+    if(old)data.projects[data.projects.findIndex(x=>x.id===editingProjectId)]=rec;else data.projects.unshift(rec);
+    if(rec.linkedRequestId){
+      const r=requestFor(rec.linkedRequestId);if(r){r.linkedProjectId=rec.id;if(!['Completed','Declined','Canceled'].includes(r.status))r.status=rec.status==='Completed'?'Completed':'Approved';r.updatedAt=nowIso();r.history=r.history||[];r.history.push({at:nowIso(),title:'Linked to project',detail:rec.name})}
+    }
+    persist();render();closeModal('projectModal');toast(old?'Project updated':'Project created')
+  }
+  function deleteProject(){
+    const p=projectFor(editingProjectId);if(!p)return;if(!confirm(`Delete "${p.name}"?`))return;
+    data.projects=data.projects.filter(x=>x.id!==p.id);
+    data.requests.forEach(r=>{if(r.linkedProjectId===p.id)r.linkedProjectId=''});
+    persist();render();closeModal('projectModal');toast('Project deleted')
+  }
+
+  function convertRequest(id){
+    const r=requestFor(id);if(!r)return;if(r.linkedProjectId){toast('This request already has a project');return}
+    closeModal('requestDetailModal');
+    openProjectEditor(null,{client:r.client,name:r.title,type:guessProjectType(r.service),status:'Not Started',startDate:todayISO(),dueDate:r.dueDate,progress:0,note:r.detail,linkedRequestId:r.id})
+  }
+  function guessProjectType(service){
+    const s=String(service||'').toLowerCase();
+    if(s.includes('website'))return 'Website';if(s.includes('qr'))return 'Smart QR';if(s.includes('local'))return 'Local Presence';if(s.includes('review'))return 'Review Growth';if(s.includes('linkhub'))return 'VMS LinkHub';if(s.includes('audit'))return 'Audit';return 'Other'
+  }
+  function completeProject(id){
+    const p=projectFor(id);if(!p)return;p.status='Completed';p.progress=100;p.updatedAt=nowIso();p.history=p.history||[];p.history.push({at:nowIso(),title:'Project completed',detail:'100% complete'});
+    if(p.linkedRequestId){const r=requestFor(p.linkedRequestId);if(r){r.status='Completed';r.updatedAt=nowIso();r.history=r.history||[];r.history.push({at:nowIso(),title:'Request completed',detail:`Project completed: ${p.name}`})}}
+    persist();render();closeModal('projectDetailModal');toast('Project completed')
+  }
+
+  function openRequestDetails(id){
+    detailRequestId=id;const r=requestFor(id);if(!r)return;const p=projectFor(r.linkedProjectId);
+    $('rdTitle').textContent=r.title;$('rdClient').textContent=`${r.client} · ${r.service||'General Request'}`;$('rdStatus').innerHTML=`<span class="badge ${statusClass(r.status)}">${esc(r.status)}</span>`;
+    $('rdPriority').textContent=r.priority;$('rdRequested').textContent=niceDate(r.requestedDate);$('rdDue').textContent=niceDate(r.dueDate);$('rdSource').textContent=r.source||'—';$('rdService').textContent=r.service||'—';$('rdProject').textContent=p?.name||'Not linked';
+    $('rdDetail').textContent=r.detail||'No request details.';$('convertRequestBtn').style.display=r.linkedProjectId||isClosedRequest(r)?'none':'inline-flex';
+    $('rdTimeline').innerHTML=(r.history||[]).slice().reverse().map(h=>`<div class="timeline-item"><div><strong>${esc(h.title)}</strong><span>${esc(h.detail||'')}</span></div><div><span>${new Date(h.at).toLocaleString()}</span></div></div>`).join('');
+    $('requestDetailModal').classList.add('show')
+  }
+  function openProjectDetails(id){
+    detailProjectId=id;const p=projectFor(id);if(!p)return;const r=requestFor(p.linkedRequestId);const reason=attentionReason(p);
+    $('pdTitle').textContent=p.name;$('pdClient').textContent=`${p.client} · ${p.type}`;$('pdStatus').innerHTML=`<span class="badge ${statusClass(p.status)}">${esc(p.status)}</span>`;
+    $('pdType').textContent=p.type;$('pdStart').textContent=niceDate(p.startDate);$('pdDue').textContent=niceDate(p.dueDate);$('pdProgress').textContent=`${Number(p.progress)||0}%`;$('pdRequest').textContent=r?.title||'Not linked';$('pdAttention').textContent=reason||'None';
+    $('pdNote').textContent=p.note||'No project notes.';$('completeProjectBtn').style.display=isClosedProject(p)?'none':'inline-flex';
+    $('pdTimeline').innerHTML=(p.history||[]).slice().reverse().map(h=>`<div class="timeline-item"><div><strong>${esc(h.title)}</strong><span>${esc(h.detail||'')}</span></div><div><span>${new Date(h.at).toLocaleString()}</span></div></div>`).join('');
+    $('projectDetailModal').classList.add('show')
+  }
+
+  function closeFloatingMenu(){$('floatingMenu').classList.remove('show');$('floatingMenu').innerHTML='';floatingContext=null}
+  function positionFloatingMenu(btn){
+    const menu=$('floatingMenu'),r=btn.getBoundingClientRect();menu.style.visibility='hidden';menu.classList.add('show');const m=menu.getBoundingClientRect(),gap=6,margin=10;
+    let left=Math.max(margin,Math.min(r.right-m.width,window.innerWidth-m.width-margin));let top=r.bottom+gap;if(top+m.height>window.innerHeight-margin)top=r.top-m.height-gap;top=Math.max(margin,Math.min(top,window.innerHeight-m.height-margin));
+    menu.style.left=`${Math.round(left)}px`;menu.style.top=`${Math.round(top)}px`;menu.style.visibility='visible'
+  }
+  function openWorkMenu(btn,kind,id){
+    floatingContext={kind,id};const menu=$('floatingMenu');const item=kind==='request'?requestFor(id):projectFor(id);
+    if(kind==='request'){
+      menu.innerHTML=`<button data-action="edit" type="button">Edit</button>${!item.linkedProjectId&&!isClosedRequest(item)?'<button data-action="convert" type="button">Create Project</button>':''}<button data-action="duplicate" type="button">Duplicate</button>${!isClosedRequest(item)?'<button data-action="complete" type="button">Mark Completed</button>':''}<button class="danger" data-action="delete" type="button">Delete</button>`;
+    }else{
+      menu.innerHTML=`<button data-action="edit" type="button">Edit</button><button data-action="duplicate" type="button">Duplicate</button>${!isClosedProject(item)?'<button data-action="complete" type="button">Mark Completed</button>':''}<button class="danger" data-action="delete" type="button">Delete</button>`;
+    }
+    positionFloatingMenu(btn)
+  }
+  function duplicateItem(kind,id){
+    if(kind==='request'){const r=structuredClone(requestFor(id));r.id='req-'+Date.now();r.title+=' Copy';r.status='New';r.linkedProjectId='';r.createdAt=r.updatedAt=nowIso();r.history=[{at:nowIso(),title:'Request duplicated',detail:`From ${id}`}];data.requests.unshift(r);toast('Request duplicated')}
+    else{const p=structuredClone(projectFor(id));p.id='proj-'+Date.now();p.name+=' Copy';p.status='Not Started';p.progress=0;p.linkedRequestId='';p.createdAt=p.updatedAt=nowIso();p.history=[{at:nowIso(),title:'Project duplicated',detail:`From ${id}`}];data.projects.unshift(p);toast('Project duplicated')}
+    persist();render()
+  }
+
+  function handleRows(e){
+    const row=e.target.closest('.work-row');if(!row)return;const kind=row.dataset.kind,id=row.dataset.id;
+    if(window.matchMedia('(max-width:760px)').matches){
+      if(e.target.closest('.mobile-summary')){const was=row.classList.contains('expanded');document.querySelectorAll('.work-row.expanded').forEach(x=>x.classList.remove('expanded'));row.classList.toggle('expanded',!was);return}
+      if(e.target.closest('.request-edit'))return openRequestEditor(id);
+      if(e.target.closest('.request-convert'))return convertRequest(id);
+      if(e.target.closest('.project-edit'))return openProjectEditor(id);
+      if(e.target.closest('.project-complete'))return completeProject(id);
+      return;
+    }
+    const btn=e.target.closest('.work-menu-btn');if(btn){e.stopPropagation();return openWorkMenu(btn,kind,id)}
+    return kind==='request'?openRequestDetails(id):openProjectDetails(id)
+  }
+
+  document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>closeModal(b.dataset.close));
+  document.querySelectorAll('.modal-backdrop').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('show')}));
+  document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>setView(b.dataset.view));
+  $('newRequestBtn').onclick=$('newRequestTopBtn').onclick=()=>openRequestEditor();
+  $('newProjectBtn').onclick=$('newProjectTopBtn').onclick=()=>openProjectEditor();
+  $('saveRequestBtn').onclick=saveRequest;$('deleteRequestBtn').onclick=deleteRequest;$('saveProjectBtn').onclick=saveProject;$('deleteProjectBtn').onclick=deleteProject;
+  $('convertRequestBtn').onclick=()=>convertRequest(detailRequestId);$('editRequestDetailBtn').onclick=()=>{closeModal('requestDetailModal');openRequestEditor(detailRequestId)};
+  $('completeProjectBtn').onclick=()=>completeProject(detailProjectId);$('editProjectDetailBtn').onclick=()=>{closeModal('projectDetailModal');openProjectEditor(detailProjectId)};
+  $('projectClient').addEventListener('change',()=>{$('projectLinkedRequest').innerHTML=linkedRequestOptions($('projectClient').value,'')});
+  $('projectStatus').addEventListener('change',()=>{if($('projectStatus').value==='Completed')$('projectProgress').value='100'});
+  $('filterBtn').onclick=()=>$('filterBar').classList.toggle('show');
+  $('clearFiltersBtn').onclick=()=>{$('clientFilter').value='';$('statusFilter').value='';$('priorityFilter').value='';$('dueFilter').value='';$('searchInput').value='';render()};
+  ['searchInput'].forEach(id=>$(id).addEventListener('input',render));
+  ['clientFilter','statusFilter','priorityFilter','dueFilter'].forEach(id=>$(id).addEventListener('change',render));
+  $('requestRows').onclick=handleRows;$('projectRows').onclick=handleRows;
+  $('attentionView').onclick=e=>{const item=e.target.closest('.attention-item');if(!item)return;item.dataset.kind==='request'?openRequestDetails(item.dataset.id):openProjectDetails(item.dataset.id)};
+  $('floatingMenu').onclick=e=>{e.stopPropagation();const a=e.target.dataset.action;if(!a||!floatingContext)return;const {kind,id}=floatingContext;closeFloatingMenu();
+    if(a==='edit')return kind==='request'?openRequestEditor(id):openProjectEditor(id);
+    if(a==='convert')return convertRequest(id);
+    if(a==='duplicate')return duplicateItem(kind,id);
+    if(a==='complete'){if(kind==='request'){const r=requestFor(id);r.status='Completed';r.updatedAt=nowIso();r.history=r.history||[];r.history.push({at:nowIso(),title:'Request completed',detail:'Marked complete by VMS Admin'});persist();render();toast('Request completed');return}return completeProject(id)}
+    if(a==='delete'){if(kind==='request'){editingRequestId=id;return deleteRequest()}editingProjectId=id;return deleteProject()}
+  };
+  document.addEventListener('click',e=>{if(!e.target.closest('.work-menu-btn')&&!e.target.closest('#floatingMenu'))closeFloatingMenu()});
+  window.addEventListener('resize',closeFloatingMenu);window.addEventListener('scroll',closeFloatingMenu,true);
+  $('mobileMenuBtn').onclick=()=>{$('sidebar').classList.add('open');$('drawerBackdrop').classList.add('show')};
+  $('drawerBackdrop').onclick=()=>{$('sidebar').classList.remove('open');$('drawerBackdrop').classList.remove('show')};
+
+  populateClientOptions();populateStatusFilter();render();
+})();
+</script>
+<script src="../assets/vms-core.js"></script><script>(async()=>{if(location.protocol!=='file:'){await VMSAuth.requireSession('admin')}})();</script></body>
+</html>
