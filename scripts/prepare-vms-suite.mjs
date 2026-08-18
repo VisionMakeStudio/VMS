@@ -4,8 +4,17 @@ import { fileURLToPath } from "node:url";
 
 const projectDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const workspaceDir = path.resolve(projectDir, "../..");
-const approvedDir = path.join(workspaceDir, "preview-client-portal");
-const libraryQr = path.join(workspaceDir, "library-downloads", "vms_qr_tools_FINAL_MOBILE_FIXED.html");
+const resolveSourcePath = (configuredPath, fallbackPath) => configuredPath
+  ? path.resolve(projectDir, configuredPath)
+  : fallbackPath;
+const approvedDir = resolveSourcePath(
+  process.env.CLIENT_PORTAL_PATH,
+  path.join(workspaceDir, "preview-client-portal"),
+);
+const libraryQr = resolveSourcePath(
+  process.env.VMS_QR_SOURCE_PATH,
+  path.join(workspaceDir, "library-downloads", "vms_qr_tools_FINAL_MOBILE_FIXED.html"),
+);
 const publicDir = path.join(projectDir, "public");
 const adminDir = path.join(publicDir, "admin");
 const portalDir = path.join(publicDir, "portal");
@@ -151,25 +160,60 @@ function preparePortalHtml(source) {
   return addMarkupButtonTypes(html);
 }
 
-await access(approvedDir);
-await rm(adminDir, { recursive: true, force: true });
-await rm(portalDir, { recursive: true, force: true });
-await mkdir(adminDir, { recursive: true });
-await mkdir(portalDir, { recursive: true });
-
-for (const file of adminFiles) {
-  const source = await readFile(path.join(approvedDir, file), "utf8");
-  const output = prepareAdminHtml(source);
-  await writeFile(path.join(adminDir, file), output, "utf8");
-  if (file === "dashboard.html") await writeFile(path.join(adminDir, "index.html"), output, "utf8");
+async function allPathsExist(paths) {
+  try {
+    await Promise.all(paths.map((file) => access(file)));
+    return true;
+  } catch {
+    return false;
+  }
 }
 
-const qrSource = await readFile(libraryQr, "utf8");
-await writeFile(path.join(adminDir, "vms_qr_tools_FINAL_MOBILE_FIXED.html"), prepareAdminHtml(qrSource), "utf8");
+async function prepareSuite() {
+  const sourceFiles = [
+    ...adminFiles.map((file) => path.join(approvedDir, file)),
+    path.join(approvedDir, "Client-Portal.html"),
+    libraryQr,
+  ];
+  const deploymentFiles = [
+    ...adminFiles.map((file) => path.join(adminDir, file)),
+    path.join(adminDir, "index.html"),
+    path.join(adminDir, "vms_qr_tools_FINAL_MOBILE_FIXED.html"),
+    path.join(portalDir, "index.html"),
+    path.join(portalDir, "Client-Portal.html"),
+  ];
 
-const portalSource = await readFile(path.join(approvedDir, "Client-Portal.html"), "utf8");
-const preparedPortal = preparePortalHtml(portalSource);
-await writeFile(path.join(portalDir, "index.html"), preparedPortal, "utf8");
-await writeFile(path.join(portalDir, "Client-Portal.html"), preparedPortal, "utf8");
+  if (!await allPathsExist(sourceFiles)) {
+    if (await allPathsExist(deploymentFiles)) {
+      console.warn("External VMS suite sources are unavailable; using the checked-in deployment copies.");
+      return;
+    }
+    throw new Error(
+      "VMS suite sources are unavailable and deployment copies are incomplete. Set CLIENT_PORTAL_PATH and VMS_QR_SOURCE_PATH to valid source locations.",
+    );
+  }
 
-console.log(`Prepared ${adminFiles.length + 2} protected Admin files and the Client Portal deployment copy.`);
+  await rm(adminDir, { recursive: true, force: true });
+  await rm(portalDir, { recursive: true, force: true });
+  await mkdir(adminDir, { recursive: true });
+  await mkdir(portalDir, { recursive: true });
+
+  for (const file of adminFiles) {
+    const source = await readFile(path.join(approvedDir, file), "utf8");
+    const output = prepareAdminHtml(source);
+    await writeFile(path.join(adminDir, file), output, "utf8");
+    if (file === "dashboard.html") await writeFile(path.join(adminDir, "index.html"), output, "utf8");
+  }
+
+  const qrSource = await readFile(libraryQr, "utf8");
+  await writeFile(path.join(adminDir, "vms_qr_tools_FINAL_MOBILE_FIXED.html"), prepareAdminHtml(qrSource), "utf8");
+
+  const portalSource = await readFile(path.join(approvedDir, "Client-Portal.html"), "utf8");
+  const preparedPortal = preparePortalHtml(portalSource);
+  await writeFile(path.join(portalDir, "index.html"), preparedPortal, "utf8");
+  await writeFile(path.join(portalDir, "Client-Portal.html"), preparedPortal, "utf8");
+
+  console.log(`Prepared ${adminFiles.length + 2} protected Admin files and the Client Portal deployment copy.`);
+}
+
+await prepareSuite();
