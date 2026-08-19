@@ -1,0 +1,1053 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <script>
+    if (location.protocol !== 'file:') {
+      document.documentElement.classList.add('vms-auth-pending');
+    }
+  </script>
+
+  <style id="vms-auth-privacy-gate">
+    html.vms-auth-pending body {
+      overflow: hidden !important;
+    }
+
+    html.vms-auth-pending body > * {
+      visibility: hidden !important;
+    }
+
+    html.vms-auth-pending body::before {
+      content: 'Verifying secure Admin session…';
+      position: fixed;
+      inset: 0;
+      z-index: 2147483647;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: linear-gradient(145deg, #003049, #08283d);
+      color: #fff;
+      font: 800 14px/1.45 Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      visibility: visible !important;
+    }
+  </style>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>VMS Admin Security</title>
+
+  <link rel="stylesheet" href="../assets/vms-suite.css">
+  <script src="../assets/config.js"></script>
+
+  <style>
+    :root{
+      --vms-navy:#003049;
+      --vms-deep:#08283d;
+      --vms-cream:#FDF0D5;
+      --vms-red:#C1121F;
+      --vms-blue:#669BBC;
+      --vms-orange:#EB5E28;
+      --vms-bg:#eef4f6;
+      --vms-line:#dbe5ea;
+      --vms-ink:#173443;
+      --vms-muted:#6e808a;
+      --vms-soft:#f7fafb;
+      --vms-shadow:0 18px 60px rgba(0,48,73,.10);
+      --vms-shadow-soft:0 8px 26px rgba(0,48,73,.06);
+      --radius-xl:28px;
+      --radius-lg:22px;
+      --radius-md:16px;
+      --radius-sm:12px;
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      font-family:Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(102,155,188,.18), transparent 28%),
+        radial-gradient(circle at top right, rgba(235,94,40,.10), transparent 22%),
+        linear-gradient(180deg, #f4f8fa 0%, #eef4f6 100%);
+      color:var(--vms-ink);
+    }
+
+    .page{
+      width:min(1180px, calc(100% - 28px));
+      margin:18px auto 56px;
+    }
+
+    .hero{
+      position:relative;
+      overflow:hidden;
+      background:
+        linear-gradient(145deg, rgba(0,48,73,.97), rgba(8,40,61,.96));
+      color:#fff;
+      border-radius:30px;
+      padding:22px;
+      box-shadow:0 24px 70px rgba(0,48,73,.20);
+      margin-bottom:16px;
+    }
+
+    .hero::before{
+      content:"";
+      position:absolute;
+      inset:auto -60px -80px auto;
+      width:220px;
+      height:220px;
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(255,255,255,.16), transparent 62%);
+      pointer-events:none;
+    }
+
+    .hero-top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:16px;
+    }
+
+    .hero-brand{
+      display:flex;
+      align-items:flex-start;
+      gap:14px;
+      min-width:0;
+    }
+
+    .hero-logo{
+      width:54px;
+      height:54px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      background:rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.14);
+      backdrop-filter:blur(10px);
+      flex:0 0 auto;
+    }
+
+    .hero-logo img{
+      width:34px;
+      height:34px;
+      object-fit:contain;
+    }
+
+    .eyebrow{
+      display:inline-block;
+      font-size:10px;
+      line-height:1;
+      letter-spacing:.16em;
+      font-weight:900;
+      color:#a9c4d1;
+      text-transform:uppercase;
+      margin-bottom:8px;
+    }
+
+    .hero h1{
+      margin:0;
+      font-size:34px;
+      line-height:1;
+      letter-spacing:-.03em;
+      font-weight:900;
+    }
+
+    .hero p{
+      margin:10px 0 0;
+      max-width:700px;
+      color:rgba(255,255,255,.82);
+      font-size:14px;
+      line-height:1.6;
+    }
+
+    .hero-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      flex:0 0 auto;
+    }
+
+    .ghost-btn,
+    .primary-btn,
+    .secondary-btn,
+    .danger-btn{
+      appearance:none;
+      border:none;
+      cursor:pointer;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      border-radius:16px;
+      min-height:52px;
+      padding:0 18px;
+      font-weight:900;
+      font-size:13px;
+      line-height:1;
+      transition:transform .16s ease, box-shadow .16s ease, background .16s ease, border-color .16s ease;
+      -webkit-tap-highlight-color:transparent;
+    }
+
+    .ghost-btn:hover,
+    .primary-btn:hover,
+    .secondary-btn:hover,
+    .danger-btn:hover{
+      transform:translateY(-1px);
+    }
+
+    .ghost-btn{
+      background:rgba(255,255,255,.10);
+      color:#fff;
+      border:1px solid rgba(255,255,255,.14);
+      backdrop-filter:blur(10px);
+    }
+
+    .ghost-btn:active,
+    .primary-btn:active,
+    .secondary-btn:active,
+    .danger-btn:active{
+      transform:translateY(0);
+    }
+
+    .stats{
+      margin-top:18px;
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0, 1fr));
+      gap:10px;
+    }
+
+    .stat{
+      border-radius:18px;
+      padding:14px 14px;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.10);
+      backdrop-filter:blur(10px);
+    }
+
+    .stat-label{
+      color:#a9c4d1;
+      font-size:10px;
+      font-weight:900;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      margin-bottom:7px;
+    }
+
+    .stat-value{
+      color:#fff;
+      font-size:15px;
+      line-height:1.3;
+      font-weight:800;
+      word-break:break-word;
+    }
+
+    .layout{
+      display:grid;
+      grid-template-columns:1.08fr .92fr;
+      gap:16px;
+      align-items:start;
+    }
+
+    .stack{
+      display:grid;
+      gap:16px;
+    }
+
+    .card{
+      background:rgba(255,255,255,.78);
+      backdrop-filter:blur(16px);
+      -webkit-backdrop-filter:blur(16px);
+      border:1px solid rgba(255,255,255,.70);
+      border-radius:var(--radius-xl);
+      box-shadow:var(--vms-shadow-soft);
+      overflow:hidden;
+    }
+
+    .card-head{
+      padding:22px 22px 0;
+    }
+
+    .card-head .eyebrow{
+      color:var(--vms-blue);
+      margin-bottom:7px;
+    }
+
+    .card-head h2{
+      margin:0;
+      color:var(--vms-navy);
+      font-size:26px;
+      line-height:1.05;
+      letter-spacing:-.02em;
+    }
+
+    .card-head p{
+      margin:10px 0 0;
+      color:var(--vms-muted);
+      font-size:13px;
+      line-height:1.6;
+    }
+
+    .card-body{
+      padding:20px 22px 22px;
+    }
+
+    .glass-section{
+      background:rgba(255,255,255,.72);
+      border:1px solid rgba(220,230,235,.95);
+      border-radius:20px;
+      padding:16px;
+    }
+
+    .form-grid{
+      display:grid;
+      gap:14px;
+    }
+
+    .field{
+      display:grid;
+      gap:7px;
+    }
+
+    label{
+      font-size:11px;
+      font-weight:900;
+      color:#5e7783;
+      letter-spacing:.01em;
+    }
+
+    input{
+      width:100%;
+      height:54px;
+      border-radius:16px;
+      border:1px solid #d5e1e6;
+      background:rgba(255,255,255,.94);
+      padding:0 15px;
+      color:#173443;
+      font-size:16px;
+      outline:none;
+      transition:border-color .16s ease, box-shadow .16s ease, background .16s ease;
+    }
+
+    input:focus{
+      border-color:var(--vms-blue);
+      box-shadow:0 0 0 4px rgba(102,155,188,.16);
+      background:#fff;
+    }
+
+    .btn-row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .btn-row > *{
+      flex:1 1 180px;
+    }
+
+    .primary-btn{
+      background:linear-gradient(135deg, #003049, #0b3a56);
+      color:#fff;
+      box-shadow:0 14px 28px rgba(0,48,73,.18);
+    }
+
+    .secondary-btn{
+      background:#fff;
+      color:var(--vms-navy);
+      border:1px solid #d6e2e7;
+    }
+
+    .danger-btn{
+      background:linear-gradient(135deg, #c1121f, #a60f1b);
+      color:#fff;
+      box-shadow:0 14px 28px rgba(193,18,31,.16);
+    }
+
+    .status{
+      margin-top:12px;
+      min-height:20px;
+      border-radius:16px;
+      padding:12px 14px;
+      background:#f5f8f9;
+      color:#607882;
+      font-size:12px;
+      line-height:1.5;
+      border:1px solid #e5edef;
+    }
+
+    .status.ok{
+      background:#edf7f2;
+      border-color:#d5eadf;
+      color:#227755;
+    }
+
+    .status.error{
+      background:#fbf0f1;
+      border-color:#f0d8db;
+      color:#a82932;
+    }
+
+    .mfa-good{
+      display:none;
+      margin-bottom:14px;
+      border-radius:18px;
+      padding:14px 15px;
+      background:linear-gradient(135deg, #edf7f2, #f7fbf8);
+      border:1px solid #d9ebe0;
+      color:#1d7754;
+      font-size:13px;
+      font-weight:800;
+      line-height:1.4;
+    }
+
+    .mfa-good.show{
+      display:block;
+    }
+
+    .setup{
+      display:none;
+      margin-top:14px;
+    }
+
+    .setup.show{
+      display:block;
+    }
+
+    .setup-shell{
+      display:grid;
+      gap:14px;
+      padding:16px;
+      border-radius:22px;
+      background:linear-gradient(180deg, rgba(255,255,255,.94), rgba(247,250,251,.92));
+      border:1px solid #e0eaee;
+    }
+
+    .qr-wrap{
+      display:grid;
+      place-items:center;
+      padding:8px;
+      border-radius:22px;
+      background:#fff;
+      border:1px solid #e1eaee;
+      box-shadow:0 6px 16px rgba(0,48,73,.05);
+    }
+
+    .qr{
+      width:220px;
+      max-width:100%;
+      aspect-ratio:1/1;
+      object-fit:contain;
+      border-radius:16px;
+    }
+
+    .secret-wrap{
+      display:grid;
+      gap:8px;
+    }
+
+    .secret{
+      border-radius:16px;
+      border:1px solid #dde7eb;
+      background:#fbfcfd;
+      color:#003049;
+      padding:14px;
+      font:800 12px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+      word-break:break-word;
+    }
+
+    .warning{
+      margin-top:14px;
+      border-radius:18px;
+      border:1px solid #f0dfc5;
+      background:linear-gradient(180deg, #fff9ef, #fff5e7);
+      color:#7b5b2d;
+      padding:14px 15px;
+      font-size:12px;
+      line-height:1.6;
+    }
+
+    .warning strong{
+      color:#6f4a12;
+    }
+
+    .meta{
+      display:grid;
+      gap:10px;
+    }
+
+    .meta-row{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:16px;
+      padding:14px 0;
+      border-bottom:1px solid #ecf1f3;
+    }
+
+    .meta-row:last-child{
+      border-bottom:none;
+      padding-bottom:0;
+    }
+
+    .meta-row:first-child{
+      padding-top:0;
+    }
+
+    .meta-label{
+      color:#7a8e97;
+      font-size:11px;
+      font-weight:900;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      flex:0 0 auto;
+    }
+
+    .meta-value{
+      color:var(--vms-navy);
+      font-size:13px;
+      font-weight:800;
+      line-height:1.45;
+      text-align:right;
+      word-break:break-word;
+    }
+
+    .mini-note{
+      margin-top:10px;
+      color:#7a8d96;
+      font-size:12px;
+      line-height:1.55;
+    }
+
+    @media (max-width: 980px){
+      .layout{
+        grid-template-columns:1fr;
+      }
+    }
+
+    @media (max-width: 760px){
+      .page{
+        width:min(100% - 18px, 100%);
+        margin:10px auto 36px;
+      }
+
+      .hero{
+        border-radius:24px;
+        padding:18px;
+      }
+
+      .hero-top{
+        flex-direction:column;
+        align-items:stretch;
+      }
+
+      .hero h1{
+        font-size:28px;
+      }
+
+      .hero p{
+        font-size:13px;
+      }
+
+      .hero-actions{
+        width:100%;
+      }
+
+      .hero-actions > *{
+        width:100%;
+      }
+
+      .stats{
+        grid-template-columns:1fr;
+      }
+
+      .card{
+        border-radius:24px;
+      }
+
+      .card-head{
+        padding:18px 18px 0;
+      }
+
+      .card-head h2{
+        font-size:22px;
+      }
+
+      .card-body{
+        padding:18px;
+      }
+
+      .glass-section{
+        border-radius:18px;
+        padding:14px;
+      }
+
+      .btn-row{
+        flex-direction:column;
+      }
+
+      .btn-row > *{
+        width:100%;
+        flex:1 1 auto;
+      }
+
+      .primary-btn,
+      .secondary-btn,
+      .danger-btn,
+      .ghost-btn{
+        width:100%;
+        min-height:56px;
+        border-radius:16px;
+        font-size:14px;
+      }
+
+      .hero-logo{
+        width:50px;
+        height:50px;
+        border-radius:14px;
+      }
+
+      .hero-logo img{
+        width:30px;
+        height:30px;
+      }
+
+      .qr{
+        width:100%;
+        max-width:230px;
+      }
+
+      .meta-row{
+        flex-direction:column;
+        gap:6px;
+      }
+
+      .meta-value{
+        text-align:left;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="hero-top">
+        <div class="hero-brand">
+          <div class="hero-logo">
+            <img src="../assets/vms-logo.png" alt="Vision Make Studio">
+          </div>
+
+          <div>
+            <span class="eyebrow">VMS ADMIN</span>
+            <h1>Security & Access</h1>
+            <p>
+              Protect your Admin workspace with a strong password and authenticator-based
+              2-step verification, while keeping the experience clean, fast, and mobile-friendly.
+            </p>
+          </div>
+        </div>
+
+        <div class="hero-actions">
+          <a class="ghost-btn" href="/admin/">Back to Admin</a>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-label">Login Method</div>
+          <div class="stat-value">Email + Password</div>
+        </div>
+
+        <div class="stat">
+          <div class="stat-label">Second Step</div>
+          <div class="stat-value">Authenticator Code</div>
+        </div>
+
+        <div class="stat">
+          <div class="stat-label">Backup Access</div>
+          <div class="stat-value">Magic Link Recovery</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="layout">
+      <div class="stack">
+        <article class="card">
+          <div class="card-head">
+            <span class="eyebrow">ADMIN PASSWORD</span>
+            <h2>Create or Change Password</h2>
+            <p>
+              This becomes your normal VMS Admin sign-in password. It is sent directly to
+              Supabase and is never displayed back to VMS.
+            </p>
+          </div>
+
+          <div class="card-body">
+            <div class="glass-section">
+              <form id="passwordForm" class="form-grid">
+                <div class="field">
+                  <label for="newPassword">New password</label>
+                  <input
+                    id="newPassword"
+                    type="password"
+                    autocomplete="new-password"
+                    minlength="12"
+                    required
+                    placeholder="At least 12 characters"
+                  >
+                </div>
+
+                <div class="field">
+                  <label for="confirmPassword">Confirm password</label>
+                  <input
+                    id="confirmPassword"
+                    type="password"
+                    autocomplete="new-password"
+                    minlength="12"
+                    required
+                    placeholder="Type it again"
+                  >
+                </div>
+
+                <div class="btn-row">
+                  <button class="primary-btn" id="savePasswordBtn" type="submit">
+                    Save Admin Password
+                  </button>
+                </div>
+              </form>
+
+              <div class="status" id="passwordStatus">
+                Use at least 12 characters and choose a password you do not reuse elsewhere.
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <span class="eyebrow">2-STEP VERIFICATION</span>
+            <h2>Authenticator App Setup</h2>
+            <p>
+              Add a 6-digit code from Apple Passwords, Google Authenticator, 1Password,
+              Microsoft Authenticator, or another TOTP app.
+            </p>
+          </div>
+
+          <div class="card-body">
+            <div class="mfa-good" id="mfaEnabled">
+              ✓ Authenticator 2-step verification is already enabled for this Admin account.
+            </div>
+
+            <div class="glass-section">
+              <div class="btn-row">
+                <button class="primary-btn" id="startMfaBtn" type="button">
+                  Set Up Authenticator
+                </button>
+              </div>
+
+              <div class="setup" id="mfaSetup">
+                <div class="setup-shell">
+                  <div class="qr-wrap">
+                    <img class="qr" id="qrCode" alt="Authenticator QR code">
+                  </div>
+
+                  <div class="secret-wrap">
+                    <label>Manual setup secret</label>
+                    <div class="secret" id="secret"></div>
+                  </div>
+
+                  <div class="btn-row">
+                    <button class="secondary-btn" id="copySecretBtn" type="button">
+                      Copy Setup Secret
+                    </button>
+                  </div>
+
+                  <div class="field">
+                    <label for="verifyCode">6-digit code</label>
+                    <input
+                      id="verifyCode"
+                      type="text"
+                      inputmode="numeric"
+                      autocomplete="one-time-code"
+                      maxlength="6"
+                      pattern="[0-9]{6}"
+                      placeholder="123456"
+                    >
+                  </div>
+
+                  <div class="btn-row">
+                    <button class="primary-btn" id="verifyMfaBtn" type="button">
+                      Verify & Enable 2-Step
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="status" id="mfaStatus">Not checked yet.</div>
+
+              <div class="warning">
+                <strong>Important:</strong> make sure the authenticator is safely saved in your
+                password manager or authenticator app before enabling it. The backup email link
+                will not bypass 2-step verification after it is turned on.
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div class="stack">
+        <article class="card">
+          <div class="card-head">
+            <span class="eyebrow">CURRENT SESSION</span>
+            <h2>Security Status</h2>
+            <p>
+              A quick view of the Admin account, current assurance level, and verified factors.
+            </p>
+          </div>
+
+          <div class="card-body">
+            <div class="glass-section">
+              <div class="meta">
+                <div class="meta-row">
+                  <div class="meta-label">Admin email</div>
+                  <div class="meta-value" id="adminEmail">—</div>
+                </div>
+
+                <div class="meta-row">
+                  <div class="meta-label">Session security</div>
+                  <div class="meta-value" id="aalStatus">—</div>
+                </div>
+
+                <div class="meta-row">
+                  <div class="meta-label">Authenticator factors</div>
+                  <div class="meta-value" id="factorCount">—</div>
+                </div>
+              </div>
+
+              <div class="mini-note">
+                Once MFA is enabled, your Admin account should sign in with password first,
+                then the authenticator code.
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <span class="eyebrow">NOTES</span>
+            <h2>Recommended Setup</h2>
+            <p>
+              Best practice for the VMS owner account.
+            </p>
+          </div>
+
+          <div class="card-body">
+            <div class="glass-section">
+              <div class="meta">
+                <div class="meta-row">
+                  <div class="meta-label">Primary Login</div>
+                  <div class="meta-value">Email + Password</div>
+                </div>
+
+                <div class="meta-row">
+                  <div class="meta-label">Second Factor</div>
+                  <div class="meta-value">Authenticator App</div>
+                </div>
+
+                <div class="meta-row">
+                  <div class="meta-label">Backup Access</div>
+                  <div class="meta-value">Magic Link Recovery</div>
+                </div>
+              </div>
+
+              <div class="mini-note">
+                This gives you the smoothest phone experience without depending on email every time.
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <script src="../assets/vms-core.js"></script>
+  <script>
+    (async () => {
+      const $ = id => document.getElementById(id);
+      let sb = null;
+      let enrolledFactor = null;
+
+      function status(id, message, type = '') {
+        const el = $(id);
+        el.textContent = message;
+        el.className = 'status' + (type ? ' ' + type : '');
+      }
+
+      async function refreshSecurityState() {
+        const { data: { session } } = await sb.auth.getSession();
+        if (!session) return;
+
+        $('adminEmail').textContent = session.user.email || '—';
+
+        const aal = await VMSAuth.getMfaState(sb);
+        $('aalStatus').textContent =
+          aal?.currentLevel === 'aal2'
+            ? 'Password + Authenticator (AAL2)'
+            : 'Standard Session (AAL1)';
+
+        const { data, error } = await sb.auth.mfa.listFactors();
+        if (error) throw error;
+
+        const verified = [
+          ...(data?.totp || []),
+          ...(data?.phone || [])
+        ].filter(f => f.status === 'verified');
+
+        $('factorCount').textContent = String(verified.length);
+
+        const totp = verified.find(f => f.factor_type === 'totp');
+
+        if (totp) {
+          $('mfaEnabled').classList.add('show');
+          $('startMfaBtn').style.display = 'none';
+          $('mfaSetup').classList.remove('show');
+          status('mfaStatus', 'Authenticator verification is active on this Admin account.', 'ok');
+        } else {
+          $('mfaEnabled').classList.remove('show');
+          $('startMfaBtn').style.display = 'inline-flex';
+          status('mfaStatus', 'Authenticator verification is not enabled yet.');
+        }
+      }
+
+      try {
+        const user = await VMSAuth.requireSession('admin');
+        if (!user) return;
+
+        sb = await VMSAuth.client();
+        if (!sb) throw new Error('Supabase is unavailable.');
+
+        await refreshSecurityState();
+      } catch (err) {
+        status('mfaStatus', err.message || 'Unable to load security settings.', 'error');
+      }
+
+      $('passwordForm').onsubmit = async ev => {
+        ev.preventDefault();
+
+        const p1 = $('newPassword').value;
+        const p2 = $('confirmPassword').value;
+
+        if (p1.length < 12) {
+          status('passwordStatus', 'Use at least 12 characters.', 'error');
+          return;
+        }
+
+        if (p1 !== p2) {
+          status('passwordStatus', 'The two passwords do not match.', 'error');
+          return;
+        }
+
+        $('savePasswordBtn').disabled = true;
+        status('passwordStatus', 'Saving password…');
+
+        try {
+          const { error } = await sb.auth.updateUser({ password: p1 });
+          if (error) throw error;
+
+          $('newPassword').value = '';
+          $('confirmPassword').value = '';
+          status('passwordStatus', 'Password saved. Future Admin sign-ins can now use email + password.', 'ok');
+        } catch (err) {
+          status(
+            'passwordStatus',
+            err.message || 'Unable to update the password. Supabase may require a recent sign-in before a sensitive password change.',
+            'error'
+          );
+        } finally {
+          $('savePasswordBtn').disabled = false;
+        }
+      };
+
+      $('startMfaBtn').onclick = async () => {
+        $('startMfaBtn').disabled = true;
+        status('mfaStatus', 'Creating authenticator setup…');
+
+        try {
+          const { data, error } = await sb.auth.mfa.enroll({
+            factorType: 'totp',
+            friendlyName: 'VMS Admin Authenticator'
+          });
+
+          if (error) throw error;
+
+          enrolledFactor = data;
+          $('qrCode').src = data.totp.qr_code;
+          $('secret').textContent = data.totp.secret;
+          $('mfaSetup').classList.add('show');
+
+          status(
+            'mfaStatus',
+            'Scan the QR code, then enter the 6-digit code from your authenticator app.'
+          );
+        } catch (err) {
+          status('mfaStatus', err.message || 'Unable to start authenticator setup.', 'error');
+          $('startMfaBtn').disabled = false;
+        }
+      };
+
+      $('copySecretBtn').onclick = async () => {
+        const value = $('secret').textContent.trim();
+        if (!value) return;
+
+        try {
+          await navigator.clipboard.writeText(value);
+          status('mfaStatus', 'Setup secret copied.', 'ok');
+        } catch {
+          status('mfaStatus', 'Press and hold the setup secret to copy it.', 'error');
+        }
+      };
+
+      $('verifyMfaBtn').onclick = async () => {
+        const code = $('verifyCode').value.replace(/\D/g, '').slice(0, 6);
+
+        if (!enrolledFactor?.id) {
+          status('mfaStatus', 'Start authenticator setup first.', 'error');
+          return;
+        }
+
+        if (code.length !== 6) {
+          status('mfaStatus', 'Enter the full 6-digit code.', 'error');
+          return;
+        }
+
+        $('verifyMfaBtn').disabled = true;
+        status('mfaStatus', 'Verifying authenticator…');
+
+        try {
+          const { data: challenge, error: challengeError } = await sb.auth.mfa.challenge({
+            factorId: enrolledFactor.id
+          });
+
+          if (challengeError) throw challengeError;
+
+          const { error: verifyError } = await sb.auth.mfa.verify({
+            factorId: enrolledFactor.id,
+            challengeId: challenge.id,
+            code
+          });
+
+          if (verifyError) throw verifyError;
+
+          enrolledFactor = null;
+          $('verifyCode').value = '';
+          status('mfaStatus', '2-step verification enabled successfully.', 'ok');
+
+          await refreshSecurityState();
+        } catch (err) {
+          status('mfaStatus', err.message || 'The verification code was not accepted.', 'error');
+          $('verifyMfaBtn').disabled = false;
+          $('verifyCode').select();
+        }
+      };
+    })();
+  </script>
+</body>
+</html>
