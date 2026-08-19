@@ -1,26 +1,44 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>VMS Admin Login</title>
-  <link rel="stylesheet" href="../assets/vms-suite.css">
+
+  <!-- Cache-busted so iPad/Safari cannot reuse the older shared stylesheet. -->
+  <link rel="stylesheet" href="../assets/vms-suite.css?v=20260819-login2">
   <script src="../assets/config.js"></script>
+
   <style>
+    *{box-sizing:border-box}
+
+    html,body{
+      margin:0;
+      min-height:100%;
+      -webkit-text-size-adjust:100%;
+    }
+
     body{
       min-height:100vh;
+      min-height:100dvh;
       display:grid;
       place-items:center;
       background:linear-gradient(145deg,#003049,#08283d)!important;
-      padding:20px
+      padding:20px;
+      font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
     }
+
     .login{
-      width:min(460px,100%);
+      width:100%;
+      max-width:460px;
+      min-width:0;
       background:#fff;
       border-radius:24px;
       padding:34px;
-      box-shadow:0 28px 90px rgba(0,0,0,.25)
+      box-shadow:0 28px 90px rgba(0,0,0,.25);
+      overflow:hidden;
     }
+
     .login img{
       display:block;
       width:96px;
@@ -29,33 +47,193 @@
       background:#003049;
       border-radius:13px;
       padding:8px;
-      margin-bottom:22px
+      margin-bottom:22px;
     }
-    .login h1{margin:0 0 7px;color:#003049;font-size:32px}
-    .login p{color:#6f818b;line-height:1.55;margin:0 0 12px}
-    .login label{display:block;font-size:12px;font-weight:900;margin:15px 0 7px}
-    .login input{width:100%;height:52px;padding:0 14px;font-size:16px}
-    .login button{width:100%;margin-top:14px}
-    .status{min-height:20px;margin-top:12px;text-align:center;color:#687d87;font-size:12px;line-height:1.45}
+
+    .login h1{
+      margin:0 0 7px;
+      color:#003049;
+      font-size:32px;
+      line-height:1.08;
+    }
+
+    .login p{
+      color:#6f818b;
+      line-height:1.55;
+      margin:0 0 12px;
+    }
+
+    .login form,
+    .login section{
+      width:100%;
+      min-width:0;
+    }
+
+    .login label{
+      display:block;
+      font-size:12px;
+      font-weight:900;
+      margin:15px 0 7px;
+    }
+
+    /* Normal fields */
+    .login input:not(#password){
+      display:block;
+      width:100%;
+      max-width:100%;
+      min-width:0;
+      height:52px;
+      padding:0 14px;
+      font-size:16px;
+      border:1px solid #d3e0e5;
+      border-radius:10px;
+      background:#fff;
+      color:#18303f;
+      outline:none;
+      box-sizing:border-box;
+    }
+
+    .login input:not(#password):focus{
+      border-color:#669BBC;
+      box-shadow:0 0 0 3px rgba(102,155,188,.14);
+    }
+
+    /*
+      Password field fix:
+      The FIELD is the wrapper. The input and Show button are flex children.
+      No absolute positioning and no width:100% + padding calculation.
+      This keeps the row exactly the same width as the email field on iPad Safari.
+    */
+    .password-shell{
+      display:flex;
+      align-items:center;
+      width:100%;
+      max-width:100%;
+      min-width:0;
+      height:52px;
+      border:1px solid #d3e0e5;
+      border-radius:10px;
+      background:#fff;
+      overflow:hidden;
+      box-sizing:border-box;
+    }
+
+    .password-shell:focus-within{
+      border-color:#669BBC;
+      box-shadow:0 0 0 3px rgba(102,155,188,.14);
+    }
+
+    .password-shell #password{
+      flex:1 1 auto;
+      width:0!important;
+      min-width:0!important;
+      max-width:none!important;
+      height:50px!important;
+      margin:0!important;
+      padding:0 14px!important;
+      border:0!important;
+      border-radius:0!important;
+      background:transparent!important;
+      color:#18303f!important;
+      font-size:16px!important;
+      outline:0!important;
+      box-shadow:none!important;
+      -webkit-appearance:none;
+      appearance:none;
+      box-sizing:border-box!important;
+    }
+
+    .password-shell .show-pass{
+      flex:0 0 58px!important;
+      width:58px!important;
+      min-width:58px!important;
+      max-width:58px!important;
+      height:36px!important;
+      min-height:36px!important;
+      max-height:36px!important;
+      margin:0 8px 0 0!important;
+      padding:0!important;
+      position:static!important;
+      transform:none!important;
+      border:0!important;
+      border-radius:9px!important;
+      background:#eef2f4!important;
+      color:#0877c9!important;
+      display:grid!important;
+      place-items:center!important;
+      font-size:10px!important;
+      font-weight:900!important;
+      line-height:1!important;
+      box-shadow:none!important;
+      cursor:pointer;
+      -webkit-appearance:none!important;
+      appearance:none!important;
+    }
+
+    .full-btn{
+      width:100%;
+      min-height:40px;
+      margin-top:14px;
+      border-radius:10px;
+      font-weight:900;
+    }
+
+    .status{
+      min-height:20px;
+      margin-top:12px;
+      text-align:center;
+      color:#687d87;
+      font-size:12px;
+      line-height:1.45;
+    }
+
     .status.error{color:#b4232c}
     .status.ok{color:#217a59}
-    .divider{display:flex;align-items:center;gap:10px;margin:18px 0 4px;color:#9aabb3;font-size:10px;font-weight:900}
-    .divider:before,.divider:after{content:"";height:1px;background:#e4ebee;flex:1}
-    .backup{background:#fff!important;color:#003049!important;border:1px solid #d7e2e7!important}
+
+    .divider{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin:18px 0 4px;
+      color:#9aabb3;
+      font-size:10px;
+      font-weight:900;
+    }
+
+    .divider:before,.divider:after{
+      content:"";
+      height:1px;
+      background:#e4ebee;
+      flex:1;
+    }
+
+    .backup{
+      background:#fff!important;
+      color:#003049!important;
+      border:1px solid #d7e2e7!important;
+    }
+
     .mfa{display:none}
     .mfa.show{display:block}
-    .password-wrap{position:relative}
-    .password-wrap input{padding-right:64px}
-    .show-pass{
-      position:absolute;right:8px;top:8px;width:auto!important;height:36px!important;
-      min-height:36px!important;margin:0!important;padding:0 9px!important;font-size:10px!important
-    }
+
     .security-note{
-      margin-top:16px;padding:11px 12px;border-radius:12px;background:#f5f8f9;
-      color:#6f818b;font-size:10px;line-height:1.5
+      margin-top:16px;
+      padding:11px 12px;
+      border-radius:12px;
+      background:#f5f8f9;
+      color:#6f818b;
+      font-size:10px;
+      line-height:1.5;
+    }
+
+    @media(max-width:560px){
+      body{padding:14px}
+      .login{padding:26px 22px;border-radius:20px}
+      .login h1{font-size:28px}
     }
   </style>
 </head>
+
 <body>
 <main class="login">
   <img src="../assets/vms-logo.png" alt="Vision Make Studio">
@@ -70,16 +248,16 @@
       <input id="email" type="email" required autocomplete="email" placeholder="info@visionmakestudio.com">
 
       <label for="password">Password</label>
-      <div class="password-wrap">
+      <div class="password-shell">
         <input id="password" type="password" required autocomplete="current-password" placeholder="Your Admin password">
-        <button class="btn show-pass" id="showPasswordBtn" type="button">Show</button>
+        <button class="show-pass" id="showPasswordBtn" type="button" aria-label="Show password">Show</button>
       </div>
 
-      <button class="btn primary" id="passwordBtn" type="submit">Sign In to Admin</button>
+      <button class="btn primary full-btn" id="passwordBtn" type="submit">Sign In to Admin</button>
     </form>
 
     <div class="divider">BACKUP</div>
-    <button class="btn backup" id="magicBtn" type="button">Email Backup Sign-In Link</button>
+    <button class="btn backup full-btn" id="magicBtn" type="button">Email Backup Sign-In Link</button>
 
     <div class="security-note">
       Backup email links are only a fallback. Once 2-step verification is enabled, the authenticator code is still required after the email link.
@@ -92,8 +270,9 @@
 
     <form id="mfaForm">
       <label for="mfaCode">6-digit code</label>
-      <input id="mfaCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="123456" required>
-      <button class="btn primary" id="mfaBtn" type="submit">Verify & Open Admin</button>
+      <input id="mfaCode" type="text" inputmode="numeric" autocomplete="one-time-code"
+             maxlength="6" pattern="[0-9]{6}" placeholder="123456" required>
+      <button class="btn primary full-btn" id="mfaBtn" type="submit">Verify & Open Admin</button>
     </form>
   </section>
 
@@ -112,6 +291,7 @@
   const passwordBtn=$('passwordBtn');
   const magicBtn=$('magicBtn');
   const mfaCode=$('mfaCode');
+  const showPasswordBtn=$('showPasswordBtn');
   let sb=null;
   let activeFactorId=null;
 
@@ -209,10 +389,11 @@
     }
   }
 
-  $('showPasswordBtn').onclick=()=>{
+  showPasswordBtn.onclick=()=>{
     const showing=password.type==='text';
     password.type=showing?'password':'text';
-    $('showPasswordBtn').textContent=showing?'Show':'Hide';
+    showPasswordBtn.textContent=showing?'Show':'Hide';
+    showPasswordBtn.setAttribute('aria-label',showing?'Show password':'Hide password');
   };
 
   $('passwordForm').onsubmit=async ev=>{
