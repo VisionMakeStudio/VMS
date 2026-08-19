@@ -142,15 +142,23 @@ window.VMS_CONFIG = {
 
   async function authApi(method='GET',body=null){
     const token=await getSessionToken();
-    if(!token)throw new Error('Client Portal session is not ready.');
-    const res=await fetch(API+(method==='GET'?'?mine=1':''),{
-      method,
-      headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'},
-      body:body?JSON.stringify(body):undefined
-    });
-    const json=await res.json().catch(()=>({}));
-    if(!res.ok)throw new Error(json.error||'LinkHub request failed.');
-    return json;
+    if(!token)throw new Error('Client Portal session is not ready. Please refresh and sign in again.');
+    const controller=new AbortController();
+    const timeout=setTimeout(()=>controller.abort(),15000);
+    try{
+      const res=await fetch(API+(method==='GET'?'?mine=1':''),{
+        method,
+        headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'},
+        body:body?JSON.stringify(body):undefined,
+        signal:controller.signal
+      });
+      const json=await res.json().catch(()=>({}));
+      if(!res.ok)throw new Error(json.error||`LinkHub request failed (${res.status}).`);
+      return json;
+    }catch(e){
+      if(e?.name==='AbortError')throw new Error('Publishing timed out. Please try again.');
+      throw e;
+    }finally{clearTimeout(timeout)}
   }
 
   function setStatus(text,type=''){
@@ -246,18 +254,68 @@ window.VMS_CONFIG = {
       try{await navigator.clipboard.writeText(url);setStatus('Link copied','live')}catch{prompt('Copy your LinkHub link:',url)}
     };
     $('vmsLinkHubOpenBtn').onclick=()=>{const url=$('vmsLinkHubPublicUrl').value;if(url)window.open(url,'_blank','noopener')};
-    const publish=()=>{
-      lastPublishError='';
-      setStatus('Publishing…');
-      const native=$('saveLinkHubBtn');
-      if(native)native.click();else setStatus('Publish control unavailable','error');
-    };
-    $('vmsLinkHubPublishBtn').onclick=publish;
-    $('vmsLinkHubMobilePublishBtn').onclick=publish;
+    $('vmsLinkHubPublishBtn').onclick=()=>publishCurrentLinkHub(true);
+    $('vmsLinkHubMobilePublishBtn').onclick=()=>publishCurrentLinkHub(true);
     $('vmsLinkHubDownloadQrBtn').onclick=downloadQr;
 
     const native=$('saveLinkHubBtn');
-    if(native){native.textContent='Publish Changes';native.addEventListener('click',()=>setStatus('Publishing…'),true)}
+    if(native){
+      native.textContent='Publish Changes';
+      native.addEventListener('click',()=>setTimeout(()=>publishCurrentLinkHub(false),0));
+    }
+  }
+
+  function setPublishControlsBusy(busy){
+    ['vmsLinkHubPublishBtn','vmsLinkHubMobilePublishBtn','saveLinkHubBtn'].forEach(id=>{
+      const button=$(id);if(button)button.disabled=!!busy;
+    });
+    const main=$('vmsLinkHubPublishBtn');
+    const mobile=$('vmsLinkHubMobilePublishBtn');
+    if(main)main.textContent=busy?'Publishing…':'Publish Changes';
+    if(mobile)mobile.textContent=busy?'Publishing…':'Publish LinkHub Changes';
+  }
+
+  function readCurrentLinkHub(){
+    try{
+      const state=JSON.parse(localStorage.getItem(PORTAL_STORAGE)||'null');
+      return state?.linkHub&&typeof state.linkHub==='object'?state.linkHub:null;
+    }catch{return null}
+  }
+
+  async function publishCurrentLinkHub(runNativeSave){
+    if(window.__VMS_LINKHUB_PUBLISHING__)return;
+    window.__VMS_LINKHUB_PUBLISHING__=true;
+    lastPublishError='';
+    setPublishControlsBusy(true);
+    try{
+      if(runNativeSave){
+        const native=$('saveLinkHubBtn');
+        if(!native||typeof native.onclick!=='function')throw new Error('LinkHub save control is unavailable. Refresh the Portal and try again.');
+        // Run the Portal's existing synchronous save routine directly. This updates
+        // localStorage with the latest form values without depending on a second event.
+        native.onclick.call(native,new Event('click'));
+        await new Promise(resolve=>setTimeout(resolve,0));
+      }
+      const data=readCurrentLinkHub();
+      if(!data)throw new Error('Could not read your current LinkHub changes.');
+      if(!String(data.businessName||'').trim())throw new Error('Add your business or display name before publishing.');
+      setStatus('Publishing…');
+      const result=await authApi('POST',{action:'publish',data});
+      lastPublishError='';
+      linkhubInfo=result;
+      try{
+        localStorage.removeItem(DIRTY_KEY);
+        localStorage.setItem(CLOUD_VERSION_KEY,result.publishedAt||'');
+      }catch{}
+      updateSharePanel(result);
+    }catch(e){
+      lastPublishError=e?.message||'Publishing failed. Please try again.';
+      console.error('VMS LinkHub direct publish failed',e);
+      setStatus(lastPublishError,'error');
+    }finally{
+      setPublishControlsBusy(false);
+      window.__VMS_LINKHUB_PUBLISHING__=false;
+    }
   }
 
   async function downloadQr(){
@@ -288,36 +346,6 @@ window.VMS_CONFIG = {
     },true);
   }
 
-  function installFetchPublishBridge(){
-    if(window.__VMS_LINKHUB_PUBLISH_FETCH__)return;
-    window.__VMS_LINKHUB_PUBLISH_FETCH__=true;
-    const original=window.fetch.bind(window);
-    window.fetch=async(input,init={})=>{
-      const response=await original(input,init);
-      try{
-        const url=typeof input==='string'?new URL(input,location.origin):new URL(input.url,location.origin);
-        if(url.origin===location.origin&&url.pathname==='/api/client-event'&&String(init.method||'GET').toUpperCase()==='POST'&&typeof init.body==='string'){
-          const body=JSON.parse(init.body);
-          if(body?.type==='client_linkhub_updated'&&response.ok){
-            const headers=new Headers(init.headers||{});
-            const token=headers.get('Authorization')||headers.get('authorization')||'';
-            const pub=await original(API,{method:'POST',headers:{'Content-Type':'application/json','Authorization':token},body:JSON.stringify({action:'publish',data:body.payload})});
-            const result=await pub.json().catch(()=>({}));
-            if(!pub.ok)throw new Error(result.error||'Publishing failed.');
-            lastPublishError='';
-            linkhubInfo=result;
-            try{localStorage.removeItem(DIRTY_KEY);localStorage.setItem(CLOUD_VERSION_KEY,result.publishedAt||'')}catch{}
-            updateSharePanel(result);
-          }
-        }
-      }catch(e){
-        lastPublishError=e?.message||'Publishing failed';
-        console.error('VMS LinkHub publish bridge failed',e);
-        setStatus(lastPublishError,'error');
-      }
-      return response;
-    };
-  }
 
   function hydratePublishedIfNeeded(info){
     if(!info?.publishedData||!info?.publishedAt)return false;
@@ -354,7 +382,6 @@ window.VMS_CONFIG = {
 
   function boot(){
     installStyles();
-    installFetchPublishBridge();
     createSharePanel();
     installDirtyTracking();
     restoreSocialIcons();
