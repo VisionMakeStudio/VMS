@@ -3,6 +3,7 @@
   const cfg=window.VMS_CONFIG||{};
   const TEST_EMAIL='info@visionmakestudio.com';
   const isLocal=location.protocol==='file:';
+  const ADMIN_FAST_NAV_KEY='vms_admin_fast_nav';
 
   function configReady(){
     return !!(
@@ -11,6 +12,62 @@
       !String(cfg.supabaseUrl).includes('PASTE_') &&
       !String(cfg.supabaseAnonKey).includes('PASTE_')
     );
+  }
+
+  function normalizeAdminPath(path){
+    let p=String(path||'/').split('?')[0].split('#')[0];
+    p=p.replace(/\/index(?:\.html)?$/i,'/').replace(/\.html$/i,'');
+    if(p.length>1)p=p.replace(/\/+$/,'');
+    return p||'/';
+  }
+
+  function clearAdminFastNav(){
+    try{sessionStorage.removeItem(ADMIN_FAST_NAV_KEY)}catch{}
+  }
+
+  function bindAdminFastNavigation(){
+    if(document.documentElement.dataset.vmsFastNavBound==='1')return;
+    document.documentElement.dataset.vmsFastNavBound='1';
+
+    document.addEventListener('click',event=>{
+      if(event.defaultPrevented)return;
+
+      const anchor=event.target?.closest?.('a[href]');
+      if(!anchor)return;
+
+      if(anchor.target && anchor.target.toLowerCase()==='_blank')return;
+      if(anchor.hasAttribute('download'))return;
+
+      let url;
+      try{
+        url=new URL(anchor.getAttribute('href'),location.href);
+      }catch{
+        return;
+      }
+
+      if(url.origin!==location.origin)return;
+      if(!url.pathname.startsWith('/admin/'))return;
+
+      const destination=normalizeAdminPath(url.pathname);
+
+      if(
+        destination==='/admin/login' ||
+        destination==='/admin/login.html'
+      ){
+        clearAdminFastNav();
+        return;
+      }
+
+      try{
+        sessionStorage.setItem(
+          ADMIN_FAST_NAV_KEY,
+          JSON.stringify({
+            to:destination,
+            until:Date.now()+12000
+          })
+        );
+      }catch{}
+    },true);
   }
 
   async function loadSupabase(){
@@ -59,8 +116,11 @@
   }
 
   async function signOut(){
+    clearAdminFastNav();
+
     const sb=await client();
     if(sb)await sb.auth.signOut();
+
     localStorage.removeItem('vms_local_portal_session');
     localStorage.removeItem('vms_local_admin_session');
   }
@@ -79,22 +139,31 @@
   async function getMfaState(sb){
     const {data,error}=await sb.auth.mfa.getAuthenticatorAssuranceLevel();
     if(error)throw error;
-    return data||{currentLevel:null,nextLevel:null,currentAuthenticationMethods:[]};
+    return data||{
+      currentLevel:null,
+      nextLevel:null,
+      currentAuthenticationMethods:[]
+    };
   }
 
   async function requireSession(kind='client'){
     const reveal=()=>document.documentElement.classList.remove('vms-auth-pending');
+
     const adminFail=code=>{
+      clearAdminFastNav();
       location.replace('/admin/login.html?error='+encodeURIComponent(code));
       return null;
     };
+
     const portalFail=code=>{
       location.replace('/?portal=1&portal_error='+encodeURIComponent(code));
       return null;
     };
 
     if(isLocal){
+      if(kind==='admin')bindAdminFastNavigation();
       reveal();
+
       return {
         email:kind==='client'?TEST_EMAIL:'preview@visionmakestudio.com',
         role:kind
@@ -102,6 +171,7 @@
     }
 
     let sb;
+
     try{
       sb=await client();
     }catch(e){
@@ -115,6 +185,7 @@
     }
 
     let session=null;
+
     try{
       ({data:{session}}=await sb.auth.getSession());
     }catch(e){
@@ -142,9 +213,17 @@
           particular session has completed the second factor.
         */
         const aal=await getMfaState(sb);
+
         if(aal?.nextLevel==='aal2' && aal?.currentLevel!=='aal2'){
           return adminFail('mfa_required');
         }
+
+        /*
+          Only a successfully verified Admin can arm the fast navigation
+          token for the next internal Admin page.
+        */
+        bindAdminFastNavigation();
+
       }catch(e){
         console.error('VMS admin verification failed',e);
         return adminFail('verification_failed');
@@ -166,9 +245,11 @@
 
     if(!r.ok){
       let m='Request failed';
+
       try{
         m=(await r.json()).error||m;
       }catch{}
+
       throw new Error(m);
     }
 
