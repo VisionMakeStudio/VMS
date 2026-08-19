@@ -1,531 +1,313 @@
 :root{
   --vms-admin-navy:#003049;
+  --vms-admin-navy-deep:#00263a;
   --vms-admin-cream:#FDF0D5;
   --vms-admin-orange:#EB5E28;
-  --vms-admin-line:rgba(255,255,255,.12);
+  --vms-admin-red:#C1121F;
+  --vms-admin-blue:#669BBC;
+  --vms-admin-green:#2b8c69;
+  --vms-admin-ink:#173443;
+  --vms-admin-muted:#6f828d;
+  --vms-admin-line:#dde6ea;
+  --vms-admin-bg:#f5f5f7;
+  --vms-admin-card:rgba(255,255,255,.92);
+  --vms-admin-shadow:0 10px 34px rgba(0,48,73,.065);
+  --vms-admin-shadow-hover:0 18px 42px rgba(0,48,73,.11);
+  --vms-admin-radius-xl:22px;
+  --vms-admin-radius-lg:18px;
+  --vms-admin-radius-md:14px;
+  --vms-admin-radius-sm:11px;
 }
 
-/* One VMS Admin shell across every tool. */
-.shell,.app{grid-template-columns:220px minmax(0,1fr)!important}
+/* ============================================================
+   VMS ADMIN 2026 — COMFORTABLE / APPLE-INSPIRED DESIGN SYSTEM
+   Shared across every Admin tool. Login intentionally excluded.
+   ============================================================ */
+html,body{
+  background:
+    radial-gradient(circle at 84% -10%,rgba(102,155,188,.12),transparent 28%),
+    linear-gradient(180deg,#f7f8fa 0%,var(--vms-admin-bg) 100%)!important;
+  color:var(--vms-admin-ink)!important;
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",system-ui,sans-serif!important;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+button,input,select,textarea{font:inherit}
+button,a{-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:3px solid rgba(102,155,188,.28)!important;outline-offset:2px!important}
 
+.shell,.app{grid-template-columns:252px minmax(0,1fr)!important;min-height:100vh!important}
+.main{min-width:0!important}
+
+/* Sidebar */
 .sidebar,.side{
-  width:220px!important;
-  min-width:220px!important;
-  height:100vh!important;
-  position:sticky!important;
-  top:0!important;
-  left:auto!important;
-  padding:16px 12px!important;
-  display:flex!important;
-  flex-direction:column!important;
-  overflow-y:auto!important;
-  overflow-x:hidden!important;
-  background:var(--vms-admin-navy)!important;
-  color:#fff!important;
-  box-shadow:none!important;
-  z-index:80!important;
+  width:252px!important;min-width:252px!important;height:100vh!important;
+  position:sticky!important;inset:auto!important;top:0!important;
+  padding:18px 14px 20px!important;display:flex!important;flex-direction:column!important;
+  overflow-y:auto!important;overflow-x:hidden!important;
+  background:linear-gradient(180deg,var(--vms-admin-navy) 0%,#002b42 66%,var(--vms-admin-navy-deep) 100%)!important;
+  color:#fff!important;z-index:80!important;box-shadow:inset -1px 0 rgba(255,255,255,.04)!important;
   transform:none!important;
 }
-
-.sidebar::-webkit-scrollbar,.side::-webkit-scrollbar{width:4px}
-.sidebar::-webkit-scrollbar-thumb,.side::-webkit-scrollbar-thumb{
-  background:rgba(255,255,255,.13);
-  border-radius:99px;
-}
-
+.sidebar::-webkit-scrollbar,.side::-webkit-scrollbar{width:5px}
+.sidebar::-webkit-scrollbar-thumb,.side::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:99px}
 .sidebar .brand,.side .brand,.vms-admin-brand{
-  min-height:62px!important;
-  padding:2px 7px 14px!important;
-  margin:0!important;
-  display:flex!important;
-  align-items:center!important;
-  gap:9px!important;
-  flex:0 0 auto!important;
-  border-bottom:1px solid var(--vms-admin-line)!important;
-  overflow:visible!important;
+  min-height:72px!important;margin:0!important;padding:4px 8px 17px!important;
+  display:flex!important;align-items:center!important;gap:12px!important;
+  border-bottom:1px solid rgba(255,255,255,.12)!important;overflow:visible!important;
 }
-
 .sidebar .brand img,.side .brand img,.vms-admin-brand img{
-  width:76px!important;
-  max-width:76px!important;
-  height:auto!important;
-  max-height:42px!important;
-  object-fit:contain!important;
-  object-position:center!important;
-  display:block!important;
-  flex:0 0 auto!important;
+  width:90px!important;max-width:90px!important;height:auto!important;max-height:48px!important;object-fit:contain!important;display:block!important;flex:0 0 auto!important;
 }
-
-.sidebar .brand-copy,.side .brand-copy{
-  display:grid!important;
-  gap:2px!important;
-  min-width:0!important;
-}
-
+.sidebar .brand-copy,.side .brand-copy{display:grid!important;gap:3px!important;min-width:0!important}
 .sidebar .brand-copy strong,.side .brand-copy strong{
-  display:block!important;
-  color:#fff!important;
-  font-size:9px!important;
-  line-height:1.08!important;
-  font-weight:900!important;
-  white-space:normal!important;
+  color:#fff!important;font-size:12px!important;line-height:1.15!important;font-weight:800!important;letter-spacing:-.01em!important;
 }
-
 .sidebar .brand-copy span,.side .brand-copy span{
-  color:#9fb9c6!important;
-  font-size:7px!important;
-  font-weight:900!important;
-  letter-spacing:.12em!important;
+  color:#a8c1cc!important;font-size:9px!important;line-height:1.1!important;font-weight:800!important;letter-spacing:.11em!important;
 }
-
-.sidebar .nav,.side .nav,.vms-admin-nav{
-  display:grid!important;
-  gap:4px!important;
-  margin:13px 0 0!important;
-  padding:0!important;
-  flex:0 0 auto!important;
+.sidebar .nav,.side .nav,.vms-admin-nav{display:grid!important;gap:5px!important;margin:16px 0 0!important;padding:0!important}
+.sidebar .nav>a,.sidebar .nav>button,.side .nav>a,.side .nav>button,.vms-admin-nav>a,.vms-admin-nav>button{
+  width:100%!important;min-height:44px!important;margin:0!important;padding:11px 12px!important;
+  border:0!important;border-radius:12px!important;background:transparent!important;color:rgba(255,255,255,.78)!important;
+  display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:10px!important;
+  text-decoration:none!important;text-align:left!important;font:700 13px/1.2 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+  letter-spacing:-.005em!important;box-shadow:none!important;transition:background .16s ease,color .16s ease,transform .16s ease!important;
 }
-
-.sidebar .nav>a,.sidebar .nav>button,
-.side .nav>a,.side .nav>button,
-.vms-admin-nav>a,.vms-admin-nav>button{
-  width:100%!important;
-  min-height:34px!important;
-  margin:0!important;
-  padding:9px 10px!important;
-  border:0!important;
-  border-radius:8px!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:flex-start!important;
-  gap:7px!important;
-  background:transparent!important;
-  color:rgba(255,255,255,.82)!important;
-  text-decoration:none!important;
-  text-align:left!important;
-  font:800 10px/1.18 Inter,system-ui,-apple-system,sans-serif!important;
-  letter-spacing:0!important;
-  box-shadow:none!important;
-  cursor:pointer!important;
+.sidebar .nav>a:hover,.sidebar .nav>button:hover,.side .nav>a:hover,.side .nav>button:hover,.vms-admin-nav>a:hover,.vms-admin-nav>button:hover{
+  background:rgba(255,255,255,.075)!important;color:#fff!important;transform:translateX(2px)!important;
 }
-
-.sidebar .nav>a:hover,.sidebar .nav>button:hover,
-.side .nav>a:hover,.side .nav>button:hover,
-.vms-admin-nav>a:hover,.vms-admin-nav>button:hover{
-  background:rgba(255,255,255,.07)!important;
-  color:#fff!important;
-}
-
 .sidebar .nav>.active,.side .nav>.active,.vms-admin-nav>.active{
-  background:rgba(255,255,255,.10)!important;
-  color:#ff7544!important;
-  box-shadow:inset 3px 0 0 #ff7544!important;
+  background:rgba(255,255,255,.105)!important;color:#fff!important;box-shadow:inset 3px 0 0 var(--vms-admin-orange)!important;
 }
-
-.sidebar .nav .ico,.side .nav .ico,
-.sidebar .nav .tag,.side .nav .tag,
-.sidebar .nav .soon,.side .nav .soon{
-  display:none!important;
-}
-
-.vms-admin-spacer{flex:1 1 auto;min-height:16px}
-
+.sidebar .nav>.active::after,.side .nav>.active::after{content:"";margin-left:auto;width:7px;height:7px;border-radius:50%;background:var(--vms-admin-orange);box-shadow:0 0 0 4px rgba(235,94,40,.11)}
+.sidebar .nav .ico,.side .nav .ico,.sidebar .nav .tag,.side .nav .tag,.sidebar .nav .soon,.side .nav .soon{display:none!important}
+.vms-admin-spacer{flex:1 1 auto;min-height:20px}
 .vms-admin-sidebar-foot,.sidebar-foot,.side-note{
-  margin-top:auto!important;
-  padding:13px 7px 2px!important;
-  border-top:1px solid var(--vms-admin-line)!important;
-  color:#9eb7c4!important;
-  font:700 7.5px/1.55 Inter,system-ui,-apple-system,sans-serif!important;
+  margin-top:auto!important;padding:15px 8px 3px!important;border-top:1px solid rgba(255,255,255,.11)!important;
+  color:#9eb8c4!important;font:650 10px/1.5 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+}
+.vms-admin-shortcuts{display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px!important;margin-bottom:12px!important}
+.vms-admin-shortcuts a,.external-links a{
+  min-height:36px!important;padding:8px!important;border:1px solid rgba(255,255,255,.12)!important;border-radius:10px!important;
+  background:rgba(255,255,255,.04)!important;color:#dbe8ed!important;text-decoration:none!important;text-align:center!important;font-size:10px!important;font-weight:750!important;
+}
+.vms-admin-shortcuts a:hover,.external-links a:hover{background:rgba(255,255,255,.08)!important;color:#fff!important}
+
+/* Header */
+.topbar,.top,.vms-standard-topbar{
+  min-height:78px!important;height:auto!important;padding:12px 28px!important;
+  background:rgba(255,255,255,.84)!important;border-bottom:1px solid rgba(0,48,73,.10)!important;
+  -webkit-backdrop-filter:saturate(155%) blur(18px)!important;backdrop-filter:saturate(155%) blur(18px)!important;
+  position:sticky!important;top:0!important;z-index:60!important;
+}
+.topbar-left small,.title-copy small,.vms-standard-title small,.topbar-title small{
+  color:#82959f!important;font-size:11px!important;line-height:1!important;font-weight:800!important;letter-spacing:.11em!important;text-transform:uppercase!important;
+}
+.topbar-left strong,.title-copy strong,.vms-standard-title strong,.topbar-title strong,.top>strong{
+  color:var(--vms-admin-ink)!important;font-size:24px!important;line-height:1.05!important;font-weight:760!important;letter-spacing:-.035em!important;margin-top:4px!important;
+}
+.top-actions,.topbar-actions{gap:9px!important}
+
+/* Page canvas and hierarchy */
+.content{
+  width:min(100%,1540px)!important;max-width:1540px!important;margin:0 auto!important;padding:28px 30px 54px!important;
+}
+.intro,.page-head,.overview,.audit-head{
+  margin-bottom:20px!important;gap:22px!important;
+}
+.intro:not(.linkhub-intro),.page-head,.overview{
+  background:rgba(255,255,255,.76)!important;border:1px solid rgba(0,48,73,.09)!important;border-radius:var(--vms-admin-radius-xl)!important;
+  padding:22px 24px!important;box-shadow:0 1px 0 rgba(255,255,255,.9),0 8px 28px rgba(0,48,73,.035)!important;
+  -webkit-backdrop-filter:blur(16px)!important;backdrop-filter:blur(16px)!important;
+}
+.intro p,.page-head p,.overview-copy p,.panel-head p,.panel-head small,.card-head p,.card-head small,.catalog-head p{
+  color:var(--vms-admin-muted)!important;font-size:13px!important;line-height:1.55!important;
+}
+.overview-copy small,.eyebrow,.panel-head-left small,.field label,.stat span,.metric span,.billing-item span,.kv-item span,.mini-stat span,.money-card span{
+  font-size:11px!important;line-height:1.2!important;font-weight:800!important;letter-spacing:.055em!important;
+}
+.overview-copy h1,.page-head h1{
+  margin:7px 0 0!important;color:var(--vms-admin-ink)!important;font-size:32px!important;line-height:1.06!important;font-weight:760!important;letter-spacing:-.045em!important;
 }
 
-.vms-admin-shortcuts{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:6px;
-  margin-bottom:10px;
+/* Buttons */
+.btn,button.btn,.status-chip,.status-pill,.chip{
+  min-height:42px!important;border-radius:12px!important;padding:9px 14px!important;font-size:12px!important;line-height:1!important;font-weight:750!important;letter-spacing:-.005em!important;
+  transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease,background .15s ease!important;
+}
+.btn:hover,button.btn:hover{transform:translateY(-1px)!important;box-shadow:0 8px 20px rgba(0,48,73,.08)!important}
+.btn.primary{background:var(--vms-admin-navy)!important;border-color:var(--vms-admin-navy)!important;color:#fff!important}
+.btn.red{background:var(--vms-admin-red)!important;border-color:var(--vms-admin-red)!important;color:#fff!important}
+.btn.small{min-height:36px!important;padding:8px 11px!important;font-size:11px!important}
+.mobile-menu,#mobileMenuBtn,#vmsMobileMenuBtn,.vms-mobile-menu-btn{border-radius:12px!important}
+
+/* Cards / panels */
+.panel,.card,.stat,.metric,.tool-card,.catalog-card,.service-card,.kv-item,.mini-stat,.next-step,.list-item,.notification-item,.request-card,.compact-status{
+  border:1px solid rgba(0,48,73,.10)!important;background:var(--vms-admin-card)!important;box-shadow:var(--vms-admin-shadow)!important;
+}
+.panel,.card{border-radius:var(--vms-admin-radius-lg)!important;overflow:hidden!important}
+.panel+.panel,.card+.card{margin-top:14px}
+.panel-head,.card-head{
+  padding:18px 20px!important;margin:0!important;border-bottom:1px solid rgba(0,48,73,.085)!important;align-items:center!important;
+}
+.panel-body,.card-body{padding:18px 20px!important}
+.panel-title strong,.panel-head strong,.panel-head h3,.card-head h3,.catalog-head h3,.tool-card h3,.service-card h3{
+  color:var(--vms-admin-ink)!important;font-size:17px!important;line-height:1.2!important;font-weight:760!important;letter-spacing:-.02em!important;
+}
+.panel-link,.text-link{font-size:12px!important;font-weight:750!important;color:var(--vms-admin-navy)!important}
+.card{padding:18px!important}
+.card>.card-head:first-child{margin:-18px -18px 18px!important}
+.card>.card-head:first-child+*{margin-top:0!important}
+
+/* Summary metrics */
+.stats,.status-strip,.metrics{
+  gap:14px!important;margin:0 0 20px!important;
+}
+.stat,.metric{
+  min-height:118px!important;border-radius:18px!important;padding:18px 19px!important;box-shadow:0 8px 26px rgba(0,48,73,.045)!important;
+}
+.stat strong,.metric strong,.audit-total,.mini-stat strong{
+  display:block!important;margin-top:8px!important;color:var(--vms-admin-ink)!important;font-size:30px!important;line-height:1!important;font-weight:760!important;letter-spacing:-.045em!important;
+}
+.stat small,.metric small{
+  display:block!important;margin-top:8px!important;color:#83969f!important;font-size:12px!important;line-height:1.4!important;min-height:0!important;
 }
 
-.vms-admin-shortcuts a{
-  min-height:30px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:6px 7px;
-  color:#d8e4e9;
-  text-decoration:none;
-  border:1px solid rgba(255,255,255,.12);
-  border-radius:8px;
-  background:rgba(255,255,255,.04);
-  font-size:7.5px;
-  font-weight:850;
-  text-align:center;
+/* Grid rhythm: fewer, larger modules */
+.dashboard-grid,.grid,.grid2,.bottom-row,.billing-summary{gap:18px!important}
+.stack{gap:18px!important}
+.tool-grid,.catalog-grid,.service-grid{gap:14px!important}
+.tool-card,.catalog-card,.service-card{border-radius:18px!important;padding:18px!important;min-height:170px!important}
+.tool-card:hover,.catalog-card:hover,.service-card:hover{box-shadow:var(--vms-admin-shadow-hover)!important;transform:translateY(-2px)!important}
+.tool-card p,.catalog-card p,.service-card p,.service-copy span,.list-item-main span,.notification-copy span,.feed-copy span,.timeline-item span{
+  font-size:12px!important;line-height:1.5!important;color:var(--vms-admin-muted)!important;
+}
+.tool-kicker,.badge,.pill,.tag,.soon,.tool-access{font-size:10px!important;font-weight:800!important}
+.tool-open,.tool-count{font-size:11px!important}
+
+/* Lists and dense rows */
+.list,.attention-list,.work-list,.activity-list,.notification-list,.timeline{gap:9px!important}
+.list-item,.notification-item,.feed-row,.timeline-item{
+  border-radius:14px!important;padding:13px 14px!important;min-height:62px!important;
+}
+.list-item-main strong,.notification-copy strong,.feed-copy strong,.timeline-item strong,.service-copy strong{
+  font-size:13px!important;line-height:1.25!important;font-weight:730!important;color:var(--vms-admin-ink)!important;
+}
+.feed-meta,.notification-copy small{font-size:10px!important}
+.empty{
+  min-height:120px!important;border-radius:16px!important;padding:24px!important;color:#7d9099!important;font-size:12px!important;line-height:1.55!important;background:#fafcfd!important;
+}
+.empty strong{font-size:14px!important}
+
+/* Forms */
+.form-grid,.fields{gap:14px!important}
+.field{gap:7px!important}
+.field label{color:#667d88!important}
+.field input,.field select,.field textarea,input,select,textarea{
+  min-height:46px!important;border-radius:12px!important;padding:11px 13px!important;font-size:13px!important;color:var(--vms-admin-ink)!important;
+}
+.field textarea,textarea{min-height:112px!important}
+.field input:focus,.field select:focus,.field textarea:focus,input:focus,select:focus,textarea:focus{
+  border-color:var(--vms-admin-blue)!important;box-shadow:0 0 0 4px rgba(102,155,188,.12)!important;outline:none!important;
 }
 
-.vms-admin-shortcuts a:hover{
-  background:rgba(255,255,255,.08);
-  color:#fff;
-}
+/* Tables */
+.table-wrap,.table-scroll,.table-container{overflow:auto!important;border-radius:16px!important;-webkit-overflow-scrolling:touch}
+table{font-size:12.5px!important;border-collapse:separate!important;border-spacing:0!important}
+th{font-size:10.5px!important;letter-spacing:.055em!important;text-transform:uppercase!important;color:#70858f!important;font-weight:800!important;padding:12px 13px!important}
+td{font-size:12.5px!important;line-height:1.4!important;padding:13px!important}
 
-/* Audit local navigation stays inside the same shared drawer. */
-.vms-audit-tools{
-  margin-top:14px;
-  padding-top:12px;
-  border-top:1px solid var(--vms-admin-line);
-}
+/* Money / billing */
+.money-card{border-radius:18px!important;padding:20px!important;background:linear-gradient(145deg,var(--vms-admin-navy),#0b4865)!important}
+.money-card strong{font-size:36px!important;line-height:1!important}
+.money-card small{font-size:12px!important;line-height:1.5!important}
+.billing-item{padding:16px!important;border-radius:15px!important}
+.billing-item strong{font-size:14px!important;line-height:1.3!important}
 
-.vms-audit-tools-title{
-  margin:0 7px 7px;
-  color:#7fa8bc;
-  font:900 7px/1 Inter,system-ui,sans-serif;
-  letter-spacing:.14em;
-}
-
-.audit-local-nav{display:grid;gap:4px}
-
+/* QR / audit local controls */
+.vms-audit-tools{margin-top:16px!important;padding-top:14px!important;border-top:1px solid rgba(255,255,255,.11)!important}
+.vms-audit-tools-title{margin:0 8px 9px!important;color:#90b3c2!important;font:800 9px/1 Inter,sans-serif!important;letter-spacing:.11em!important}
+.audit-local-nav{display:grid!important;gap:5px!important}
 .audit-local-nav>button,.audit-parent-btn,.audit-subnav button{
-  width:100%!important;
-  min-height:30px!important;
-  border:0!important;
-  border-radius:8px!important;
-  padding:7px 9px!important;
-  background:transparent!important;
-  color:rgba(255,255,255,.70)!important;
-  text-align:left!important;
-  font:800 8.5px/1.15 Inter,system-ui,sans-serif!important;
-  cursor:pointer!important;
+  min-height:38px!important;border-radius:10px!important;padding:9px 11px!important;background:transparent!important;color:rgba(255,255,255,.74)!important;font:700 11px/1.2 Inter,sans-serif!important;
 }
+.audit-local-nav>button:hover,.audit-parent-btn:hover,.audit-subnav button:hover,.audit-local-nav>button.active,.audit-subnav button.active{background:rgba(255,255,255,.07)!important;color:#fff!important}
+.audit-subnav{padding:4px 0 3px 10px!important;border-left:1px solid rgba(255,255,255,.12)!important}
 
-.audit-local-nav>button:hover,.audit-parent-btn:hover,
-.audit-subnav button:hover,.audit-local-nav>button.active,
-.audit-subnav button.active{
-  background:rgba(255,255,255,.07)!important;
-  color:#fff!important;
+/* Modal polish */
+.modal,.dialog,.sheet{
+  border-radius:22px!important;box-shadow:0 30px 80px rgba(0,30,46,.20)!important;border:1px solid rgba(0,48,73,.10)!important;
 }
+.modal-head,.modal-foot{padding:18px 20px!important}
+.modal-body{padding:20px!important;font-size:13px!important}
 
-.audit-local-nav .nav-ico{display:none!important}
-.audit-local-nav .pill{
-  margin-left:auto!important;
-  min-width:22px!important;
-  height:19px!important;
-  font-size:7px!important;
-}
-.audit-subnav-wrap{margin:0!important}
-.audit-subnav{
-  padding:3px 0 2px 8px!important;
-  border-left:1px solid rgba(255,255,255,.10)!important;
-}
-.audit-subnav button{padding-left:9px!important}
+/* Shared logout follows the new sidebar scale. */
+.vms-shared-logout{min-height:44px!important;border-radius:12px!important;padding:10px 12px!important}
+.vms-shared-logout strong{font-size:12px!important}.vms-shared-logout small{font-size:9px!important}
 
-.side-bottom-dock{
-  margin-top:9px!important;
-  padding-top:9px!important;
-  border-top:1px solid rgba(255,255,255,.08)!important;
-}
+.drawer-backdrop{position:fixed!important;inset:0!important;z-index:9998!important;background:rgba(0,31,48,.44)!important;-webkit-backdrop-filter:blur(4px)!important;backdrop-filter:blur(4px)!important;display:none!important}
+.drawer-backdrop.show{display:block!important}body.menu-open{overflow:hidden!important}
 
-.side-foot.clean-vms-card{display:none!important}
-.side-status-row{display:grid!important;gap:5px!important}
-
-.compact-status{
-  min-height:28px!important;
-  padding:6px 8px!important;
-  background:rgba(255,255,255,.04)!important;
-  border:1px solid rgba(255,255,255,.07)!important;
-  border-radius:8px!important;
+@media(max-width:1180px){
+  .tool-grid,.catalog-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .dashboard-grid,.grid2{grid-template-columns:1fr!important}
+  .stack.right{grid-template-columns:repeat(2,minmax(0,1fr))!important}
 }
-
-.compact-status strong{
-  font-size:7.5px!important;
-  color:#dce8ed!important;
-}
-.compact-status small{
-  font-size:6.5px!important;
-  color:#8faebb!important;
-}
-
-.topbar,.top{
-  min-height:68px!important;
-  background:#fff!important;
-  border-bottom:1px solid #dce5e9!important;
-}
-
-/* Shared backdrop. */
-.drawer-backdrop{
-  position:fixed!important;
-  inset:0!important;
-  z-index:9998!important;
-  background:rgba(0,48,73,.48)!important;
-  -webkit-backdrop-filter:blur(1px);
-  backdrop-filter:blur(1px);
-  display:none!important;
-}
-
-.drawer-backdrop.show{display:block!important}
-body.menu-open{overflow:hidden!important}
 
 @media(max-width:900px){
   .shell,.app{grid-template-columns:1fr!important}
-
-  /* Always a real fixed, full-height drawer on phones/tablets. */
   .sidebar,.side{
-    display:flex!important;
-    position:fixed!important;
-    inset:0 auto 0 0!important;
-    left:0!important;
-    top:0!important;
-    bottom:0!important;
-    width:min(86vw,300px)!important;
-    min-width:0!important;
-    max-width:300px!important;
-    height:100dvh!important;
-    min-height:100dvh!important;
-    max-height:100dvh!important;
-    margin:0!important;
-    padding:16px 12px 20px!important;
-    overflow-y:auto!important;
-    overflow-x:hidden!important;
-    overscroll-behavior:contain!important;
-    -webkit-overflow-scrolling:touch!important;
-    background:var(--vms-admin-navy)!important;
-    transform:translate3d(-105%,0,0)!important;
-    transition:transform .22s ease!important;
-    z-index:9999!important;
-    box-shadow:16px 0 42px rgba(0,25,38,.30)!important;
+    position:fixed!important;inset:0 auto 0 0!important;width:min(88vw,320px)!important;min-width:0!important;max-width:320px!important;
+    height:100dvh!important;min-height:100dvh!important;padding:16px 13px 22px!important;overflow-y:auto!important;
+    transform:translate3d(-105%,0,0)!important;transition:transform .22s cubic-bezier(.22,.61,.36,1)!important;z-index:9999!important;
+    box-shadow:18px 0 54px rgba(0,25,38,.28)!important;
   }
-
-  .sidebar.open,.side.open{
-    transform:translate3d(0,0,0)!important;
+  .sidebar.open,.side.open{transform:translate3d(0,0,0)!important}
+  .sidebar .brand,.side .brand{min-height:70px!important}
+  .sidebar .nav>a,.sidebar .nav>button,.side .nav>a,.side .nav>button{min-height:46px!important;padding:12px!important;font-size:14px!important;border-radius:12px!important}
+  .sidebar .brand-copy strong,.side .brand-copy strong{font-size:13px!important}.sidebar .brand-copy span,.side .brand-copy span{font-size:9px!important}
+  .mobile-menu,#mobileMenuBtn,#vmsMobileMenuBtn,.vms-mobile-menu-btn{display:inline-grid!important;place-items:center!important;flex:0 0 44px!important;width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important}
+  .mobile-head,.vms-mobile-shell{display:none!important}
+  main.main>.topbar,.main>.topbar,.vms-standard-topbar{
+    min-height:68px!important;padding:10px 14px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;
+    background:rgba(255,255,255,.92)!important;
   }
+  .vms-standard-left,.topbar-title,.vms-standard-topbar>div:first-child{min-width:0!important;display:flex!important;align-items:center!important;gap:10px!important}
+  .vms-standard-title,.topbar-left,.title-copy{min-width:0!important;display:grid!important;gap:2px!important}
+  .vms-standard-title small,.topbar-left small,.title-copy small{font-size:9px!important;line-height:1!important;white-space:nowrap!important}
+  .vms-standard-title strong,.topbar-left strong,.title-copy strong{font-size:20px!important;line-height:1.05!important;white-space:normal!important;overflow:visible!important}
+  .top-actions,.topbar-actions{gap:6px!important}
+  .top-actions .btn:not(.primary):not(.red),.topbar-actions .btn:not(.primary):not(.red){display:none!important}
+  .content{padding:16px 14px 34px!important}
+  .intro:not(.linkhub-intro),.page-head,.overview{padding:18px!important;border-radius:18px!important;margin-bottom:14px!important}
+  .overview-copy h1,.page-head h1{font-size:27px!important}.intro p,.page-head p,.overview-copy p{font-size:13px!important}
 
-  .mobile-menu,#mobileMenuBtn,.vms-mobile-menu-btn{
-    display:inline-flex!important;
-    align-items:center!important;
-    justify-content:center!important;
-    position:relative!important;
-    z-index:60!important;
-  }
+  /* Two-up summaries cut phone scrolling without shrinking type. */
+  .stats,.status-strip,.metrics{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important;margin-bottom:14px!important}
+  .stat,.metric{min-height:94px!important;padding:14px!important;border-radius:15px!important}
+  .stat strong,.metric strong{font-size:25px!important}.stat small,.metric small{display:none!important}
 
-  /* Never allow legacy page CSS to turn the Admin menu into page content. */
-  .sidebar .nav,.side .nav{
-    display:grid!important;
-    grid-template-columns:1fr!important;
-    overflow:visible!important;
-    width:100%!important;
-    padding:0!important;
-    margin:13px 0 0!important;
-  }
-
-  .sidebar .nav>a,.sidebar .nav>button,
-  .side .nav>a,.side .nav>button{
-    width:100%!important;
-    min-height:42px!important;
-    padding:11px 12px!important;
-    border-radius:9px!important;
-    color:rgba(255,255,255,.86)!important;
-    text-decoration:none!important;
-    font-size:11px!important;
-    white-space:normal!important;
-  }
-
-  .side-bottom-dock{
-    position:static!important;
-    width:100%!important;
-    margin-top:auto!important;
-    background:transparent!important;
-  }
-
-  .side .brand{display:flex!important}
+  .dashboard-grid,.grid,.grid2,.bottom-row,.billing-summary,.stack.right{grid-template-columns:1fr!important;gap:12px!important}
+  .panel,.card{border-radius:16px!important}.panel-head,.card-head{padding:15px 16px!important}.panel-body,.card-body{padding:15px 16px!important}.card{padding:15px!important}.card>.card-head:first-child{margin:-15px -15px 15px!important}
+  .panel-title strong,.panel-head strong,.panel-head h3,.card-head h3,.catalog-head h3{font-size:16px!important}
+  .tool-grid,.catalog-grid,.service-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
+  .tool-card,.catalog-card,.service-card{min-height:150px!important;padding:14px!important;border-radius:15px!important}
+  .tool-card p,.catalog-card p,.service-card p{font-size:11.5px!important}
+  .list-item,.notification-item,.feed-row{padding:12px!important}
+  .field input,.field select,.field textarea,input,select,textarea{font-size:16px!important} /* Prevent iOS zoom. */
+  .btn,button.btn{min-height:42px!important;font-size:12px!important}
+  .vms-admin-sidebar-foot,.sidebar-foot,.side-note{font-size:10px!important}
 }
 
-@media(min-width:901px){
-  .drawer-backdrop{display:none!important}
-  body.menu-open{overflow:auto!important}
+@media(max-width:520px){
+  .tool-grid,.catalog-grid,.service-grid{grid-template-columns:1fr!important}
+  .intro-actions,.actions,.list-actions{width:100%!important}
+  .intro-actions .btn,.actions .btn{flex:1 1 auto!important}
+  .status-chip,.status-pill{display:none!important}
+  .panel-head,.card-head{align-items:flex-start!important;flex-wrap:wrap!important}
+  .form-grid,.fields{grid-template-columns:1fr!important}.field.full{grid-column:auto!important}
+  .money-card strong{font-size:32px!important}
 }
 
-
-/* ============================================================
-   VMS ADMIN — AUTHORITATIVE MOBILE HEADER
-   Promotions is the visual baseline for every Admin page.
-   This final layer intentionally wins over legacy page CSS.
-   ============================================================ */
-@media(max-width:900px){
-
-  /* QR Tools + Clients used their own logo strips.
-     Audit used a separate navy logo/hamburger shell.
-     The shared Admin header replaces all of them on mobile. */
-  .mobile-head,
-  .vms-mobile-shell{
-    display:none!important;
-  }
-
-  /* One white header everywhere. */
-  main.main > .topbar,
-  .main > .topbar,
-  .vms-standard-topbar{
-    width:100%!important;
-    min-height:64px!important;
-    height:auto!important;
-    margin:0!important;
-    padding:10px 14px!important;
-    box-sizing:border-box!important;
-    display:flex!important;
-    align-items:center!important;
-    justify-content:space-between!important;
-    gap:10px!important;
-    background:#fff!important;
-    border-bottom:1px solid #dfe7ea!important;
-    position:sticky!important;
-    top:0!important;
-    z-index:60!important;
-    color:#003049!important;
-  }
-
-  /* Left side exactly follows Promotions:
-     hamburger + VMS ADMIN + page title. */
-  .vms-standard-left,
-  .topbar-title,
-  .vms-standard-topbar > div:first-child{
-    min-width:0!important;
-    display:flex!important;
-    align-items:center!important;
-    gap:10px!important;
-  }
-
-  .vms-standard-title,
-  .topbar-left,
-  .title-copy{
-    min-width:0!important;
-    display:grid!important;
-    gap:2px!important;
-    align-content:center!important;
-  }
-
-  .vms-standard-title small,
-  .topbar-left small,
-  .title-copy small{
-    display:block!important;
-    margin:0!important;
-    color:#879aa4!important;
-    font-size:9px!important;
-    line-height:1!important;
-    font-weight:950!important;
-    letter-spacing:.12em!important;
-    text-transform:uppercase!important;
-    white-space:nowrap!important;
-  }
-
-  .vms-standard-title strong,
-  .topbar-left strong,
-  .title-copy strong{
-    display:block!important;
-    margin:3px 0 0!important;
-    color:#003049!important;
-    font-size:18px!important;
-    line-height:1.05!important;
-    font-weight:900!important;
-    letter-spacing:-.02em!important;
-    white-space:normal!important;
-    overflow:visible!important;
-    text-overflow:clip!important;
-  }
-
-  /* Identical hamburger treatment. */
-  main.main > .topbar #mobileMenuBtn,
-  main.main > .topbar #vmsMobileMenuBtn,
-  .vms-standard-topbar #mobileMenuBtn,
-  .vms-standard-topbar #vmsMobileMenuBtn,
-  .vms-standard-topbar .vms-mobile-menu-btn{
-    display:inline-grid!important;
-    place-items:center!important;
-    flex:0 0 44px!important;
-    width:44px!important;
-    height:44px!important;
-    min-width:44px!important;
-    min-height:44px!important;
-    max-width:44px!important;
-    max-height:44px!important;
-    margin:0!important;
-    padding:0!important;
-    border:1px solid #d7e3e8!important;
-    border-radius:12px!important;
-    background:#fff!important;
-    color:#003049!important;
-    box-shadow:none!important;
-    font-size:18px!important;
-    line-height:1!important;
-  }
-
-  /* Audit uses a drawn three-line icon instead of the ☰ character. */
-  .vms-standard-topbar .vms-mobile-menu-btn span,
-  .vms-standard-topbar .vms-mobile-menu-btn span::before,
-  .vms-standard-topbar .vms-mobile-menu-btn span::after{
-    background:#003049!important;
-  }
-
-  /* Keep each page's existing right-side actions/status,
-     but normalize them to the Promotions header rhythm. */
-  main.main > .topbar > .top-actions,
-  .vms-standard-topbar > .top-actions{
-    flex:0 0 auto!important;
-    display:flex!important;
-    align-items:center!important;
-    justify-content:flex-end!important;
-    gap:7px!important;
-    margin:0!important;
-  }
-
-  main.main > .topbar .top-actions .btn,
-  .vms-standard-topbar .top-actions .btn{
-    min-height:44px!important;
-    height:44px!important;
-    border-radius:11px!important;
-    padding:0 13px!important;
-    display:inline-flex!important;
-    align-items:center!important;
-    justify-content:center!important;
-    white-space:nowrap!important;
-    font-size:11px!important;
-    font-weight:900!important;
-  }
-
-  /* Status pills on QR/Clients remain useful, but align to the same header. */
-  main.main > .topbar > .status-pill,
-  main.main > .topbar .status-chip,
-  .vms-standard-topbar > .status-pill,
-  .vms-standard-topbar .status-chip{
-    flex:0 0 auto!important;
-    min-height:38px!important;
-    height:38px!important;
-    margin:0!important;
-    padding:0 12px!important;
-    display:inline-flex!important;
-    align-items:center!important;
-    justify-content:center!important;
-    border-radius:999px!important;
-    white-space:nowrap!important;
-    font-size:9px!important;
-  }
-
-  /* The injected Audit header is only mobile UI.
-     Its workflow-specific audit bar stays below it when needed. */
-  .vms-injected-topbar{
-    display:flex!important;
-  }
-
-  /* Original drawer logo only: white/cream VMS art on navy.
-     No mobile blue/red asset override. */
-  .sidebar .brand img,
-  .side .brand img,
-  .vms-admin-brand img{
-    content:normal!important;
-    width:78px!important;
-    max-width:78px!important;
-    max-height:44px!important;
-    object-fit:contain!important;
-  }
-}
-
-@media(min-width:901px){
-  .vms-injected-topbar{
-    display:none!important;
-  }
-}
+@media(min-width:901px){.drawer-backdrop{display:none!important}body.menu-open{overflow:auto!important}}
