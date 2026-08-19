@@ -5,43 +5,28 @@ window.VMS_CONFIG = {
 };
 
 /*
-  VMS Admin fast navigation gate
-  --------------------------------
-  Admin pages still run the real Supabase + role + MFA verification on every
-  load. After an already-verified Admin clicks another VMS Admin page, the
-  current page creates a one-use token for that exact destination. Because
-  config.js loads in <head>, we can consume that token before <body> paints
-  and avoid flashing the full-screen "Verifying secure Admin session…" gate.
+  VMS Admin trusted-tab visual gate
+  ---------------------------------
+  Every Admin page still runs the real Supabase session, role, and MFA checks.
+  Once this browser tab has successfully verified Admin access, we suppress
+  the full-screen privacy splash for a short period so normal Admin navigation
+  feels continuous instead of flashing "Verifying..." between pages.
 
-  Fresh visits, refreshes, expired tokens, other destinations, and new
-  unauthenticated sessions continue to show the privacy gate normally.
+  This is only a visual fast-path. Invalid/expired sessions are still rejected
+  by VMSAuth.requireSession().
 */
 (()=>{
   if(location.protocol==='file:' || !location.pathname.startsWith('/admin/'))return;
+  if(/\/admin\/login(?:\.html)?\/?$/i.test(location.pathname))return;
 
-  const KEY='vms_admin_fast_nav';
-
-  const normalizePath=path=>{
-    let p=String(path||'/').split('?')[0].split('#')[0];
-    p=p.replace(/\/index(?:\.html)?$/i,'/').replace(/\.html$/i,'');
-    if(p.length>1)p=p.replace(/\/+$/,'');
-    return p||'/';
-  };
+  const KEY='vms_admin_visual_trust_until';
 
   try{
-    const raw=sessionStorage.getItem(KEY);
-    sessionStorage.removeItem(KEY); // one use only
-
-    if(!raw)return;
-
-    const token=JSON.parse(raw);
-    const validTime=Number(token?.until||0)>Date.now();
-    const validTarget=normalizePath(token?.to)===normalizePath(location.pathname);
-
-    if(validTime && validTarget){
+    const until=Number(sessionStorage.getItem(KEY)||0);
+    if(until>Date.now()){
       document.documentElement.classList.remove('vms-auth-pending');
+    }else{
+      sessionStorage.removeItem(KEY);
     }
-  }catch(e){
-    try{sessionStorage.removeItem(KEY)}catch{}
-  }
+  }catch{}
 })();

@@ -3,7 +3,8 @@
   const cfg=window.VMS_CONFIG||{};
   const TEST_EMAIL='info@visionmakestudio.com';
   const isLocal=location.protocol==='file:';
-  const ADMIN_FAST_NAV_KEY='vms_admin_fast_nav';
+  const ADMIN_VISUAL_TRUST_KEY='vms_admin_visual_trust_until';
+  const ADMIN_VISUAL_TRUST_MS=15*60*1000;
 
   function configReady(){
     return !!(
@@ -14,60 +15,17 @@
     );
   }
 
-  function normalizeAdminPath(path){
-    let p=String(path||'/').split('?')[0].split('#')[0];
-    p=p.replace(/\/index(?:\.html)?$/i,'/').replace(/\.html$/i,'');
-    if(p.length>1)p=p.replace(/\/+$/,'');
-    return p||'/';
+  function setAdminVisualTrust(){
+    try{
+      sessionStorage.setItem(
+        ADMIN_VISUAL_TRUST_KEY,
+        String(Date.now()+ADMIN_VISUAL_TRUST_MS)
+      );
+    }catch{}
   }
 
-  function clearAdminFastNav(){
-    try{sessionStorage.removeItem(ADMIN_FAST_NAV_KEY)}catch{}
-  }
-
-  function bindAdminFastNavigation(){
-    if(document.documentElement.dataset.vmsFastNavBound==='1')return;
-    document.documentElement.dataset.vmsFastNavBound='1';
-
-    document.addEventListener('click',event=>{
-      if(event.defaultPrevented)return;
-
-      const anchor=event.target?.closest?.('a[href]');
-      if(!anchor)return;
-
-      if(anchor.target && anchor.target.toLowerCase()==='_blank')return;
-      if(anchor.hasAttribute('download'))return;
-
-      let url;
-      try{
-        url=new URL(anchor.getAttribute('href'),location.href);
-      }catch{
-        return;
-      }
-
-      if(url.origin!==location.origin)return;
-      if(!url.pathname.startsWith('/admin/'))return;
-
-      const destination=normalizeAdminPath(url.pathname);
-
-      if(
-        destination==='/admin/login' ||
-        destination==='/admin/login.html'
-      ){
-        clearAdminFastNav();
-        return;
-      }
-
-      try{
-        sessionStorage.setItem(
-          ADMIN_FAST_NAV_KEY,
-          JSON.stringify({
-            to:destination,
-            until:Date.now()+12000
-          })
-        );
-      }catch{}
-    },true);
+  function clearAdminVisualTrust(){
+    try{sessionStorage.removeItem(ADMIN_VISUAL_TRUST_KEY)}catch{}
   }
 
   async function loadSupabase(){
@@ -116,7 +74,7 @@
   }
 
   async function signOut(){
-    clearAdminFastNav();
+    clearAdminVisualTrust();
 
     const sb=await client();
     if(sb)await sb.auth.signOut();
@@ -150,7 +108,7 @@
     const reveal=()=>document.documentElement.classList.remove('vms-auth-pending');
 
     const adminFail=code=>{
-      clearAdminFastNav();
+      clearAdminVisualTrust();
       location.replace('/admin/login.html?error='+encodeURIComponent(code));
       return null;
     };
@@ -161,7 +119,7 @@
     };
 
     if(isLocal){
-      if(kind==='admin')bindAdminFastNavigation();
+      if(kind==='admin')setAdminVisualTrust();
       reveal();
 
       return {
@@ -209,8 +167,8 @@
 
         /*
           If this Admin has a verified MFA factor, Supabase reports
-          nextLevel=aal2. Never reveal private Admin content until this
-          particular session has completed the second factor.
+          nextLevel=aal2. Never treat the session as fully authorized until
+          this session has completed the second factor.
         */
         const aal=await getMfaState(sb);
 
@@ -219,10 +177,10 @@
         }
 
         /*
-          Only a successfully verified Admin can arm the fast navigation
-          token for the next internal Admin page.
+          Verification succeeded. Keep this browser tab visually trusted for
+          15 minutes. Every Admin page still performs these checks again.
         */
-        bindAdminFastNavigation();
+        setAdminVisualTrust();
 
       }catch(e){
         console.error('VMS admin verification failed',e);
