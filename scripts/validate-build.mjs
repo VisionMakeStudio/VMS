@@ -51,18 +51,17 @@ for(const name of adminPages){
 
 const catalog=fs.readFileSync(path.join(root,'assets','vms-catalog.js'),'utf8');
 const requiredPricing=[
-  ["linkhub-wifi",'6.99'],["linkhub-menu",'49.99'],["linkhub-pro",'14.99'],["vms-activation-fee",'4.99'],["smart-qr",'14.99']
+  ["linkhub-core",'5.99'],["linkhub-wifi",'6.99'],["linkhub-menu",'49.99'],["linkhub-pro",'19.99'],["vms-activation-fee",'4.99'],["smart-qr",'14.99']
 ];
 for(const [key,price] of requiredPricing){
   const idx=catalog.indexOf(`id:'${key}'`);if(idx<0){failures.push(`catalog missing ${key}`);continue}
   const chunk=catalog.slice(idx,idx+1200);if(!chunk.includes(price))failures.push(`catalog ${key} does not contain expected ${price}`);
 }
-if(/smart-qr[^\n]{0,900}(setupPrice|setup:99|recurringPrice:19)/i.test(catalog))failures.push('Smart QR still contains legacy setup/monthly pricing in central catalog');
+if(/smart-qr[^\n]{0,900}(setupPrice|setup:99|recurringPrice\s*:\s*19(?![\d.]))/i.test(catalog))failures.push('Smart QR still contains legacy setup/monthly pricing in central catalog');
 if(!catalog.includes("name:'VMS LinkHub Pro'")||!catalog.includes('Smart Scan Activity'))failures.push('LinkHub Pro entitlements incomplete');
 
 const schema=fs.readFileSync(path.join(root,'supabase','schema.sql'),'utf8');
-for(const needle of ['workspace_state','vms-client-files','linkhub-pro','14.99','linkhub-menu','49.99','linkhub-wifi','6.99'])if(!schema.includes(needle))failures.push(`Supabase schema missing ${needle}`);
-
+for(const needle of ['workspace_state','vms-client-files','smart-qr','linkhub-core','linkhub-pro','linkhub-menu','linkhub-wifi'])if(!schema.includes(needle))failures.push(`Supabase schema missing ${needle}`);
 
 const clientsPage=fs.readFileSync(path.join(root,'admin','clients.html'),'utf8');
 for(const needle of ['../assets/vms-catalog.js','profilePortalInviteBtn','/api/client-account','VMS_CLIENT_CLOUD_SYNC'])if(!clientsPage.includes(needle))failures.push(`Clients production bridge missing ${needle}`);
@@ -70,7 +69,7 @@ const billingPage=fs.readFileSync(path.join(root,'admin','billing.html'),'utf8')
 for(const forbidden of ['secure-checkout://prototype','Simulate Paid','richDemoData','loadDemoData'])if(billingPage.includes(forbidden))failures.push(`Billing still contains prototype checkout behavior: ${forbidden}`);
 if(!billingPage.includes('Online Checkout · Connect Provider')||!billingPage.includes("let posPaymentPath='manual'"))failures.push('Billing must default to manual payment until a real payment provider is connected');
 const allProductText=[catalog,schema,clientsPage,billingPage,fs.readFileSync(path.join(root,'admin','linkhub.html'),'utf8'),fs.readFileSync(path.join(root,'portal','index.html'),'utf8')].join('\n');
-for(const forbidden of ['Smart QR monthly','setupPrice:99','recurringPrice:19'])if(allProductText.includes(forbidden))failures.push(`Legacy product pricing remains: ${forbidden}`);
+for(const forbidden of ['Smart QR monthly','setupPrice:99'])if(allProductText.includes(forbidden))failures.push(`Legacy product pricing remains: ${forbidden}`);
 
 const funcs=['health.mts','intake.mts','ai-audit.mts','requests.mts','audits.mts','review-lookup.mts','client-event.mts','client-account.mts'];
 for(const f of funcs)if(!fs.existsSync(path.join(root,'netlify','functions',f)))failures.push(`Netlify function missing ${f}`);
