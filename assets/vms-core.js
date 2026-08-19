@@ -165,21 +165,12 @@
           return adminFail('unauthorized');
         }
 
-        /*
-          If this Admin has a verified MFA factor, Supabase reports
-          nextLevel=aal2. Never treat the session as fully authorized until
-          this session has completed the second factor.
-        */
         const aal=await getMfaState(sb);
 
         if(aal?.nextLevel==='aal2' && aal?.currentLevel!=='aal2'){
           return adminFail('mfa_required');
         }
 
-        /*
-          Verification succeeded. Keep this browser tab visually trusted for
-          15 minutes. Every Admin page still performs these checks again.
-        */
         setAdminVisualTrust();
 
       }catch(e){
@@ -190,6 +181,192 @@
 
     reveal();
     return session.user;
+  }
+
+  function installLogoutStyles(){
+    if(document.getElementById('vms-shared-logout-style'))return;
+
+    const style=document.createElement('style');
+    style.id='vms-shared-logout-style';
+    style.textContent=`
+      .vms-logout-wrap{
+        width:100%;
+        margin-top:10px;
+        padding-top:10px;
+        border-top:1px solid rgba(255,255,255,.10);
+      }
+
+      .vms-shared-logout{
+        width:100%;
+        min-height:42px;
+        margin:0;
+        padding:9px 11px;
+        border:1px solid rgba(255,255,255,.12);
+        border-radius:10px;
+        background:rgba(255,255,255,.055);
+        color:rgba(255,255,255,.90);
+        display:flex;
+        align-items:center;
+        justify-content:flex-start;
+        gap:9px;
+        font:850 10px/1.2 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+        text-align:left;
+        cursor:pointer;
+        -webkit-tap-highlight-color:transparent;
+        transition:background .16s ease,border-color .16s ease,color .16s ease;
+      }
+
+      .vms-shared-logout:hover{
+        background:rgba(193,18,31,.17);
+        border-color:rgba(255,180,186,.20);
+        color:#fff;
+      }
+
+      .vms-shared-logout:active{
+        background:rgba(193,18,31,.23);
+      }
+
+      .vms-shared-logout:disabled{
+        opacity:.58;
+        cursor:wait;
+      }
+
+      .vms-shared-logout svg{
+        width:17px;
+        height:17px;
+        flex:0 0 17px;
+        stroke:currentColor;
+      }
+
+      .vms-shared-logout .vms-logout-copy{
+        min-width:0;
+        display:grid;
+        gap:1px;
+      }
+
+      .vms-shared-logout strong{
+        color:inherit;
+        font-size:10px;
+        line-height:1.15;
+        font-weight:900;
+      }
+
+      .vms-shared-logout small{
+        color:rgba(255,255,255,.52);
+        font-size:7px;
+        line-height:1.2;
+        font-weight:750;
+      }
+
+      @media(max-width:900px){
+        .vms-shared-logout{
+          min-height:46px;
+          padding:11px 12px;
+          border-radius:11px;
+          font-size:11px;
+        }
+
+        .vms-shared-logout strong{font-size:11px}
+        .vms-shared-logout small{font-size:7.5px}
+      }
+    `;
+
+    document.head.appendChild(style);
+  }
+
+  function installLogoutControl(){
+    const path=(location.pathname||'').toLowerCase();
+    const isAdmin=path.startsWith('/admin/') &&
+      !/\/admin\/login(?:\.html)?\/?$/.test(path);
+    const isPortal=path==='/portal' ||
+      path==='/portal/' ||
+      path.startsWith('/portal/');
+
+    if(!isAdmin && !isPortal)return;
+    if(document.querySelector('[data-vms-shared-logout="1"]'))return;
+
+    const sidebar=document.querySelector('aside.sidebar,aside.side,.sidebar,.side');
+    if(!sidebar)return;
+
+    installLogoutStyles();
+
+    const wrap=document.createElement('div');
+    wrap.className='vms-logout-wrap';
+    wrap.dataset.vmsSharedLogout='1';
+
+    const button=document.createElement('button');
+    button.type='button';
+    button.className='vms-shared-logout';
+    button.setAttribute('aria-label',isAdmin?'Log out of VMS Admin':'Log out of Client Portal');
+
+    button.innerHTML=`
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M10 17l5-5-5-5"></path>
+        <path d="M15 12H3"></path>
+        <path d="M13 3h5a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3h-5"></path>
+      </svg>
+      <span class="vms-logout-copy">
+        <strong>Log out</strong>
+        <small>${isAdmin?'VMS Admin':'Client Portal'}</small>
+      </span>
+    `;
+
+    button.addEventListener('click',async()=>{
+      if(button.disabled)return;
+
+      button.disabled=true;
+      const strong=button.querySelector('strong');
+      const small=button.querySelector('small');
+
+      if(strong)strong.textContent='Signing out…';
+      if(small)small.textContent='Please wait';
+
+      try{
+        await signOut();
+      }catch(e){
+        console.error('VMS sign out failed',e);
+      }
+
+      if(isAdmin){
+        location.replace('/admin/login.html?logged_out=1');
+      }else{
+        location.replace('/?portal=1&logged_out=1');
+      }
+    });
+
+    wrap.appendChild(button);
+
+    if(isPortal){
+      const foot=sidebar.querySelector('.side-foot');
+      if(foot){
+        foot.appendChild(wrap);
+      }else{
+        wrap.style.marginTop='auto';
+        sidebar.appendChild(wrap);
+      }
+      return;
+    }
+
+    const adminFoot=sidebar.querySelector(
+      '.side-bottom,.side-bottom-dock,.vms-admin-sidebar-foot,.sidebar-foot,.side-note'
+    );
+
+    if(adminFoot){
+      adminFoot.appendChild(wrap);
+    }else{
+      wrap.style.marginTop='auto';
+      sidebar.appendChild(wrap);
+    }
+  }
+
+  function bootSharedUi(){
+    installLogoutControl();
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',bootSharedUi,{once:true});
+  }else{
+    bootSharedUi();
   }
 
   async function api(path,options={}){
