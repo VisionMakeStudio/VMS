@@ -75,16 +75,23 @@ window.VMS_CONFIG = {
     const rows=[...document.querySelectorAll('#linkHubSocialList .social-row')];
     rows.forEach(row=>{
       const icon=row.querySelector('.social-admin-icon');
-      if(icon){
-        const platform=platformFromRow(row);
+      if(!icon)return;
+      const platform=platformFromRow(row)||'Website';
+      const key=String(platform).trim().toLowerCase();
+      if(icon.dataset.vmsSocialIcon!==key || !icon.querySelector('svg')){
         icon.innerHTML=iconSvg(platform);
-        icon.setAttribute('aria-label',platform||'Social');
+        icon.dataset.vmsSocialIcon=key;
       }
+      icon.setAttribute('aria-label',platform||'Social');
     });
     const preview=[...document.querySelectorAll('#section-linkhub .linkhub-public-social')];
     preview.forEach((button,i)=>{
       const platform=platformFromRow(rows[i])||button.title||'Website';
-      button.innerHTML=iconSvg(platform);
+      const key=String(platform).trim().toLowerCase();
+      if(button.dataset.vmsSocialIcon!==key || !button.querySelector('svg')){
+        button.innerHTML=iconSvg(platform);
+        button.dataset.vmsSocialIcon=key;
+      }
       button.setAttribute('aria-label',button.title||platform);
     });
   }
@@ -351,9 +358,19 @@ window.VMS_CONFIG = {
     createSharePanel();
     installDirtyTracking();
     restoreSocialIcons();
-    const observer=new MutationObserver(()=>restoreSocialIcons());
-    const section=$('section-linkhub');
-    if(section)observer.observe(section,{childList:true,subtree:true});
+    let iconRefreshQueued=false;
+    const observer=new MutationObserver(()=>{
+      if(iconRefreshQueued)return;
+      iconRefreshQueued=true;
+      requestAnimationFrame(()=>{
+        iconRefreshQueued=false;
+        restoreSocialIcons();
+      });
+    });
+    const socialList=$('linkHubSocialList');
+    const previewScreen=$('linkHubPreviewScreen');
+    if(socialList)observer.observe(socialList,{childList:true,subtree:true});
+    if(previewScreen)observer.observe(previewScreen,{childList:true,subtree:true});
     loadInfo();
   }
 
