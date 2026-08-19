@@ -311,3 +311,215 @@ td{font-size:12.5px!important;line-height:1.4!important;padding:13px!important}
 }
 
 @media(min-width:901px){.drawer-backdrop{display:none!important}body.menu-open{overflow:auto!important}}
+
+
+/* ============================================================
+   VMS ADMIN — PHASE 1 FINAL POLISH
+   Shared visual pass for every production Admin page.
+   Login intentionally remains untouched.
+   ============================================================ */
+
+/* Stronger readability across legacy page-level styles. */
+.content{font-size:14px!important}
+.content p,.content li,.content td,.content .hint,.content .help,.content .field-help{
+  line-height:1.5!important;
+}
+.panel-head small,.card-head small,.panel-head p,.card-head p,
+.section-head span,.section-head small,.modal-head p,.modal-subtitle,
+.tool-card p,.catalog-card p,.service-card p,.request-card p,
+.client-copy span,.feed-copy span,.notification-copy span,.timeline-item span{
+  font-size:12px!important;
+}
+.panel-head h2,.panel-head h3,.panel-title strong,.card-head h2,.card-head h3,
+.section-head strong,.invoice-toolbar strong,.catalog-head h3{
+  font-weight:760!important;letter-spacing:-.02em!important;
+}
+.badge,.pill,.tag,.chip,.status-chip,.status-pill,.tool-kicker,.tool-access{
+  min-height:26px!important;padding:5px 9px!important;font-size:10.5px!important;
+}
+
+/* Apple-like grouped surfaces instead of one long wall of information. */
+.toolbar,.compact-toolbar,.invoice-toolbar,.filter-bar,.search-bar,.controls,.control-bar{
+  border-color:rgba(0,48,73,.085)!important;
+}
+.toolbar,.compact-toolbar,.invoice-toolbar{
+  background:rgba(255,255,255,.72)!important;
+  border-radius:16px!important;
+  box-shadow:0 6px 24px rgba(0,48,73,.035)!important;
+}
+.panel,.card,.section-card,.hub-card,.request-card,.notification-item,.list-item,
+.revenue-card,.billing-item,.access-box,.feature-option,.feature-price{
+  transition:border-color .16s ease,box-shadow .16s ease,transform .16s ease!important;
+}
+.panel:hover,.card:hover{border-color:rgba(0,48,73,.14)!important}
+
+/* Better density for cards: readable without forcing long scrolls. */
+.tool-card,.catalog-card,.service-card{min-height:150px!important}
+.tool-card p,.catalog-card p,.service-card p{
+  display:-webkit-box!important;-webkit-box-orient:vertical!important;-webkit-line-clamp:3!important;
+  overflow:hidden!important;
+}
+.empty{min-height:100px!important}
+
+/* Unified tab language. */
+.tabs,.manage-tabs,.segmented,.filter-tabs{
+  scrollbar-width:none!important;-webkit-overflow-scrolling:touch!important;
+}
+.tabs::-webkit-scrollbar,.manage-tabs::-webkit-scrollbar,.segmented::-webkit-scrollbar,.filter-tabs::-webkit-scrollbar{display:none!important}
+.tab,.manage-tab{
+  border-radius:999px!important;min-height:40px!important;padding:9px 14px!important;
+  font-size:11.5px!important;font-weight:750!important;
+}
+.tab.active,.manage-tab.active{
+  box-shadow:0 7px 16px rgba(0,48,73,.12)!important;
+}
+
+/* More comfortable row typography in dense business tables/lists. */
+.subscription-row,.payment-row,.invoice-row,.client-row,.project-row,.file-row,.promo-row{
+  font-size:13px!important;
+}
+.subscription-row .cell strong,.payment-row .cell strong,.invoice-row .cell strong,
+.client-row strong,.project-row strong,.file-row strong,.promo-row strong{
+  font-size:13px!important;
+}
+.subscription-row .cell span,.payment-row .cell span,.invoice-row .cell span{
+  font-size:10px!important;
+}
+
+/* Revenue / KPI cards. */
+.revenue-strip{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:12px!important;margin:0 0 16px!important}
+.revenue-card{
+  min-width:0!important;padding:16px 17px!important;border:1px solid rgba(0,48,73,.10)!important;
+  border-radius:16px!important;background:rgba(255,255,255,.92)!important;box-shadow:0 7px 24px rgba(0,48,73,.04)!important;
+}
+.revenue-card span{display:block!important;color:#7e929c!important;font-size:10px!important;font-weight:800!important;letter-spacing:.05em!important}
+.revenue-card strong{display:block!important;margin-top:7px!important;color:var(--vms-admin-ink)!important;font-size:25px!important;letter-spacing:-.035em!important}
+.revenue-card small{display:block!important;margin-top:7px!important;color:#8b9ca4!important;font-size:11px!important;line-height:1.4!important}
+.accounting-note,.pro-note,.note{
+  border-radius:14px!important;padding:13px 15px!important;font-size:11.5px!important;line-height:1.55!important;
+}
+.attention-strip{
+  border-radius:16px!important;padding:14px 16px!important;gap:12px!important;
+}
+.attention-strip strong{font-size:14px!important}.attention-strip span{font-size:11.5px!important;line-height:1.45!important}
+
+/* Dashboard compact pulse and shortcuts. */
+.pulse{border-radius:16px!important;overflow:hidden!important;box-shadow:0 6px 22px rgba(0,48,73,.035)!important}
+.pulse-item{padding:14px 16px!important}.pulse-item span{font-size:10px!important}.pulse-item strong{font-size:14px!important}
+.shortcut{border-radius:13px!important;min-height:58px!important;font-size:11.5px!important;padding:12px 13px!important}
+
+/* LinkHub / client cards. */
+.hub-card{border-radius:17px!important;box-shadow:0 7px 25px rgba(0,48,73,.045)!important}
+.hub-card-top{padding:15px!important}.hub-info{padding:12px 15px!important}.hub-card-foot{padding:11px 14px!important}
+.client-logo{width:48px!important;height:48px!important;min-width:48px!important;border-radius:14px!important}
+.client-copy strong{font-size:13px!important}.client-copy span{font-size:10.5px!important}
+
+/* Forms feel like native controls without excessive height. */
+.field input,.field select,.field textarea,input,select,textarea{
+  border-color:#d5e0e5!important;background:rgba(255,255,255,.96)!important;
+}
+.field label{font-size:10.5px!important}
+.check-line,.permission{border-radius:13px!important;padding:11px 12px!important}
+.check-line strong,.permission strong{font-size:12px!important}.check-line span,.permission span{font-size:10.5px!important}
+
+/* Modal hierarchy. */
+.modal-backdrop{background:rgba(0,31,48,.48)!important;-webkit-backdrop-filter:blur(5px)!important;backdrop-filter:blur(5px)!important}
+.modal-head h3{font-size:19px!important;letter-spacing:-.025em!important}.modal-head p{font-size:11.5px!important}
+.modal-foot{background:rgba(255,255,255,.94)!important;-webkit-backdrop-filter:blur(16px)!important;backdrop-filter:blur(16px)!important}
+
+/* Audit remains information-dense, but no longer tiny. */
+.vms-page-audit .workspace,.vms-page-audit .audit-workspace,.vms-page-audit .content{font-size:13px!important}
+.vms-page-audit .audit-card,.vms-page-audit .audit-panel,.vms-page-audit .result-card{
+  border-radius:16px!important;box-shadow:0 7px 24px rgba(0,48,73,.04)!important;
+}
+.vms-page-audit .audit-card h3,.vms-page-audit .audit-panel h3,.vms-page-audit .result-card h3{font-size:15px!important}
+
+/* ============================================================
+   MOBILE / TABLET — LESS SCROLL, SAME READABILITY
+   ============================================================ */
+@media(max-width:900px){
+  .content{padding:14px 12px 30px!important;font-size:14px!important}
+  main.main>.topbar,.main>.topbar,.vms-standard-topbar{min-height:64px!important;padding:9px 12px!important}
+  .vms-standard-title strong,.topbar-left strong,.title-copy strong{font-size:19px!important}
+  .vms-standard-title small,.topbar-left small,.title-copy small{font-size:9px!important}
+
+  .intro:not(.linkhub-intro),.page-head,.overview{padding:16px!important;margin-bottom:12px!important}
+  .overview-copy h1,.page-head h1{font-size:25px!important}
+  .overview-meta{display:none!important}
+
+  /* KPI cards keep a compact 2-up rhythm. */
+  .stats,.status-strip,.metrics{gap:8px!important;margin-bottom:12px!important}
+  .stat,.metric{min-height:88px!important;padding:13px!important}
+  .stat strong,.metric strong{font-size:24px!important;margin-top:6px!important}
+  .stat span,.metric span{font-size:9.5px!important}
+
+  .revenue-strip{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;margin-bottom:12px!important}
+  .revenue-card{padding:13px!important;border-radius:14px!important}
+  .revenue-card span{font-size:9px!important}.revenue-card strong{font-size:21px!important;margin-top:5px!important}
+  .revenue-card small{font-size:10px!important;margin-top:5px!important}
+
+  /* One-row swipeable tabs save a large amount of vertical space. */
+  .tabs,.manage-tabs{
+    display:flex!important;grid-template-columns:none!important;gap:7px!important;
+    overflow-x:auto!important;overflow-y:hidden!important;flex-wrap:nowrap!important;
+    padding:8px 2px 10px!important;margin-bottom:10px!important;
+    scroll-snap-type:x proximity!important;
+  }
+  .tabs .tab,.manage-tabs .manage-tab{
+    flex:0 0 auto!important;grid-column:auto!important;min-height:40px!important;
+    scroll-snap-align:start!important;padding:9px 13px!important;font-size:11px!important;
+  }
+
+  .dashboard-grid,.grid,.grid2,.bottom-row,.billing-summary,.stack.right{gap:10px!important}
+  .panel,.card{border-radius:15px!important}.panel-head,.card-head{padding:13px 14px!important}.panel-body,.card-body{padding:13px 14px!important}
+  .panel-title strong,.panel-head strong,.panel-head h3,.card-head h3,.section-head strong{font-size:15px!important}
+  .panel-head small,.card-head small,.section-head span{font-size:10.5px!important}
+
+  .tool-grid,.catalog-grid,.service-grid{gap:8px!important}
+  .tool-card,.catalog-card,.service-card{min-height:132px!important;padding:13px!important}
+  .tool-card h3,.catalog-card h3,.service-card h3{font-size:14px!important}
+  .tool-card p,.catalog-card p,.service-card p{font-size:10.5px!important;-webkit-line-clamp:2!important}
+
+  .toolbar,.compact-toolbar,.invoice-toolbar{border-radius:14px!important;padding:9px 10px!important;gap:7px!important}
+  .toolbar input,.compact-toolbar input,.search-wrap input{min-height:44px!important}
+
+  .accounting-note,.pro-note,.note{padding:11px 12px!important;font-size:10.5px!important;margin-bottom:12px!important}
+  .attention-strip{padding:12px 13px!important;margin-bottom:12px!important}.attention-strip strong{font-size:13px!important}.attention-strip span{font-size:10.5px!important}
+
+  .pulse{grid-template-columns:repeat(2,minmax(0,1fr))!important;margin-top:8px!important}
+  .pulse-item{padding:11px 12px!important;border-bottom:1px solid #e5edef!important}
+  .pulse-item:nth-child(2n){border-right:0!important}.pulse-item:nth-last-child(-n+2){border-bottom:0!important}
+
+  .shortcut-list{grid-template-columns:1fr 1fr!important;gap:7px!important}.shortcut{min-height:52px!important;padding:10px!important;font-size:10.5px!important}
+
+  /* Modal sheets stay usable and keep actions visible. */
+  .modal-backdrop.show{align-items:flex-end!important;padding:0!important}
+  .modal,.modal.wide,.modal.small{width:100%!important;max-width:none!important;max-height:94dvh!important;border-radius:22px 22px 0 0!important}
+  .modal-head{padding:14px 15px!important}.modal-body{padding:13px 14px!important}.modal-foot{position:sticky!important;bottom:0!important;z-index:5!important;padding:10px 12px calc(10px + env(safe-area-inset-bottom))!important}
+  .modal-foot .btn{min-height:44px!important}
+
+  /* LinkHub editor: preview remains useful without eating the whole screen. */
+  .vms-page-linkhub .manage-preview{padding:0!important;margin:0 auto 4px!important}
+  .vms-page-linkhub .preview-label{font-size:9.5px!important;margin-top:7px!important}
+}
+
+@media(max-width:600px){
+  .content{padding-left:10px!important;padding-right:10px!important}
+  .tool-grid,.catalog-grid,.service-grid{grid-template-columns:1fr!important}
+  .tool-card,.catalog-card,.service-card{min-height:116px!important}
+  .revenue-card small{display:none!important}
+  .shortcut-list{grid-template-columns:1fr!important}
+  .form-grid,.fields{grid-template-columns:1fr!important}
+  .field.full{grid-column:auto!important}
+  .modal-foot{gap:7px!important}.modal-foot-left,.modal-foot-right{gap:7px!important}
+  .modal-foot-right{margin-left:auto!important}
+  .modal-foot .btn{padding-left:13px!important;padding-right:13px!important}
+}
+
+@media(min-width:901px){
+  /* Desktop typography should feel like a real application, not a compressed prototype. */
+  .sidebar .nav>a,.sidebar .nav>button,.side .nav>a,.side .nav>button{font-size:13.5px!important}
+  .content{font-size:14px!important}
+  .panel-head small,.card-head small,.section-head span{font-size:12px!important}
+  .field input,.field select,.field textarea,input,select,textarea{font-size:14px!important}
+}
