@@ -18,3 +18,24 @@ input,select,textarea{border-radius:10px!important;border-color:#d3e0e5!importan
   .sidebar.open,.side.open{box-shadow:18px 0 50px rgba(0,28,45,.28)!important}.btn{min-height:43px!important}.stats{gap:8px!important}.stat{padding:12px!important}
   .modal,.modal-card{width:min(100% - 22px,680px)!important;max-width:none!important;padding-left:16px!important;padding-right:16px!important}
 }
+
+/* Client Portal — keep My Services abbreviations inside their square icon. */
+.service-grid .service-card .service-icon,
+.catalog-wrap .catalog-card .service-icon{
+  width:42px!important;
+  height:42px!important;
+  min-width:42px!important;
+  max-width:42px!important;
+  flex:0 0 42px!important;
+  padding:4px!important;
+  display:grid!important;
+  place-items:center!important;
+  overflow:hidden!important;
+  text-align:center!important;
+  white-space:normal!important;
+  overflow-wrap:anywhere!important;
+  word-break:break-word!important;
+  font-size:7px!important;
+  line-height:1!important;
+  letter-spacing:-.04em!important;
+}
