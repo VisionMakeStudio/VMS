@@ -621,3 +621,281 @@ window.VMS_CONFIG = {
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
+
+/* VMS Client Portal · Billing Center v1 · real data / provider-ready */
+(()=>{
+  const path=String(location.pathname||'').toLowerCase();
+  if(!(path==='/portal'||path==='/portal/'||path.startsWith('/portal/')))return;
+
+  const TEST_EMAIL='info@visionmakestudio.com';
+  const lower=v=>String(v||'').trim().toLowerCase();
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const money=(value,currency='USD')=>{
+    const n=Number(value||0);
+    try{return new Intl.NumberFormat('en-US',{style:'currency',currency:String(currency||'USD').toUpperCase(),minimumFractionDigits:2}).format(Number.isFinite(n)?n:0)}catch{return `$${(Number.isFinite(n)?n:0).toFixed(2)}`}
+  };
+  const date=value=>{
+    if(!value)return '';
+    const d=new Date(value);if(Number.isNaN(d.getTime()))return '';
+    return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  };
+  const safeUrl=value=>{try{const u=new URL(String(value||''));return /^https?:$/.test(u.protocol)?u.href:''}catch{return ''}};
+  const titleStatus=value=>{
+    const s=lower(value).replace(/[_-]+/g,' ');
+    if(s==='past due')return 'Past Due';
+    if(s==='test')return 'Test Access';
+    return s?s.replace(/\b\w/g,c=>c.toUpperCase()):'Active';
+  };
+  const statusTone=value=>{
+    const s=lower(value);
+    if(['active','paid','test','trialing','completed'].includes(s))return 'green';
+    if(['past_due','past due','unpaid','incomplete'].includes(s))return 'red';
+    if(['paused','pending'].includes(s))return 'orange';
+    if(['canceled','cancelled'].includes(s))return 'muted';
+    return 'blue';
+  };
+  const recurringRow=(row,catalogMap)=>{
+    const cat=catalogMap.get(row?.service_key);
+    return !!row?.billing_cadence||lower(cat?.pricing_model)==='recurring';
+  };
+  const serviceActive=row=>!['canceled','cancelled'].includes(lower(row?.service_status));
+  let running=false;
+
+  function installStyles(){
+    if(document.getElementById('vms-billing-center-style'))return;
+    const style=document.createElement('style');
+    style.id='vms-billing-center-style';
+    style.textContent=`
+      #section-billing.vms-billing-center{--billNavy:#003049;--billBlue:#669BBC;--billGreen:#2b8c69;--billOrange:#d97818;--billRed:#C1121F;--billInk:#173443;--billMuted:#71858f;--billLine:#dfe8ec;--billSoft:#f6f9fa}
+      #section-billing .vms-billing-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:14px}
+      #section-billing .vms-billing-head h2{margin:0;color:var(--billNavy);font-size:24px;line-height:1.05;letter-spacing:-.035em}
+      #section-billing .vms-billing-head p{margin:6px 0 0;color:var(--billMuted);font-size:10px;line-height:1.55;max-width:700px}
+      #section-billing .vms-billing-provider{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--billLine);border-radius:999px;background:#fff;padding:7px 10px;color:#637b87;font-size:8px;font-weight:950;white-space:nowrap}
+      #section-billing .vms-billing-provider:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--billBlue)}
+      #section-billing .vms-billing-provider.live:before{background:var(--billGreen)}
+      #section-billing .vms-billing-hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(360px,.85fr);gap:12px;margin-bottom:12px}
+      #section-billing .vms-billing-primary{position:relative;overflow:hidden;border-radius:18px;padding:22px;background:linear-gradient(145deg,#003049 0%,#0c4a66 100%);color:#fff;min-height:184px;box-shadow:0 16px 40px rgba(0,48,73,.13)}
+      #section-billing .vms-billing-primary:after{content:"";position:absolute;right:-60px;bottom:-85px;width:230px;height:230px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.14),transparent 65%);pointer-events:none}
+      #section-billing .vms-billing-kicker{display:block;color:#b9d2dc;font-size:8px;font-weight:950;letter-spacing:.11em}
+      #section-billing .vms-billing-primary strong{display:block;margin-top:10px;font-size:30px;line-height:1;letter-spacing:-.045em}
+      #section-billing .vms-billing-primary p{margin:10px 0 0;color:#c4d8e0;font-size:9px;line-height:1.5;max-width:580px}
+      #section-billing .vms-billing-quick{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+      #section-billing .vms-billing-quick-card{border:1px solid var(--billLine);border-radius:15px;background:#fff;padding:15px;min-width:0}
+      #section-billing .vms-billing-quick-card span{display:block;color:#84969f;font-size:7px;font-weight:950;letter-spacing:.05em}
+      #section-billing .vms-billing-quick-card strong{display:block;margin-top:6px;color:var(--billNavy);font-size:13px;line-height:1.25;overflow-wrap:anywhere}
+      #section-billing .vms-billing-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(300px,.8fr);gap:12px;align-items:start}
+      #section-billing .vms-billing-stack{display:grid;gap:12px}
+      #section-billing .vms-billing-card{border:1px solid var(--billLine);border-radius:16px;background:#fff;padding:15px;box-shadow:0 5px 18px rgba(0,48,73,.035)}
+      #section-billing .vms-billing-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
+      #section-billing .vms-billing-card-head h3{margin:0;color:var(--billNavy);font-size:13px}
+      #section-billing .vms-billing-card-head p{margin:4px 0 0;color:var(--billMuted);font-size:8px;line-height:1.5}
+      #section-billing .vms-sub-list,#section-billing .vms-invoice-list{display:grid;gap:9px}
+      #section-billing .vms-sub-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;border:1px solid #e3ebee;border-radius:13px;padding:12px;background:#fbfdfd}
+      #section-billing .vms-sub-main{min-width:0}
+      #section-billing .vms-sub-title{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+      #section-billing .vms-sub-title strong{color:var(--billNavy);font-size:10px;line-height:1.25}
+      #section-billing .vms-sub-meta{display:flex;gap:6px 12px;flex-wrap:wrap;margin-top:6px;color:var(--billMuted);font-size:8px}
+      #section-billing .vms-sub-price{text-align:right;white-space:nowrap}
+      #section-billing .vms-sub-price strong{display:block;color:var(--billNavy);font-size:12px}
+      #section-billing .vms-sub-price span{display:block;margin-top:3px;color:#899ba4;font-size:7px}
+      #section-billing .vms-billing-badge{display:inline-flex;align-items:center;border-radius:999px;padding:5px 8px;font-size:7px;font-weight:950;background:#edf5f8;color:#3a7390}
+      #section-billing .vms-billing-badge.green{background:#edf7f3;color:var(--billGreen)}
+      #section-billing .vms-billing-badge.orange{background:#fff5e8;color:#a9651d}
+      #section-billing .vms-billing-badge.red{background:#fbeff0;color:#b13a43}
+      #section-billing .vms-billing-badge.muted{background:#f1f3f4;color:#74858d}
+      #section-billing .vms-invoice-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;border-bottom:1px solid #edf1f3;padding:10px 0}
+      #section-billing .vms-invoice-row:last-child{border-bottom:0}
+      #section-billing .vms-invoice-row strong{display:block;color:var(--billNavy);font-size:9px}
+      #section-billing .vms-invoice-row span{display:block;margin-top:3px;color:var(--billMuted);font-size:7px}
+      #section-billing .vms-invoice-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+      #section-billing .vms-billing-actions{display:grid;gap:8px}
+      #section-billing .vms-billing-action{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid #e3ebee;border-radius:13px;padding:11px;background:#fbfdfd}
+      #section-billing .vms-billing-action strong{display:block;color:var(--billNavy);font-size:9px}
+      #section-billing .vms-billing-action span{display:block;margin-top:3px;color:var(--billMuted);font-size:7px;line-height:1.4}
+      #section-billing .vms-billing-empty{border:1px dashed #cbd9df;border-radius:13px;background:#fafcfd;padding:20px;text-align:center;color:#7f929b;font-size:8px;line-height:1.55}
+      #section-billing .vms-billing-note{margin-top:10px;border-radius:12px;background:#f5f8f9;border:1px solid #e4ecef;padding:10px;color:#758a94;font-size:7.5px;line-height:1.5}
+      #section-billing .vms-billing-modal{position:fixed;inset:0;z-index:10050;display:none;place-items:center;padding:18px;background:rgba(0,38,58,.44);backdrop-filter:blur(4px)}
+      #section-billing .vms-billing-modal.show{display:grid}
+      #section-billing .vms-billing-dialog{width:min(520px,100%);border-radius:18px;background:#fff;border:1px solid var(--billLine);box-shadow:0 28px 80px rgba(0,35,52,.23);overflow:hidden}
+      #section-billing .vms-billing-dialog-head,#section-billing .vms-billing-dialog-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 15px;border-bottom:1px solid #edf1f3}
+      #section-billing .vms-billing-dialog-head h3{margin:0;color:var(--billNavy);font-size:12px}
+      #section-billing .vms-billing-dialog-body{padding:15px;color:var(--billMuted);font-size:9px;line-height:1.55}
+      #section-billing .vms-billing-dialog-foot{border-top:1px solid #edf1f3;border-bottom:0;justify-content:flex-end}
+      @media(max-width:900px){
+        #section-billing .vms-billing-head{align-items:flex-start;flex-direction:column;gap:9px}
+        #section-billing .vms-billing-head h2{font-size:22px}
+        #section-billing .vms-billing-head p{font-size:10px}
+        #section-billing .vms-billing-hero,#section-billing .vms-billing-grid{grid-template-columns:1fr}
+        #section-billing .vms-billing-primary{min-height:160px;padding:18px}
+        #section-billing .vms-billing-primary strong{font-size:27px}
+        #section-billing .vms-billing-quick{grid-template-columns:1fr 1fr}
+        #section-billing .vms-sub-row{grid-template-columns:1fr}
+        #section-billing .vms-sub-price{text-align:left;display:flex;align-items:baseline;gap:5px}
+      }
+      @media(max-width:520px){
+        #section-billing .vms-billing-quick{grid-template-columns:1fr 1fr}
+        #section-billing .vms-billing-quick-card{padding:12px}
+        #section-billing .vms-billing-action{align-items:flex-start;flex-direction:column}
+        #section-billing .vms-billing-action .btn{width:100%}
+        #section-billing .vms-invoice-row{grid-template-columns:1fr}
+        #section-billing .vms-invoice-actions{justify-content:flex-start}
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  async function sendEvent(type,payload){
+    const sb=await window.VMSAuth?.client?.();
+    if(!sb)throw new Error('Client Portal session is not ready.');
+    const {data:{session}}=await sb.auth.getSession();
+    if(!session?.access_token)throw new Error('Please sign in again.');
+    const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),15000);
+    try{
+      const res=await fetch('/api/client-event',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${session.access_token}`},body:JSON.stringify({type,payload}),signal:controller.signal});
+      const json=await res.json().catch(()=>({}));
+      if(!res.ok)throw new Error(json.error||'VMS could not save this request.');
+      return json;
+    }catch(e){if(e?.name==='AbortError')throw new Error('The request timed out. Please try again.');throw e}finally{clearTimeout(timer)}
+  }
+
+  function openManageModal(service,mode){
+    const modal=document.getElementById('vmsBillingCenterModal');if(!modal)return;
+    const title=modal.querySelector('[data-vms-billing-modal-title]');
+    const body=modal.querySelector('[data-vms-billing-modal-body]');
+    const confirm=modal.querySelector('[data-vms-billing-confirm]');
+    const cancel=modal.querySelector('[data-vms-billing-close]');
+    const isCancel=mode==='cancel';
+    title.textContent=isCancel?'Request Cancellation':'Request Pause';
+    body.innerHTML=`<p style="margin:0">${isCancel?'VMS will review this request and confirm the effective cancellation date. Your service does not shut off immediately.':'VMS will review your pause request and confirm when the pause takes effect.'}</p><div style="margin-top:12px;padding:11px;border-radius:11px;background:#f6f9fa;border:1px solid #e3ebee"><strong style="display:block;color:#003049;font-size:10px">${esc(service.name)}</strong><span style="display:block;margin-top:4px;font-size:8px">${esc(service.priceLabel)} · ${esc(service.statusLabel)}</span></div>${isCancel?'<label style="display:grid;gap:5px;margin-top:12px;font-size:8px;font-weight:900;color:#6f828d">OPTIONAL REASON<select data-vms-billing-reason style="min-height:42px;border:1px solid #d8e3e7;border-radius:10px;padding:9px 10px;background:#fff"><option>Need a break</option><option>Service completed</option><option>Too expensive</option><option>Not using it</option><option>Business closed</option><option>Other</option></select></label>':''}<div data-vms-billing-modal-status style="margin-top:10px;font-size:8px">No immediate billing change is made by this request.</div>`;
+    confirm.textContent=isCancel?'Send Cancellation Request':'Send Pause Request';
+    confirm.className=`btn ${isCancel?'red':'primary'}`;
+    const close=()=>modal.classList.remove('show');
+    cancel.onclick=close;
+    modal.onclick=e=>{if(e.target===modal)close()};
+    confirm.onclick=async()=>{
+      if(confirm.disabled)return;confirm.disabled=true;const original=confirm.textContent;confirm.textContent='Sending…';
+      const status=modal.querySelector('[data-vms-billing-modal-status]');
+      try{
+        await sendEvent(isCancel?'subscription_cancel_requested':'subscription_pause_requested',{
+          plan:service.name,serviceKey:service.serviceKey,reason:isCancel?(modal.querySelector('[data-vms-billing-reason]')?.value||''):''
+        });
+        status.textContent=isCancel?'Cancellation request sent to VMS.':'Pause request sent to VMS.';
+        confirm.textContent='Sent';setTimeout(close,850);
+      }catch(e){status.textContent=e?.message||'Could not send request.';confirm.disabled=false;confirm.textContent=original}
+    };
+    modal.classList.add('show');
+  }
+
+  function invoiceMarkup(invoices){
+    if(!invoices.length)return '<div class="vms-billing-empty"><strong style="display:block;color:#526c78;font-size:10px;margin-bottom:4px">No invoices yet</strong>Real invoices and receipts will appear here automatically after live payment processing is connected. No sample charges are shown.</div>';
+    return invoices.map(inv=>{
+      const number=inv.invoice_number||'Invoice';
+      const when=date(inv.paid_at||inv.issued_at||inv.created_at)||'Recent';
+      const amount=money(inv.status==='paid'?inv.amount_paid:inv.amount_due,inv.currency);
+      const hosted=safeUrl(inv.hosted_invoice_url),pdf=safeUrl(inv.invoice_pdf_url);
+      return `<div class="vms-invoice-row"><div><strong>${esc(number)} · ${esc(amount)}</strong><span>${esc(titleStatus(inv.status))} · ${esc(when)}</span></div><div class="vms-invoice-actions">${hosted?`<a class="btn small" href="${esc(hosted)}" target="_blank" rel="noopener">View</a>`:''}${pdf?`<a class="btn small" href="${esc(pdf)}" target="_blank" rel="noopener">PDF</a>`:''}</div></div>`;
+    }).join('');
+  }
+
+  function subscriptionView(services,catalog,ledger,email){
+    const catalogMap=new Map(catalog.map(x=>[x.id,x]));
+    const ledgerByService=new Map(ledger.filter(x=>x.client_service_id).map(x=>[String(x.client_service_id),x]));
+    return services.filter(serviceActive).filter(row=>recurringRow(row,catalogMap)).map(row=>{
+      const cat=catalogMap.get(row.service_key)||{};
+      const sub=ledgerByService.get(String(row.id));
+      const amount=sub?.amount!=null?Number(sub.amount):row.agreed_price!=null?Number(row.agreed_price):Number(cat.recurring_price||0);
+      const cadence=sub?.cadence||row.billing_cadence||cat.cadence||'Monthly';
+      const rawStatus=sub?.status||row.billing_status||row.service_status||'active';
+      const isTest=row?.metadata?.testAccess===true||lower(rawStatus)==='test';
+      const next=sub?.current_period_end||null;
+      return {
+        id:row.id,serviceKey:row.service_key,name:row.service_name||cat.name||'VMS Subscription',amount,currency:sub?.currency||'USD',cadence,
+        rawStatus,statusLabel:isTest?'Test Access':titleStatus(rawStatus),tone:isTest?'blue':statusTone(rawStatus),next,
+        start:row.start_date||sub?.current_period_start||null,isTest,provider:sub?.provider||'manual',manageUrl:safeUrl(sub?.metadata?.manage_url||sub?.metadata?.customer_portal_url),
+        priceLabel:`${money(amount,sub?.currency||'USD')}/${/year|annual/i.test(cadence)?'yr':'mo'}`
+      };
+    });
+  }
+
+  async function render(){
+    if(running)return;running=true;
+    try{
+      const section=document.getElementById('section-billing');
+      if(!section||!window.VMSAuth?.client)return;
+      const sb=await VMSAuth.client();if(!sb)return;
+      const {data:{session}}=await sb.auth.getSession();const email=lower(session?.user?.email);if(!email)return;
+      const {data:client,error:clientError}=await sb.from('clients').select('id,business_name,owner_email').ilike('owner_email',email).maybeSingle();
+      if(clientError||!client)return;
+      const [{data:services,error:serviceError},{data:catalog,error:catalogError},{data:ledger,error:ledgerError},{data:invoices,error:invoiceError}]=await Promise.all([
+        sb.from('client_services').select('*').eq('client_id',client.id),
+        sb.from('service_catalog').select('id,name,pricing_model,recurring_price,cadence').eq('status','Published'),
+        sb.from('billing_subscriptions').select('*').eq('client_id',client.id).order('created_at',{ascending:false}),
+        sb.from('billing_invoices').select('*').eq('client_id',client.id).order('created_at',{ascending:false}).limit(24)
+      ]);
+      if(serviceError)throw serviceError;if(catalogError)throw catalogError;if(ledgerError)throw ledgerError;if(invoiceError)throw invoiceError;
+      const subs=subscriptionView(services||[],catalog||[],ledger||[],email);
+      const invs=invoices||[];
+      const allTest=subs.length>0&&subs.every(x=>x.isTest);
+      const liveProvider=(ledger||[]).some(x=>x.provider&&lower(x.provider)!=='manual');
+      const monthly=subs.filter(x=>!/year|annual/i.test(x.cadence)).reduce((sum,x)=>sum+(Number(x.amount)||0),0);
+      const annual=subs.filter(x=>/year|annual/i.test(x.cadence)).reduce((sum,x)=>sum+(Number(x.amount)||0),0);
+      const nextDates=subs.map(x=>x.next).filter(Boolean).map(x=>new Date(x)).filter(d=>!Number.isNaN(d.getTime())).sort((a,b)=>a-b);
+      const nextBilling=nextDates.length?date(nextDates[0]):'Not scheduled';
+      const liveStatus=subs.some(x=>['past_due','past due','unpaid','incomplete'].includes(lower(x.rawStatus)))?'Needs attention':subs.length?(allTest?'Test access':'Active'):'No subscription';
+      const heroValue=allTest?'Test access':monthly?`${money(monthly)}/mo`:annual?`${money(annual)}/yr`:'No recurring charge';
+      const heroNote=allTest?'This account is using VMS test access. Nothing shown here is a live charge.':subs.length?'Your recurring services use the agreed client price stored by VMS.':'No recurring VMS service is assigned to this account.';
+      const paymentMethod=(ledger||[]).find(x=>x?.metadata?.payment_method_label)?.metadata?.payment_method_label||'Not connected';
+      const manageUrl=subs.map(x=>x.manageUrl).find(Boolean)||'';
+      installStyles();
+      section.classList.add('vms-billing-center');
+      section.innerHTML=`
+        <div class="vms-billing-head"><div><h2>Billing & Subscription</h2><p>See your actual VMS recurring services, agreed pricing, invoice history, next billing date, and subscription controls in one place.</p></div><span class="vms-billing-provider ${liveProvider?'live':''}">${liveProvider?'Live billing connected':'VMS-managed billing'}</span></div>
+        <div class="vms-billing-hero">
+          <div class="vms-billing-primary"><span class="vms-billing-kicker">${allTest?'TEST ACCOUNT':'CURRENT RECURRING TOTAL'}</span><strong>${esc(heroValue)}</strong><p>${esc(heroNote)}</p>${annual&&!allTest?`<p>Plus ${esc(money(annual))}/year in annual recurring services.</p>`:''}</div>
+          <div class="vms-billing-quick">
+            <div class="vms-billing-quick-card"><span>STATUS</span><strong>${esc(liveStatus)}</strong></div>
+            <div class="vms-billing-quick-card"><span>NEXT BILLING</span><strong>${esc(nextBilling)}</strong></div>
+            <div class="vms-billing-quick-card"><span>PAYMENT METHOD</span><strong>${esc(paymentMethod)}</strong></div>
+            <div class="vms-billing-quick-card"><span>INVOICES</span><strong>${invs.length}</strong></div>
+          </div>
+        </div>
+        <div class="vms-billing-grid">
+          <div class="vms-billing-stack">
+            <div class="vms-billing-card"><div class="vms-billing-card-head"><div><h3>Your Subscriptions</h3><p>These prices come from the service assigned to your VMS client account.</p></div></div>
+              <div class="vms-sub-list">${subs.length?subs.map(s=>`<div class="vms-sub-row"><div class="vms-sub-main"><div class="vms-sub-title"><strong>${esc(s.name)}</strong><span class="vms-billing-badge ${esc(s.tone)}">${esc(s.statusLabel)}</span></div><div class="vms-sub-meta"><span>${s.start?`Started ${esc(date(s.start))}`:'Start date not set'}</span><span>${s.next?`Next billing ${esc(date(s.next))}`:'Billing date appears when live payments are connected'}</span></div></div><div class="vms-sub-price"><strong>${esc(s.priceLabel)}</strong><span>agreed price</span></div></div>`).join(''):'<div class="vms-billing-empty">No recurring subscription is assigned to this client account.</div>'}</div>
+            </div>
+            <div class="vms-billing-card"><div class="vms-billing-card-head"><div><h3>Invoices & Receipts</h3><p>Only real billing records are shown here.</p></div></div><div class="vms-invoice-list">${invoiceMarkup(invs)}</div></div>
+          </div>
+          <div class="vms-billing-stack">
+            <div class="vms-billing-card"><div class="vms-billing-card-head"><div><h3>Manage Subscription</h3><p>Make a billing request without losing your VMS client history.</p></div></div>
+              <div class="vms-billing-actions">
+                ${subs.length?`<div class="vms-billing-action"><div><strong>Pause a subscription</strong><span>Ask VMS to temporarily pause one of your recurring services.</span></div><button class="btn" type="button" data-vms-billing-action="pause">Request Pause</button></div>
+                <div class="vms-billing-action"><div><strong>Cancel a subscription</strong><span>Request cancellation and receive a confirmed effective date.</span></div><button class="btn red" type="button" data-vms-billing-action="cancel">Request Cancellation</button></div>`:'<div class="vms-billing-empty">Subscription controls will appear when a recurring service is assigned.</div>'}
+                <div class="vms-billing-action"><div><strong>Payment method</strong><span>${manageUrl?'Open the secure billing portal to update your payment method.':'Self-service payment methods become available when live checkout is connected.'}</span></div><button class="btn" type="button" data-vms-payment-manage ${manageUrl?'':'disabled'}>${manageUrl?'Manage Payment':'Not Available Yet'}</button></div>
+                <div class="vms-billing-action"><div><strong>Need help?</strong><span>Contact Vision Make Studio about a charge, invoice, or subscription.</span></div><a class="btn" href="mailto:info@visionmakestudio.com?subject=VMS%20Billing%20Help">Contact VMS</a></div>
+              </div>
+              <div class="vms-billing-note">Pause and cancellation buttons send a request to VMS; they do not silently shut off paid services. Once a payment provider is connected, the next charge date, payment method, and invoices will populate from the live billing ledger.</div>
+            </div>
+          </div>
+        </div>
+        <div class="vms-billing-modal" id="vmsBillingCenterModal"><div class="vms-billing-dialog"><div class="vms-billing-dialog-head"><h3 data-vms-billing-modal-title>Manage Subscription</h3><button class="btn small" type="button" data-vms-billing-close>Close</button></div><div class="vms-billing-dialog-body" data-vms-billing-modal-body></div><div class="vms-billing-dialog-foot"><button class="btn primary" type="button" data-vms-billing-confirm>Send Request</button></div></div></div>`;
+
+      const chooseService=mode=>{
+        if(!subs.length)return;
+        if(subs.length===1)return openManageModal(subs[0],mode);
+        const modal=document.getElementById('vmsBillingCenterModal'),title=modal?.querySelector('[data-vms-billing-modal-title]'),body=modal?.querySelector('[data-vms-billing-modal-body]'),confirm=modal?.querySelector('[data-vms-billing-confirm]'),close=modal?.querySelector('[data-vms-billing-close]');
+        if(!modal||!title||!body||!confirm||!close)return;
+        title.textContent=mode==='cancel'?'Choose Subscription to Cancel':'Choose Subscription to Pause';
+        body.innerHTML=`<p style="margin-top:0">Choose the recurring service you want VMS to review.</p><div style="display:grid;gap:7px">${subs.map((s,i)=>`<button type="button" class="btn" data-vms-sub-choice="${i}" style="justify-content:space-between;width:100%"><span>${esc(s.name)}</span><span>${esc(s.priceLabel)}</span></button>`).join('')}</div>`;
+        confirm.style.display='none';close.onclick=()=>{modal.classList.remove('show');confirm.style.display=''};modal.classList.add('show');
+        body.querySelectorAll('[data-vms-sub-choice]').forEach(btn=>btn.onclick=()=>{confirm.style.display='';openManageModal(subs[Number(btn.dataset.vmsSubChoice)],mode)});
+      };
+      section.querySelector('[data-vms-billing-action="pause"]')?.addEventListener('click',()=>chooseService('pause'));
+      section.querySelector('[data-vms-billing-action="cancel"]')?.addEventListener('click',()=>chooseService('cancel'));
+      const manage=section.querySelector('[data-vms-payment-manage]');if(manageUrl&&manage)manage.addEventListener('click',()=>window.open(manageUrl,'_blank','noopener'));
+    }catch(e){console.warn('VMS Billing Center could not load.',e)}finally{running=false}
+  }
+
+  function boot(){[1800,3400,5600].forEach(ms=>setTimeout(render,ms));window.addEventListener('focus',render);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')render()})}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+})();
