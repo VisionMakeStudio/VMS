@@ -1,1 +1,326 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>VMS Admin Login</title><link rel="stylesheet" href="../assets/vms-suite.css"><script src="../assets/config.js"></script><style>body{min-height:100vh;display:grid;place-items:center;background:linear-gradient(145deg,#003049,#08283d)!important;padding:20px}.login{width:min(460px,100%);background:#fff;border-radius:24px;padding:34px;box-shadow:0 28px 90px rgba(0,0,0,.25)}.login img{display:block;width:96px;max-height:56px;object-fit:contain;background:#003049;border-radius:13px;padding:8px;margin-bottom:22px}.login h1{margin:0 0 7px;color:#003049;font-size:32px}.login p{color:#6f818b;line-height:1.55}.login label{display:block;font-size:12px;font-weight:900;margin:18px 0 7px}.login input{width:100%;height:52px;padding:0 14px}.login button{width:100%;margin-top:14px}.status{min-height:20px;margin-top:12px;text-align:center;color:#687d87;font-size:12px}</style></head><body><main class="login"><img src="../assets/vms-logo.png" alt="Vision Make Studio"><div class="vms-production-badge">Private Admin</div><h1>VMS Admin</h1><p>Use your authorized VMS owner email. A secure sign-in link is sent to your inbox. Your public website does not expose this private Admin URL.</p><form id="f"><label>Email address</label><input id="e" type="email" required autocomplete="email" placeholder="info@visionmakestudio.com"><button class="btn primary" type="submit">Email Admin Sign-In Link</button><div class="status" id="s"></div></form></main><script src="../assets/vms-core.js"></script><script>(()=>{const q=new URLSearchParams(location.search);const code=q.get('error');const messages={session_required:'Your Admin session is missing or expired. Request a new sign-in link.',unauthorized:'This email is not authorized for VMS Admin.',configuration:'Admin sign-in is temporarily unavailable. Please try again shortly.',verification_failed:'We could not verify your Admin access. Please sign in again.'};if(code&&messages[code])s.textContent=messages[code];const h=new URLSearchParams(location.hash.replace(/^#/,''));if(h.get('error_description'))s.textContent='That sign-in link is invalid or expired. Request a new Admin sign-in link.';})();f.onsubmit=async ev=>{ev.preventDefault();s.textContent='Sending secure link…';const email=e.value.trim().toLowerCase();if(location.protocol==='file:'){localStorage.setItem('vms_local_admin_session',email);location.href='index.html';return}try{const sb=await VMSAuth.client();if(!sb)throw new Error('Admin sign-in is temporarily unavailable.');const redirectTo=new URL('/admin/',location.origin).href;const {error}=await sb.auth.signInWithOtp({email,options:{emailRedirectTo:redirectTo,shouldCreateUser:false}});if(error)throw error;s.textContent='Check your email for the secure Admin link. Use only the newest link once.'}catch(err){s.textContent=err.message}}</script></body></html>
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>VMS Admin Login</title>
+  <link rel="stylesheet" href="../assets/vms-suite.css">
+  <script src="../assets/config.js"></script>
+  <style>
+    body{
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(145deg,#003049,#08283d)!important;
+      padding:20px
+    }
+    .login{
+      width:min(460px,100%);
+      background:#fff;
+      border-radius:24px;
+      padding:34px;
+      box-shadow:0 28px 90px rgba(0,0,0,.25)
+    }
+    .login img{
+      display:block;
+      width:96px;
+      max-height:56px;
+      object-fit:contain;
+      background:#003049;
+      border-radius:13px;
+      padding:8px;
+      margin-bottom:22px
+    }
+    .login h1{margin:0 0 7px;color:#003049;font-size:32px}
+    .login p{color:#6f818b;line-height:1.55;margin:0 0 12px}
+    .login label{display:block;font-size:12px;font-weight:900;margin:15px 0 7px}
+    .login input{width:100%;height:52px;padding:0 14px;font-size:16px}
+    .login button{width:100%;margin-top:14px}
+    .status{min-height:20px;margin-top:12px;text-align:center;color:#687d87;font-size:12px;line-height:1.45}
+    .status.error{color:#b4232c}
+    .status.ok{color:#217a59}
+    .divider{display:flex;align-items:center;gap:10px;margin:18px 0 4px;color:#9aabb3;font-size:10px;font-weight:900}
+    .divider:before,.divider:after{content:"";height:1px;background:#e4ebee;flex:1}
+    .backup{background:#fff!important;color:#003049!important;border:1px solid #d7e2e7!important}
+    .mfa{display:none}
+    .mfa.show{display:block}
+    .password-wrap{position:relative}
+    .password-wrap input{padding-right:64px}
+    .show-pass{
+      position:absolute;right:8px;top:8px;width:auto!important;height:36px!important;
+      min-height:36px!important;margin:0!important;padding:0 9px!important;font-size:10px!important
+    }
+    .security-note{
+      margin-top:16px;padding:11px 12px;border-radius:12px;background:#f5f8f9;
+      color:#6f818b;font-size:10px;line-height:1.5
+    }
+  </style>
+</head>
+<body>
+<main class="login">
+  <img src="../assets/vms-logo.png" alt="Vision Make Studio">
+  <div class="vms-production-badge">Private Admin</div>
+
+  <section id="passwordSection">
+    <h1>VMS Admin</h1>
+    <p>Sign in with your VMS Admin email and password.</p>
+
+    <form id="passwordForm">
+      <label for="email">Email address</label>
+      <input id="email" type="email" required autocomplete="email" placeholder="info@visionmakestudio.com">
+
+      <label for="password">Password</label>
+      <div class="password-wrap">
+        <input id="password" type="password" required autocomplete="current-password" placeholder="Your Admin password">
+        <button class="btn show-pass" id="showPasswordBtn" type="button">Show</button>
+      </div>
+
+      <button class="btn primary" id="passwordBtn" type="submit">Sign In to Admin</button>
+    </form>
+
+    <div class="divider">BACKUP</div>
+    <button class="btn backup" id="magicBtn" type="button">Email Backup Sign-In Link</button>
+
+    <div class="security-note">
+      Backup email links are only a fallback. Once 2-step verification is enabled, the authenticator code is still required after the email link.
+    </div>
+  </section>
+
+  <section class="mfa" id="mfaSection">
+    <h1>Verification Code</h1>
+    <p>Enter the 6-digit code from your authenticator app or Apple Passwords.</p>
+
+    <form id="mfaForm">
+      <label for="mfaCode">6-digit code</label>
+      <input id="mfaCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="123456" required>
+      <button class="btn primary" id="mfaBtn" type="submit">Verify & Open Admin</button>
+    </form>
+  </section>
+
+  <div class="status" id="status"></div>
+</main>
+
+<script src="../assets/vms-core.js"></script>
+<script>
+(()=>{
+  const $=id=>document.getElementById(id);
+  const passwordSection=$('passwordSection');
+  const mfaSection=$('mfaSection');
+  const status=$('status');
+  const email=$('email');
+  const password=$('password');
+  const passwordBtn=$('passwordBtn');
+  const magicBtn=$('magicBtn');
+  const mfaCode=$('mfaCode');
+  let sb=null;
+  let activeFactorId=null;
+
+  function setStatus(message,type=''){
+    status.textContent=message||'';
+    status.className='status'+(type?' '+type:'');
+  }
+
+  function showPassword(){
+    passwordSection.style.display='block';
+    mfaSection.classList.remove('show');
+    activeFactorId=null;
+  }
+
+  function showMfa(){
+    passwordSection.style.display='none';
+    mfaSection.classList.add('show');
+    setStatus('Second-step verification is required for this Admin session.');
+    setTimeout(()=>mfaCode.focus(),50);
+  }
+
+  async function ensureAdmin(user){
+    const role=await VMSAuth.getAdminRole(sb,user.id);
+    if(role!=='admin'){
+      await sb.auth.signOut();
+      throw new Error('This account is not authorized for VMS Admin.');
+    }
+  }
+
+  async function routeAuthenticatedSession(session){
+    if(!session?.user)return false;
+
+    await ensureAdmin(session.user);
+
+    const aal=await VMSAuth.getMfaState(sb);
+
+    if(aal?.currentLevel==='aal2'){
+      location.replace('/admin/');
+      return true;
+    }
+
+    if(aal?.nextLevel==='aal2'){
+      const {data,error}=await sb.auth.mfa.listFactors();
+      if(error)throw error;
+
+      const factors=[
+        ...(data?.totp||[]),
+        ...(data?.phone||[])
+      ].filter(f=>f.status==='verified');
+
+      if(!factors.length){
+        throw new Error('2-step verification is enabled but no verified factor was found.');
+      }
+
+      const totp=factors.find(f=>f.factor_type==='totp') || factors[0];
+      activeFactorId=totp.id;
+      showMfa();
+      return true;
+    }
+
+    location.replace('/admin/');
+    return true;
+  }
+
+  async function init(){
+    try{
+      sb=await VMSAuth.client();
+      if(!sb)throw new Error('Admin sign-in is temporarily unavailable.');
+
+      const q=new URLSearchParams(location.search);
+      const code=q.get('error');
+
+      const messages={
+        session_required:'Your Admin session is missing or expired. Sign in again.',
+        mfa_required:'Enter your authenticator code to finish signing in.',
+        unauthorized:'This account is not authorized for VMS Admin.',
+        configuration:'Admin sign-in is temporarily unavailable.',
+        verification_failed:'We could not verify your Admin access. Sign in again.'
+      };
+
+      if(code&&messages[code])setStatus(messages[code],code==='unauthorized'?'error':'');
+
+      const hash=new URLSearchParams(location.hash.replace(/^#/,''));
+      if(hash.get('error_description')){
+        setStatus('That backup sign-in link is invalid or expired. Sign in with your password or request a newer link.','error');
+      }
+
+      const {data:{session}}=await sb.auth.getSession();
+
+      if(session){
+        await routeAuthenticatedSession(session);
+      }
+    }catch(err){
+      setStatus(err.message||'Unable to initialize Admin sign-in.','error');
+    }
+  }
+
+  $('showPasswordBtn').onclick=()=>{
+    const showing=password.type==='text';
+    password.type=showing?'password':'text';
+    $('showPasswordBtn').textContent=showing?'Show':'Hide';
+  };
+
+  $('passwordForm').onsubmit=async ev=>{
+    ev.preventDefault();
+    setStatus('Signing in…');
+    passwordBtn.disabled=true;
+
+    try{
+      if(!sb)sb=await VMSAuth.client();
+      if(!sb)throw new Error('Admin sign-in is temporarily unavailable.');
+
+      const credentials={
+        email:email.value.trim().toLowerCase(),
+        password:password.value
+      };
+
+      const {data,error}=await sb.auth.signInWithPassword(credentials);
+      if(error)throw error;
+
+      await routeAuthenticatedSession(data.session);
+    }catch(err){
+      setStatus(err.message||'Sign-in failed.','error');
+      passwordBtn.disabled=false;
+    }
+  };
+
+  magicBtn.onclick=async()=>{
+    const address=email.value.trim().toLowerCase();
+
+    if(!address){
+      setStatus('Enter your Admin email address first.','error');
+      email.focus();
+      return;
+    }
+
+    magicBtn.disabled=true;
+    setStatus('Sending backup sign-in link…');
+
+    try{
+      if(!sb)sb=await VMSAuth.client();
+      if(!sb)throw new Error('Admin sign-in is temporarily unavailable.');
+
+      const redirectTo=new URL('/admin/login.html',location.origin).href;
+      const {error}=await sb.auth.signInWithOtp({
+        email:address,
+        options:{
+          emailRedirectTo:redirectTo,
+          shouldCreateUser:false
+        }
+      });
+
+      if(error)throw error;
+
+      setStatus('Backup link sent. Use only the newest email link once.','ok');
+    }catch(err){
+      setStatus(err.message||'Unable to send backup sign-in link.','error');
+    }finally{
+      magicBtn.disabled=false;
+    }
+  };
+
+  $('mfaForm').onsubmit=async ev=>{
+    ev.preventDefault();
+
+    const code=mfaCode.value.replace(/\D/g,'').slice(0,6);
+
+    if(code.length!==6){
+      setStatus('Enter the full 6-digit code.','error');
+      return;
+    }
+
+    $('mfaBtn').disabled=true;
+    setStatus('Verifying code…');
+
+    try{
+      if(!sb)sb=await VMSAuth.client();
+      if(!activeFactorId){
+        const {data,error}=await sb.auth.mfa.listFactors();
+        if(error)throw error;
+
+        const factors=[
+          ...(data?.totp||[]),
+          ...(data?.phone||[])
+        ].filter(f=>f.status==='verified');
+
+        activeFactorId=(factors.find(f=>f.factor_type==='totp')||factors[0])?.id;
+      }
+
+      if(!activeFactorId)throw new Error('No verified authenticator factor was found.');
+
+      const {error}=await sb.auth.mfa.challengeAndVerify({
+        factorId:activeFactorId,
+        code
+      });
+
+      if(error)throw error;
+
+      setStatus('Verified. Opening Admin…','ok');
+      location.replace('/admin/');
+    }catch(err){
+      setStatus(err.message||'That verification code was not accepted.','error');
+      $('mfaBtn').disabled=false;
+      mfaCode.select();
+    }
+  };
+
+  init();
+})();
+</script>
+</body>
+</html>
