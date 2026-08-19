@@ -2,8 +2,14 @@
   var MOBILE_MAX=900;
 
   function currentPage(){
-    var p=(location.pathname||'').split('/').filter(Boolean).pop()||'index.html';
-    return p.toLowerCase();
+    var parts=(location.pathname||'').split('/').filter(Boolean);
+    var p=(parts.pop()||'index.html').toLowerCase();
+
+    /* Netlify may serve clean URLs such as /admin/audit instead of audit.html. */
+    if(p==='admin' || !p)return 'index.html';
+    if(!p.includes('.'))p+='.html';
+
+    return p;
   }
 
   function pageTitle(){
@@ -140,10 +146,6 @@
       if(btn.dataset.vmsShellBound==='1')return;
       btn.dataset.vmsShellBound='1';
 
-      /*
-        Capture phase + stopImmediatePropagation prevents legacy page-level
-        menu handlers from reopening their retired mobile drawers.
-      */
       btn.addEventListener('click',function(e){
         if(window.innerWidth>MOBILE_MAX)return;
         e.preventDefault();
