@@ -1,0 +1,531 @@
+:root{
+  --vms-admin-navy:#003049;
+  --vms-admin-cream:#FDF0D5;
+  --vms-admin-orange:#EB5E28;
+  --vms-admin-line:rgba(255,255,255,.12);
+}
+
+/* One VMS Admin shell across every tool. */
+.shell,.app{grid-template-columns:220px minmax(0,1fr)!important}
+
+.sidebar,.side{
+  width:220px!important;
+  min-width:220px!important;
+  height:100vh!important;
+  position:sticky!important;
+  top:0!important;
+  left:auto!important;
+  padding:16px 12px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  background:var(--vms-admin-navy)!important;
+  color:#fff!important;
+  box-shadow:none!important;
+  z-index:80!important;
+  transform:none!important;
+}
+
+.sidebar::-webkit-scrollbar,.side::-webkit-scrollbar{width:4px}
+.sidebar::-webkit-scrollbar-thumb,.side::-webkit-scrollbar-thumb{
+  background:rgba(255,255,255,.13);
+  border-radius:99px;
+}
+
+.sidebar .brand,.side .brand,.vms-admin-brand{
+  min-height:62px!important;
+  padding:2px 7px 14px!important;
+  margin:0!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:9px!important;
+  flex:0 0 auto!important;
+  border-bottom:1px solid var(--vms-admin-line)!important;
+  overflow:visible!important;
+}
+
+.sidebar .brand img,.side .brand img,.vms-admin-brand img{
+  width:76px!important;
+  max-width:76px!important;
+  height:auto!important;
+  max-height:42px!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  display:block!important;
+  flex:0 0 auto!important;
+}
+
+.sidebar .brand-copy,.side .brand-copy{
+  display:grid!important;
+  gap:2px!important;
+  min-width:0!important;
+}
+
+.sidebar .brand-copy strong,.side .brand-copy strong{
+  display:block!important;
+  color:#fff!important;
+  font-size:9px!important;
+  line-height:1.08!important;
+  font-weight:900!important;
+  white-space:normal!important;
+}
+
+.sidebar .brand-copy span,.side .brand-copy span{
+  color:#9fb9c6!important;
+  font-size:7px!important;
+  font-weight:900!important;
+  letter-spacing:.12em!important;
+}
+
+.sidebar .nav,.side .nav,.vms-admin-nav{
+  display:grid!important;
+  gap:4px!important;
+  margin:13px 0 0!important;
+  padding:0!important;
+  flex:0 0 auto!important;
+}
+
+.sidebar .nav>a,.sidebar .nav>button,
+.side .nav>a,.side .nav>button,
+.vms-admin-nav>a,.vms-admin-nav>button{
+  width:100%!important;
+  min-height:34px!important;
+  margin:0!important;
+  padding:9px 10px!important;
+  border:0!important;
+  border-radius:8px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:7px!important;
+  background:transparent!important;
+  color:rgba(255,255,255,.82)!important;
+  text-decoration:none!important;
+  text-align:left!important;
+  font:800 10px/1.18 Inter,system-ui,-apple-system,sans-serif!important;
+  letter-spacing:0!important;
+  box-shadow:none!important;
+  cursor:pointer!important;
+}
+
+.sidebar .nav>a:hover,.sidebar .nav>button:hover,
+.side .nav>a:hover,.side .nav>button:hover,
+.vms-admin-nav>a:hover,.vms-admin-nav>button:hover{
+  background:rgba(255,255,255,.07)!important;
+  color:#fff!important;
+}
+
+.sidebar .nav>.active,.side .nav>.active,.vms-admin-nav>.active{
+  background:rgba(255,255,255,.10)!important;
+  color:#ff7544!important;
+  box-shadow:inset 3px 0 0 #ff7544!important;
+}
+
+.sidebar .nav .ico,.side .nav .ico,
+.sidebar .nav .tag,.side .nav .tag,
+.sidebar .nav .soon,.side .nav .soon{
+  display:none!important;
+}
+
+.vms-admin-spacer{flex:1 1 auto;min-height:16px}
+
+.vms-admin-sidebar-foot,.sidebar-foot,.side-note{
+  margin-top:auto!important;
+  padding:13px 7px 2px!important;
+  border-top:1px solid var(--vms-admin-line)!important;
+  color:#9eb7c4!important;
+  font:700 7.5px/1.55 Inter,system-ui,-apple-system,sans-serif!important;
+}
+
+.vms-admin-shortcuts{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+  margin-bottom:10px;
+}
+
+.vms-admin-shortcuts a{
+  min-height:30px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:6px 7px;
+  color:#d8e4e9;
+  text-decoration:none;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:8px;
+  background:rgba(255,255,255,.04);
+  font-size:7.5px;
+  font-weight:850;
+  text-align:center;
+}
+
+.vms-admin-shortcuts a:hover{
+  background:rgba(255,255,255,.08);
+  color:#fff;
+}
+
+/* Audit local navigation stays inside the same shared drawer. */
+.vms-audit-tools{
+  margin-top:14px;
+  padding-top:12px;
+  border-top:1px solid var(--vms-admin-line);
+}
+
+.vms-audit-tools-title{
+  margin:0 7px 7px;
+  color:#7fa8bc;
+  font:900 7px/1 Inter,system-ui,sans-serif;
+  letter-spacing:.14em;
+}
+
+.audit-local-nav{display:grid;gap:4px}
+
+.audit-local-nav>button,.audit-parent-btn,.audit-subnav button{
+  width:100%!important;
+  min-height:30px!important;
+  border:0!important;
+  border-radius:8px!important;
+  padding:7px 9px!important;
+  background:transparent!important;
+  color:rgba(255,255,255,.70)!important;
+  text-align:left!important;
+  font:800 8.5px/1.15 Inter,system-ui,sans-serif!important;
+  cursor:pointer!important;
+}
+
+.audit-local-nav>button:hover,.audit-parent-btn:hover,
+.audit-subnav button:hover,.audit-local-nav>button.active,
+.audit-subnav button.active{
+  background:rgba(255,255,255,.07)!important;
+  color:#fff!important;
+}
+
+.audit-local-nav .nav-ico{display:none!important}
+.audit-local-nav .pill{
+  margin-left:auto!important;
+  min-width:22px!important;
+  height:19px!important;
+  font-size:7px!important;
+}
+.audit-subnav-wrap{margin:0!important}
+.audit-subnav{
+  padding:3px 0 2px 8px!important;
+  border-left:1px solid rgba(255,255,255,.10)!important;
+}
+.audit-subnav button{padding-left:9px!important}
+
+.side-bottom-dock{
+  margin-top:9px!important;
+  padding-top:9px!important;
+  border-top:1px solid rgba(255,255,255,.08)!important;
+}
+
+.side-foot.clean-vms-card{display:none!important}
+.side-status-row{display:grid!important;gap:5px!important}
+
+.compact-status{
+  min-height:28px!important;
+  padding:6px 8px!important;
+  background:rgba(255,255,255,.04)!important;
+  border:1px solid rgba(255,255,255,.07)!important;
+  border-radius:8px!important;
+}
+
+.compact-status strong{
+  font-size:7.5px!important;
+  color:#dce8ed!important;
+}
+.compact-status small{
+  font-size:6.5px!important;
+  color:#8faebb!important;
+}
+
+.topbar,.top{
+  min-height:68px!important;
+  background:#fff!important;
+  border-bottom:1px solid #dce5e9!important;
+}
+
+/* Shared backdrop. */
+.drawer-backdrop{
+  position:fixed!important;
+  inset:0!important;
+  z-index:9998!important;
+  background:rgba(0,48,73,.48)!important;
+  -webkit-backdrop-filter:blur(1px);
+  backdrop-filter:blur(1px);
+  display:none!important;
+}
+
+.drawer-backdrop.show{display:block!important}
+body.menu-open{overflow:hidden!important}
+
+@media(max-width:900px){
+  .shell,.app{grid-template-columns:1fr!important}
+
+  /* Always a real fixed, full-height drawer on phones/tablets. */
+  .sidebar,.side{
+    display:flex!important;
+    position:fixed!important;
+    inset:0 auto 0 0!important;
+    left:0!important;
+    top:0!important;
+    bottom:0!important;
+    width:min(86vw,300px)!important;
+    min-width:0!important;
+    max-width:300px!important;
+    height:100dvh!important;
+    min-height:100dvh!important;
+    max-height:100dvh!important;
+    margin:0!important;
+    padding:16px 12px 20px!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    overscroll-behavior:contain!important;
+    -webkit-overflow-scrolling:touch!important;
+    background:var(--vms-admin-navy)!important;
+    transform:translate3d(-105%,0,0)!important;
+    transition:transform .22s ease!important;
+    z-index:9999!important;
+    box-shadow:16px 0 42px rgba(0,25,38,.30)!important;
+  }
+
+  .sidebar.open,.side.open{
+    transform:translate3d(0,0,0)!important;
+  }
+
+  .mobile-menu,#mobileMenuBtn,.vms-mobile-menu-btn{
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    position:relative!important;
+    z-index:60!important;
+  }
+
+  /* Never allow legacy page CSS to turn the Admin menu into page content. */
+  .sidebar .nav,.side .nav{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    overflow:visible!important;
+    width:100%!important;
+    padding:0!important;
+    margin:13px 0 0!important;
+  }
+
+  .sidebar .nav>a,.sidebar .nav>button,
+  .side .nav>a,.side .nav>button{
+    width:100%!important;
+    min-height:42px!important;
+    padding:11px 12px!important;
+    border-radius:9px!important;
+    color:rgba(255,255,255,.86)!important;
+    text-decoration:none!important;
+    font-size:11px!important;
+    white-space:normal!important;
+  }
+
+  .side-bottom-dock{
+    position:static!important;
+    width:100%!important;
+    margin-top:auto!important;
+    background:transparent!important;
+  }
+
+  .side .brand{display:flex!important}
+}
+
+@media(min-width:901px){
+  .drawer-backdrop{display:none!important}
+  body.menu-open{overflow:auto!important}
+}
+
+
+/* ============================================================
+   VMS ADMIN — AUTHORITATIVE MOBILE HEADER
+   Promotions is the visual baseline for every Admin page.
+   This final layer intentionally wins over legacy page CSS.
+   ============================================================ */
+@media(max-width:900px){
+
+  /* QR Tools + Clients used their own logo strips.
+     Audit used a separate navy logo/hamburger shell.
+     The shared Admin header replaces all of them on mobile. */
+  .mobile-head,
+  .vms-mobile-shell{
+    display:none!important;
+  }
+
+  /* One white header everywhere. */
+  main.main > .topbar,
+  .main > .topbar,
+  .vms-standard-topbar{
+    width:100%!important;
+    min-height:64px!important;
+    height:auto!important;
+    margin:0!important;
+    padding:10px 14px!important;
+    box-sizing:border-box!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:10px!important;
+    background:#fff!important;
+    border-bottom:1px solid #dfe7ea!important;
+    position:sticky!important;
+    top:0!important;
+    z-index:60!important;
+    color:#003049!important;
+  }
+
+  /* Left side exactly follows Promotions:
+     hamburger + VMS ADMIN + page title. */
+  .vms-standard-left,
+  .topbar-title,
+  .vms-standard-topbar > div:first-child{
+    min-width:0!important;
+    display:flex!important;
+    align-items:center!important;
+    gap:10px!important;
+  }
+
+  .vms-standard-title,
+  .topbar-left,
+  .title-copy{
+    min-width:0!important;
+    display:grid!important;
+    gap:2px!important;
+    align-content:center!important;
+  }
+
+  .vms-standard-title small,
+  .topbar-left small,
+  .title-copy small{
+    display:block!important;
+    margin:0!important;
+    color:#879aa4!important;
+    font-size:9px!important;
+    line-height:1!important;
+    font-weight:950!important;
+    letter-spacing:.12em!important;
+    text-transform:uppercase!important;
+    white-space:nowrap!important;
+  }
+
+  .vms-standard-title strong,
+  .topbar-left strong,
+  .title-copy strong{
+    display:block!important;
+    margin:3px 0 0!important;
+    color:#003049!important;
+    font-size:18px!important;
+    line-height:1.05!important;
+    font-weight:900!important;
+    letter-spacing:-.02em!important;
+    white-space:normal!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+  }
+
+  /* Identical hamburger treatment. */
+  main.main > .topbar #mobileMenuBtn,
+  main.main > .topbar #vmsMobileMenuBtn,
+  .vms-standard-topbar #mobileMenuBtn,
+  .vms-standard-topbar #vmsMobileMenuBtn,
+  .vms-standard-topbar .vms-mobile-menu-btn{
+    display:inline-grid!important;
+    place-items:center!important;
+    flex:0 0 44px!important;
+    width:44px!important;
+    height:44px!important;
+    min-width:44px!important;
+    min-height:44px!important;
+    max-width:44px!important;
+    max-height:44px!important;
+    margin:0!important;
+    padding:0!important;
+    border:1px solid #d7e3e8!important;
+    border-radius:12px!important;
+    background:#fff!important;
+    color:#003049!important;
+    box-shadow:none!important;
+    font-size:18px!important;
+    line-height:1!important;
+  }
+
+  /* Audit uses a drawn three-line icon instead of the ☰ character. */
+  .vms-standard-topbar .vms-mobile-menu-btn span,
+  .vms-standard-topbar .vms-mobile-menu-btn span::before,
+  .vms-standard-topbar .vms-mobile-menu-btn span::after{
+    background:#003049!important;
+  }
+
+  /* Keep each page's existing right-side actions/status,
+     but normalize them to the Promotions header rhythm. */
+  main.main > .topbar > .top-actions,
+  .vms-standard-topbar > .top-actions{
+    flex:0 0 auto!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:flex-end!important;
+    gap:7px!important;
+    margin:0!important;
+  }
+
+  main.main > .topbar .top-actions .btn,
+  .vms-standard-topbar .top-actions .btn{
+    min-height:44px!important;
+    height:44px!important;
+    border-radius:11px!important;
+    padding:0 13px!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    white-space:nowrap!important;
+    font-size:11px!important;
+    font-weight:900!important;
+  }
+
+  /* Status pills on QR/Clients remain useful, but align to the same header. */
+  main.main > .topbar > .status-pill,
+  main.main > .topbar .status-chip,
+  .vms-standard-topbar > .status-pill,
+  .vms-standard-topbar .status-chip{
+    flex:0 0 auto!important;
+    min-height:38px!important;
+    height:38px!important;
+    margin:0!important;
+    padding:0 12px!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    border-radius:999px!important;
+    white-space:nowrap!important;
+    font-size:9px!important;
+  }
+
+  /* The injected Audit header is only mobile UI.
+     Its workflow-specific audit bar stays below it when needed. */
+  .vms-injected-topbar{
+    display:flex!important;
+  }
+
+  /* Original drawer logo only: white/cream VMS art on navy.
+     No mobile blue/red asset override. */
+  .sidebar .brand img,
+  .side .brand img,
+  .vms-admin-brand img{
+    content:normal!important;
+    width:78px!important;
+    max-width:78px!important;
+    max-height:44px!important;
+    object-fit:contain!important;
+  }
+}
+
+@media(min-width:901px){
+  .vms-injected-topbar{
+    display:none!important;
+  }
+}
