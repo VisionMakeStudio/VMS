@@ -35,6 +35,185 @@
       document.querySelector('.vms-mobile-menu-btn,[data-vms-menu-toggle]');
   }
 
+  function installStyle(id,css){
+    if(document.getElementById(id))return;
+    var style=document.createElement('style');
+    style.id=id;
+    style.textContent=css;
+    document.head.appendChild(style);
+  }
+
+  function refineBillingPage(){
+    if(currentPage()!=='billing.html')return;
+
+    installStyle('vms-billing-mobile-refinements',`
+      /* Billing refinement: keep MRR primary; service mix is supporting information. */
+      @media(max-width:760px){
+        .mrr-feature{
+          grid-template-columns:minmax(0,1fr) 66px!important;
+          column-gap:10px!important;
+          min-height:118px!important;
+          padding:15px 16px!important;
+          align-items:center!important;
+        }
+        .mrr-feature .mrr-copy{padding-right:0!important}
+        .mrr-feature .mrr-copy>strong#statMrr{
+          font-size:38px!important;
+          line-height:.98!important;
+        }
+        .mrr-chart-wrap{
+          width:66px!important;
+          justify-self:end!important;
+          gap:3px!important;
+        }
+        .mrr-feature .donut{
+          width:60px!important;
+          height:60px!important;
+          box-shadow:inset 0 0 0 1px rgba(0,48,73,.045)!important;
+        }
+        .mrr-feature .donut-hole{
+          width:38px!important;
+          height:38px!important;
+          box-shadow:0 1px 6px rgba(0,48,73,.045)!important;
+        }
+        .mrr-feature .donut-hole strong{
+          font-size:13px!important;
+          line-height:1!important;
+        }
+        .mrr-feature .donut-hole span{
+          font-size:5px!important;
+          line-height:1!important;
+          margin-top:2px!important;
+          letter-spacing:.045em!important;
+        }
+      }
+    `);
+
+    var strip=document.getElementById('attentionStrip');
+    var count=document.getElementById('statAttention');
+    if(!strip||!count)return;
+
+    function syncAttentionStrip(){
+      var issueCount=parseInt(String(count.textContent||'0').replace(/[^0-9-]/g,''),10)||0;
+      strip.style.setProperty('display',issueCount>0?'flex':'none','important');
+      strip.setAttribute('aria-hidden',issueCount>0?'false':'true');
+    }
+
+    syncAttentionStrip();
+
+    if(count.dataset.vmsAttentionObserver!=='1'){
+      count.dataset.vmsAttentionObserver='1';
+      new MutationObserver(syncAttentionStrip).observe(count,{childList:true,characterData:true,subtree:true});
+    }
+  }
+
+  function refineLinkHubPage(){
+    if(currentPage()!=='linkhub.html')return;
+
+    installStyle('vms-linkhub-modern-phone',`
+      /* Newer iPhone-inspired LinkHub preview: Dynamic Island, thinner bezel, cleaner frame. */
+      .manage-preview .phone-wrap{
+        width:min(100%,344px)!important;
+        margin:0 auto!important;
+        padding:12px!important;
+        background:transparent!important;
+        border-radius:0!important;
+        box-shadow:none!important;
+      }
+      .manage-preview .phone{
+        position:relative!important;
+        width:100%!important;
+        aspect-ratio:9/19.5!important;
+        min-height:0!important;
+        padding:5px!important;
+        overflow:hidden!important;
+        border:3px solid #27343b!important;
+        border-radius:46px!important;
+        background:#0a1014!important;
+        box-shadow:
+          0 24px 54px rgba(0,35,52,.20),
+          0 7px 16px rgba(0,35,52,.12),
+          inset 0 0 0 1px rgba(255,255,255,.42)!important;
+      }
+      .manage-preview .phone::before{
+        content:"";
+        position:absolute;
+        inset:2px;
+        z-index:2;
+        border-radius:41px;
+        border:1px solid rgba(255,255,255,.18);
+        pointer-events:none;
+      }
+      .manage-preview .phone-notch{
+        position:absolute!important;
+        top:15px!important;
+        left:50%!important;
+        transform:translateX(-50%)!important;
+        z-index:30!important;
+        width:88px!important;
+        height:25px!important;
+        margin:0!important;
+        border-radius:999px!important;
+        background:#05080a!important;
+        box-shadow:0 1px 2px rgba(255,255,255,.05),0 2px 8px rgba(0,0,0,.26)!important;
+      }
+      .manage-preview .phone-notch::after{
+        content:"";
+        position:absolute;
+        right:12px;
+        top:9px;
+        width:6px;
+        height:6px;
+        border-radius:50%;
+        background:#102a44;
+        box-shadow:inset 0 0 0 1px rgba(71,110,147,.45),0 0 3px rgba(44,92,138,.35);
+      }
+      .manage-preview .public-page{
+        width:100%!important;
+        height:100%!important;
+        min-height:0!important;
+        padding:64px 18px 24px!important;
+        border-radius:38px!important;
+        overflow-y:auto!important;
+        overflow-x:hidden!important;
+        scrollbar-width:none;
+      }
+      .manage-preview .public-page::-webkit-scrollbar{display:none}
+      .manage-preview .preview-label{
+        margin-top:10px!important;
+        font-size:10px!important;
+        color:#83959e!important;
+      }
+
+      @media(max-width:760px){
+        .manage-preview .phone-wrap{
+          width:min(100%,320px)!important;
+          padding:8px 6px 10px!important;
+        }
+        .manage-preview .phone{
+          border-width:3px!important;
+          border-radius:42px!important;
+        }
+        .manage-preview .phone::before{border-radius:37px!important}
+        .manage-preview .phone-notch{
+          top:13px!important;
+          width:82px!important;
+          height:24px!important;
+        }
+        .manage-preview .phone-notch::after{
+          right:11px;
+          top:8.5px;
+          width:6px;
+          height:6px;
+        }
+        .manage-preview .public-page{
+          padding:58px 17px 22px!important;
+          border-radius:35px!important;
+        }
+      }
+    `);
+  }
+
   function normalizeMobileHeader(){
     if(window.innerWidth>MOBILE_MAX)return;
     if(currentPage()==='login.html')return;
@@ -188,6 +367,8 @@
   function start(){
     normalizeMobileHeader();
     bindSidebar();
+    refineBillingPage();
+    refineLinkHubPage();
   }
 
   if(document.readyState==='loading'){
