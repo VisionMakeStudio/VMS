@@ -39,3 +39,61 @@ input,select,textarea{border-radius:10px!important;border-color:#d3e0e5!importan
   line-height:1!important;
   letter-spacing:-.04em!important;
 }
+
+/* Admin Login — keep the password field and Show/Hide control inside the card.
+   Safari/iPad can otherwise stretch the button because .login button is full-width. */
+.login,
+.login *{
+  box-sizing:border-box;
+}
+
+.login .password-wrap{
+  position:relative!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+}
+
+.login .password-wrap input{
+  display:block!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  padding-right:76px!important;
+}
+
+.login .password-wrap .show-pass{
+  -webkit-appearance:none!important;
+  appearance:none!important;
+  position:absolute!important;
+  top:50%!important;
+  right:8px!important;
+  transform:translateY(-50%)!important;
+  width:56px!important;
+  min-width:56px!important;
+  max-width:56px!important;
+  height:36px!important;
+  min-height:36px!important;
+  max-height:36px!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:9px!important;
+  background:#eef2f4!important;
+  color:#0877c9!important;
+  display:grid!important;
+  place-items:center!important;
+  font-size:10px!important;
+  font-weight:900!important;
+  line-height:1!important;
+  box-shadow:none!important;
+  z-index:2!important;
+}
+
+@media(max-width:760px){
+  .login .password-wrap .show-pass{
+    width:58px!important;
+    min-width:58px!important;
+    max-width:58px!important;
+  }
+}
