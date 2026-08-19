@@ -1,11 +1,14 @@
 /* VMS cross-device state bridge for legacy Admin/Portal tools.
-   Keeps the existing proven UI/data models while persisting each tool state in Supabase. */
+   Keeps the existing proven UI/data models while persisting each tool state in Supabase.
+   Client portal local state is owner-scoped so one signed-in client can never inherit
+   another client's local workspace state on a shared browser/device. */
 (()=>{
   const nativeGet=Storage.prototype.getItem;
   const nativeSet=Storage.prototype.setItem;
   const nativeRemove=Storage.prototype.removeItem;
   let started=false, scope='', keys=new Set(), suppress=false, userEmail='';
   const isHosted=location.protocol!=='file:';
+  const CLIENT_OWNER_MARKER='vms_client_state_owner_v1';
   const ADMIN_KEYS=[
     'vms_clients_final_v1','vms_billing_subscriptions_v3','vms_work_admin_v2','vms_work_admin_v1',
     'vms_notifications_activity_v2','vms_notifications_activity_v1','vms_files_assets_v2','vms_files_assets_v1',
@@ -20,6 +23,20 @@
   function localRemove(k){suppress=true;try{nativeRemove.call(localStorage,k)}finally{suppress=false}}
   function validConfig(){const c=window.VMS_CONFIG||{};return !!(c.supabaseUrl&&c.supabaseAnonKey&&!String(c.supabaseUrl).includes('PASTE_')&&!String(c.supabaseAnonKey).includes('PASTE_'))}
   async function sb(){if(!validConfig()||!window.VMSAuth?.client)return null;try{return await VMSAuth.client()}catch{return null}}
+
+  function protectClientOwner(nextEmail){
+    const clean=String(nextEmail||'').trim().toLowerCase();
+    if(!clean)return false;
+    const previous=String(localGet(CLIENT_OWNER_MARKER)||'').trim().toLowerCase();
+    let cleared=false;
+    if(previous&&previous!==clean){
+      for(const key of CLIENT_KEYS){if(localGet(key)!=null){localRemove(key);cleared=true}}
+      for(const key of Object.keys(sessionStorage)){if(key.startsWith('vms_state_hydrated_client:'))sessionStorage.removeItem(key)}
+    }
+    localSet(CLIENT_OWNER_MARKER,clean);
+    return cleared;
+  }
+
   async function upsert(key,value){
     if(!isHosted||!scope||!keys.has(key)||!validConfig())return;
     const client=await sb();if(!client)return;
@@ -45,15 +62,19 @@
       if(row){
         const serialized=typeof row.payload==='string'?row.payload:JSON.stringify(row.payload);
         if(local!==serialized){localSet(key,serialized);changed=true}
-      }else if(local!=null){await upsert(key,local)}
+      }else if(local!=null){
+        await upsert(key,local);
+      }
     }
     return changed;
   }
   async function start(opts={}){
     const user=opts.user||null;
     userEmail=String(opts.email||user?.email||'').toLowerCase();
-    scope=opts.scope==='admin'?'admin':`client:${userEmail||'preview'}`;
-    keys=new Set(opts.keys||((opts.scope==='admin')?ADMIN_KEYS:CLIENT_KEYS));
+    const isAdmin=opts.scope==='admin';
+    if(!isAdmin)protectClientOwner(userEmail);
+    scope=isAdmin?'admin':`client:${userEmail||'preview'}`;
+    keys=new Set(opts.keys||(isAdmin?ADMIN_KEYS:CLIENT_KEYS));
     installPatch();
     const marker=`vms_state_hydrated_${scope}`;
     if(sessionStorage.getItem(marker)==='1')return {changed:false,scope};

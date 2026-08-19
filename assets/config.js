@@ -405,3 +405,219 @@ window.VMS_CONFIG = {
   else setTimeout(boot,0);
 })();
 
+
+/* VMS Client Portal production cleanup + live panels. */
+(()=>{
+  const path=String(location.pathname||'').toLowerCase();
+  if(!(path==='/portal'||path==='/portal/'||path.startsWith('/portal/')))return;
+
+  const PORTAL_KEY='vms_client_portal_v4';
+  const TEST_EMAIL='info@visionmakestudio.com';
+  const $=id=>document.getElementById(id);
+  const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const lower=value=>String(value||'').trim().toLowerCase();
+  const titleStatus=value=>String(value||'').replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+  const activeService=row=>{
+    const service=lower(row?.service_status),billing=lower(row?.billing_status);
+    return ['active','completed'].includes(service)&&!['pending','unpaid','past_due','past due','paused','suspended','canceled','cancelled'].includes(billing);
+  };
+  let liveContext=null;
+  let cleanupRunning=false;
+
+  function portalState(){
+    try{return JSON.parse(localStorage.getItem(PORTAL_KEY)||'null')}catch{return null}
+  }
+
+  function scrubLegacyTestDefaults(email){
+    if(!email||lower(email)===TEST_EMAIL)return false;
+    const state=portalState();
+    if(!state||typeof state!=='object')return false;
+    let changed=false;
+    const set=(obj,key,value)=>{if(obj&&obj[key]!==value){obj[key]=value;changed=true}};
+    const h=state.linkHub||{};
+    if(h.businessName==='VMS Test Client')set(h,'businessName','');
+    if(h.title==='Vision Make Studio Test Client')set(h,'title','');
+    if(/test account/i.test(String(h.bio||'')))set(h,'bio','');
+    if(lower(h.email)===TEST_EMAIL)set(h,'email','');
+    if(h.restaurant?.name==='VMS Test Client')set(h.restaurant,'name','');
+    if(h.visit?.name==='VMS Test Client')set(h.visit,'name','');
+    if(lower(h.visit?.email)===TEST_EMAIL)set(h.visit,'email','');
+    if(state.qr?.name==='VMS Test QR'){
+      set(state.qr,'name','My VMS QR');
+      set(state.qr,'destination','');
+      set(state.qr,'cta','Scan to connect');
+      set(state.qr,'updated','Not configured');
+    }
+    if(state.subscription?.planName==='VMS LinkHub Pro'&&Number(state.subscription?.price)===14.99){
+      set(state.subscription,'planName','');
+      set(state.subscription,'planId','');
+      set(state.subscription,'price',0);
+      set(state.subscription,'status','');
+      set(state.subscription,'paused',false);
+      set(state.subscription,'cancelAtPeriodEnd',false);
+    }
+    if(changed)localStorage.setItem(PORTAL_KEY,JSON.stringify(state));
+    return changed;
+  }
+
+  function replaceLegacyProjectPanels(){
+    const projectSection=$('section-projects');
+    if(projectSection){
+      const card=projectSection.querySelector('.card');
+      if(card&&(/website revamp|homepage photos|started aug/i.test(card.textContent||''))){
+        card.innerHTML='<div class="empty">No live project timeline has been shared with your portal yet. When VMS publishes a project update, it will appear here.</div>';
+      }
+    }
+    const home=$('section-home');
+    if(home){
+      [...home.querySelectorAll('.card,.next-step')].forEach(card=>{
+        if(/website revamp|homepage photos|design & content/i.test(card.textContent||'')){
+          card.innerHTML='<div class="empty">No active project update has been shared yet.</div>';
+        }
+      });
+    }
+  }
+
+  function scoreValue(scores){
+    if(scores==null)return null;
+    if(typeof scores==='number')return scores;
+    if(typeof scores!=='object')return null;
+    const preferred=['overall','overall_score','score','total'];
+    for(const key of preferred){const n=Number(scores[key]);if(Number.isFinite(n))return n}
+    const nums=Object.values(scores).map(Number).filter(Number.isFinite);
+    return nums.length?Math.round(nums.reduce((a,b)=>a+b,0)/nums.length):null;
+  }
+
+  function ensureLiveAuditModal(){
+    let modal=$('vmsLiveAuditModal');
+    if(modal)return modal;
+    modal=document.createElement('div');
+    modal.className='modal-backdrop';modal.id='vmsLiveAuditModal';
+    modal.innerHTML='<div class="modal"><div class="modal-head"><h3 id="vmsLiveAuditTitle">VMS Audit</h3><button class="close" id="vmsLiveAuditClose" type="button">×</button></div><div class="modal-body" id="vmsLiveAuditBody"></div><div class="modal-foot"><button class="btn" id="vmsLiveAuditClose2" type="button">Close</button><button class="btn primary" id="vmsLiveAuditPrint" type="button">Print</button></div></div>';
+    document.body.appendChild(modal);
+    const close=()=>modal.classList.remove('show');
+    $('vmsLiveAuditClose').onclick=close;$('vmsLiveAuditClose2').onclick=close;
+    $('vmsLiveAuditPrint').onclick=()=>window.print();
+    modal.addEventListener('click',e=>{if(e.target===modal)close()});
+    return modal;
+  }
+
+  function prettyJson(value){
+    if(value==null)return '<div class="empty">No details have been published yet.</div>';
+    if(Array.isArray(value))return `<div class="list">${value.map(v=>`<div class="list-item"><div class="list-item-main"><span>${esc(typeof v==='object'?JSON.stringify(v):v)}</span></div></div>`).join('')}</div>`;
+    if(typeof value==='object')return `<div class="kv">${Object.entries(value).map(([k,v])=>`<div class="kv-item"><span>${esc(String(k).replace(/_/g,' ').toUpperCase())}</span><strong>${esc(typeof v==='object'?JSON.stringify(v):v)}</strong></div>`).join('')}</div>`;
+    return `<p>${esc(value)}</p>`;
+  }
+
+  function renderAudits(audits){
+    const section=$('section-audits');if(!section)return;
+    const list=section.querySelector('.list');if(!list)return;
+    if(!audits?.length){list.innerHTML='<div class="empty">No VMS audit has been published to your portal yet.</div>';return}
+    list.innerHTML=audits.map(row=>{
+      const score=scoreValue(row.scores),date=row.updated_at||row.created_at;
+      const when=date?new Date(date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'Recently';
+      return `<div class="list-item"><div style="display:flex;align-items:center;gap:11px"><div class="audit-score">${score==null?'—':esc(score)}</div><div class="list-item-main"><strong>${esc(row.business_name||'VMS Business & Website Audit')}</strong><span>${esc(titleStatus(row.status||'Published'))} · ${esc(when)}</span></div></div><div class="list-actions"><button class="btn small vms-live-audit-view" data-audit-id="${esc(row.id)}" type="button">View Report</button></div></div>`;
+    }).join('');
+    list.querySelectorAll('.vms-live-audit-view').forEach(button=>button.addEventListener('click',()=>{
+      const row=audits.find(x=>String(x.id)===String(button.dataset.auditId));if(!row)return;
+      const modal=ensureLiveAuditModal();
+      $('vmsLiveAuditTitle').textContent=row.business_name||'VMS Business & Website Audit';
+      $('vmsLiveAuditBody').innerHTML=`<div class="card" style="box-shadow:none"><div class="card-head"><div><h3>Scores</h3><p>Published VMS audit data</p></div></div>${prettyJson(row.scores)}</div><div class="card" style="box-shadow:none;margin-top:10px"><div class="card-head"><div><h3>Findings & Recommendations</h3></div></div>${prettyJson(row.findings)}</div>`;
+      modal.classList.add('show');
+    }));
+  }
+
+  function billingName(row,catalogMap){return row?.service_name||catalogMap.get(row?.service_key)?.name||'VMS Subscription'}
+
+  async function sendClientEvent(type,payload){
+    const sb=await window.VMSAuth?.client?.();
+    if(!sb)throw new Error('Client Portal session is not ready.');
+    const {data:{session}}=await sb.auth.getSession();
+    if(!session?.access_token)throw new Error('Please sign in again.');
+    const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),15000);
+    try{
+      const res=await fetch('/api/client-event',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${session.access_token}`},body:JSON.stringify({type,payload}),signal:controller.signal});
+      const json=await res.json().catch(()=>({}));
+      if(!res.ok)throw new Error(json.error||'VMS could not save this request.');
+      return json;
+    }catch(e){if(e?.name==='AbortError')throw new Error('The request timed out. Please try again.');throw e}finally{clearTimeout(timer)}
+  }
+
+  function installBillingActions(rows,catalog){
+    const hero=document.querySelector('#section-billing .billing-hero small');if(hero)hero.textContent='BILLING & SUBSCRIPTION';
+    const manage=document.querySelector('#section-billing .card:last-of-type .card-head p');
+    if(manage)manage.textContent='Subscription changes are securely sent to VMS. Payment self-service will appear here when live billing is connected.';
+    const note=document.querySelector('#section-billing .card:last-of-type .note');
+    if(note)note.textContent='Canceling does not erase your client history. VMS will confirm the effective date and any paid-through access before changing the service.';
+
+    const catalogMap=new Map((catalog||[]).map(x=>[x.id,x]));
+    const recurring=(rows||[]).filter(activeService).filter(row=>row.billing_cadence||catalogMap.get(row.service_key)?.pricing_model==='Recurring');
+    const pause=$('pauseSubscriptionBtn'),cancel=$('cancelSubscriptionBtn');
+    if(pause)pause.textContent='Request Pause';
+    if(cancel)cancel.textContent='Request Cancellation';
+    if(!pause||!cancel)return;
+    pause.disabled=cancel.disabled=!recurring.length;
+    if(!recurring.length)return;
+    const planLabel=recurring.length===1?billingName(recurring[0],catalogMap):`${recurring.length} VMS subscriptions`;
+
+    const openAction=mode=>{
+      const modal=$('subscriptionModal'),title=$('subscriptionModalTitle'),body=$('subscriptionModalBody'),foot=$('subscriptionModalFoot');
+      if(!modal||!title||!body||!foot)return;
+      const canceling=mode==='cancel';
+      title.textContent=canceling?`Request Cancellation — ${planLabel}`:`Request Pause — ${planLabel}`;
+      body.innerHTML=`<p style="margin:0;color:var(--muted);font-size:9px;line-height:1.6">${canceling?'Send a cancellation request to Vision Make Studio. Your service stays unchanged until VMS confirms the effective date and any paid-through access.':'Send a pause request to Vision Make Studio. Your service stays active until VMS reviews and confirms the pause date.'}</p>${canceling?'<div class="field" style="margin-top:12px"><label>OPTIONAL — REASON</label><select id="vmsCancelReason"><option>Need a break</option><option>Service completed</option><option>Too expensive</option><option>Not using it</option><option>Business closed</option><option>Other</option></select></div>':''}<div class="note" id="vmsBillingActionStatus" style="margin-top:10px">No immediate billing change is made by this request.</div>`;
+      foot.innerHTML=`<button class="btn" id="vmsBillingBack" type="button">Go Back</button><button class="btn ${canceling?'red':'primary'}" id="vmsBillingConfirm" type="button">${canceling?'Send Cancellation Request':'Send Pause Request'}</button>`;
+      modal.classList.add('show');
+      $('vmsBillingBack').onclick=()=>modal.classList.remove('show');
+      $('vmsBillingConfirm').onclick=async()=>{
+        const button=$('vmsBillingConfirm'),status=$('vmsBillingActionStatus');button.disabled=true;button.textContent='Sending…';
+        try{
+          const payload={plan:planLabel};if(canceling)payload.reason=$('vmsCancelReason')?.value||'';
+          await sendClientEvent(canceling?'subscription_cancel_requested':'subscription_pause_requested',payload);
+          if(status)status.textContent=canceling?'Cancellation request sent to VMS.':'Pause request sent to VMS.';
+          const billingStatus=$('billingStatusText');if(billingStatus)billingStatus.textContent=canceling?'Cancellation requested':'Pause requested';
+          button.textContent='Sent';setTimeout(()=>modal.classList.remove('show'),700);
+        }catch(e){if(status)status.textContent=e?.message||'Could not send request.';button.disabled=false;button.textContent=canceling?'Send Cancellation Request':'Send Pause Request'}
+      };
+    };
+    pause.onclick=()=>openAction('pause');cancel.onclick=()=>openAction('cancel');
+  }
+
+  function scrubQrForUnconfiguredRealClient(email){
+    if(lower(email)===TEST_EMAIL)return;
+    const state=portalState();
+    if(!state?.qr||state.qr.destination)return;
+    const section=$('section-qrs');if(!section)return;
+    const card=section.querySelector('.qr-card');
+    if(card)card.innerHTML='<div class="empty" style="grid-column:1/-1">Your VMS Smart QR will appear here after VMS creates and connects it to your client account.</div>';
+  }
+
+  async function syncLivePanels(){
+    if(cleanupRunning)return;cleanupRunning=true;
+    try{
+      if(!window.VMSAuth?.client)return;
+      const sb=await VMSAuth.client();if(!sb)return;
+      const {data:{session}}=await sb.auth.getSession();const email=lower(session?.user?.email);if(!email)return;
+      if(scrubLegacyTestDefaults(email)&&sessionStorage.getItem('vms_portal_legacy_cleanup')!=='1'){
+        sessionStorage.setItem('vms_portal_legacy_cleanup','1');location.reload();return;
+      }
+      const {data:client,error:clientError}=await sb.from('clients').select('id,business_name,owner_email').ilike('owner_email',email).maybeSingle();
+      if(clientError||!client)return;
+      const [{data:rows,error:serviceError},{data:catalog,error:catalogError},{data:audits,error:auditError}]=await Promise.all([
+        sb.from('client_services').select('*').eq('client_id',client.id),
+        sb.from('service_catalog').select('*').eq('status','Published'),
+        sb.from('audit_records').select('*').eq('client_id',client.id).order('created_at',{ascending:false})
+      ]);
+      if(serviceError)throw serviceError;if(catalogError)throw catalogError;if(auditError)throw auditError;
+      liveContext={client,rows:rows||[],catalog:catalog||[],audits:audits||[]};
+      replaceLegacyProjectPanels();renderAudits(liveContext.audits);installBillingActions(liveContext.rows,liveContext.catalog);scrubQrForUnconfiguredRealClient(email);
+    }catch(e){console.warn('VMS Client Portal production cleanup skipped',e)}finally{cleanupRunning=false}
+  }
+
+  function boot(){
+    [500,1200,2600,5000].forEach(ms=>setTimeout(syncLivePanels,ms));
+    window.addEventListener('focus',syncLivePanels);
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')syncLivePanels()});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+})();
