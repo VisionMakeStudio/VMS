@@ -896,6 +896,79 @@
     return r.json();
   }
 
+
+  /* ------------------------------------------------------------------
+     LinkHub current-price compatibility guard
+     Keeps legacy LinkHub Manager markup aligned with the central catalog
+     without overwriting an existing client's agreed price on page load.
+     ------------------------------------------------------------------ */
+  async function installLinkHubPricingGuard(){
+    const path=lower(location.pathname||'');
+    const isAdminLinkHub=path.includes('/admin/linkhub');
+    const isPortal=path==='/portal'||path==='/portal/'||path.startsWith('/portal/');
+    if(!isAdminLinkHub&&!isPortal)return;
+
+    try{
+      if(!window.VMSCatalog?.load)return;
+      const catalog=await window.VMSCatalog.load({force:true});
+      const core=(catalog||[]).find(x=>x.id==='linkhub-core');
+      const pro=(catalog||[]).find(x=>x.id==='linkhub-pro');
+      const corePrice=Number(core?.recurringPrice ?? 5.99);
+      const proPrice=Number(pro?.recurringPrice ?? 19.99);
+      const coreLabel=window.VMSCatalog.priceLabel?window.VMSCatalog.priceLabel(core):`$${corePrice.toFixed(2)}/month`;
+      const proLabel=window.VMSCatalog.priceLabel?window.VMSCatalog.priceLabel(pro):`$${proPrice.toFixed(2)}/month`;
+
+      if(isAdminLinkHub){
+        const cards=[...document.querySelectorAll('.feature-pricing .feature-price')];
+        for(const card of cards){
+          const key=lower(card.querySelector('span')?.textContent);
+          const strong=card.querySelector('strong');
+          if(!strong)continue;
+          if(key==='core')strong.textContent=coreLabel;
+          if(key==='linkhub pro')strong.textContent=proLabel;
+        }
+
+        const plan=document.getElementById('hubPlan');
+        const price=document.getElementById('hubPrice');
+        if(plan){
+          const coreOption=[...plan.options].find(o=>o.value==='Core');
+          const proOption=[...plan.options].find(o=>o.value==='Pro');
+          if(coreOption)coreOption.textContent=`Core · ${coreLabel}`;
+          if(proOption)proOption.textContent=`Pro · ${proLabel}`;
+
+          plan.addEventListener('change',()=>{
+            setTimeout(()=>{
+              if(!price)return;
+              price.value=plan.value==='Pro'?String(proPrice):String(corePrice);
+            },0);
+          });
+        }
+
+        const hint=price?.parentElement?.querySelector('small');
+        if(hint)hint.textContent=`Pro standard ${proLabel}. Core standard ${coreLabel}. Existing client agreed prices stay locked unless VMS changes them.`;
+
+        const addHub=document.getElementById('addHubBtn');
+        addHub?.addEventListener('click',()=>{
+          setTimeout(()=>{
+            const p=document.getElementById('hubPrice');
+            const pl=document.getElementById('hubPlan');
+            if(p&&pl?.value==='Pro'&&Number(p.value)===14.99)p.value=String(proPrice);
+          },0);
+        });
+      }
+
+      if(isPortal){
+        const standard=document.getElementById('billingStandardPrice');
+        if(standard)standard.textContent=proLabel.replace('/month','/mo');
+      }
+    }catch(e){
+      console.warn('VMS LinkHub pricing guard skipped',e);
+    }
+  }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{setTimeout(installLinkHubPricingGuard,0)},{once:true});
+  else setTimeout(installLinkHubPricingGuard,0);
+
   window.VMSAuth={magicLink,signOut,requireSession,client,getAdminRole,getMfaState,TEST_EMAIL,configReady};
   window.VMSApi={api};
   window.VMSClientCloud={syncLocalStore:syncAdminClientLocalStore,syncClient:directSyncClient,syncServices:directSyncServices,deleteClient:directDeleteClient};
