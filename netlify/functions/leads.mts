@@ -37,7 +37,45 @@ async function recomputeOnboarding(clientId:string){const all=await read(`client
 
 async function convertLead(user:any,body:AnyRow){const lead=await getLead(clean(body.id,80));if(lead.converted_client_id){const rows=await read(`clients?id=eq.${encodeURIComponent(lead.converted_client_id)}&select=*&limit=1`);return{client:rows?.[0]||{id:lead.converted_client_id},alreadyConverted:true}}const email=cleanEmail(lead.email);if(!email)throw Object.assign(new Error("Lead email is required before conversion."),{status:400});let existing=await read(`clients?owner_email=ilike.${encodeURIComponent(email)}&select=*&limit=1`),client=existing?.[0];const clientPayload={business_name:clean(lead.business_name,180)||"VMS Client",owner_email:email,contact_name:clean(lead.contact_name,180)||null,phone:clean(lead.phone,80)||null,status:"active",preferred_contact_method:lead.contact_method||null,preferred_contact_time:lead.contact_time||null,lead_source:lead.source||null,converted_at:new Date().toISOString()};if(client?.id){const rows=await write(`clients?id=eq.${encodeURIComponent(client.id)}`,"PATCH",clientPayload);client=rows?.[0]||{...client,...clientPayload}}else{const rows=await write("clients","POST",clientPayload);client=rows?.[0]}if(!client?.id)throw Object.assign(new Error("Client conversion did not return a client record."),{status:502});
   const ids=serviceIds(body.service_ids??lead.service_ids);let selectedCatalog:any[]=[];
-  if(ids.length){const filter=ids.map((x:string)=>`id.eq.${x.replace(/[,()]/g,"")}`).join(",");selectedCatalog=await read(`service_catalog?or=(${encodeURIComponent(filter)})&select=id,name,category,pricing_model,one_time_price,recurring_price,cadence,sales_mode,metadata`);const current=await read(`client_services?client_id=eq.${encodeURIComponent(client.id)}&select=id,catalog_service_id,service_key,billing_status,service_status,metadata`);const byKey=new Map((current||[]).flatMap((x:any)=>[[x.catalog_service_id,x],[x.service_key,x]]).filter(([k])=>k));for(const s of selectedCatalog||[]){const st=paymentState(s),old=byKey.get(s.id);const payload={client_id:client.id,service_key:s.id||slug(s.name),service_name:s.name,service_status:st.service_status,billing_status:st.billing_status,catalog_service_id:s.id,agreed_price:s.recurring_price??s.one_time_price??null,billing_cadence:s.cadence||null,price_locked:true,metadata:{...(old?.metadata||{}),source:"phase5-lead-conversion",lead_id:lead.id,payment_required:st.payment_required,sales_mode:s.sales_mode||null,pricing_model:s.pricing_model||null,family:s.metadata?.family||null},updated_at:new Date().toISOString()};if(old?.id)await write(`client_services?id=eq.${encodeURIComponent(old.id)}`,"PATCH",payload,"return=minimal");else await write("client_services","POST",payload,"return=minimal")}}
+  if(ids.length){
+    const filter=ids.map((x:string)=>`id.eq.${x.replace(/[,()]/g,"")}`).join(",");
+    selectedCatalog=(await read(`service_catalog?or=(${encodeURIComponent(filter)})&select=id,name,category,pricing_model,one_time_price,recurring_price,cadence,sales_mode,metadata`)) as AnyRow[];
+    const current=(await read(`client_services?client_id=eq.${encodeURIComponent(client.id)}&select=id,catalog_service_id,service_key,billing_status,service_status,metadata`)) as AnyRow[];
+    const byKey=new Map<string,AnyRow>();
+    for(const row of current||[]){
+      const catalogKey=clean(row.catalog_service_id,120);
+      const serviceKey=clean(row.service_key,120);
+      if(catalogKey)byKey.set(catalogKey,row);
+      if(serviceKey)byKey.set(serviceKey,row);
+    }
+    for(const s of selectedCatalog||[]){
+      const st=paymentState(s);
+      const old:AnyRow|undefined=byKey.get(clean(s.id,120));
+      const payload={
+        client_id:client.id,
+        service_key:s.id||slug(s.name),
+        service_name:s.name,
+        service_status:st.service_status,
+        billing_status:st.billing_status,
+        catalog_service_id:s.id,
+        agreed_price:s.recurring_price??s.one_time_price??null,
+        billing_cadence:s.cadence||null,
+        price_locked:true,
+        metadata:{
+          ...(old?.metadata||{}),
+          source:"phase5-lead-conversion",
+          lead_id:lead.id,
+          payment_required:st.payment_required,
+          sales_mode:s.sales_mode||null,
+          pricing_model:s.pricing_model||null,
+          family:s.metadata?.family||null
+        },
+        updated_at:new Date().toISOString()
+      };
+      if(old?.id)await write(`client_services?id=eq.${encodeURIComponent(String(old.id))}`,"PATCH",payload,"return=minimal");
+      else await write("client_services","POST",payload,"return=minimal");
+    }
+  }
   const now=new Date().toISOString();const onboardingRows=await write("client_onboarding","POST",{client_id:client.id,status:"in_progress",preferred_contact_method:lead.contact_method||null,preferred_contact_time:lead.contact_time||null,updated_at:now},"resolution=merge-duplicates,return=representation");const baseTasks=[["confirm-business-info","Confirm business & contact information"],["confirm-services","Confirm selected services and scope"],["collect-assets","Collect logo, photos, brand assets, and required access"],["contact-preferences","Confirm preferred contact method and time"],["portal-invite","Send Client Portal welcome / invitation"],["initial-setup-review","Complete initial VMS setup review"]];const taskRows=[...baseTasks.map(([key,title])=>({client_id:client.id,task_key:key,title,required:true,metadata:{source:"phase5"}})),...(selectedCatalog||[]).map((s:any)=>({client_id:client.id,task_key:`service-${slug(s.id)}`,title:`Set up ${s.name}`,required:true,metadata:{source:"phase5",service_id:s.id}}))];if(taskRows.length)await write("client_onboarding_tasks","POST",taskRows,"resolution=ignore-duplicates,return=minimal");await write(`intake_requests?id=eq.${encodeURIComponent(lead.id)}`,"PATCH",{status:"won",converted_client_id:client.id,converted_at:now,updated_at:now,service_ids:ids});await write(`crm_tasks?lead_id=eq.${encodeURIComponent(lead.id)}&task_type=eq.follow_up&status=eq.open`,"PATCH",{status:"canceled",updated_at:now},"return=minimal");await write(`activity_events?lead_id=eq.${encodeURIComponent(lead.id)}`,"PATCH",{client_id:client.id},"return=minimal");const awaiting=(selectedCatalog||[]).filter((s:any)=>paymentState(s).payment_required).length;await activity(lead.id,client.id,"Lead converted to client",awaiting?`${client.business_name} is now a VMS client with ${awaiting} service${awaiting===1?"":"s"} awaiting payment.`:`${client.business_name} is now an active VMS client.`,false,{actor:user.id,action:"convert",awaiting_payment:awaiting});return{client,onboarding:onboardingRows?.[0]||null,awaitingPayment:awaiting}}
 
 async function updateTask(user:any,body:AnyRow){const id=clean(body.task_id,80),status=["pending","complete","waived"].includes(clean(body.status,20))?clean(body.status,20):"pending";const rows=await write(`client_onboarding_tasks?id=eq.${encodeURIComponent(id)}`,"PATCH",{status,completed_at:status==="complete"?new Date().toISOString():null,updated_at:new Date().toISOString()}),task=rows?.[0];if(!task)throw Object.assign(new Error("Onboarding task not found."),{status:404});await recomputeOnboarding(task.client_id);const linked=await read(`intake_requests?converted_client_id=eq.${encodeURIComponent(task.client_id)}&select=id&limit=1`);if(linked?.[0]?.id)await activity(linked[0].id,task.client_id,`Onboarding task ${status}`,task.title,false,{actor:user.id,action:"onboarding_task",task_id:task.id});return task}
