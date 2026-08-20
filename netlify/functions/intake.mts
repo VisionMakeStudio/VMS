@@ -2,6 +2,7 @@ import type { Config, Context } from "@netlify/functions";
 
 function clean(value:any,max=5000){return String(value??"").trim().slice(0,max)}
 function serviceIds(value:any){return [...new Set((Array.isArray(value)?value:[]).map(v=>clean(v,120)).filter(Boolean))].slice(0,40)}
+function normalizeWebsite(value:any){const raw=clean(value,400);if(!raw)return "";if(/^https?:\/\//i.test(raw))return raw;if(/^\/\//.test(raw))return `https:${raw}`;return `https://${raw.replace(/^\/+/,"")}`}
 function dbHeaders(secret:string,json=false,prefer=""){const h:Record<string,string>={apikey:secret};if(!secret.startsWith("sb_secret_"))h.Authorization=`Bearer ${secret}`;if(json)h["Content-Type"]="application/json";if(prefer)h.Prefer=prefer;return h}
 function tracking(body:any){const out:Record<string,string>={};for(const key of ['promoCode','landingPath','utm_source','utm_medium','utm_campaign','utm_content','utm_term']){const v=clean(body?.[key],key==='landingPath'?600:240);if(v)out[key.replace('promoCode','promo_code').replace('landingPath','landing_path')]=v}return out}
 
@@ -11,7 +12,7 @@ export default async(req:Request,_context:Context)=>{
     const body:any=await req.json();
     if(!body?.businessName||!body?.email)return Response.json({error:"Business name and email are required."},{status:400});
     const selected=serviceIds(body.serviceIds),meta=tracking(body);
-    const record={business_name:clean(body.businessName,160),contact_name:clean(body.contactName,160),email:clean(body.email,240).toLowerCase(),phone:clean(body.phone,80),website:clean(body.website,400),goal:clean(body.goal,240),contact_method:clean(body.contactMethod||"Email",60),contact_time:clean(body.contactTime,120)||null,service_ids:selected,message:clean(body.message,5000),status:"new",source:clean(body.source||"public-website",120),lead_score:selected.length?60:50,metadata:meta,updated_at:new Date().toISOString()};
+    const record={business_name:clean(body.businessName,160),contact_name:clean(body.contactName,160),email:clean(body.email,240).toLowerCase(),phone:clean(body.phone,80),website:normalizeWebsite(body.website),goal:clean(body.goal,240),contact_method:clean(body.contactMethod||"Email",60),contact_time:clean(body.contactTime,120)||null,service_ids:selected,message:clean(body.message,5000),status:"new",source:clean(body.source||"public-website",120),lead_score:selected.length?60:50,metadata:meta,updated_at:new Date().toISOString()};
     const url=Netlify.env.get("SUPABASE_URL"),secretKey=Netlify.env.get("SUPABASE_SECRET_KEY")||Netlify.env.get("SUPABASE_SERVICE_ROLE_KEY");
     if(!url||!secretKey)return Response.json({error:"VMS intake is not configured yet. Please email info@visionmakestudio.com."},{status:503});
     const dbResponse=await fetch(`${url}/rest/v1/intake_requests`,{method:"POST",headers:dbHeaders(secretKey,true,"return=representation"),body:JSON.stringify(record)});

@@ -40,7 +40,7 @@ if(fs.existsSync(adminDir)){for(const entry of fs.readdirSync(adminDir,{withFile
 /* Phase 11: inject the production repair layers without replacing the user's
    approved source-page layouts. These scripts make Clients/Billing database-first,
    add Portal payment activation, repair Audit desktop navigation, and add safe Admin cleanup controls. */
-const phase11Assets=['vms-audit-desktop-fix.js','vms-admin-clients-live.js','vms-admin-billing-live.js','vms-portal-payments.js','vms-admin-cleanup.js'];
+const phase11Assets=['vms-audit-desktop-fix.js','vms-admin-clients-live.js','vms-admin-billing-live.js','vms-portal-payments.js','vms-admin-cleanup.js','vms-get-started-url.js'];
 for(const name of phase11Assets){if(!fs.existsSync(path.join(dist,'assets',name)))throw new Error(`Phase 11 repair asset is missing: assets/${name}`)}
 function injectRepair(relative,src,id){const file=path.join(dist,relative);if(!fs.existsSync(file))throw new Error(`Phase 11 target is missing: ${relative}`);let html=fs.readFileSync(file,'utf8');if(html.includes(`id="${id}"`))return;if(!/<\/body>/i.test(html))throw new Error(`Phase 11 target has no </body>: ${relative}`);html=html.replace(/<\/body>/i,`<script id="${id}" src="${src}" defer></script></body>`);fs.writeFileSync(file,html)}
 injectRepair('admin/audit.html','../assets/vms-audit-desktop-fix.js','vms-phase11-audit-fix');
@@ -49,6 +49,7 @@ injectRepair('admin/billing.html','../assets/vms-admin-billing-live.js','vms-pha
 injectRepair('portal/index.html','../assets/vms-portal-payments.js','vms-phase11-portal-payments');
 injectRepair('admin/leads.html','../assets/vms-admin-cleanup.js','vms-phase11-admin-cleanup');
 injectRepair('admin/audit.html','../assets/vms-admin-cleanup.js','vms-phase11-audit-cleanup');
+injectRepair('get-started.html','assets/vms-get-started-url.js','vms-phase11-get-started-url');
 
 /* Phase 10 final-content cleanup. */
 const htmlCleanups=new Map([
