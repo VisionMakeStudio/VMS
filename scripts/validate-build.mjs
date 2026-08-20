@@ -34,8 +34,12 @@ for(const file of htmlFiles){
   const sourceIdSet=new Set([...source.matchAll(/\bid\s*=\s*["']([^"']+)["']/gi)].map(m=>m[1]).filter(id=>!id.includes('${')));
   const duplicateIds=[...new Set(ids.filter((id,i)=>ids.indexOf(id)!==i))];
   if(duplicateIds.length)failures.push(`${rel(file)}: duplicate HTML id(s): ${duplicateIds.join(', ')}`);
-  for(const m of source.matchAll(/\$\(\s*["']([^"']+)["']\s*\)/g)){
-    if(!sourceIdSet.has(m[1]))failures.push(`${rel(file)}: script references missing element id via $(): ${m[1]}`);
+  // Only treat a simple #id selector passed to $() as an ID lookup.
+  // The previous validator compared '#tracked' directly with the HTML id 'tracked',
+  // causing false failures on valid selectors and compound selectors.
+  for(const m of source.matchAll(/\$\(\s*["']#([A-Za-z_][A-Za-z0-9_:.-]*)["']\s*\)/g)){
+    const id=m[1];
+    if(!sourceIdSet.has(id))failures.push(`${rel(file)}: script references missing element id via $(): #${id}`);
   }
 }
 
