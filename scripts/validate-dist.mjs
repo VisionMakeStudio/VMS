@@ -14,6 +14,7 @@ function scriptSrc(attrs){return attrs.match(/\bsrc\s*=\s*["']([^"']+)["']/i)?.[
 if(!fs.existsSync(root))failures.push('dist/ was not generated');
 else for(const file of walk(root).filter(f=>f.endsWith('.html'))){
   stats.html++;const source=fs.readFileSync(file,'utf8'),clean=stripScriptsStyles(source);
+  const marker=source.match(/\b(?:demo|sample|testing)\b/i);if(marker)failures.push(`${path.relative(root,file)} contains non-production marker: ${marker[0]}`);
   for(const m of clean.matchAll(/\b(?:href|src)\s*=\s*["']([^"']+)["']/gi)){stats.links++;if(!existsLocal(file,m[1]))failures.push(`${path.relative(root,file)} missing ${m[1]}`)}
   for(const m of source.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)){
     const attrs=m[1]||'',code=m[2]||'',src=scriptSrc(attrs);

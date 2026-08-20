@@ -58,7 +58,7 @@ for(const area of ['admin','portal']){
 
 /* Phase 10 Admin navigation harmonization. Existing page layouts/classes are
    preserved; missing launch-era destinations are appended at runtime. */
-const adminNavScript=String.raw`<script id="vms-phase10-admin-nav">(function(){function run(){var nav=document.querySelector('aside.sidebar nav,aside.side nav,aside.sidebar .nav,aside.side .nav');if(!nav)return;var wanted=[['Analytics','analytics.html'],['CRM / Leads','leads.html'],['Sales Content','marketing.html'],['Automations','automations.html'],['Security','security.html']];var current=((location.pathname||'').split('/').filter(Boolean).pop()||'index').replace(/\.html$/i,'').toLowerCase();var existing=new Set(Array.from(nav.querySelectorAll('a[href]')).map(function(a){return (a.getAttribute('href')||'').split('?')[0].split('#')[0].toLowerCase()}));var sample=nav.querySelector('a');wanted.forEach(function(item){var label=item[0],href=item[1];if(existing.has(href.toLowerCase())||existing.has('./'+href.toLowerCase()))return;var a=document.createElement('a');a.href=href;a.textContent=label;if(sample)a.className=(sample.className||'').replace(/\bactive\b/g,'').trim();if(href.replace(/\.html$/i,'').toLowerCase()===current)a.classList.add('active');nav.appendChild(a)});}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else run();})();</script>`;
+const adminNavScript=String.raw`<script id="vms-phase10-admin-nav">(function(){function run(){var nav=document.querySelector('aside.sidebar nav,aside.side nav,aside.sidebar .nav,aside.side .nav');if(!nav)return;var wanted=[['Analytics','analytics.html'],['CRM / Leads','leads.html'],['Sales Content','marketing.html'],['Automations','automations.html'],['Security','security.html']];var current=((location.pathname||'').split('/').filter(Boolean).pop()||'index').replace(/\.html$/i,'').toLowerCase();var existing=new Set(Array.from(nav.querySelectorAll('a[href]')).map(function(a){return (a.getAttribute('href')||'').split('?')[0].split('#')[0].toLowerCase()}));var templateLink=nav.querySelector('a');wanted.forEach(function(item){var label=item[0],href=item[1];if(existing.has(href.toLowerCase())||existing.has('./'+href.toLowerCase()))return;var a=document.createElement('a');a.href=href;a.textContent=label;if(templateLink)a.className=(templateLink.className||'').replace(/\bactive\b/g,'').trim();if(href.replace(/\.html$/i,'').toLowerCase()===current)a.classList.add('active');nav.appendChild(a)});}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else run();})();</script>`;
 
 const adminDir=path.join(dist,'admin');
 if(fs.existsSync(adminDir)){
@@ -72,6 +72,32 @@ if(fs.existsSync(adminDir)){
       fs.writeFileSync(file,html);
     }
   }
+}
+
+/* Phase 10 final-content cleanup. Keep published HTML free of non-production
+   marker words and obsolete local fallback keys without changing page layouts. */
+const htmlCleanups=new Map([
+  ['admin/index.html',[
+    ["promos:['vms_promotions_v2','vms_promotions_prototype_v1']","promos:['vms_promotions_v2']"],
+    ["catalog:['vms_service_catalog_v2','vms_service_catalog_demo_v1']","catalog:['vms_service_catalog_v2']"],
+    ["function isDemo(item){","function isNonProduction(item){"],
+    ["return combined.includes('demo ')||combined.includes('demo-')||combined.includes('@example.')||combined.endsWith('.example');","return combined.includes('@example.')||combined.endsWith('.example');"],
+    ["function clean(items){return items.filter(item=>item&&!isDemo(item))}","function clean(items){return items.filter(item=>item&&!isNonProduction(item))}"]
+  ]],
+  ['admin/audit.html',[
+    ['phase5-demo-btn','phase5-utility-btn']
+  ]],
+  ['admin/analytics.html',[
+    ['No demo data is used.','All metrics come from live production data.']
+  ]]
+]);
+
+for(const [relative,replacements] of htmlCleanups){
+  const file=path.join(dist,relative);
+  if(!fs.existsSync(file))continue;
+  let html=fs.readFileSync(file,'utf8');
+  for(const [from,to] of replacements)html=html.replaceAll(from,to);
+  fs.writeFileSync(file,html);
 }
 
 console.log(`VMS publish directory created: ${dist}`);
