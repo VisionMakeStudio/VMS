@@ -9,13 +9,52 @@ function env(name: string) {
   return Netlify.env.get(name) || "";
 }
 
+function normalizedStripeMode() {
+  const value = env("VMS_STRIPE_MODE").trim().toLowerCase();
+  return value === "live" ? "live" : "test";
+}
+
+function stripeKeyMode(key: string) {
+  if (/^(?:sk|rk)_live_/i.test(key)) return "live";
+  if (/^(?:sk|rk)_test_/i.test(key)) return "test";
+  return "unknown";
+}
+
+function stripeModeError(mode: string, key: string) {
+  const keyMode = stripeKeyMode(key);
+  if (!key) return "Stripe is not connected yet.";
+  if (keyMode === "unknown") return "VMS cannot verify the configured Stripe key mode.";
+  if (mode === "test" && keyMode !== "test") {
+    return "VMS billing is locked to Stripe Test Mode for QA. Live Stripe requests are disabled.";
+  }
+  if (mode === "live" && keyMode !== "live") {
+    return "VMS billing is configured for Live Mode, but the connected Stripe key is not live.";
+  }
+  return "";
+}
+
 export function billingEnv() {
   const supabaseUrl = env("SUPABASE_URL");
   const publishableKey = env("SUPABASE_PUBLISHABLE_KEY");
   const secretKey = env("SUPABASE_SECRET_KEY") || env("SUPABASE_SERVICE_ROLE_KEY");
   const stripeSecretKey = env("STRIPE_SECRET_KEY");
-  const stripeWebhookSecret = env("STRIPE_WEBHOOK_SECRET");
-  return { supabaseUrl, publishableKey, secretKey, stripeSecretKey, stripeWebhookSecret };
+  const rawStripeWebhookSecret = env("STRIPE_WEBHOOK_SECRET");
+  const stripeMode = normalizedStripeMode();
+  const stripeSafetyError = stripeModeError(stripeMode, stripeSecretKey);
+
+  // Fail closed during QA: when the key mode does not match VMS_STRIPE_MODE,
+  // do not expose the webhook secret to the webhook handler either.
+  const stripeWebhookSecret = stripeSafetyError ? "" : rawStripeWebhookSecret;
+
+  return {
+    supabaseUrl,
+    publishableKey,
+    secretKey,
+    stripeSecretKey,
+    stripeWebhookSecret,
+    stripeMode,
+    stripeSafetyError,
+  };
 }
 
 export function requireServerConfig(includeStripe = true) {
@@ -23,8 +62,16 @@ export function requireServerConfig(includeStripe = true) {
   if (!cfg.supabaseUrl || !cfg.publishableKey || !cfg.secretKey) {
     throw Object.assign(new Error("VMS billing server configuration is incomplete."), { status: 503 });
   }
-  if (includeStripe && !cfg.stripeSecretKey) {
-    throw Object.assign(new Error("Stripe is not connected yet."), { status: 503, code: "stripe_not_configured" });
+  if (includeStripe) {
+    if (!cfg.stripeSecretKey) {
+      throw Object.assign(new Error("Stripe is not connected yet."), { status: 503, code: "stripe_not_configured" });
+    }
+    if (cfg.stripeSafetyError) {
+      throw Object.assign(new Error(cfg.stripeSafetyError), {
+        status: 503,
+        code: cfg.stripeMode === "test" ? "stripe_test_mode_required" : "stripe_live_mode_required",
+      });
+    }
   }
   return cfg;
 }
