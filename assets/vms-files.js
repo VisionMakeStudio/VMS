@@ -24,31 +24,24 @@
   async function remove(path){if(!path)return;const sb=await client();if(!sb)return;const {error}=await sb.storage.from(BUCKET).remove([path]);if(error)throw error}
   window.VMSFiles={BUCKET,ready,upload,signedUrl,remove,currentEmail,safeOwner};
 
-  // Master Phase 6 — expose the real Scheduling workspace from the main Client Portal.
-  function installPhase6SchedulingNav(){
+  function installPortalTools(){
     const portalHome=location.pathname.endsWith('/portal/')||location.pathname.endsWith('/portal/index.html');
     if(!portalHome)return;
-
     const install=()=>{
-      const nav=document.getElementById('nav');
-      if(!nav||document.getElementById('vmsSchedulingNavBtn'))return;
-
-      const button=document.createElement('button');
-      button.id='vmsSchedulingNavBtn';
-      button.type='button';
-      button.textContent='Scheduling';
-      button.setAttribute('aria-label','Open Scheduling');
-
-      const projects=nav.querySelector('button[data-section="projects"]');
-      if(projects)projects.insertAdjacentElement('afterend',button);
-      else nav.appendChild(button);
-
-      button.addEventListener('click',()=>{location.href='schedule.html';});
+      const nav=document.getElementById('nav');if(!nav)return;
+      if(!document.getElementById('vmsSchedulingNavBtn')){
+        const button=document.createElement('button');button.id='vmsSchedulingNavBtn';button.type='button';button.textContent='Scheduling';button.setAttribute('aria-label','Open Scheduling');
+        const projects=nav.querySelector('button[data-section="projects"]');if(projects)projects.insertAdjacentElement('afterend',button);else nav.appendChild(button);
+        button.addEventListener('click',()=>{location.href='schedule.html';});
+      }
+      if(!document.getElementById('vmsNotificationPrefsNavBtn')){
+        const button=document.createElement('button');button.id='vmsNotificationPrefsNavBtn';button.type='button';button.textContent='Notification Settings';button.setAttribute('aria-label','Open Notification Settings');
+        const notifications=nav.querySelector('button[data-section="notifications"]'),schedule=document.getElementById('vmsSchedulingNavBtn');
+        if(notifications)notifications.insertAdjacentElement('afterend',button);else if(schedule)schedule.insertAdjacentElement('afterend',button);else nav.appendChild(button);
+        button.addEventListener('click',()=>{location.href='preferences.html';});
+      }
     };
-
-    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});
-    else install();
+    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
   }
-
-  installPhase6SchedulingNav();
+  installPortalTools();
 })();
