@@ -29,19 +29,36 @@ async function recordPayment(opts:{clientId:string,service:any,invoiceId?:string
     return{payment:p,isNew:false};
   }
 
-  // Stripe can emit both checkout.session.completed and invoice.paid for the
-  // same one-time Checkout payment when invoice_creation is enabled. In newer
-  // invoice payloads the PaymentIntent may not be expanded, so invoice.paid can
-  // fall back to an `invoice:<id>` provider key. Before inserting a second row,
-  // reconcile that invoice against the recent Checkout payment for this exact
-  // client service and amount, then attach the invoice to the canonical payment.
-  if(opts.providerPaymentId.startsWith('invoice:')&&opts.invoiceId&&opts.service?.id){
-    const recent=await supabaseJson(`billing_payments?provider=eq.stripe&client_id=eq.${encodeURIComponent(opts.clientId)}&client_service_id=eq.${encodeURIComponent(opts.service.id)}&status=eq.paid&invoice_id=is.null&amount=eq.${encodeURIComponent(String(opts.amount))}&order=created_at.desc&limit=3`).catch(()=>[]);
-    const cutoff=Date.now()-15*60*1000;
-    const match=(Array.isArray(recent)?recent:[]).find((p:any)=>{const t=Date.parse(String(p?.created_at||''));return Number.isFinite(t)&&t>=cutoff});
+  // Stripe can emit both Checkout and Invoice events for one one-time purchase.
+  // First reconcile an invoice event with any payment already carrying the same
+  // VMS invoice row. This covers the event-order case where invoice.created or
+  // invoice.finalized attached the invoice before invoice.paid arrives.
+  if(opts.invoiceId&&opts.service?.id){
+    const sameInvoice=await supabaseJson(`billing_payments?provider=eq.stripe&client_id=eq.${encodeURIComponent(opts.clientId)}&client_service_id=eq.${encodeURIComponent(opts.service.id)}&status=eq.paid&invoice_id=eq.${encodeURIComponent(opts.invoiceId)}&amount=eq.${encodeURIComponent(String(opts.amount))}&order=created_at.desc&limit=1`).catch(()=>[]);
+    const match=sameInvoice?.[0];
     if(match){
-      const patched=await supabaseWrite(`billing_payments?id=eq.${encodeURIComponent(match.id)}`,'PATCH',{invoice_id:opts.invoiceId,subscription_id:opts.subscriptionId||match.subscription_id||null,description:opts.description||match.description,updated_at:now()}).catch(()=>null);
-      return{payment:patched?.[0]||{...match,invoice_id:opts.invoiceId,subscription_id:opts.subscriptionId||match.subscription_id||null,description:opts.description||match.description},isNew:false};
+      const currentId=String(match.provider_payment_id||'');
+      const preferredId=!opts.providerPaymentId.startsWith('invoice:')&&(currentId.startsWith('invoice:')||!currentId)?opts.providerPaymentId:currentId;
+      const patched=await supabaseWrite(`billing_payments?id=eq.${encodeURIComponent(match.id)}`,'PATCH',{provider_payment_id:preferredId||match.provider_payment_id,subscription_id:opts.subscriptionId||match.subscription_id||null,description:opts.description||match.description,updated_at:now()}).catch(()=>null);
+      return{payment:patched?.[0]||{...match,provider_payment_id:preferredId||match.provider_payment_id,subscription_id:opts.subscriptionId||match.subscription_id||null,description:opts.description||match.description},isNew:false};
+    }
+  }
+
+  // If the invoice payload cannot expose the PaymentIntent, Stripe may give us
+  // an invoice fallback id. Reconcile only with a very recent payment for the
+  // same client/service/amount whose invoice is still empty or is this invoice.
+  // Never merge two different non-null invoice ids.
+  if(opts.providerPaymentId.startsWith('invoice:')&&opts.invoiceId&&opts.service?.id){
+    const recent=await supabaseJson(`billing_payments?provider=eq.stripe&client_id=eq.${encodeURIComponent(opts.clientId)}&client_service_id=eq.${encodeURIComponent(opts.service.id)}&status=eq.paid&amount=eq.${encodeURIComponent(String(opts.amount))}&order=created_at.desc&limit=5`).catch(()=>[]);
+    const cutoff=Date.now()-15*60*1000;
+    const match=(Array.isArray(recent)?recent:[]).find((p:any)=>{
+      const t=Date.parse(String(p?.created_at||''));
+      const invoiceId=String(p?.invoice_id||'');
+      return Number.isFinite(t)&&t>=cutoff&&(!invoiceId||invoiceId===opts.invoiceId);
+    });
+    if(match){
+      const patched=await supabaseWrite(`billing_payments?id=eq.${encodeURIComponent(match.id)}`,'PATCH',{invoice_id:match.invoice_id||opts.invoiceId,subscription_id:opts.subscriptionId||match.subscription_id||null,description:opts.description||match.description,updated_at:now()}).catch(()=>null);
+      return{payment:patched?.[0]||{...match,invoice_id:match.invoice_id||opts.invoiceId,subscription_id:opts.subscriptionId||match.subscription_id||null,description:opts.description||match.description},isNew:false};
     }
   }
 
