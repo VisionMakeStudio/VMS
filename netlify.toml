@@ -7,13 +7,43 @@
   for = "/*"
   [headers.values]
     X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "SAMEORIGIN"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    Strict-Transport-Security = "max-age=31536000"
+    Content-Security-Policy = "frame-ancestors 'self'; base-uri 'self'; object-src 'none'"
+
+[[headers]]
+  for = "/admin/*"
+  [headers.values]
+    Cache-Control = "no-store, max-age=0"
+    Pragma = "no-cache"
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/portal/*"
+  [headers.values]
+    Cache-Control = "no-store, max-age=0"
+    Pragma = "no-cache"
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/get-started.html"
+  [headers.values]
+    Cache-Control = "no-store, max-age=0"
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Cache-Control = "no-store, max-age=0"
+    X-Robots-Tag = "noindex, nofollow"
 
 [[redirects]]
   from = "/admin"
   to = "/admin/"
   status = 301
+
 [[redirects]]
   from = "/portal"
   to = "/portal/"
