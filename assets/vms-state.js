@@ -12,11 +12,12 @@
   const ADMIN_KEYS=[
     'vms_clients_final_v1','vms_billing_subscriptions_v3','vms_work_admin_v2','vms_work_admin_v1',
     'vms_notifications_activity_v2','vms_notifications_activity_v1','vms_files_assets_v2','vms_files_assets_v1',
-    'vms_linkhub_admin_v2','vms_linkhub_admin_v1','vms_promotions_v2','vms_service_catalog_v2','vms_service_catalog_demo_v1',
+    'vms_linkhub_admin_v2','vms_linkhub_admin_v1','vms_promotions_v2','vms_service_catalog_v2',
     'vms_phase3_history_v1','vms_phase3_current_v1','vms_phase5_requests_v1','vms_qr_saved_library_v3',
     'vms_qr_tools_v4','vms_qr_tools_final_v1','vms_qr_codes_v1','vms_saved_qrs_v1'
   ];
   const CLIENT_KEYS=['vms_client_portal_v4','vms_client_bridge_v1'];
+  const LEGACY_QA_MARKER='VMS Phase 12 QA';
 
   function localGet(k){return nativeGet.call(localStorage,k)}
   function localSet(k,v){suppress=true;try{nativeSet.call(localStorage,k,v)}finally{suppress=false}}
@@ -37,8 +38,21 @@
     return cleared;
   }
 
+  function purgeLegacyQaClientState(){
+    let cleared=false;
+    for(const key of CLIENT_KEYS){
+      const value=localGet(key);
+      if(value!=null&&String(value).includes(LEGACY_QA_MARKER)){localRemove(key);cleared=true}
+    }
+    if(cleared){
+      for(const key of Object.keys(sessionStorage)){if(key.startsWith('vms_state_hydrated_client:'))sessionStorage.removeItem(key)}
+    }
+    return cleared;
+  }
+
   async function upsert(key,value){
     if(!isHosted||!scope||!keys.has(key)||!validConfig())return;
+    if(scope.startsWith('client:')&&String(value).includes(LEGACY_QA_MARKER)){localRemove(key);return}
     const client=await sb();if(!client)return;
     let payload;try{payload=JSON.parse(value)}catch{payload=value}
     const {error}=await client.from('workspace_state').upsert({scope,state_key:key,payload,owner_email:userEmail||null,updated_at:new Date().toISOString()},{onConflict:'scope,state_key'});
@@ -61,8 +75,10 @@
       const row=cloud.get(key),local=localGet(key);
       if(row){
         const serialized=typeof row.payload==='string'?row.payload:JSON.stringify(row.payload);
+        if(scope.startsWith('client:')&&serialized.includes(LEGACY_QA_MARKER)){localRemove(key);continue}
         if(local!==serialized){localSet(key,serialized);changed=true}
       }else if(local!=null){
+        if(scope.startsWith('client:')&&String(local).includes(LEGACY_QA_MARKER)){localRemove(key);continue}
         await upsert(key,local);
       }
     }
@@ -72,7 +88,7 @@
     const user=opts.user||null;
     userEmail=String(opts.email||user?.email||'').toLowerCase();
     const isAdmin=opts.scope==='admin';
-    if(!isAdmin)protectClientOwner(userEmail);
+    if(!isAdmin){protectClientOwner(userEmail);purgeLegacyQaClientState()}
     scope=isAdmin?'admin':`client:${userEmail||'preview'}`;
     keys=new Set(opts.keys||(isAdmin?ADMIN_KEYS:CLIENT_KEYS));
     installPatch();
