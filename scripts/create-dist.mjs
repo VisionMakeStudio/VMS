@@ -65,4 +65,30 @@ const htmlCleanups=new Map([
 ]);
 for(const [relative,replacements] of htmlCleanups){const file=path.join(dist,relative);if(!fs.existsSync(file))continue;let html=fs.readFileSync(file,'utf8');for(const [from,to] of replacements)html=html.replaceAll(from,to);fs.writeFileSync(file,html)}
 
+/* Phase 12E: final Admin privacy + stale production-state cleanup.
+   The source config previously contained a trusted-tab visual shortcut that could
+   remove vms-auth-pending before Supabase re-verified Admin role/MFA. Production
+   must stay privacy-gated until VMSAuth.requireSession() finishes successfully. */
+for(const relative of ['config.js','assets/config.js']){
+  const file=path.join(dist,relative);
+  if(!fs.existsSync(file))throw new Error(`Phase 12E config target missing: ${relative}`);
+  let code=fs.readFileSync(file,'utf8');
+  const startMarker='/*\n  VMS Admin trusted-tab visual gate';
+  const endMarker='/* LinkHub live publishing/share/social-icon layer. */';
+  const start=code.indexOf(startMarker);
+  const end=code.indexOf(endMarker);
+  if(start>=0&&end>start)code=code.slice(0,start)+code.slice(end);
+  if(code.includes('vms_admin_visual_trust_until'))throw new Error(`Phase 12E failed to remove Admin trusted-tab shortcut from ${relative}`);
+  fs.writeFileSync(file,code);
+}
+
+/* Stop syncing the retired demo catalog state key into production cloud state.
+   This does not delete or alter the live service catalog. */
+const stateFile=path.join(dist,'assets','vms-state.js');
+if(!fs.existsSync(stateFile))throw new Error('Phase 12E state bridge target missing: assets/vms-state.js');
+let stateCode=fs.readFileSync(stateFile,'utf8');
+stateCode=stateCode.replaceAll(",'vms_service_catalog_demo_v1'","");
+if(stateCode.includes('vms_service_catalog_demo_v1'))throw new Error('Phase 12E failed to remove retired demo catalog state key');
+fs.writeFileSync(stateFile,stateCode);
+
 console.log(`VMS publish directory created: ${dist}`);

@@ -37,4 +37,16 @@ if(!home.includes('href="services.html"'))failures.push('published homepage is n
 if(!home.includes("btn.href='get-started.html?service='+encodeURIComponent(s.id)"))failures.push('published homepage selected-service Get Started hook missing');
 
 for(const forbidden of ['README.md','package.json','supabase','scripts','types','qa'])if(fs.existsSync(path.join(root,forbidden)))failures.push(`private/source artifact leaked into dist: ${forbidden}`);
+
+/* Phase 12E launch assertions: published Admin config must never bypass
+   the privacy gate before VMSAuth finishes the real session/role/MFA check. */
+for(const relative of ['config.js','assets/config.js']){
+  const file=path.join(root,relative);
+  if(!fs.existsSync(file))continue;
+  const code=fs.readFileSync(file,'utf8');
+  if(code.includes('vms_admin_visual_trust_until'))failures.push(`${relative}: Admin trusted-tab early-unhide shortcut leaked into production`);
+}
+const publishedState=path.join(root,'assets','vms-state.js');
+if(fs.existsSync(publishedState)&&fs.readFileSync(publishedState,'utf8').includes('vms_service_catalog_demo_v1'))failures.push('assets/vms-state.js: retired demo catalog state key leaked into production');
+
 const report={ok:!failures.length,checkedAt:new Date().toISOString(),stats,failures};fs.mkdirSync(path.join(project,'qa'),{recursive:true});fs.writeFileSync(path.join(project,'qa','dist-validation.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));if(failures.length)process.exit(1);
