@@ -1,286 +1,33 @@
 import type { Config } from "@netlify/functions";
-import {
-  billingEnv,
-  dollars,
-  jsonError,
-  stripeRequest,
-  supabaseJson,
-  supabaseWrite,
-  unixToIso,
-} from "./_shared/billing.mts";
+import { billingEnv, dollars, jsonError, stripeRequest, supabaseJson, supabaseWrite, unixToIso } from "./_shared/billing.mts";
 
-const encoder = new TextEncoder();
+const encoder=new TextEncoder();
+const now=()=>new Date().toISOString();
+const money=(v:any,c='USD')=>{try{return new Intl.NumberFormat('en-US',{style:'currency',currency:String(c||'USD').toUpperCase()}).format(Number(v)||0)}catch{return `$${Number(v||0).toFixed(2)}`}};
+function timingSafeEqualHex(a:string,b:string){if(a.length!==b.length)return false;let diff=0;for(let i=0;i<a.length;i++)diff|=a.charCodeAt(i)^b.charCodeAt(i);return diff===0}
+async function hmacHex(secret:string,value:string){const key=await crypto.subtle.importKey('raw',encoder.encode(secret),{name:'HMAC',hash:'SHA-256'},false,['sign']);const sig=await crypto.subtle.sign('HMAC',key,encoder.encode(value));return Array.from(new Uint8Array(sig)).map(b=>b.toString(16).padStart(2,'0')).join('')}
+async function verifyStripeSignature(raw:string,header:string,secret:string){const parts=header.split(',').map(x=>x.trim()),timestamp=parts.find(x=>x.startsWith('t='))?.slice(2)||'',signatures=parts.filter(x=>x.startsWith('v1=')).map(x=>x.slice(3)),time=Number(timestamp);if(!time||!signatures.length||Math.abs(Math.floor(Date.now()/1000)-time)>300)return false;const expected=await hmacHex(secret,`${timestamp}.${raw}`);return signatures.some(sig=>timingSafeEqualHex(expected,sig))}
+function subPeriod(s:any){const i=s?.items?.data?.[0];return{start:unixToIso(i?.current_period_start??s?.current_period_start),end:unixToIso(i?.current_period_end??s?.current_period_end)}}
+function subAmount(s:any){const i=s?.items?.data?.[0];return dollars(i?.price?.unit_amount??i?.plan?.amount??0)}
+function subCadence(s:any){const i=s?.items?.data?.[0],interval=i?.price?.recurring?.interval||i?.plan?.interval||'month';return interval==='year'?'Annual':'Monthly'}
+function invoiceSubscriptionId(i:any){return i?.parent?.type==='subscription_details'?i?.parent?.subscription_details?.subscription||'':i?.subscription||''}
+function invoiceMetadata(i:any){return{...(i?.parent?.subscription_details?.metadata||{}),...(i?.metadata||{})}}
+async function getCatalog(serviceKey:string){if(!serviceKey)return null;const rows=await supabaseJson(`service_catalog?id=eq.${encodeURIComponent(serviceKey)}&select=*&limit=1`);return rows?.[0]||null}
+async function getClient(clientId:string){const rows=await supabaseJson(`clients?id=eq.${encodeURIComponent(clientId)}&select=*&limit=1`);return rows?.[0]||null}
+async function queue(ruleKey:string,clientId:string,sourceType:string,sourceId:string,subject:string,message:string,metadata:any={}){return supabaseWrite('automation_event_queue','POST',{rule_key:ruleKey,event_key:`${ruleKey}:${sourceType}:${sourceId}`,client_id:clientId,source_type:sourceType,source_id:sourceId,subject,message,needs_action:false,metadata,status:'pending',next_attempt_at:now(),updated_at:now()},'return=minimal').catch(()=>null)}
 
-function timingSafeEqualHex(a: string, b: string) {
-  if (a.length !== b.length) return false;
-  let diff = 0;
-  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  return diff === 0;
-}
+async function ensureClientService(clientId:string,serviceKey:string,serviceName:string,amount:number,cadence:string|null,billingStatus:string,preferredId=''){let rows:any[]=[];if(preferredId)rows=await supabaseJson(`client_services?id=eq.${encodeURIComponent(preferredId)}&client_id=eq.${encodeURIComponent(clientId)}&select=*&limit=1`);if(!rows?.[0])rows=await supabaseJson(`client_services?client_id=eq.${encodeURIComponent(clientId)}&service_key=eq.${encodeURIComponent(serviceKey)}&select=*&limit=1`);const active=['active','trialing','paid'].includes(billingStatus);if(rows?.[0]){const current=rows[0],updated=await supabaseWrite(`client_services?id=eq.${encodeURIComponent(current.id)}`,'PATCH',{service_name:serviceName||current.service_name,service_status:active?'active':billingStatus==='canceled'?'canceled':current.service_status||'pending',billing_status:billingStatus,agreed_price:amount||current.agreed_price,billing_cadence:cadence||current.billing_cadence,price_locked:true,start_date:active?(current.start_date||new Date().toISOString().slice(0,10)):current.start_date,metadata:{...(current.metadata||{}),testAccess:false,payment_required:!active,billingProvider:'stripe'},updated_at:now()});return updated?.[0]||current}const inserted=await supabaseWrite('client_services','POST',{client_id:clientId,service_key:serviceKey,service_name:serviceName||serviceKey,service_status:active?'active':'pending',billing_status:billingStatus,catalog_service_id:serviceKey,agreed_price:amount||null,billing_cadence:cadence||null,price_locked:true,metadata:{billingProvider:'stripe',payment_required:!active},start_date:active?new Date().toISOString().slice(0,10):null,updated_at:now()});return inserted?.[0]||inserted}
 
-async function hmacHex(secret: string, value: string) {
-  const key = await crypto.subtle.importKey("raw", encoder.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
-  const sig = await crypto.subtle.sign("HMAC", key, encoder.encode(value));
-  return Array.from(new Uint8Array(sig)).map((b) => b.toString(16).padStart(2, "0")).join("");
-}
+async function maybeCreateJob(clientId:string,service:any){const catalog=await getCatalog(service.service_key),family=String(catalog?.metadata?.family||service?.metadata?.family||'').toLowerCase(),auto=new Set(['audit','website','local','reviews','package','bundle']);if(!auto.has(family)&&catalog?.metadata?.optionalLabor!==true)return null;const existing=await supabaseJson(`service_jobs?client_id=eq.${encodeURIComponent(clientId)}&catalog_service_id=eq.${encodeURIComponent(service.service_key)}&source=eq.billing&status=not.eq.canceled&select=id&limit=1`).catch(()=>[]);if(existing?.[0])return existing[0];const client=await getClient(clientId);const rows=await supabaseWrite('service_jobs','POST',{client_id:clientId,catalog_service_id:service.service_key,service_name:service.service_name,title:`${service.service_name} · ${client?.business_name||'VMS Client'}`,status:'draft',priority:'normal',timezone:'America/New_York',location_type:'remote',client_visible:true,source:'billing',internal_notes:'Created automatically after payment confirmation.'});return rows?.[0]||null}
 
-async function verifyStripeSignature(raw: string, header: string, secret: string) {
-  const parts = header.split(",").map((x) => x.trim());
-  const timestamp = parts.find((x) => x.startsWith("t="))?.slice(2) || "";
-  const signatures = parts.filter((x) => x.startsWith("v1=")).map((x) => x.slice(3));
-  const time = Number(timestamp);
-  if (!time || !signatures.length) return false;
-  if (Math.abs(Math.floor(Date.now() / 1000) - time) > 300) return false;
-  const expected = await hmacHex(secret, `${timestamp}.${raw}`);
-  return signatures.some((sig) => timingSafeEqualHex(expected, sig));
-}
+async function recordPayment(opts:{clientId:string,service:any,invoiceId?:string|null,subscriptionId?:string|null,providerPaymentId:string,amount:number,currency:string,description:string,method?:string}){const existing=await supabaseJson(`billing_payments?provider=eq.stripe&provider_payment_id=eq.${encodeURIComponent(opts.providerPaymentId)}&select=*&limit=1`).catch(()=>[]);if(existing?.[0]){const p=existing[0];if((opts.invoiceId&&!p.invoice_id)||(opts.subscriptionId&&!p.subscription_id))await supabaseWrite(`billing_payments?id=eq.${encodeURIComponent(p.id)}`,'PATCH',{invoice_id:opts.invoiceId||p.invoice_id,subscription_id:opts.subscriptionId||p.subscription_id,updated_at:now()},'return=minimal').catch(()=>null);return{payment:p,isNew:false}}const rows=await supabaseWrite('billing_payments','POST',{client_id:opts.clientId,client_service_id:opts.service?.id||null,invoice_id:opts.invoiceId||null,subscription_id:opts.subscriptionId||null,provider:'stripe',provider_payment_id:opts.providerPaymentId,amount:opts.amount,currency:opts.currency,status:'paid',method:opts.method||'Card',description:opts.description,paid_at:now(),metadata:{service_key:opts.service?.service_key||null,service_name:opts.service?.service_name||null},updated_at:now()});return{payment:rows?.[0],isNew:true}}
+async function announcePayment(clientId:string,service:any,payment:any){if(!payment)return;await maybeCreateJob(clientId,service);await queue('payment_received',clientId,'billing_payment',payment.id,`Payment received · ${service.service_name}`,`${money(payment.amount,payment.currency)} received for ${service.service_name}. The VMS service is now active.`,{payment_id:payment.id,amount:payment.amount,currency:payment.currency,service_key:service.service_key,method:payment.method||'Card'})}
 
-function subPeriod(subscription: any) {
-  const item = subscription?.items?.data?.[0];
-  return {
-    start: unixToIso(item?.current_period_start ?? subscription?.current_period_start),
-    end: unixToIso(item?.current_period_end ?? subscription?.current_period_end),
-  };
-}
+async function syncSubscription(subscription:any){const m=subscription?.metadata||{},clientId=String(m.client_id||''),serviceKey=String(m.service_key||'');if(!clientId||!serviceKey)return null;const cat=await getCatalog(serviceKey),amount=subAmount(subscription)||Number(m.service_amount||cat?.recurring_price||0),cadence=subCadence(subscription)||cat?.cadence||'Monthly',status=String(subscription.status||'incomplete'),service=await ensureClientService(clientId,serviceKey,String(m.service_name||cat?.name||serviceKey),amount,cadence,status,String(m.client_service_id||'')),period=subPeriod(subscription),existing=await supabaseJson(`billing_subscriptions?provider_subscription_id=eq.${encodeURIComponent(subscription.id)}&select=id&limit=1`),payload={client_id:clientId,client_service_id:service?.id||null,provider:'stripe',provider_customer_id:typeof subscription.customer==='string'?subscription.customer:subscription.customer?.id||null,provider_subscription_id:subscription.id,status,amount,currency:String(subscription.currency||'usd').toUpperCase(),cadence,current_period_start:period.start,current_period_end:period.end,cancel_at_period_end:!!subscription.cancel_at_period_end,canceled_at:unixToIso(subscription.canceled_at||subscription.ended_at),metadata:{service_key:serviceKey,service_name:m.service_name||cat?.name||serviceKey},updated_at:now()};let subRow:any;if(existing?.[0]){const r=await supabaseWrite(`billing_subscriptions?id=eq.${encodeURIComponent(existing[0].id)}`,'PATCH',payload);subRow=r?.[0]}else{const r=await supabaseWrite('billing_subscriptions','POST',payload);subRow=r?.[0]}await supabaseWrite(`client_services?id=eq.${encodeURIComponent(service?.id||'')}`,'PATCH',{billing_status:status,service_status:['active','trialing'].includes(status)?'active':status==='canceled'?'canceled':service?.service_status||'pending',metadata:{...(service?.metadata||{}),payment_required:!['active','trialing'].includes(status)},updated_at:now()},'return=minimal').catch(()=>{});return{service,subscription:subRow,clientId}}
 
-function subAmount(subscription: any) {
-  const item = subscription?.items?.data?.[0];
-  const unit = item?.price?.unit_amount ?? item?.plan?.amount ?? 0;
-  return dollars(unit);
-}
+async function syncInvoice(invoice:any){const m=invoiceMetadata(invoice);let clientId=String(m.client_id||''),subscriptionProviderId=invoiceSubscriptionId(invoice),subscriptionId:string|null=null,clientServiceId=String(m.client_service_id||''),serviceKey=String(m.service_key||'');if(subscriptionProviderId){const rows=await supabaseJson(`billing_subscriptions?provider_subscription_id=eq.${encodeURIComponent(subscriptionProviderId)}&select=id,client_id,client_service_id,metadata&limit=1`);if(rows?.[0]){subscriptionId=rows[0].id;if(!clientId)clientId=rows[0].client_id;if(!clientServiceId)clientServiceId=rows[0].client_service_id||'';if(!serviceKey)serviceKey=rows[0].metadata?.service_key||''}}if(!clientId&&invoice.customer){const customerId=typeof invoice.customer==='string'?invoice.customer:invoice.customer?.id,rows=await supabaseJson(`billing_customers?provider_customer_id=eq.${encodeURIComponent(customerId)}&select=client_id&limit=1`);if(rows?.[0])clientId=rows[0].client_id}if(!clientId)return null;let service:any=null;if(clientServiceId){const rows=await supabaseJson(`client_services?id=eq.${encodeURIComponent(clientServiceId)}&select=*&limit=1`);service=rows?.[0]||null}if(!service&&serviceKey){const rows=await supabaseJson(`client_services?client_id=eq.${encodeURIComponent(clientId)}&service_key=eq.${encodeURIComponent(serviceKey)}&select=*&limit=1`);service=rows?.[0]||null}const existing=await supabaseJson(`billing_invoices?provider_invoice_id=eq.${encodeURIComponent(invoice.id)}&select=id&limit=1`),status=String(invoice.status||(invoice.paid?'paid':'open')),payload={client_id:clientId,client_service_id:service?.id||null,service_key:serviceKey||service?.service_key||null,subscription_id:subscriptionId,provider:'stripe',provider_invoice_id:invoice.id,invoice_number:invoice.number||null,status,amount_due:dollars(invoice.amount_due||0),amount_paid:dollars(invoice.amount_paid||0),currency:String(invoice.currency||'usd').toUpperCase(),issued_at:unixToIso(invoice.created),due_at:unixToIso(invoice.due_date),paid_at:unixToIso(invoice.status_transitions?.paid_at),hosted_invoice_url:invoice.hosted_invoice_url||null,invoice_pdf_url:invoice.invoice_pdf||null,metadata:{service_key:serviceKey||null,service_name:m.service_name||service?.service_name||null,billing_reason:invoice.billing_reason||null},updated_at:now()};let saved:any;if(existing?.[0]){const r=await supabaseWrite(`billing_invoices?id=eq.${encodeURIComponent(existing[0].id)}`,'PATCH',payload);saved=r?.[0]}else{const r=await supabaseWrite('billing_invoices','POST',payload);saved=r?.[0]}if(status==='paid'&&service){const cat=await getCatalog(service.service_key),amount=Number(service.agreed_price||(/recurring/i.test(String(cat?.pricing_model||''))?cat?.recurring_price:cat?.one_time_price)||0);service=await ensureClientService(clientId,service.service_key,service.service_name,amount,service.billing_cadence,'paid',service.id);const providerPaymentId=String(invoice.payment_intent||invoice?.payments?.data?.[0]?.payment?.payment_intent||`invoice:${invoice.id}`),rec=await recordPayment({clientId,service,invoiceId:saved?.id||null,subscriptionId,providerPaymentId,amount:dollars(invoice.amount_paid||0),currency:String(invoice.currency||'usd').toUpperCase(),description:`${service.service_name} · ${invoice.number||'Stripe invoice'}`});if(rec.isNew)await announcePayment(clientId,service,rec.payment)}return{invoice:saved,service,clientId}}
 
-function subCadence(subscription: any) {
-  const item = subscription?.items?.data?.[0];
-  const interval = item?.price?.recurring?.interval || item?.plan?.interval || "month";
-  return interval === "year" ? "Annual" : "Monthly";
-}
+async function syncCheckout(session:any){const m=session?.metadata||{},clientId=String(m.client_id||session.client_reference_id||''),serviceKey=String(m.service_key||'');if(!clientId||!serviceKey)return;await supabaseWrite(`billing_checkout_sessions?provider_session_id=eq.${encodeURIComponent(session.id)}`,'PATCH',{status:session.status||(session.payment_status==='paid'?'complete':'open'),provider_subscription_id:typeof session.subscription==='string'?session.subscription:session.subscription?.id||null,completed_at:now(),updated_at:now()}).catch(()=>{});const customerId=typeof session.customer==='string'?session.customer:session.customer?.id||null;if(customerId)await supabaseWrite('billing_customers?on_conflict=client_id','POST',{client_id:clientId,provider:'stripe',provider_customer_id:customerId,email:session.customer_details?.email||null,metadata:{last_checkout_session_id:session.id},updated_at:now()},'resolution=merge-duplicates,return=minimal').catch(()=>{});if(session.mode==='subscription'&&session.subscription){const subId=typeof session.subscription==='string'?session.subscription:session.subscription.id,subscription=await stripeRequest(`subscriptions/${encodeURIComponent(subId)}`,undefined,'GET');await syncSubscription(subscription)}else if(session.mode==='payment'&&session.payment_status==='paid'){const cat=await getCatalog(serviceKey),amount=Number(m.service_amount||cat?.one_time_price||0),service=await ensureClientService(clientId,serviceKey,String(m.service_name||cat?.name||serviceKey),amount,null,'paid',String(m.client_service_id||'')),providerPaymentId=String(session.payment_intent||`checkout:${session.id}`),rec=await recordPayment({clientId,service,providerPaymentId,amount:dollars(session.amount_total||Math.round((amount+Number(m.activation_fee||0))*100)),currency:String(session.currency||'usd').toUpperCase(),description:`${service.service_name} · Stripe Checkout`});if(rec.isNew)await announcePayment(clientId,service,rec.payment)}}
 
-function invoiceSubscriptionId(invoice: any) {
-  return invoice?.parent?.type === "subscription_details"
-    ? invoice?.parent?.subscription_details?.subscription || ""
-    : invoice?.subscription || "";
-}
-
-function invoiceMetadata(invoice: any) {
-  return {
-    ...(invoice?.parent?.subscription_details?.metadata || {}),
-    ...(invoice?.metadata || {}),
-  };
-}
-
-async function getCatalog(serviceKey: string) {
-  if (!serviceKey) return null;
-  const rows = await supabaseJson(`service_catalog?id=eq.${encodeURIComponent(serviceKey)}&select=id,name,pricing_model,recurring_price,one_time_price,cadence&limit=1`);
-  return Array.isArray(rows) ? rows[0] || null : null;
-}
-
-async function ensureClientService(clientId: string, serviceKey: string, serviceName: string, amount: number, cadence: string | null, billingStatus: string) {
-  const rows = await supabaseJson(`client_services?client_id=eq.${encodeURIComponent(clientId)}&service_key=eq.${encodeURIComponent(serviceKey)}&select=*&limit=1`);
-  if (Array.isArray(rows) && rows[0]) {
-    const current = rows[0];
-    const updated = await supabaseWrite(`client_services?id=eq.${encodeURIComponent(current.id)}`, "PATCH", {
-      service_name: serviceName || current.service_name,
-      service_status: ['active','trialing','paid'].includes(billingStatus) ? 'active' : current.service_status,
-      billing_status: billingStatus,
-      agreed_price: amount || current.agreed_price,
-      billing_cadence: cadence || current.billing_cadence,
-      price_locked: true,
-      metadata: { ...(current.metadata || {}), testAccess: false, billingProvider: 'stripe' },
-      updated_at: new Date().toISOString(),
-    });
-    return Array.isArray(updated) ? updated[0] : current;
-  }
-  const inserted = await supabaseWrite("client_services", "POST", {
-    client_id: clientId,
-    service_key: serviceKey,
-    service_name: serviceName || serviceKey,
-    service_status: ['active','trialing','paid'].includes(billingStatus) ? 'active' : 'pending',
-    billing_status: billingStatus,
-    catalog_service_id: serviceKey,
-    agreed_price: amount || null,
-    billing_cadence: cadence || null,
-    price_locked: true,
-    metadata: { billingProvider: 'stripe' },
-    start_date: new Date().toISOString().slice(0,10),
-    updated_at: new Date().toISOString(),
-  });
-  return Array.isArray(inserted) ? inserted[0] : inserted;
-}
-
-async function syncSubscription(subscription: any) {
-  const metadata = subscription?.metadata || {};
-  const clientId = String(metadata.client_id || "");
-  const serviceKey = String(metadata.service_key || "");
-  if (!clientId || !serviceKey) return;
-  const cat = await getCatalog(serviceKey);
-  const amount = subAmount(subscription) || Number(metadata.service_amount || cat?.recurring_price || 0);
-  const cadence = subCadence(subscription) || cat?.cadence || 'Monthly';
-  const status = String(subscription.status || 'incomplete');
-  const service = await ensureClientService(clientId, serviceKey, String(metadata.service_name || cat?.name || serviceKey), amount, cadence, status);
-  const period = subPeriod(subscription);
-  const existing = await supabaseJson(`billing_subscriptions?provider_subscription_id=eq.${encodeURIComponent(subscription.id)}&select=id&limit=1`);
-  const payload = {
-    client_id: clientId,
-    client_service_id: service?.id || null,
-    provider: 'stripe',
-    provider_customer_id: typeof subscription.customer === 'string' ? subscription.customer : subscription.customer?.id || null,
-    provider_subscription_id: subscription.id,
-    status,
-    amount,
-    currency: String(subscription.currency || 'usd').toUpperCase(),
-    cadence,
-    current_period_start: period.start,
-    current_period_end: period.end,
-    cancel_at_period_end: !!subscription.cancel_at_period_end,
-    canceled_at: unixToIso(subscription.canceled_at || subscription.ended_at),
-    metadata: { service_key: serviceKey, service_name: metadata.service_name || cat?.name || serviceKey },
-    updated_at: new Date().toISOString(),
-  };
-  if (Array.isArray(existing) && existing[0]) await supabaseWrite(`billing_subscriptions?id=eq.${encodeURIComponent(existing[0].id)}`, 'PATCH', payload);
-  else await supabaseWrite('billing_subscriptions', 'POST', payload);
-
-  await supabaseWrite(`client_services?id=eq.${encodeURIComponent(service?.id || '')}`, 'PATCH', {
-    billing_status: status,
-    service_status: ['active','trialing'].includes(status) ? 'active' : status === 'canceled' ? 'canceled' : service?.service_status || 'pending',
-    updated_at: new Date().toISOString(),
-  }).catch(()=>{});
-}
-
-async function syncInvoice(invoice: any) {
-  const metadata = invoiceMetadata(invoice);
-  let clientId = String(metadata.client_id || "");
-  const subscriptionProviderId = invoiceSubscriptionId(invoice);
-  let subscriptionId: string | null = null;
-  if (subscriptionProviderId) {
-    const rows = await supabaseJson(`billing_subscriptions?provider_subscription_id=eq.${encodeURIComponent(subscriptionProviderId)}&select=id,client_id&limit=1`);
-    if (Array.isArray(rows) && rows[0]) {
-      subscriptionId = rows[0].id;
-      if (!clientId) clientId = rows[0].client_id;
-    }
-  }
-  if (!clientId && invoice.customer) {
-    const customerId = typeof invoice.customer === 'string' ? invoice.customer : invoice.customer?.id;
-    const rows = await supabaseJson(`billing_customers?provider_customer_id=eq.${encodeURIComponent(customerId)}&select=client_id&limit=1`);
-    if (Array.isArray(rows) && rows[0]) clientId = rows[0].client_id;
-  }
-  if (!clientId) return;
-
-  const existing = await supabaseJson(`billing_invoices?provider_invoice_id=eq.${encodeURIComponent(invoice.id)}&select=id&limit=1`);
-  const status = String(invoice.status || (invoice.paid ? 'paid' : 'open'));
-  const payload = {
-    client_id: clientId,
-    subscription_id: subscriptionId,
-    provider: 'stripe',
-    provider_invoice_id: invoice.id,
-    invoice_number: invoice.number || null,
-    status,
-    amount_due: dollars(invoice.amount_due || 0),
-    amount_paid: dollars(invoice.amount_paid || 0),
-    currency: String(invoice.currency || 'usd').toUpperCase(),
-    issued_at: unixToIso(invoice.created),
-    due_at: unixToIso(invoice.due_date),
-    paid_at: unixToIso(invoice.status_transitions?.paid_at),
-    hosted_invoice_url: invoice.hosted_invoice_url || null,
-    invoice_pdf_url: invoice.invoice_pdf || null,
-    metadata: {
-      service_key: metadata.service_key || null,
-      service_name: metadata.service_name || null,
-      billing_reason: invoice.billing_reason || null,
-    },
-    updated_at: new Date().toISOString(),
-  };
-  if (Array.isArray(existing) && existing[0]) await supabaseWrite(`billing_invoices?id=eq.${encodeURIComponent(existing[0].id)}`, 'PATCH', payload);
-  else await supabaseWrite('billing_invoices', 'POST', payload);
-}
-
-async function syncCheckout(session: any) {
-  const metadata = session?.metadata || {};
-  const clientId = String(metadata.client_id || session.client_reference_id || '');
-  const serviceKey = String(metadata.service_key || '');
-  if (!clientId || !serviceKey) return;
-  await supabaseWrite(`billing_checkout_sessions?provider_session_id=eq.${encodeURIComponent(session.id)}`, 'PATCH', {
-    status: session.status || (session.payment_status === 'paid' ? 'complete' : 'open'),
-    provider_subscription_id: typeof session.subscription === 'string' ? session.subscription : session.subscription?.id || null,
-    completed_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  }).catch(()=>{});
-
-  const customerId = typeof session.customer === 'string' ? session.customer : session.customer?.id || null;
-  if (customerId) {
-    await supabaseWrite('billing_customers?on_conflict=client_id', 'POST', {
-      client_id: clientId,
-      provider: 'stripe',
-      provider_customer_id: customerId,
-      email: session.customer_details?.email || null,
-      metadata: { last_checkout_session_id: session.id },
-      updated_at: new Date().toISOString(),
-    }, 'resolution=merge-duplicates,return=minimal').catch(()=>{});
-  }
-
-  if (session.mode === 'subscription' && session.subscription) {
-    const subId = typeof session.subscription === 'string' ? session.subscription : session.subscription.id;
-    const subscription = await stripeRequest(`subscriptions/${encodeURIComponent(subId)}`, undefined, 'GET');
-    await syncSubscription(subscription);
-  } else if (session.mode === 'payment' && session.payment_status === 'paid') {
-    const cat = await getCatalog(serviceKey);
-    const amount = Number(metadata.service_amount || cat?.one_time_price || 0);
-    await ensureClientService(clientId, serviceKey, String(metadata.service_name || cat?.name || serviceKey), amount, null, 'paid');
-  }
-}
-
-export default async (req: Request) => {
-  if (req.method !== 'POST') return Response.json({ error: 'Method not allowed.' }, { status: 405 });
-  try {
-    const cfg = billingEnv();
-    if (!cfg.stripeWebhookSecret) throw Object.assign(new Error('Stripe webhook secret is not configured.'), { status: 503 });
-    const raw = await req.text();
-    const signature = req.headers.get('stripe-signature') || '';
-    if (!(await verifyStripeSignature(raw, signature, cfg.stripeWebhookSecret))) {
-      return Response.json({ error: 'Invalid Stripe signature.' }, { status: 400 });
-    }
-    const event = JSON.parse(raw);
-    const seen = await supabaseJson(`billing_events?provider_event_id=eq.${encodeURIComponent(event.id)}&select=provider_event_id&limit=1`);
-    if (Array.isArray(seen) && seen[0]) return Response.json({ received: true, duplicate: true });
-
-    const object = event?.data?.object || {};
-    switch (event.type) {
-      case 'checkout.session.completed':
-      case 'checkout.session.async_payment_succeeded':
-        await syncCheckout(object);
-        break;
-      case 'customer.subscription.created':
-      case 'customer.subscription.updated':
-      case 'customer.subscription.deleted':
-      case 'customer.subscription.paused':
-      case 'customer.subscription.resumed':
-        await syncSubscription(object);
-        break;
-      case 'invoice.created':
-      case 'invoice.finalized':
-      case 'invoice.paid':
-      case 'invoice.payment_failed':
-      case 'invoice.voided':
-      case 'invoice.marked_uncollectible':
-        await syncInvoice(object);
-        break;
-      default:
-        break;
-    }
-
-    await supabaseWrite('billing_events', 'POST', {
-      provider_event_id: event.id,
-      provider: 'stripe',
-      event_type: event.type,
-      object_id: object?.id || null,
-      livemode: !!event.livemode,
-      metadata: { request_id: event?.request?.id || null },
-      processed_at: new Date().toISOString(),
-    }, 'return=minimal').catch(()=>{});
-
-    return Response.json({ received: true });
-  } catch (error) {
-    return jsonError(error);
-  }
-};
-
-export const config: Config = { path: '/api/stripe-webhook' };
+export default async(req:Request)=>{if(req.method!=='POST')return Response.json({error:'Method not allowed.'},{status:405});try{const cfg=billingEnv();if(!cfg.stripeWebhookSecret)throw Object.assign(new Error('Stripe webhook secret is not configured.'),{status:503});const raw=await req.text(),signature=req.headers.get('stripe-signature')||'';if(!(await verifyStripeSignature(raw,signature,cfg.stripeWebhookSecret)))return Response.json({error:'Invalid Stripe signature.'},{status:400});const event=JSON.parse(raw),seen=await supabaseJson(`billing_events?provider_event_id=eq.${encodeURIComponent(event.id)}&select=provider_event_id&limit=1`);if(seen?.[0])return Response.json({received:true,duplicate:true});const object=event?.data?.object||{};switch(event.type){case'checkout.session.completed':case'checkout.session.async_payment_succeeded':await syncCheckout(object);break;case'customer.subscription.created':case'customer.subscription.updated':case'customer.subscription.deleted':case'customer.subscription.paused':case'customer.subscription.resumed':await syncSubscription(object);break;case'invoice.created':case'invoice.finalized':case'invoice.paid':case'invoice.payment_failed':case'invoice.voided':case'invoice.marked_uncollectible':await syncInvoice(object);break;default:break}await supabaseWrite('billing_events','POST',{provider_event_id:event.id,provider:'stripe',event_type:event.type,object_id:object?.id||null,livemode:!!event.livemode,metadata:{request_id:event?.request?.id||null},processed_at:now()},'return=minimal').catch(()=>{});return Response.json({received:true})}catch(error){return jsonError(error)}};
+export const config:Config={path:'/api/stripe-webhook'};

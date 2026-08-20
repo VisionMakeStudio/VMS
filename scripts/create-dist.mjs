@@ -19,63 +19,36 @@ for(const item of ['index.html','services.html','get-started.html','404.html','r
 const homepage=path.join(dist,'index.html');
 if(fs.existsSync(homepage)){
   let html=fs.readFileSync(homepage,'utf8');
-
   html=html.replaceAll('href="#services"','href="services.html"');
-
   const oldServiceHook="const btn=document.getElementById('serviceRequestBtn');btn.textContent=s.salesMode==='Buy Now'?'Get Started':'Request This Service';serviceModal.classList.add('show')";
   const newServiceHook="const btn=document.getElementById('serviceRequestBtn');btn.textContent=s.salesMode==='Buy Now'?'Get Started':'Request This Service';btn.href='get-started.html?service='+encodeURIComponent(s.id);serviceModal.classList.add('show')";
-
-  if(!html.includes(oldServiceHook)){
-    throw new Error('Phase 9 homepage service CTA hook was not found.');
-  }
-
+  if(!html.includes(oldServiceHook))throw new Error('Phase 9 homepage service CTA hook was not found.');
   html=html.replace(oldServiceHook,newServiceHook);
   fs.writeFileSync(homepage,html);
 }
 
-/* Phase 10 privacy hardening. Source pages keep their existing gates; this
-   publish-time safety net protects any Admin/Portal page that is missing one. */
+/* Phase 10 privacy hardening. */
 const privacyGate=String.raw`<script id="vms-phase10-privacy-gate">if(location.protocol!=='file:')document.documentElement.classList.add('vms-auth-pending');</script><style id="vms-phase10-privacy-style">html.vms-auth-pending body{overflow:hidden!important}html.vms-auth-pending body>*{visibility:hidden!important}html.vms-auth-pending body::before{content:'Verifying secure session…';position:fixed;inset:0;z-index:2147483647;display:grid;place-items:center;padding:24px;background:#003049;color:#fff;font:800 14px/1.45 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;visibility:visible!important}</style>`;
+function ensurePrivacyGate(file){if(!fs.existsSync(file))return;let html=fs.readFileSync(file,'utf8');if(html.includes('vms-auth-pending'))return;if(!/<head\b/i.test(html))throw new Error(`Protected page has no <head>: ${path.relative(dist,file)}`);html=html.replace(/<head([^>]*)>/i,`<head$1>${privacyGate}`);fs.writeFileSync(file,html)}
+for(const area of ['admin','portal']){const dir=path.join(dist,area);if(!fs.existsSync(dir))continue;for(const entry of fs.readdirSync(dir,{withFileTypes:true})){if(!entry.isFile()||!entry.name.endsWith('.html'))continue;if(area==='admin'&&entry.name==='login.html')continue;ensurePrivacyGate(path.join(dir,entry.name))}}
 
-function ensurePrivacyGate(file){
-  if(!fs.existsSync(file))return;
-  let html=fs.readFileSync(file,'utf8');
-  if(html.includes('vms-auth-pending'))return;
-  if(!/<head\b/i.test(html))throw new Error(`Protected page has no <head>: ${path.relative(dist,file)}`);
-  html=html.replace(/<head([^>]*)>/i,`<head$1>${privacyGate}`);
-  fs.writeFileSync(file,html);
-}
-
-for(const area of ['admin','portal']){
-  const dir=path.join(dist,area);
-  if(!fs.existsSync(dir))continue;
-  for(const entry of fs.readdirSync(dir,{withFileTypes:true})){
-    if(!entry.isFile()||!entry.name.endsWith('.html'))continue;
-    if(area==='admin'&&entry.name==='login.html')continue;
-    ensurePrivacyGate(path.join(dir,entry.name));
-  }
-}
-
-/* Phase 10 Admin navigation harmonization. Existing page layouts/classes are
-   preserved; missing launch-era destinations are appended at runtime. */
+/* Phase 10 Admin navigation harmonization. */
 const adminNavScript=String.raw`<script id="vms-phase10-admin-nav">(function(){function run(){var nav=document.querySelector('aside.sidebar nav,aside.side nav,aside.sidebar .nav,aside.side .nav');if(!nav)return;var wanted=[['Analytics','analytics.html'],['CRM / Leads','leads.html'],['Sales Content','marketing.html'],['Automations','automations.html'],['Security','security.html']];var current=((location.pathname||'').split('/').filter(Boolean).pop()||'index').replace(/\.html$/i,'').toLowerCase();var existing=new Set(Array.from(nav.querySelectorAll('a[href]')).map(function(a){return (a.getAttribute('href')||'').split('?')[0].split('#')[0].toLowerCase()}));var templateLink=nav.querySelector('a');wanted.forEach(function(item){var label=item[0],href=item[1];if(existing.has(href.toLowerCase())||existing.has('./'+href.toLowerCase()))return;var a=document.createElement('a');a.href=href;a.textContent=label;if(templateLink)a.className=(templateLink.className||'').replace(/\bactive\b/g,'').trim();if(href.replace(/\.html$/i,'').toLowerCase()===current)a.classList.add('active');nav.appendChild(a)});}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else run();})();</script>`;
-
 const adminDir=path.join(dist,'admin');
-if(fs.existsSync(adminDir)){
-  for(const entry of fs.readdirSync(adminDir,{withFileTypes:true})){
-    if(!entry.isFile()||!entry.name.endsWith('.html')||entry.name==='login.html')continue;
-    const file=path.join(adminDir,entry.name);
-    let html=fs.readFileSync(file,'utf8');
-    if(!html.includes('vms-phase10-admin-nav')){
-      if(!/<\/body>/i.test(html))throw new Error(`Admin page has no </body>: ${entry.name}`);
-      html=html.replace(/<\/body>/i,`${adminNavScript}</body>`);
-      fs.writeFileSync(file,html);
-    }
-  }
-}
+if(fs.existsSync(adminDir)){for(const entry of fs.readdirSync(adminDir,{withFileTypes:true})){if(!entry.isFile()||!entry.name.endsWith('.html')||entry.name==='login.html')continue;const file=path.join(adminDir,entry.name);let html=fs.readFileSync(file,'utf8');if(!html.includes('vms-phase10-admin-nav')){if(!/<\/body>/i.test(html))throw new Error(`Admin page has no </body>: ${entry.name}`);html=html.replace(/<\/body>/i,`${adminNavScript}</body>`);fs.writeFileSync(file,html)}}}
 
-/* Phase 10 final-content cleanup. Keep published HTML free of non-production
-   marker words and obsolete local fallback keys without changing page layouts. */
+/* Phase 11: inject the production repair layers without replacing the user's
+   approved source-page layouts. These scripts make Clients/Billing database-first,
+   add Portal payment activation, and repair Audit desktop navigation. */
+const phase11Assets=['vms-audit-desktop-fix.js','vms-admin-clients-live.js','vms-admin-billing-live.js','vms-portal-payments.js'];
+for(const name of phase11Assets){if(!fs.existsSync(path.join(dist,'assets',name)))throw new Error(`Phase 11 repair asset is missing: assets/${name}`)}
+function injectRepair(relative,src,id){const file=path.join(dist,relative);if(!fs.existsSync(file))throw new Error(`Phase 11 target is missing: ${relative}`);let html=fs.readFileSync(file,'utf8');if(html.includes(`id="${id}"`))return;if(!/<\/body>/i.test(html))throw new Error(`Phase 11 target has no </body>: ${relative}`);html=html.replace(/<\/body>/i,`<script id="${id}" src="${src}" defer></script></body>`);fs.writeFileSync(file,html)}
+injectRepair('admin/audit.html','../assets/vms-audit-desktop-fix.js','vms-phase11-audit-fix');
+injectRepair('admin/clients.html','../assets/vms-admin-clients-live.js','vms-phase11-clients-live');
+injectRepair('admin/billing.html','../assets/vms-admin-billing-live.js','vms-phase11-billing-live');
+injectRepair('portal/index.html','../assets/vms-portal-payments.js','vms-phase11-portal-payments');
+
+/* Phase 10 final-content cleanup. */
 const htmlCleanups=new Map([
   ['admin/index.html',[
     ["promos:['vms_promotions_v2','vms_promotions_prototype_v1']","promos:['vms_promotions_v2']"],
@@ -84,20 +57,9 @@ const htmlCleanups=new Map([
     ["return combined.includes('demo ')||combined.includes('demo-')||combined.includes('@example.')||combined.endsWith('.example');","return combined.includes('@example.')||combined.endsWith('.example');"],
     ["function clean(items){return items.filter(item=>item&&!isDemo(item))}","function clean(items){return items.filter(item=>item&&!isNonProduction(item))}"]
   ]],
-  ['admin/audit.html',[
-    ['phase5-demo-btn','phase5-utility-btn']
-  ]],
-  ['admin/analytics.html',[
-    ['No demo data is used.','All metrics come from live production data.']
-  ]]
+  ['admin/audit.html',[["phase5-demo-btn","phase5-utility-btn"]]],
+  ['admin/analytics.html',[["No demo data is used.","All metrics come from live production data."]]]
 ]);
-
-for(const [relative,replacements] of htmlCleanups){
-  const file=path.join(dist,relative);
-  if(!fs.existsSync(file))continue;
-  let html=fs.readFileSync(file,'utf8');
-  for(const [from,to] of replacements)html=html.replaceAll(from,to);
-  fs.writeFileSync(file,html);
-}
+for(const [relative,replacements] of htmlCleanups){const file=path.join(dist,relative);if(!fs.existsSync(file))continue;let html=fs.readFileSync(file,'utf8');for(const [from,to] of replacements)html=html.replaceAll(from,to);fs.writeFileSync(file,html)}
 
 console.log(`VMS publish directory created: ${dist}`);
