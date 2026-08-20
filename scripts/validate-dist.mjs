@@ -24,7 +24,7 @@ else for(const file of walk(root).filter(f=>f.endsWith('.html'))){
   }
 }
 
-const required=['index.html','services.html','get-started.html','404.html','robots.txt','sitemap.xml','config.js','admin/index.html','admin/login.html','admin/service-catalog.html','admin/audit.html','admin/leads.html','admin/automations.html','admin/analytics.html','admin/marketing.html','admin/security.html','portal/index.html','portal/onboarding.html','portal/preferences.html','portal/qr.html','portal/schedule.html','assets/vms-catalog.js','assets/vms-core.js','assets/config.js'];
+const required=['index.html','services.html','get-started.html','404.html','robots.txt','sitemap.xml','config.js','admin/index.html','admin/login.html','admin/service-catalog.html','admin/audit.html','admin/leads.html','admin/automations.html','admin/analytics.html','admin/marketing.html','admin/security.html','portal/index.html','portal/onboarding.html','portal/preferences.html','portal/qr.html','portal/schedule.html','assets/vms-catalog.js','assets/vms-core.js','assets/config.js','assets/vms-audit-ai-live.js'];
 for(const item of required)if(!fs.existsSync(path.join(root,item)))failures.push(`dist missing ${item}`);
 
 const protectedAdmin=['index.html','audit.html','qr.html','clients.html','service-catalog.html','billing.html','promotions.html','projects.html','files.html','activity.html','linkhub.html','leads.html','automations.html','analytics.html','marketing.html','security.html'];
@@ -46,6 +46,9 @@ for(const relative of ['config.js','assets/config.js']){
   const code=fs.readFileSync(file,'utf8');
   if(code.includes('vms_admin_visual_trust_until'))failures.push(`${relative}: Admin trusted-tab early-unhide shortcut leaked into production`);
 }
+
+const publishedAudit=path.join(root,'admin','audit.html');
+if(fs.existsSync(publishedAudit)){const auditHtml=fs.readFileSync(publishedAudit,'utf8');if(!auditHtml.includes('vms-audit-ai-live'))failures.push('admin/audit.html: live Audit AI production layer missing');}
 const publishedState=path.join(root,'assets','vms-state.js');
 if(fs.existsSync(publishedState)&&fs.readFileSync(publishedState,'utf8').includes('vms_service_catalog_demo_v1'))failures.push('assets/vms-state.js: retired demo catalog state key leaked into production');
 
