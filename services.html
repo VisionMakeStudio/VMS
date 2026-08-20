@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#ffffff">
+<meta name="theme-color" content="#003049">
 <title>Services | Vision Make Studio</title>
 <meta name="description" content="Explore Vision Make Studio websites, local presence, reviews, Smart QR, LinkHub, audits, packages and ongoing digital support for NJ, NYC and the Tri-State area.">
 <link rel="canonical" href="https://visionmakestudio.com/services.html">
@@ -23,21 +23,27 @@ html{scroll-behavior:smooth}
 body{margin:0;font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;color:var(--ink);background:#fff;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 a{color:inherit;text-decoration:none}button,input,select,textarea{font:inherit}button{cursor:pointer}.container{width:min(1180px,calc(100% - 40px));margin:auto}
 
-/* Shared public shell */
-.site-header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.88);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid rgba(0,48,73,.08)}
-.header-inner{height:78px;display:flex;align-items:center;gap:28px}
-.brand{display:flex;align-items:center;gap:12px;min-width:0}
-.logo-tile{width:96px;height:48px;border-radius:13px;background:linear-gradient(145deg,var(--navy),var(--deep));display:flex;align-items:center;justify-content:center;padding:5px 9px;box-shadow:0 7px 18px rgba(0,48,73,.17);overflow:hidden;flex:0 0 auto}
-.logo-tile img{display:block;width:100%;height:100%;object-fit:contain}
-.brand-copy{display:grid;gap:1px}.brand-copy strong{font-size:14px;color:var(--navy);letter-spacing:-.02em}.brand-copy span{font-size:9px;color:#81939b;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
-.desktop-nav{margin-left:auto;display:flex;align-items:center;gap:28px;color:#526b77;font-size:14px;font-weight:760}
-.desktop-nav a{position:relative;padding:8px 0}.desktop-nav a:hover,.desktop-nav a.active{color:var(--navy)}
+/* Shared public shell — matched to the VMS homepage */
+.site-header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(0,48,73,.97);
+  border-bottom:1px solid rgba(253,240,213,.08);
+  backdrop-filter:saturate(150%) blur(16px);
+  -webkit-backdrop-filter:saturate(150%) blur(16px);
+}
+.header-inner{height:82px;display:flex;align-items:center;justify-content:space-between;gap:26px}
+.brand{display:flex;align-items:center;min-width:0;flex:0 0 auto}
+.header-logo{display:block;width:132px;height:58px;object-fit:contain;object-position:left center}
+.desktop-nav{margin-left:auto;display:flex;align-items:center;gap:28px;color:rgba(253,240,213,.82);font-size:14px;font-weight:760}
+.desktop-nav a{position:relative;padding:8px 0;transition:color .18s ease,opacity .18s ease}
+.desktop-nav a:hover,.desktop-nav a.active{color:var(--cream)}
 .desktop-nav a.active:after{content:"";position:absolute;left:0;right:0;bottom:-5px;height:2px;border-radius:999px;background:var(--red)}
-.header-actions{display:flex;align-items:center;gap:10px}.portal-link{font-size:13px;font-weight:800;color:var(--navy);padding:11px 13px;border-radius:11px}.portal-link:hover{background:#f4f7f8}
-.header-cta{min-height:42px;padding:0 16px;border-radius:12px;background:var(--navy);color:#fff;font-size:13px;font-weight:850;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(0,48,73,.14)}
-.menu-btn{display:none;width:44px;height:44px;border:1px solid var(--line);background:#fff;color:var(--navy);border-radius:12px;font-size:21px;align-items:center;justify-content:center}
-.mobile-nav{display:none;position:fixed;top:78px;left:0;right:0;background:rgba(255,255,255,.98);z-index:99;padding:12px 20px 22px;border-bottom:1px solid var(--line);box-shadow:0 20px 35px rgba(0,48,73,.08)}
-.mobile-nav.open{display:grid}.mobile-nav a{padding:14px 4px;border-bottom:1px solid var(--line);font-size:15px;font-weight:820;color:var(--navy)}.mobile-nav a:last-child{border:0}
+.header-actions{display:flex;align-items:center;gap:10px}
+.header-cta{min-height:44px;padding:0 17px;border-radius:13px;background:var(--red);color:#fff;font-size:13px;font-weight:880;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 12px 28px rgba(193,18,31,.22);white-space:nowrap;transition:transform .18s ease,box-shadow .18s ease}
+.header-cta:hover{transform:translateY(-1px);box-shadow:0 15px 32px rgba(193,18,31,.28)}
+.menu-btn{display:none;width:46px;height:46px;border:1px solid rgba(253,240,213,.18);background:rgba(253,240,213,.045);color:var(--cream);border-radius:13px;font-size:22px;align-items:center;justify-content:center}
+.mobile-nav{display:none;position:fixed;top:82px;left:0;right:0;background:rgba(0,48,73,.99);z-index:99;padding:14px 20px 22px;border-bottom:1px solid rgba(253,240,213,.10);box-shadow:0 20px 35px rgba(0,48,73,.18)}
+.mobile-nav.open{display:grid}.mobile-nav a{padding:14px 2px;border-bottom:1px solid rgba(253,240,213,.09);font-size:15px;font-weight:820;color:var(--cream)}.mobile-nav a:last-child{border:0}
 
 /* Hero */
 .hero{position:relative;overflow:hidden;background:linear-gradient(180deg,#fff 0%,#fffaf0 100%);border-bottom:1px solid rgba(0,48,73,.06)}
@@ -88,30 +94,47 @@ a{color:inherit;text-decoration:none}button,input,select,textarea{font:inherit}b
 @media(max-width:980px){.desktop-nav{display:none}.header-actions .portal-link{display:none}.menu-btn{display:flex}.grid{grid-template-columns:1fr}.promo-grid,.show-grid,.quote-grid{grid-template-columns:1fr 1fr}.catalog-toolbar{top:78px}.hero-inner{padding:72px 0 66px}.hero p{font-size:17px}.card{min-height:330px}}
 @media(max-width:700px){.container{width:min(100% - 28px,1180px)}.header-inner{height:72px}.mobile-nav{top:72px}.brand-copy{display:none}.logo-tile{width:86px;height:44px}.header-actions .header-cta{display:none}.hero-inner{padding:58px 0 56px}.hero h1{font-size:clamp(44px,13.5vw,62px)}.hero p{font-size:16px}.hero-actions{width:100%}.hero-actions .btn{flex:1;min-width:150px}.catalog-shell{padding-top:18px}.catalog-toolbar{top:72px;align-items:flex-start;flex-direction:column;margin-bottom:24px}.live-note{display:none}.filters{flex-wrap:nowrap;overflow:auto;width:calc(100vw - 14px);padding-right:18px;scrollbar-width:none}.filters::-webkit-scrollbar{display:none}.filter{white-space:nowrap}.section-head{align-items:flex-start;flex-direction:column}.section-head p{font-size:13px}.card{border-radius:20px;padding:21px}.card h3{font-size:25px}.card p{font-size:14px}.card-actions{flex-direction:column}.promo-grid,.show-grid,.quote-grid{grid-template-columns:1fr}.closing-card{padding:30px 24px;align-items:flex-start;flex-direction:column}.closing-card .btn{width:100%}.footer-inner{padding:24px 0;align-items:flex-start;flex-direction:column}.footer-links{flex-wrap:wrap}}
 @media(max-width:480px){.hero-actions{flex-direction:column}.hero-actions .btn{width:100%}.hero-note{gap:9px 15px}.card{min-height:0}.price{font-size:25px}}
+@media(max-width:900px){
+  .desktop-nav{display:none}.menu-btn{display:flex}
+}
+@media(max-width:640px){
+  .container{width:min(100% - 24px,1180px)}
+  .header-inner{height:68px;gap:10px}
+  .header-logo{width:96px;height:50px}
+  .header-actions{gap:8px;margin-left:auto}
+  .header-cta{display:inline-flex;min-height:46px;padding:0 14px;border-radius:14px;font-size:12px}
+  .menu-btn{width:44px;height:44px;border-radius:13px;font-size:21px}
+  .mobile-nav{top:68px;padding:12px 18px 20px}
+}
+
 </style>
 </head>
 <body>
 <header class="site-header">
   <div class="container header-inner">
     <a class="brand" href="/" aria-label="Vision Make Studio home">
-      <span class="logo-tile"><img src="/assets/vms-logo.png" alt="Vision Make Studio"></span>
-      <span class="brand-copy"><strong>Vision Make Studio</strong><span>Digital services for local business</span></span>
+      <img class="header-logo" src="/assets/vms-logo.png" alt="Vision Make Studio">
     </a>
     <nav class="desktop-nav" aria-label="Primary navigation">
-      <a href="/">Home</a>
       <a class="active" href="/services.html">Services</a>
-      <a href="/get-started.html">Get Started</a>
+      <a href="/#checkup">Business Checkup</a>
+      <a href="/#process">How It Works</a>
+      <a href="/#pricing">Pricing</a>
+      <a href="/#subscriptions">Subscriptions</a>
     </nav>
     <div class="header-actions">
-      <a class="portal-link" href="/?portal=1">Client Portal</a>
-      <a class="header-cta" href="/get-started.html">Start a project</a>
+      <a class="header-cta" href="/#checkup">Free Checkup</a>
       <button class="menu-btn" id="menuBtn" type="button" aria-label="Open menu" aria-expanded="false">☰</button>
     </div>
   </div>
+  <nav class="mobile-nav" id="mobileNav" aria-label="Mobile navigation">
+    <a href="/services.html">Services</a>
+    <a href="/#checkup">Business Checkup</a>
+    <a href="/#process">How It Works</a>
+    <a href="/#pricing">Pricing</a>
+    <a href="/#subscriptions">Subscriptions</a>
+  </nav>
 </header>
-<nav class="mobile-nav" id="mobileNav" aria-label="Mobile navigation">
-  <a href="/">Home</a><a href="/services.html">Services</a><a href="/get-started.html">Get Started</a><a href="/?portal=1">Client Portal</a>
-</nav>
 
 <main>
   <section class="hero">
