@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script>if(location.protocol!=='file:')document.documentElement.classList.add('vms-auth-pending');</script>
+<style>html.vms-auth-pending body{overflow:hidden!important}html.vms-auth-pending body>*{visibility:hidden!important}html.vms-auth-pending body::before{content:'Opening your secure VMS Portal…';position:fixed;inset:0;z-index:999999;display:grid;place-items:center;background:#003049;color:#fff;font:800 14px Inter,Arial,sans-serif;visibility:visible!important}</style>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>VMS Client Portal — Scheduling</title>
+<style>
+:root{--navy:#003049;--blue:#669BBC;--orange:#EB5E28;--red:#C1121F;--green:#2b8c69;--ink:#173443;--muted:#71858f;--line:#dce6ea;--bg:#f4f6f8;--cream:#FDF0D5}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at 88% -10%,rgba(102,155,188,.16),transparent 30%),var(--bg);color:var(--ink)}button,input,select,textarea{font:inherit}button{cursor:pointer}a{text-decoration:none;color:inherit}
+.top{min-height:68px;background:rgba(255,255,255,.92);border-bottom:1px solid #dfe7ea;backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:space-between;padding:10px max(14px,calc((100vw - 1120px)/2));position:sticky;top:0;z-index:10}.top img{width:80px;max-height:44px;object-fit:contain}.top-actions{display:flex;gap:6px}.btn{display:inline-flex;align-items:center;justify-content:center;border:1px solid #d8e3e7;background:#fff;color:var(--navy);border-radius:11px;padding:9px 12px;font-size:10px;font-weight:850}.btn.primary{background:var(--navy);border-color:var(--navy);color:#fff}.btn.red{color:var(--red);border-color:#efc8cd}.btn.small{padding:7px 9px;font-size:9px}
+.wrap{max-width:1120px;margin:auto;padding:24px 15px 50px}.hero{background:linear-gradient(145deg,var(--navy),#0b4058);color:#fff;border-radius:22px;padding:24px;box-shadow:0 18px 45px rgba(0,48,73,.12)}.hero small{font-size:9px;color:#9bc3d7;font-weight:900;letter-spacing:.12em}.hero h1{font-size:30px;letter-spacing:-.04em;margin:6px 0 8px}.hero p{color:rgba(255,255,255,.72);font-size:11.5px;line-height:1.55;margin:0;max-width:760px}.next{margin-top:17px;padding:13px 14px;border:1px solid rgba(255,255,255,.16);border-radius:14px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;gap:12px}.next span{font-size:9px;color:#a9c7d5;font-weight:850}.next strong{display:block;font-size:14px;margin-top:4px}.next .pill{border-radius:999px;background:rgba(253,240,213,.14);color:var(--cream);padding:7px 9px;font-size:8px;font-weight:900}
+.grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(320px,.9fr);gap:13px;margin-top:14px}.card{background:#fff;border:1px solid rgba(0,48,73,.09);border-radius:18px;box-shadow:0 10px 30px rgba(0,48,73,.05);overflow:hidden}.head{padding:14px 16px;border-bottom:1px solid #e8eef0}.head strong{font-size:14px;color:var(--navy)}.head span{display:block;margin-top:4px;color:var(--muted);font-size:9px}.body{padding:14px 16px}
+.jobs,.requests,.rules{display:grid;gap:8px}.job,.request,.rule{border:1px solid #e1e8eb;border-radius:13px;padding:11px}.job-top,.request-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.job strong,.request strong,.rule strong{display:block;font-size:10.5px;color:#385462}.job span,.request span,.rule span{display:block;color:#84969f;font-size:8.5px;margin-top:4px;line-height:1.45}.job-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.badge{display:inline-flex;border-radius:999px;padding:5px 7px;font-size:8px;font-weight:900;background:#eef3f5;color:#657b86;white-space:nowrap}.badge.confirmed{background:#eaf8f2;color:#26795c}.badge.scheduled{background:#eef5f8;color:#4f7688}.badge.in_progress{background:#fff4e6;color:#9a6415}.badge.ready{background:#eaf4ff;color:#356e9b}.badge.completed{background:#edf6ef;color:#4b7859}.badge.canceled,.badge.declined{background:#f4f4f5;color:#7d858b}.badge.new{background:#fff1f2;color:#a73d47}.badge.reviewing{background:#fff7e7;color:#946616}.badge.approved{background:#eaf8f2;color:#26795c}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.field{display:grid;gap:5px}.field.full{grid-column:1/-1}.field label{font-size:8px;font-weight:900;color:#6f838d}.field input,.field select,.field textarea{width:100%;min-height:42px;border:1px solid #d9e4e8;border-radius:10px;background:#fbfcfc;padding:9px 10px;color:var(--ink);font-size:10px;outline:none}.field textarea{min-height:84px;resize:vertical}.field input:focus,.field select:focus,.field textarea:focus{border-color:#9fc1d2;box-shadow:0 0 0 3px rgba(102,155,188,.11)}.hint{font-size:8px;color:#84969f;line-height:1.45}.submit-row{grid-column:1/-1;display:flex;justify-content:flex-end}.empty{text-align:center;padding:28px 16px;border:1px dashed #cfdbdf;border-radius:13px;color:var(--muted);font-size:10px;line-height:1.5}.empty strong{display:block;color:var(--navy);font-size:13px;margin-bottom:4px}.availability-note{padding:10px 11px;border-radius:12px;background:#eef6f9;color:#557480;font-size:9px;line-height:1.55;margin-bottom:10px}.toast{position:fixed;left:50%;bottom:20px;transform:translate(-50%,15px);opacity:0;background:var(--navy);color:#fff;border-radius:11px;padding:10px 13px;font-size:9px;font-weight:850;z-index:100;transition:.18s}.toast.show{opacity:1;transform:translate(-50%,0)}
+.modal-backdrop{display:none;position:fixed;inset:0;background:rgba(0,34,49,.42);z-index:50;align-items:center;justify-content:center;padding:15px}.modal-backdrop.show{display:flex}.modal{width:min(560px,100%);background:#fff;border-radius:17px;overflow:hidden;box-shadow:0 28px 80px rgba(0,33,48,.25)}.modal-head{padding:14px 16px;border-bottom:1px solid #e5ecef;display:flex;align-items:center;justify-content:space-between}.modal-head h3{margin:0;color:var(--navy);font-size:14px}.close{border:0;background:transparent;font-size:22px;color:#7d9099}.modal-body{padding:15px 16px}.modal-foot{padding:12px 16px;border-top:1px solid #e5ecef;display:flex;justify-content:flex-end;gap:7px}
+@media(max-width:760px){.wrap{padding-top:15px}.hero{padding:20px 17px}.hero h1{font-size:25px}.grid{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.field.full,.submit-row{grid-column:auto}.field input,.field select,.field textarea{font-size:16px}.next{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<header class="top"><img src="../assets/vms-logo.png" alt="Vision Make Studio"><div class="top-actions"><a class="btn" href="onboarding.html">Onboarding</a><a class="btn" href="./">Portal Home</a></div></header>
+<main class="wrap">
+<section class="hero"><small>CLIENT PORTAL · SCHEDULING</small><h1 id="welcome">Your VMS schedule.</h1><p>Request a service time, see confirmed appointments and shoots, or ask VMS to reschedule or cancel an upcoming job.</p><div class="next"><div><span>NEXT SCHEDULED SERVICE</span><strong id="nextJobText">Loading schedule…</strong></div><div class="pill" id="nextJobStatus">—</div></div></section>
+<div class="grid">
+<div>
+<section class="card"><div class="head"><strong>Upcoming Services</strong><span>Your confirmed and scheduled VMS work.</span></div><div class="body"><div id="jobsList" class="jobs"></div></div></section>
+<section class="card" style="margin-top:13px"><div class="head"><strong>Request History</strong><span>Booking, reschedule, and cancellation requests.</span></div><div class="body"><div id="requestsList" class="requests"></div></div></section>
+</div>
+<div>
+<section class="card"><div class="head"><strong>Request a Booking</strong><span>Choose an active service and your preferred time. VMS confirms the final schedule.</span></div><div class="body">
+<div class="availability-note" id="availabilityNote">Loading VMS availability…</div>
+<form id="bookingForm" class="form-grid">
+<div class="field full"><label>Service</label><select id="serviceSelect" required><option value="">Choose a service</option></select></div>
+<div class="field"><label>Preferred start</label><input id="preferredStart" type="datetime-local" required></div>
+<div class="field"><label>Preferred end</label><input id="preferredEnd" type="datetime-local" required></div>
+<div class="field full"><label>Alternate start (optional)</label><input id="alternateStart" type="datetime-local"></div>
+<div class="field"><label>Location type</label><select id="locationType"><option value="onsite">On-site</option><option value="remote">Remote</option><option value="studio">Studio</option><option value="other">Other</option></select></div>
+<div class="field"><label>Address / location</label><input id="address" type="text" placeholder="Property or business address"></div>
+<div class="field full"><label>Anything VMS should know?</label><textarea id="clientNote" placeholder="Access instructions, requested shots, timing details, etc."></textarea></div>
+<div class="submit-row"><button class="btn primary" type="submit">Send Booking Request</button></div>
+</form>
+</div></section>
+</div>
+</div>
+</main>
+
+<div class="modal-backdrop" id="requestModal"><div class="modal"><div class="modal-head"><h3 id="requestModalTitle">Request a change</h3><button class="close" id="requestModalClose" type="button">×</button></div><div class="modal-body">
+<input id="changeJobId" type="hidden"><input id="changeType" type="hidden">
+<div id="rescheduleFields" class="form-grid">
+<div class="field"><label>New preferred start</label><input id="changeStart" type="datetime-local"></div>
+<div class="field"><label>New preferred end</label><input id="changeEnd" type="datetime-local"></div>
+</div>
+<div class="field" style="margin-top:8px"><label>Reason / note</label><textarea id="changeNote" placeholder="Tell VMS what changed."></textarea></div>
+</div><div class="modal-foot"><button class="btn" id="requestModalCancel" type="button">Back</button><button class="btn primary" id="requestModalSend" type="button">Send Request</button></div></div></div>
+<div class="toast" id="toast"></div>
+<script src="../assets/config.js"></script><script src="../assets/vms-core.js"></script>
+<script>
+(()=>{'use strict';
+const g=x=>document.getElementById(x),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let data={client:null,jobs:[],requests:[],services:[],rules:[],blackouts:[]};
+function fmt(v,o={}){if(!v)return'—';const d=new Date(v);return Number.isNaN(d.getTime())?'—':d.toLocaleString('en-US',o)}
+function dtLocal(v){if(!v)return'';const d=new Date(v),p=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`}
+function toast(m){g('toast').textContent=m;g('toast').classList.add('show');setTimeout(()=>g('toast').classList.remove('show'),2200)}
+async function token(){const sb=await VMSAuth.client();const{data:{session}}=await sb.auth.getSession();if(!session?.access_token)throw new Error('Please sign in again.');return session.access_token}
+async function api(body=null){const t=await token(),r=await fetch('/api/schedule',{method:body?'POST':'GET',headers:{Authorization:`Bearer ${t}`,...(body?{'Content-Type':'application/json'}:{})},body:body?JSON.stringify(body):undefined}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||'Scheduling request failed.');return d}
+async function load(){data=await api();render()}
+function render(){
+ if(data.client)g('welcome').textContent=`${data.client.business_name||'Your'} VMS schedule.`;
+ const now=new Date(),upcoming=data.jobs.filter(j=>j.scheduled_start&&new Date(j.scheduled_start)>=now&&!['canceled','completed'].includes(j.status)).sort((a,b)=>new Date(a.scheduled_start)-new Date(b.scheduled_start));
+ const next=upcoming[0];g('nextJobText').textContent=next?`${next.title} · ${fmt(next.scheduled_start,{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})}`:'No upcoming service is scheduled.';g('nextJobStatus').textContent=next?next.status.replace(/_/g,' '):'Clear';
+ renderJobs();renderRequests();renderServices();renderAvailability();
+}
+function renderJobs(){
+ const now=Date.now(),jobs=data.jobs.filter(j=>!['draft','canceled'].includes(j.status)).sort((a,b)=>new Date(a.scheduled_start||0)-new Date(b.scheduled_start||0));
+ g('jobsList').innerHTML=jobs.length?jobs.map(j=>{const start=new Date(j.scheduled_start||0).getTime(),soon=start>now&&start-now<=86400000&&!['completed','ready'].includes(j.status);return `<div class="job"><div class="job-top"><div><strong>${esc(j.title)}</strong><span>${fmt(j.scheduled_start,{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})} – ${fmt(j.scheduled_end,{hour:'numeric',minute:'2-digit'})}<br>${esc(j.address||j.location_type||'Location to be confirmed')}</span></div><span class="badge ${esc(j.status)}">${esc(j.status.replace(/_/g,' '))}</span></div>${soon?'<span class="badge" style="margin-top:8px">Coming up within 24 hours</span>':''}${!['completed','canceled'].includes(j.status)&&start>now?`<div class="job-actions"><button class="btn small" data-reschedule="${esc(j.id)}" type="button">Request Reschedule</button><button class="btn red small" data-cancel="${esc(j.id)}" type="button">Request Cancellation</button></div>`:''}</div>`}).join(''):'<div class="empty"><strong>No scheduled services yet.</strong>Use the booking request form to ask for a time.</div>';
+ g('jobsList').querySelectorAll('[data-reschedule]').forEach(b=>b.onclick=()=>openChange(b.dataset.reschedule,'reschedule'));g('jobsList').querySelectorAll('[data-cancel]').forEach(b=>b.onclick=()=>openChange(b.dataset.cancel,'cancel'));
+}
+function renderRequests(){
+ g('requestsList').innerHTML=data.requests.length?data.requests.map(r=>`<div class="request"><div class="request-top"><div><strong>${esc(r.request_type==='new'?'Booking request':r.request_type==='reschedule'?'Reschedule request':'Cancellation request')} · ${esc(r.service_name||'VMS Service')}</strong><span>${r.requested_start?fmt(r.requested_start,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'No requested time'}${r.client_note?`<br>${esc(r.client_note)}`:''}</span></div><span class="badge ${esc(r.status)}">${esc(r.status)}</span></div>${['new','reviewing'].includes(r.status)?`<div class="job-actions"><button class="btn red small" data-request-cancel="${esc(r.id)}" type="button">Withdraw Request</button></div>`:''}</div>`).join(''):'<div class="empty">You have no scheduling requests yet.</div>';
+ g('requestsList').querySelectorAll('[data-request-cancel]').forEach(b=>b.onclick=async()=>{if(!confirm('Withdraw this pending request?'))return;try{await api({action:'request-cancel',id:b.dataset.requestCancel});toast('Request withdrawn');await load()}catch(e){alert(e.message)}});
+}
+function renderServices(){
+ g('serviceSelect').innerHTML='<option value="">Choose a service</option>'+data.services.map(s=>`<option value="${esc(s.catalog_service_id||'')}" data-name="${esc(s.service_name)}">${esc(s.service_name)}</option>`).join('');
+}
+function renderAvailability(){
+ const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];if(!data.rules.length){g('availabilityNote').textContent='No fixed booking windows are published yet. Send your preferred time and VMS will confirm availability.';return}
+ const grouped=data.rules.map(r=>`${days[r.weekday]} ${String(r.start_time).slice(0,5)}–${String(r.end_time).slice(0,5)}`);g('availabilityNote').textContent='Typical availability: '+grouped.join(' · ')+'. Final times are confirmed by VMS.';
+}
+function openChange(id,type){
+ const j=data.jobs.find(x=>x.id===id);if(!j)return;g('changeJobId').value=id;g('changeType').value=type;g('requestModalTitle').textContent=type==='reschedule'?'Request a Reschedule':'Request a Cancellation';g('rescheduleFields').style.display=type==='reschedule'?'grid':'none';g('changeStart').value=type==='reschedule'?dtLocal(j.scheduled_start):'';g('changeEnd').value=type==='reschedule'?dtLocal(j.scheduled_end):'';g('changeNote').value='';g('requestModal').classList.add('show')
+}
+function closeChange(){g('requestModal').classList.remove('show')}
+async function sendChange(){
+ const type=g('changeType').value,body={action:'booking-request',request_type:type,job_id:g('changeJobId').value,client_note:g('changeNote').value};if(type==='reschedule'){if(!g('changeStart').value||!g('changeEnd').value){alert('Choose the requested start and end time.');return}body.requested_start=new Date(g('changeStart').value).toISOString();body.requested_end=new Date(g('changeEnd').value).toISOString()}
+ try{await api(body);closeChange();toast(type==='reschedule'?'Reschedule requested':'Cancellation requested');await load()}catch(e){alert(e.message)}
+}
+function bind(){
+ g('bookingForm').onsubmit=async e=>{e.preventDefault();const s=g('serviceSelect').selectedOptions[0];if(!g('serviceSelect').value){alert('Choose a service.');return}try{await api({action:'booking-request',request_type:'new',catalog_service_id:g('serviceSelect').value,service_name:s?.dataset.name||s?.textContent,requested_start:new Date(g('preferredStart').value).toISOString(),requested_end:new Date(g('preferredEnd').value).toISOString(),alternate_start:g('alternateStart').value?new Date(g('alternateStart').value).toISOString():null,location_type:g('locationType').value,address:g('address').value,client_note:g('clientNote').value});toast('Booking request sent');g('clientNote').value='';await load()}catch(x){alert(x.message)}};
+ g('requestModalClose').onclick=closeChange;g('requestModalCancel').onclick=closeChange;g('requestModalSend').onclick=sendChange;g('requestModal').onclick=e=>{if(e.target===g('requestModal'))closeChange()};
+ const start=new Date(Date.now()+86400000);start.setMinutes(0,0,0);const end=new Date(start.getTime()+3600000);g('preferredStart').value=dtLocal(start);g('preferredEnd').value=dtLocal(end)
+}
+document.addEventListener('DOMContentLoaded',async()=>{bind();try{await VMSAuth.requireSession('client');document.documentElement.classList.remove('vms-auth-pending');await load()}catch(e){console.error(e);alert(e.message||'Unable to load scheduling.')}});
+})();
+</script>
+</body></html>
