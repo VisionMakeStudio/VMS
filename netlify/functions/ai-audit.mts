@@ -1,6 +1,4 @@
 import type { Config } from "@netlify/functions";
-import { lookup } from "node:dns/promises";
-import { isIP } from "node:net";
 import { jsonError, requireAdmin } from "./_shared/auth.mts";
 
 type Row = Record<string, any>;
@@ -90,16 +88,34 @@ function isPrivateIPv6(ip:string){
   const x=ip.toLowerCase();
   return x==="::"||x==="::1"||x.startsWith("fc")||x.startsWith("fd")||x.startsWith("fe8")||x.startsWith("fe9")||x.startsWith("fea")||x.startsWith("feb")||x.startsWith("::ffff:127.")||x.startsWith("::ffff:10.")||x.startsWith("::ffff:192.168.");
 }
+function ipKind(host:string){
+  const raw=host.replace(/^\[|\]$/g,"");
+  if(/^\d{1,3}(?:\.\d{1,3}){3}$/.test(raw))return 4;
+  if(raw.includes(":"))return 6;
+  return 0;
+}
+async function resolvePublicDns(host:string){
+  const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),3500);
+  try{
+    const q=encodeURIComponent(host);
+    const [a,aaaa]=await Promise.all([
+      fetch(`https://dns.google/resolve?name=${q}&type=A`,{signal:ctrl.signal,headers:{Accept:"application/dns-json"}}).then(r=>r.ok?r.json():null).catch(()=>null),
+      fetch(`https://dns.google/resolve?name=${q}&type=AAAA`,{signal:ctrl.signal,headers:{Accept:"application/dns-json"}}).then(r=>r.ok?r.json():null).catch(()=>null),
+    ]);
+    const rows=[...(Array.isArray(a?.Answer)?a.Answer:[]),...(Array.isArray(aaaa?.Answer)?aaaa.Answer:[])];
+    return rows.filter((x:any)=>x?.type===1||x?.type===28).map((x:any)=>clean(x?.data,120)).filter(Boolean);
+  }finally{clearTimeout(timer)}
+}
 async function assertPublicHost(u:URL){
-  const host=u.hostname.toLowerCase();
+  const host=u.hostname.toLowerCase().replace(/^\[|\]$/g,"");
   if(host==="localhost"||host.endsWith(".localhost")||host.endsWith(".local")||host.endsWith(".internal"))throw Object.assign(new Error("That website address cannot be audited."),{status:400});
-  const kind=isIP(host);
+  const kind=ipKind(host);
   if(kind===4&&isPrivateIPv4(host))throw Object.assign(new Error("That website address cannot be audited."),{status:400});
   if(kind===6&&isPrivateIPv6(host))throw Object.assign(new Error("That website address cannot be audited."),{status:400});
   if(!kind){
-    const rows=await lookup(host,{all:true,verbatim:true}).catch(()=>[] as any[]);
-    if(!rows.length)throw Object.assign(new Error("The website hostname could not be resolved."),{status:400});
-    for(const row of rows){if((row.family===4&&isPrivateIPv4(row.address))||(row.family===6&&isPrivateIPv6(row.address)))throw Object.assign(new Error("That website address cannot be audited."),{status:400});}
+    const addresses=await resolvePublicDns(host);
+    if(!addresses.length)throw Object.assign(new Error("The website hostname could not be resolved."),{status:400});
+    for(const address of addresses){const family=ipKind(address);if((family===4&&isPrivateIPv4(address))||(family===6&&isPrivateIPv6(address)))throw Object.assign(new Error("That website address cannot be audited."),{status:400});}
   }
 }
 function normalizeWebsite(v:any){
@@ -197,8 +213,9 @@ function annotationSources(r:Row){
   return out;
 }
 async function openAiAudit(context:Row){
-  const key=clean(process.env.OPENAI_API_KEY,500);if(!key)throw Object.assign(new Error("Audit AI is not connected yet. Add OPENAI_API_KEY in Netlify first."),{status:503,code:"openai_not_configured"});
-  const model=clean(process.env.OPENAI_AUDIT_MODEL,120)||"gpt-5.6-luna";
+  const env=((globalThis as any)?.process?.env||{}) as Record<string,string|undefined>;
+  const key=clean(env.OPENAI_API_KEY,500);if(!key)throw Object.assign(new Error("Audit AI is not connected yet. Add OPENAI_API_KEY in Netlify first."),{status:503,code:"openai_not_configured"});
+  const model=clean(env.OPENAI_AUDIT_MODEL,120)||"gpt-5.6-luna";
   const instructions=`You are the internal audit engine for Vision Make Studio (VMS). Produce a rigorous business presence audit using the exact VMS rubric supplied by the application.\n\nRules:\n1. Use the supplied live website snapshot as factual evidence for the website category. Do not claim Lighthouse/Core Web Vitals measurements; the snapshot is a lightweight live technical check.\n2. Use web search to verify the public business footprint, especially Google/local presence, reviews, reputation, and visible competitors. Prefer official business pages, the business website, Google-visible results, major review platforms, and credible directory/business sources.\n3. Never invent a Google profile, rating, review count, review recency, hours, address, competitor comparison, booking system, automation, CRM, follow-up system, or internal workflow. If evidence is insufficient, use points=null and label="N/A" and explain what needs manual review.\n4. For internal YOU-only systems (follow-up, organization, automation, integration, review request process), only score them when the supplied reviewer notes explicitly establish the fact. Otherwise return N/A.\n5. Every numeric points value must exactly match one allowed points value for that rubric item. No arbitrary numbers.\n6. Keep reasons and Assessment Notes concise, professional, client-safe, and natural. Do not say "the AI thinks" or "AI-generated". Use wording such as "The assessment found" or "Current evidence shows".\n7. Recommendations must be specific and actionable.\n8. Do not lower a score merely because evidence is unavailable; use N/A instead.\n9. Use no more web searching than necessary.\n10. Output only the structured response schema.`;
   const payload={model,store:false,instructions,input:JSON.stringify(context),tools:[{type:"web_search"}],tool_choice:"auto",max_output_tokens:6500,text:{verbosity:"low",format:{type:"json_schema",name:"vms_business_audit",description:"VMS business audit with exact rubric selections and evidence.",strict:true,schema:RESPONSE_SCHEMA}}};
   const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),42000);
