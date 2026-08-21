@@ -44,13 +44,31 @@ const phase11Assets=['vms-audit-desktop-fix.js','vms-audit-ai-live.js','vms-admi
 for(const name of phase11Assets){if(!fs.existsSync(path.join(dist,'assets',name)))throw new Error(`Phase 11 repair asset is missing: assets/${name}`)}
 function injectRepair(relative,src,id){const file=path.join(dist,relative);if(!fs.existsSync(file))throw new Error(`Phase 11 target is missing: ${relative}`);let html=fs.readFileSync(file,'utf8');const idNeedle=`id="${id}"`;if(html.includes(idNeedle)){const re=new RegExp(`<script([^>]*\\s)id=["']${id}["']([^>]*)><\\/script>`,`i`);html=html.replace(re,(tag)=>{if(/\bsrc=["'][^"']*["']/i.test(tag))return tag.replace(/\bsrc=["'][^"']*["']/i,`src="${src}"`);return tag.replace(/<script/i,`<script src="${src}"`)});fs.writeFileSync(file,html);return}if(!/<\/body>/i.test(html))throw new Error(`Phase 11 target has no </body>: ${relative}`);html=html.replace(/<\/body>/i,`<script id="${id}" src="${src}" defer></script></body>`);fs.writeFileSync(file,html)}
 injectRepair('admin/audit.html','../assets/vms-audit-desktop-fix.js','vms-phase11-audit-fix');
-injectRepair('admin/audit.html','../assets/vms-audit-ai-live.js?v=20260820-503truth','vms-audit-ai-live');
+injectRepair('admin/audit.html','../assets/vms-audit-ai-live.js?v=20260821-audit-polish-v2','vms-audit-ai-live');
 injectRepair('admin/clients.html','../assets/vms-admin-clients-live.js','vms-phase11-clients-live');
 injectRepair('admin/billing.html','../assets/vms-admin-billing-live.js','vms-phase11-billing-live');
 injectRepair('portal/index.html','../assets/vms-portal-payments.js','vms-phase11-portal-payments');
 injectRepair('admin/leads.html','../assets/vms-admin-cleanup.js','vms-phase11-admin-cleanup');
 injectRepair('admin/audit.html','../assets/vms-admin-cleanup.js','vms-phase11-audit-cleanup');
 injectRepair('get-started.html','assets/vms-get-started-url.js','vms-phase11-get-started-url');
+
+
+/* Phase 13: VMS Audit page polish. Keep the internal category key `google`
+   for backward compatibility with saved audits/API payloads, while the
+   customer/admin-facing product name is Local Presence everywhere. */
+const auditPolishFile=path.join(dist,'admin','audit.html');
+if(!fs.existsSync(auditPolishFile))throw new Error('Audit polish target missing: admin/audit.html');
+let auditHtml=fs.readFileSync(auditPolishFile,'utf8');
+for(const [from,to] of [
+  ['Google Presence Audit','Local Presence Audit'],
+  ['Google Presence','Local Presence'],
+  ['Google Business Profile setup','Primary local profile setup'],
+  ['Google matches website/business info','Listings match website/business info'],
+  ['Prioritize Google Business Profile improvements.','Prioritize Local Presence and listing consistency improvements.'],
+  ['data-view="google">Google</button>','data-view="google">Local Presence</button>'],
+  ['<span>Google</span>','<span>Local Presence</span>']
+]) auditHtml=auditHtml.replaceAll(from,to);
+fs.writeFileSync(auditPolishFile,auditHtml);
 
 /* Phase 10 final-content cleanup. */
 const htmlCleanups=new Map([
