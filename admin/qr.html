@@ -1554,9 +1554,8 @@ a{color:inherit}
 .template{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden}
 .template-preview{height:220px;background:linear-gradient(180deg,#f9fbfb,#eef3f5);display:grid;place-items:center;padding:18px}
 .mock{background:#fff;border:1px solid #dce5e9;box-shadow:0 8px 24px rgba(0,48,73,.07);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
-.mock.sticker{width:145px;height:145px;border-radius:18px}
-.mock.counter{width:125px;height:175px;border-radius:10px}
-.mock.flyer{width:130px;height:180px;border-radius:4px}
+.mock.qr-only{width:145px;height:145px;border-radius:18px}
+.mock.qr-card{width:125px;height:175px;border-radius:10px}
 .mock-logo{width:44px;height:28px;border:1px solid #dce5e9;border-radius:5px;display:grid;place-items:center;font-size:6px;color:#83939c;margin-bottom:7px}
 .mock-qr{width:56px;height:56px;background:repeating-conic-gradient(#123 0 25%,#fff 0 50%) 0/12px 12px;border:4px solid #fff;box-shadow:0 0 0 1px #dde5e9}
 .mock strong{font-size:7px;margin-top:7px;color:var(--navy)}
@@ -2353,13 +2352,6 @@ html.vms-admin-surface #previewCanvas{
   transform-origin:top center;
 }
 html.vms-admin-surface #previewCanvas.vms-layout-qr-only{min-height:405px!important;border-radius:18px!important;padding:28px 24px!important}
-html.vms-admin-surface #previewCanvas.vms-layout-sticker{width:min(100%,285px)!important;min-height:285px!important;aspect-ratio:1/1!important;border-radius:28px!important;padding:20px!important;box-shadow:0 0 0 2px #fff,0 0 0 3px #d6e1e5,0 16px 34px rgba(0,48,73,.10)!important}
-html.vms-admin-surface #previewCanvas.vms-layout-counter{width:min(100%,292px)!important;min-height:390px!important;aspect-ratio:3/4!important;border-radius:16px!important;padding:27px 22px!important;box-shadow:0 18px 36px rgba(0,48,73,.12)!important}
-html.vms-admin-surface #previewCanvas.vms-layout-flyer{width:min(100%,300px)!important;min-height:388px!important;aspect-ratio:8.5/11!important;border-radius:7px!important;padding:30px 24px!important;box-shadow:0 18px 42px rgba(0,48,73,.14)!important}
-html.vms-admin-surface #previewCanvas.vms-layout-sticker .preview-url,
-html.vms-admin-surface #previewCanvas.vms-layout-sticker .preview-foot{display:none!important}
-html.vms-admin-surface #previewCanvas.vms-layout-flyer .preview-title{font-size:21px!important;margin-top:22px!important}
-html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-size:19px!important}
 
 .vms-preview-logo-slot{display:block;width:88px;height:44px;flex:0 0 88px}#vmsCanonicalAdminSidebar .vms-preview-logo-slot,#vmsCanonicalPortalSidebar .vms-preview-logo-slot{background:transparent!important}</style>
 <style id="vms-review-v2-qr-live-layout">
@@ -2369,10 +2361,6 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
 .vms-live-layout-choices button{min-height:38px;border:1px solid #d5e2e7;border-radius:9px;background:#fff;color:#385461;font-size:11px;font-weight:850;padding:6px 8px}
 .vms-live-layout-choices button.active{background:#003049!important;border-color:#003049!important;color:#fff!important;box-shadow:0 5px 14px rgba(0,48,73,.15)}
 #previewCanvas.vms-layout-qr-only{width:min(100%,330px)!important;min-height:405px!important;aspect-ratio:auto!important}
-#previewCanvas.vms-layout-sticker{width:min(100%,285px)!important;min-height:285px!important;aspect-ratio:1/1!important;border-radius:28px!important;padding:20px!important}
-#previewCanvas.vms-layout-counter{width:min(100%,292px)!important;min-height:390px!important;aspect-ratio:3/4!important;border-radius:16px!important;padding:27px 22px!important}
-#previewCanvas.vms-layout-flyer{width:min(100%,300px)!important;min-height:388px!important;aspect-ratio:8.5/11!important;border-radius:7px!important;padding:30px 24px!important}
-#previewCanvas.vms-layout-sticker .preview-url,#previewCanvas.vms-layout-sticker .preview-foot{display:none!important}
 @media(max-width:620px){.vms-live-layout-panel{margin:0 14px 12px}.vms-live-layout-choices{grid-template-columns:1fr 1fr}.vms-live-layout-choices button{min-height:42px;font-size:12px}}
 </style>
 <style id="vms-final-qr-two-layouts">
@@ -2628,7 +2616,7 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
           <div>
             <div class="eyebrow">SCAN ACTIVITY</div>
             <h1>QR analytics</h1>
-            <p>Tracking-enabled QRs appear here. Prototype scan numbers are demo data until the VMS redirect backend is connected.</p>
+            <p>Tracking-enabled QRs appear here. Scan numbers shown here are local preview data until the VMS redirect backend is connected.</p>
           </div>
           <div class="phase-chip">DYNAMIC QR · PREVIEW</div>
         </div>
@@ -2655,7 +2643,7 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
         <div class="templates" style="grid-template-columns:repeat(2,minmax(0,1fr))">
           <div class="template">
             <div class="template-preview">
-              <div class="mock sticker" style="border-radius:14px">
+              <div class="mock qr-only" style="border-radius:14px">
                 <div class="mock-qr"></div>
               </div>
             </div>
@@ -2668,7 +2656,7 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
 
           <div class="template">
             <div class="template-preview">
-              <div class="mock counter" style="height:180px">
+              <div class="mock qr-card" style="height:180px">
                 <div class="mock-logo">LOGO</div>
                 <div class="mock-qr"></div>
                 <strong>SCAN HERE</strong>
@@ -3033,7 +3021,7 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
     const valid=['raw-qr','qr-card'];
     exportPreset=valid.includes(preset)?preset:'qr-card';
     const names={'raw-qr':'QR Only','qr-card':'QR Card'};
-    previewCanvas.classList.remove('vms-layout-raw-qr','vms-layout-qr-card','vms-layout-qr-only','vms-layout-sticker','vms-layout-counter','vms-layout-flyer');
+    previewCanvas.classList.remove('vms-layout-raw-qr','vms-layout-qr-card','vms-layout-qr-only');
     previewCanvas.classList.add(`vms-layout-${exportPreset}`);
     previewCanvas.dataset.layoutPreset=exportPreset;
     if(liveLayoutName)liveLayoutName.textContent=names[exportPreset];
@@ -3070,7 +3058,7 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
 
   const demoSavedQrs=[
     {
-      id:'demo-beauty-review',
+      id:'preview-beauty-review',
       name:'Beauty Corner Reviews',
       client:'Beauty Corner Corp',
       type:'review',
@@ -3096,7 +3084,7 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
       savedAt:'2026-08-10T14:00:00'
     },
     {
-      id:'demo-francis-booking',
+      id:'preview-francis-booking',
       name:'Francis Booking',
       client:'Beauty Corner Corp',
       type:'booking',
@@ -3122,7 +3110,7 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
       savedAt:'2026-08-09T13:30:00'
     },
     {
-      id:'demo-broadway',
+      id:'preview-broadway',
       name:'Broadway Vision Website',
       client:'Broadway Vision NYC',
       type:'website',
@@ -4046,9 +4034,7 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
       return raw;
     }
 
-    let w=1200,h=1200;
-    if(preset==='counter'){w=1200;h=1600}
-    if(preset==='flyer'){w=1600;h=2200}
+    const w=1200,h=1200;
 
     const c=document.createElement('canvas');
     c.width=w;
@@ -4062,16 +4048,16 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
     ctx.save();
     ctx.strokeStyle=item.qrColor||'#112D3D';
     ctx.globalAlpha=.20;
-    ctx.lineWidth=preset==='flyer'?10:8;
+    ctx.lineWidth=8;
     ctx.beginPath();
 
-    const inset=preset==='flyer'?34:26;
+    const inset=26;
     const bw=w-(inset*2), bh=h-(inset*2);
 
     if(item.frame==='square'){
       ctx.rect(inset,inset,bw,bh);
     }else if(typeof ctx.roundRect==='function'){
-      ctx.roundRect(inset,inset,bw,bh,item.frame==='soft'?(preset==='flyer'?100:70):(preset==='flyer'?46:34));
+      ctx.roundRect(inset,inset,bw,bh,item.frame==='soft'?70:34);
     }else{
       ctx.rect(inset,inset,bw,bh);
     }
@@ -4083,12 +4069,12 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
     ctx.fillStyle=item.qrColor||'#112D3D';
 
     const logo=await loadImage(item.logoData);
-    let y=preset==='flyer'?110:80;
+    let y=80;
 
     // Bigger logo in every branded layout.
     if(logo){
-      const maxW=preset==='flyer'?420:330;
-      const maxH=preset==='flyer'?190:155;
+      const maxW=330;
+      const maxH=155;
       const ratio=Math.min(maxW/logo.width,maxH/logo.height);
       const lw=logo.width*ratio;
       const lh=logo.height*ratio;
@@ -4097,16 +4083,14 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
     }
 
     if(item.showBusinessName!==false){
-      ctx.font=preset==='flyer'?'700 56px Arial':'700 46px Arial';
+      ctx.font='700 46px Arial';
       ctx.fillText(item.client||'Client Business',w/2,y);
-      y+=preset==='flyer'?92:78;
+      y+=78;
     }
 
     // QR first.
     let qrSize=650;
     if(preset==='qr-card')qrSize=720;
-    if(preset==='counter')qrSize=720;
-    if(preset==='flyer')qrSize=900;
 
     // Make sure QR fits remaining canvas.
     if(y+qrSize > h-250){
@@ -4117,11 +4101,11 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
     y+=qrSize+108;
 
     // Custom text is intentionally BELOW the QR, centered with clear breathing room.
-    ctx.font=preset==='flyer'?'800 64px Arial':'800 50px Arial';
+    ctx.font='800 50px Arial';
     ctx.fillText(item.cta||'Scan to Open',w/2,y);
-    y+=preset==='flyer'?78:65;
+    y+=65;
 
-    ctx.font=preset==='flyer'?'500 32px Arial':'500 25px Arial';
+    ctx.font='500 25px Arial';
     ctx.fillText('Scan with your phone camera',w/2,y);
 
     if(item.showVms!==false){
@@ -4882,7 +4866,7 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
     if(!canvas)return;
     const p=['raw-qr','qr-card'].includes(preset)?preset:'qr-card';
     canvas.dataset.layoutPreset=p;
-    canvas.classList.remove('vms-layout-raw-qr','vms-layout-qr-card','vms-layout-qr-only','vms-layout-sticker','vms-layout-counter','vms-layout-flyer');
+    canvas.classList.remove('vms-layout-raw-qr','vms-layout-qr-card','vms-layout-qr-only');
     canvas.classList.add(`vms-layout-${p}`);
     const title=document.querySelector('.preview-card .section-title span,.preview-card .card-head span,.preview-card .card-title span');
     if(title&&/live preview/i.test(title.textContent||''))title.textContent=`Live Preview · ${presetName[p]}`;
