@@ -42,9 +42,9 @@ if(fs.existsSync(adminDir)){for(const entry of fs.readdirSync(adminDir,{withFile
    add Portal payment activation, repair Audit desktop navigation, and add safe Admin cleanup controls. */
 const phase11Assets=['vms-audit-desktop-fix.js','vms-audit-ai-live.js','vms-admin-clients-live.js','vms-admin-billing-live.js','vms-portal-payments.js','vms-admin-cleanup.js','vms-get-started-url.js'];
 for(const name of phase11Assets){if(!fs.existsSync(path.join(dist,'assets',name)))throw new Error(`Phase 11 repair asset is missing: assets/${name}`)}
-function injectRepair(relative,src,id){const file=path.join(dist,relative);if(!fs.existsSync(file))throw new Error(`Phase 11 target is missing: ${relative}`);let html=fs.readFileSync(file,'utf8');if(html.includes(`id="${id}"`))return;if(!/<\/body>/i.test(html))throw new Error(`Phase 11 target has no </body>: ${relative}`);html=html.replace(/<\/body>/i,`<script id="${id}" src="${src}" defer></script></body>`);fs.writeFileSync(file,html)}
+function injectRepair(relative,src,id){const file=path.join(dist,relative);if(!fs.existsSync(file))throw new Error(`Phase 11 target is missing: ${relative}`);let html=fs.readFileSync(file,'utf8');const idNeedle=`id="${id}"`;if(html.includes(idNeedle)){const re=new RegExp(`<script([^>]*\\s)id=["']${id}["']([^>]*)><\\/script>`,`i`);html=html.replace(re,(tag)=>{if(/\bsrc=["'][^"']*["']/i.test(tag))return tag.replace(/\bsrc=["'][^"']*["']/i,`src="${src}"`);return tag.replace(/<script/i,`<script src="${src}"`)});fs.writeFileSync(file,html);return}if(!/<\/body>/i.test(html))throw new Error(`Phase 11 target has no </body>: ${relative}`);html=html.replace(/<\/body>/i,`<script id="${id}" src="${src}" defer></script></body>`);fs.writeFileSync(file,html)}
 injectRepair('admin/audit.html','../assets/vms-audit-desktop-fix.js','vms-phase11-audit-fix');
-injectRepair('admin/audit.html','../assets/vms-audit-ai-live.js?v=20260820-400fix','vms-audit-ai-live');
+injectRepair('admin/audit.html','../assets/vms-audit-ai-live.js?v=20260820-503truth','vms-audit-ai-live');
 injectRepair('admin/clients.html','../assets/vms-admin-clients-live.js','vms-phase11-clients-live');
 injectRepair('admin/billing.html','../assets/vms-admin-billing-live.js','vms-phase11-billing-live');
 injectRepair('portal/index.html','../assets/vms-portal-payments.js','vms-phase11-portal-payments');
