@@ -67,7 +67,7 @@
     },
     {
       id:'linkhub-pro',name:'VMS LinkHub Pro',kind:'subscription',category:'LinkHub',icon:'LH+',status:'Published',featured:true,displayOrder:53,
-      description:'The complete managed LinkHub membership with premium features, analytics, and ongoing control from the Client Portal.',pricingModel:'Recurring',oneTimePrice:null,recurringPrice:14.99,cadence:'Monthly',startingAt:false,salesMode:'Buy Now',websiteVisible:true,portalVisible:true,promoEligible:true,
+      description:'The complete managed LinkHub membership with premium features, analytics, and ongoing control from the Client Portal.',pricingModel:'Recurring',oneTimePrice:null,recurringPrice:19.99,cadence:'Monthly',startingAt:false,salesMode:'Buy Now',websiteVisible:true,portalVisible:true,promoEligible:true,
       features:['Everything in LinkHub Core','Restaurant Menu included','Wi‑Fi feature included','Smart Scan Activity','LinkHub views and click analytics','Dynamic management and ongoing updates','Client Portal management'],included:['VMS LinkHub Core','LinkHub Wi‑Fi Feature','LinkHub Restaurant Menu','Smart Scan Activity'],metadata:{family:'linkhub',plan:'pro',analyticsIncluded:true}
     },
     {
