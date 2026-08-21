@@ -1,5 +1,5 @@
 import type { Config } from "@netlify/functions";
-import { jsonError } from "./_shared/auth.mts";
+import { jsonError, requireAdmin } from "./_shared/auth.mts";
 
 type Row = Record<string, any>;
 type AuditCategory = "website" | "google" | "reviews" | "systems";
@@ -33,37 +33,6 @@ type WebSnapshot = {
 };
 
 const clean=(v:any,n=2000)=>String(v??"").trim().slice(0,n);
-
-function runtimeEnv(name:string){
-  const netlifyEnv=(globalThis as any)?.Netlify?.env;
-  const processEnv=((globalThis as any)?.process?.env||{}) as Record<string,string|undefined>;
-  return clean(netlifyEnv?.get?.(name)??processEnv[name],1200);
-}
-
-async function requireAuditOwner(req:Request){
-  const auth=clean(req.headers.get("authorization"),4000);
-  const token=auth.match(/^Bearer\s+(.+)$/i)?.[1]?.trim()||"";
-  if(!token)throw Object.assign(new Error("Please sign in again."),{status:401,code:"auth_required"});
-
-  const supabaseUrl=runtimeEnv("SUPABASE_URL").replace(/\/$/,"");
-  const publishableKey=runtimeEnv("SUPABASE_PUBLISHABLE_KEY")||runtimeEnv("SUPABASE_ANON_KEY");
-  const ownerUserId=runtimeEnv("VMS_ADMIN_USER_ID");
-  if(!supabaseUrl||!publishableKey||!ownerUserId){
-    throw Object.assign(new Error("Audit AI admin authorization is not configured."),{status:503,code:"audit_admin_not_configured"});
-  }
-
-  const verify=await fetch(`${supabaseUrl}/auth/v1/user`,{
-    headers:{apikey:publishableKey,Authorization:`Bearer ${token}`}
-  });
-  if(!verify.ok){
-    throw Object.assign(new Error("Your admin session has expired. Please sign in again."),{status:401,code:"invalid_admin_session"});
-  }
-  const user=await verify.json().catch(()=>({}));
-  if(clean(user?.id,120)!==ownerUserId){
-    throw Object.assign(new Error("This account is not authorized to run VMS Audit AI."),{status:403,code:"audit_admin_forbidden"});
-  }
-  return user;
-}
 const clamp=(n:number,min=0,max=100)=>Math.min(max,Math.max(min,n));
 const CATS:AuditCategory[]=["website","google","reviews","systems"];
 
@@ -288,8 +257,11 @@ function finalize(model:Row,website:WebSnapshot|null,meta:Row){
 }
 
 export default async(req:Request)=>{
+  let stage="authorize";
   try{
-    await requireAuditOwner(req);if(req.method!=="POST")return Response.json({error:"Method not allowed."},{status:405});
+    await requireAdmin(req);
+    if(req.method!=="POST")return Response.json({error:"Method not allowed.",code:"method_not_allowed",stage},{status:405});
+    stage="validate_request";
     const body=await req.json().catch(()=>({}));
     // Phase 13 compatibility: the approved Audit page has existed through several
     // production layers. Accept both the current API field names and the legacy
@@ -302,11 +274,21 @@ export default async(req:Request)=>{
     const googleUrl=clean(body.google_url??body.googleUrl??body.googleBusinessUrl??body.google??"",900);
     const reviewerNotes=clean(body.internal_notes??body.internalNotes??body.overviewNotes??body.notes??"",2200);
     const reviewPlatforms=Array.isArray(body.review_platforms)?body.review_platforms:Array.isArray(body.reviewPlatforms)?body.reviewPlatforms:[];
-    let website:WebSnapshot|null=null;let websiteError="";if(websiteUrl){try{website=await buildWebsiteSnapshot(websiteUrl)}catch(e:any){websiteError=clean(e?.message,500)}}
+    let website:WebSnapshot|null=null;let websiteError="";
+    stage="website_scan";
+    if(websiteUrl){try{website=await buildWebsiteSnapshot(websiteUrl)}catch(e:any){websiteError=clean(e?.message,500)}}
     const context={business:{name:businessName,industry:clean(body.industry??body.businessIndustry,180),website_url:websiteUrl,google_url:googleUrl,reviewer_notes:reviewerNotes,review_platforms:reviewPlatforms.slice(0,8)},live_website_snapshot:website,website_check_error:websiteError||null,vms_rubric:rubricForPrompt(),task:"Score only what can be supported by evidence. Use web search for public local/review evidence and the live snapshot for website evidence. Return N/A for internal facts not established by reviewer notes."};
-    const ai=await openAiAudit(context);const result=finalize(ai.parsed,website,ai);if(websiteError)result.warnings.unshift(`Website live check: ${websiteError}`);
+    stage="openai";
+    const ai=await openAiAudit(context);
+    stage="finalize";
+    const result=finalize(ai.parsed,website,ai);if(websiteError)result.warnings.unshift(`Website live check: ${websiteError}`);
     return Response.json({ok:true,result},{headers:{"Cache-Control":"no-store"}});
-  }catch(error){return jsonError(error)}
+  }catch(error:any){
+    const status=Number(error?.status)||500;
+    const message=clean(error?.message,700)||"Audit AI could not complete the request.";
+    const code=clean(error?.code,120)||(status===500?"audit_internal_error":"audit_request_error");
+    return Response.json({error:message,code,stage},{status,headers:{"Cache-Control":"no-store"}});
+  }
 };
 
 export const config:Config={path:"/api/ai-audit"};
