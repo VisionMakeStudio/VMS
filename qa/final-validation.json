@@ -1,0 +1,16 @@
+{
+  "ok": true,
+  "checkedAt": "2026-08-21T20:34:35.609Z",
+  "stats": {
+    "html": 27,
+    "links": 436,
+    "scripts": 67,
+    "adminPages": 16,
+    "portalPages": 5
+  },
+  "failures": [],
+  "warnings": [
+    "portal/index.html: source privacy gate missing; Phase 10 publish gate will be injected",
+    "portal/qr.html: source privacy gate missing; Phase 10 publish gate will be injected"
+  ]
+}
