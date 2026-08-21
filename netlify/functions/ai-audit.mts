@@ -213,9 +213,11 @@ function annotationSources(r:Row){
   return out;
 }
 async function openAiAudit(context:Row){
-  const env=((globalThis as any)?.process?.env||{}) as Record<string,string|undefined>;
-  const key=clean(env.OPENAI_API_KEY,500);if(!key)throw Object.assign(new Error("Audit AI is not connected yet. Add OPENAI_API_KEY in Netlify first."),{status:503,code:"openai_not_configured"});
-  const model=clean(env.OPENAI_AUDIT_MODEL,120)||"gpt-5.6-luna";
+  const netlifyEnv=(globalThis as any)?.Netlify?.env;
+  const processEnv=((globalThis as any)?.process?.env||{}) as Record<string,string|undefined>;
+  const getEnv=(name:string)=>clean(netlifyEnv?.get?.(name)??processEnv[name],500);
+  const key=getEnv("OPENAI_API_KEY");if(!key)throw Object.assign(new Error("Audit AI is not connected yet. Add OPENAI_API_KEY in Netlify first."),{status:503,code:"openai_not_configured"});
+  const model=clean(getEnv("OPENAI_AUDIT_MODEL"),120)||"gpt-5.6-luna";
   const instructions=`You are the internal audit engine for Vision Make Studio (VMS). Produce a rigorous business presence audit using the exact VMS rubric supplied by the application.\n\nRules:\n1. Use the supplied live website snapshot as factual evidence for the website category. Do not claim Lighthouse/Core Web Vitals measurements; the snapshot is a lightweight live technical check.\n2. Use web search to verify the public business footprint, especially Google/local presence, reviews, reputation, and visible competitors. Prefer official business pages, the business website, Google-visible results, major review platforms, and credible directory/business sources.\n3. Never invent a Google profile, rating, review count, review recency, hours, address, competitor comparison, booking system, automation, CRM, follow-up system, or internal workflow. If evidence is insufficient, use points=null and label="N/A" and explain what needs manual review.\n4. For internal YOU-only systems (follow-up, organization, automation, integration, review request process), only score them when the supplied reviewer notes explicitly establish the fact. Otherwise return N/A.\n5. Every numeric points value must exactly match one allowed points value for that rubric item. No arbitrary numbers.\n6. Keep reasons and Assessment Notes concise, professional, client-safe, and natural. Do not say "the AI thinks" or "AI-generated". Use wording such as "The assessment found" or "Current evidence shows".\n7. Recommendations must be specific and actionable.\n8. Do not lower a score merely because evidence is unavailable; use N/A instead.\n9. Use no more web searching than necessary.\n10. Output only the structured response schema.`;
   const payload={model,store:false,instructions,input:JSON.stringify(context),tools:[{type:"web_search"}],tool_choice:"auto",max_output_tokens:6500,text:{verbosity:"low",format:{type:"json_schema",name:"vms_business_audit",description:"VMS business audit with exact rubric selections and evidence.",strict:true,schema:RESPONSE_SCHEMA}}};
   const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),42000);
@@ -257,9 +259,20 @@ function finalize(model:Row,website:WebSnapshot|null,meta:Row){
 export default async(req:Request)=>{
   try{
     await requireAdmin(req);if(req.method!=="POST")return Response.json({error:"Method not allowed."},{status:405});
-    const body=await req.json().catch(()=>({}));const businessName=clean(body.business_name,180);if(!businessName)throw Object.assign(new Error("Business name is required before running the audit."),{status:400});
-    const websiteUrl=normalizeWebsite(body.website_url);let website:WebSnapshot|null=null;let websiteError="";if(websiteUrl){try{website=await buildWebsiteSnapshot(websiteUrl)}catch(e:any){websiteError=clean(e?.message,500)}}
-    const context={business:{name:businessName,industry:clean(body.industry,180),website_url:websiteUrl,google_url:clean(body.google_url,900),reviewer_notes:clean(body.internal_notes,2200),review_platforms:Array.isArray(body.review_platforms)?body.review_platforms.slice(0,8):[]},live_website_snapshot:website,website_check_error:websiteError||null,vms_rubric:rubricForPrompt(),task:"Score only what can be supported by evidence. Use web search for public local/review evidence and the live snapshot for website evidence. Return N/A for internal facts not established by reviewer notes."};
+    const body=await req.json().catch(()=>({}));
+    // Phase 13 compatibility: the approved Audit page has existed through several
+    // production layers. Accept both the current API field names and the legacy
+    // camelCase names so an older browser/script cannot turn a valid filled form
+    // into an HTTP 400 simply because it used the previous payload contract.
+    const businessName=clean(body.business_name??body.businessName??body.name,180);
+    if(!businessName)throw Object.assign(new Error("Business name is required before running the audit."),{status:400,code:"business_name_required"});
+    const rawWebsite=body.website_url??body.websiteUrl??body.website??"";
+    const websiteUrl=normalizeWebsite(rawWebsite);
+    const googleUrl=clean(body.google_url??body.googleUrl??body.googleBusinessUrl??body.google??"",900);
+    const reviewerNotes=clean(body.internal_notes??body.internalNotes??body.overviewNotes??body.notes??"",2200);
+    const reviewPlatforms=Array.isArray(body.review_platforms)?body.review_platforms:Array.isArray(body.reviewPlatforms)?body.reviewPlatforms:[];
+    let website:WebSnapshot|null=null;let websiteError="";if(websiteUrl){try{website=await buildWebsiteSnapshot(websiteUrl)}catch(e:any){websiteError=clean(e?.message,500)}}
+    const context={business:{name:businessName,industry:clean(body.industry??body.businessIndustry,180),website_url:websiteUrl,google_url:googleUrl,reviewer_notes:reviewerNotes,review_platforms:reviewPlatforms.slice(0,8)},live_website_snapshot:website,website_check_error:websiteError||null,vms_rubric:rubricForPrompt(),task:"Score only what can be supported by evidence. Use web search for public local/review evidence and the live snapshot for website evidence. Return N/A for internal facts not established by reviewer notes."};
     const ai=await openAiAudit(context);const result=finalize(ai.parsed,website,ai);if(websiteError)result.warnings.unshift(`Website live check: ${websiteError}`);
     return Response.json({ok:true,result},{headers:{"Cache-Control":"no-store"}});
   }catch(error){return jsonError(error)}
