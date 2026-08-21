@@ -392,3 +392,27 @@ html.vms-phase3-portal :where(.billing-item strong,.choice strong,.notification-
   .vms-required-pill{display:none}
   .vms-notification-settings-btn{width:100%!important;margin-top:9px!important}
 }
+
+/* =========================================================
+   Review fixes — Aug 21
+   ========================================================= */
+
+/* Public homepage: keep the How It Works heading readable on the navy workflow block.
+   This intentionally changes only text contrast; the homepage logo is untouched. */
+html.vms-public-surface .workflow .section-head h2,
+html.vms-public-surface #how .section-head h2{
+  color:#FDF0D5!important;
+  text-shadow:0 1px 0 rgba(0,0,0,.04);
+}
+html.vms-public-surface .workflow .section-head p,
+html.vms-public-surface #how .section-head p{
+  color:#c4d7df!important;
+}
+
+/* Service Catalog: separate the navy source-of-truth intro from the four summary cards. */
+html.vms-page-service-catalog :is(.content,.page-content,.admin-content) > :is(.intro,.catalog-hero,.service-catalog-hero,.source-of-truth){
+  margin-bottom:30px!important;
+}
+html.vms-page-service-catalog :is(.content,.page-content,.admin-content) > :is(.intro,.catalog-hero,.service-catalog-hero,.source-of-truth) + :is(.status-strip,.stats,.summary-grid,.metric-grid,.catalog-stats){
+  margin-top:0!important;
+}
