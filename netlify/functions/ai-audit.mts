@@ -1,5 +1,5 @@
 import type { Config } from "@netlify/functions";
-import { jsonError, requireAdmin } from "./_shared/auth.mts";
+import { jsonError } from "./_shared/auth.mts";
 
 type Row = Record<string, any>;
 type AuditCategory = "website" | "google" | "reviews" | "systems";
@@ -33,6 +33,37 @@ type WebSnapshot = {
 };
 
 const clean=(v:any,n=2000)=>String(v??"").trim().slice(0,n);
+
+function runtimeEnv(name:string){
+  const netlifyEnv=(globalThis as any)?.Netlify?.env;
+  const processEnv=((globalThis as any)?.process?.env||{}) as Record<string,string|undefined>;
+  return clean(netlifyEnv?.get?.(name)??processEnv[name],1200);
+}
+
+async function requireAuditOwner(req:Request){
+  const auth=clean(req.headers.get("authorization"),4000);
+  const token=auth.match(/^Bearer\s+(.+)$/i)?.[1]?.trim()||"";
+  if(!token)throw Object.assign(new Error("Please sign in again."),{status:401,code:"auth_required"});
+
+  const supabaseUrl=runtimeEnv("SUPABASE_URL").replace(/\/$/,"");
+  const publishableKey=runtimeEnv("SUPABASE_PUBLISHABLE_KEY")||runtimeEnv("SUPABASE_ANON_KEY");
+  const ownerUserId=runtimeEnv("VMS_ADMIN_USER_ID");
+  if(!supabaseUrl||!publishableKey||!ownerUserId){
+    throw Object.assign(new Error("Audit AI admin authorization is not configured."),{status:503,code:"audit_admin_not_configured"});
+  }
+
+  const verify=await fetch(`${supabaseUrl}/auth/v1/user`,{
+    headers:{apikey:publishableKey,Authorization:`Bearer ${token}`}
+  });
+  if(!verify.ok){
+    throw Object.assign(new Error("Your admin session has expired. Please sign in again."),{status:401,code:"invalid_admin_session"});
+  }
+  const user=await verify.json().catch(()=>({}));
+  if(clean(user?.id,120)!==ownerUserId){
+    throw Object.assign(new Error("This account is not authorized to run VMS Audit AI."),{status:403,code:"audit_admin_forbidden"});
+  }
+  return user;
+}
 const clamp=(n:number,min=0,max=100)=>Math.min(max,Math.max(min,n));
 const CATS:AuditCategory[]=["website","google","reviews","systems"];
 
@@ -258,7 +289,7 @@ function finalize(model:Row,website:WebSnapshot|null,meta:Row){
 
 export default async(req:Request)=>{
   try{
-    await requireAdmin(req);if(req.method!=="POST")return Response.json({error:"Method not allowed."},{status:405});
+    await requireAuditOwner(req);if(req.method!=="POST")return Response.json({error:"Method not allowed."},{status:405});
     const body=await req.json().catch(()=>({}));
     // Phase 13 compatibility: the approved Audit page has existed through several
     // production layers. Accept both the current API field names and the legacy
