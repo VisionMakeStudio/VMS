@@ -4,7 +4,7 @@
   const TEST_EMAIL='info@visionmakestudio.com';
   const isLocal=location.protocol==='file:';
   const ADMIN_FAST_NAV_KEY='vms_admin_fast_nav';
-  const FINAL_POLISH_VERSION='20260821-review-fixes';
+  const FINAL_POLISH_VERSION='20260821-unified-admin-shell-v2';
 
   function surfaceClass(){
     const path=(location.pathname||'/').toLowerCase();
@@ -29,67 +29,14 @@
     const ensureAdminShell=()=>{
       const path=(location.pathname||'/').toLowerCase();
       if(!path.startsWith('/admin/')||/\/admin\/login(?:\.html)?\/?$/.test(path))return;
-      if(document.querySelector('#vms-admin-sidebar,aside.sidebar,aside.side'))return;
-
-      const current=(path.split('/').filter(Boolean).pop()||'index.html').toLowerCase();
-      const nav=[
-        ['index.html','Home','⌂'],
-        ['audit.html','VMS Audit','✦'],
-        ['qr.html','QR Tools','▦'],
-        ['clients.html','Clients','◎'],
-        ['service-catalog.html','Service Catalog','◇'],
-        ['billing.html','Billing / Subscriptions','$'],
-        ['promotions.html','Promotions','%'],
-        ['projects.html','Projects & Requests','✓'],
-        ['files.html','Files & Assets','▤'],
-        ['activity.html','Notifications & Activity','●'],
-        ['linkhub.html','VMS LinkHub','↗'],
-        ['analytics.html','Analytics','◫'],
-        ['leads.html','CRM / Leads','◉'],
-        ['marketing.html','Sales Content','◆'],
-        ['automations.html','Automations','⚡'],
-        ['security.html','Security & Access','⌾']
-      ];
-      const titleMap=new Map(nav.map(([href,label])=>[href,label]));
-      const pageTitle=titleMap.get(current)||document.querySelector('h1')?.textContent?.trim()||'VMS Admin';
-
-      if(!document.getElementById('vms-shared-admin-shell-style')){
-        const st=document.createElement('style');
-        st.id='vms-shared-admin-shell-style';
-        st.textContent=`
-          body.vms-shared-admin-shell{padding:72px 0 0 236px!important;min-height:100vh!important;overflow-x:hidden!important}
-          #vms-admin-sidebar{position:fixed;inset:0 auto 0 0;width:236px;background:linear-gradient(180deg,#003049 0%,#00283d 70%,#06263a 100%);z-index:9998;color:#fff;padding:20px 14px 15px;display:flex;flex-direction:column;box-shadow:12px 0 36px rgba(0,28,45,.08)}
-          .vms-admin-brand{display:flex;align-items:center;gap:11px;padding:2px 10px 18px;border-bottom:1px solid rgba(255,255,255,.13)}
-          .vms-admin-brand img{width:94px;height:54px;object-fit:contain;object-position:left center;display:block}
-          .vms-admin-brand-copy{display:grid;gap:2px}.vms-admin-brand-copy strong{font-size:11px;line-height:1.05}.vms-admin-brand-copy span{font-size:8px;letter-spacing:.16em;color:#9fbdc9;font-weight:900}
-          .vms-admin-nav{display:grid;gap:4px;margin-top:15px;overflow:auto}.vms-admin-nav a{color:#d8e6eb;text-decoration:none;border-radius:11px;padding:10px 11px;font-size:11px;font-weight:850;min-height:38px;display:flex;align-items:center;gap:9px}.vms-admin-nav a:hover{background:rgba(255,255,255,.07);color:#fff}.vms-admin-nav a.active{color:#ff7a45;background:rgba(255,255,255,.10)}
-          .vms-nav-icon{width:21px;text-align:center;opacity:.9;font-size:12px}.vms-admin-foot{margin-top:auto;border-top:1px solid rgba(255,255,255,.12);padding:13px 9px 2px;display:grid;gap:8px}.vms-admin-foot a{color:#a7c0cb;text-decoration:none;font-size:9px;font-weight:800}.vms-admin-foot small{color:#7897a5;line-height:1.45;font-size:7.5px}
-          #vms-admin-topbar{position:fixed;top:0;right:0;left:236px;height:72px;background:rgba(255,255,255,.97);backdrop-filter:blur(14px);border-bottom:1px solid #dce7eb;z-index:9997;display:flex;align-items:center;justify-content:space-between;padding:0 24px;gap:15px}
-          .vms-admin-top-left{display:flex;align-items:center;gap:11px;min-width:0}.vms-admin-menu{display:none;width:44px;height:44px;border:1px solid #d6e2e7;background:#fff;color:#003049;border-radius:12px;font-size:19px;font-weight:900}.vms-admin-page-title small{display:block;color:#8b9da6;font-size:8px;font-weight:950;letter-spacing:.14em}.vms-admin-page-title strong{display:block;color:#003049;font-size:20px;line-height:1.1;margin-top:3px}.vms-admin-top-actions{display:flex;align-items:center;gap:8px}.vms-shell-btn{height:39px;border:1px solid #d6e2e7;border-radius:10px;background:#fff;color:#003049;padding:0 12px;font-weight:900;font-size:10px;display:inline-flex;align-items:center;justify-content:center;text-decoration:none}.vms-shell-btn.primary{background:#003049;border-color:#003049;color:#fff}
-          #vms-admin-backdrop{display:none;position:fixed;inset:0;background:rgba(0,28,45,.48);z-index:9996}
-          body.vms-shared-admin-shell>main,body.vms-shared-admin-shell>.page{max-width:none!important;margin-left:0!important;margin-right:0!important}
-          @media(max-width:820px){body.vms-shared-admin-shell{padding:70px 0 0!important}#vms-admin-sidebar{width:min(82vw,340px);transform:translateX(-105%);transition:transform .24s ease}body.vms-admin-drawer-open #vms-admin-sidebar{transform:translateX(0)}body.vms-admin-drawer-open #vms-admin-backdrop{display:block}#vms-admin-topbar{left:0;height:70px;padding:0 16px}.vms-admin-menu{display:grid;place-items:center}.vms-admin-page-title strong{font-size:18px}.vms-admin-top-actions .desktop-only-shell{display:none}}
-        `;
-        document.head.appendChild(st);
-      }
-
-      const aside=document.createElement('aside');
-      aside.id='vms-admin-sidebar';
-      aside.innerHTML=`<div class="vms-admin-brand"><img src="../assets/vms-logo.png" alt="Vision Make Studio"><div class="vms-admin-brand-copy"><strong>Vision Make Studio</strong><span>ADMIN</span></div></div><nav class="vms-admin-nav">${nav.map(([href,label,icon])=>`<a href="${href}" class="${current===href.toLowerCase()?'active':''}"><span class="vms-nav-icon">${icon}</span><span>${label}</span></a>`).join('')}</nav><div class="vms-admin-foot"><a href="../portal/">Client Portal</a><a href="../index.html">Public Website</a><small>VMS Admin · Private workspace<br>info@visionmakestudio.com</small></div>`;
-
-      const header=document.createElement('header');
-      header.id='vms-admin-topbar';
-      header.innerHTML=`<div class="vms-admin-top-left"><button class="vms-admin-menu" type="button" aria-label="Open admin menu">☰</button><div class="vms-admin-page-title"><small>VMS ADMIN</small><strong>${pageTitle}</strong></div></div><div class="vms-admin-top-actions"><a class="vms-shell-btn desktop-only-shell" href="../portal/">Client Portal</a><a class="vms-shell-btn primary" href="../index.html">View Site</a></div>`;
-      const backdrop=document.createElement('div');backdrop.id='vms-admin-backdrop';
-      document.body.prepend(backdrop,header,aside);
-      document.body.classList.add('vms-shared-admin-shell');
-      const close=()=>document.body.classList.remove('vms-admin-drawer-open');
-      header.querySelector('.vms-admin-menu')?.addEventListener('click',()=>document.body.classList.toggle('vms-admin-drawer-open'));
-      backdrop.addEventListener('click',close);
-      aside.querySelectorAll('a').forEach(a=>a.addEventListener('click',close));
-      document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
+      if(document.getElementById('vmsCanonicalAdminSidebar'))return;
+      if(document.querySelector('script[data-vms-canonical-admin-shell="1"]'))return;
+      const script=document.createElement('script');
+      script.src='/assets/vms-admin-shell.js?v=20260821-final';
+      script.async=false;
+      script.dataset.vmsCanonicalAdminShell='1';
+      document.head.appendChild(script);
     };
-
     if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ensureAdminShell,{once:true});else ensureAdminShell();
 
     if(!document.querySelector('link[data-vms-final-polish="1"]')){
