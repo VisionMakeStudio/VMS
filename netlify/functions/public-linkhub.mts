@@ -1,7 +1,7 @@
 import type { Config } from "@netlify/functions";
 
 function env(name:string){
-  try{return Netlify.env.get(name)||""}catch{return process.env[name]||""}
+  try{return Netlify.env.get(name)||""}catch{return (globalThis as any).process?.env?.[name]||""}
 }
 function escapeHtml(value:any){return String(value??"").replace(/[&<>"']/g,(c)=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"} as Record<string,string>)[c]||c)}
 function safeUrl(value:any){
