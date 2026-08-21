@@ -1,0 +1,394 @@
+/* Vision Make Studio — Final Polish shared UI foundation (Phase 1 checkpoint) */
+:root{
+  --vms-navy:#003049;
+  --vms-deep:#08283d;
+  --vms-cream:#FDF0D5;
+  --vms-red:#C1121F;
+  --vms-blue:#669BBC;
+  --vms-orange:#EB5E28;
+  --vms-success:#23825f;
+  --vms-warning:#b66d10;
+  --vms-muted:#667e89;
+  --vms-line:#dce7eb;
+  --vms-control-h:42px;
+  --vms-radius:11px;
+  --vms-body-size:clamp(15.5px,calc(14.9px + .13vw),17px);
+  --vms-label-size:clamp(11.5px,calc(11px + .08vw),12.5px);
+  --vms-button-size:clamp(13px,calc(12.5px + .09vw),14.5px);
+}
+
+html.vms-admin-surface body,
+html.vms-portal-surface body,
+html.vms-public-surface body{
+  -webkit-text-size-adjust:100%;
+  text-size-adjust:100%;
+  font-size:var(--vms-body-size)!important;
+  line-height:1.5;
+  text-rendering:optimizeLegibility;
+}
+
+/* Readable UI type without inflating device mockups / QR artwork previews. */
+html.vms-admin-surface :where(.content,.main,.panel,.card,.modal,.toolbar,.topbar,#vms-admin-topbar) :where(p,li,td,th),
+html.vms-portal-surface :where(.content,.main,.panel,.card,.modal,.toolbar,.topbar) :where(p,li,td,th){
+  line-height:1.48;
+}
+html.vms-admin-surface :where(.field,.form-field,.control-group) > label,
+html.vms-portal-surface :where(.field,.form-field,.control-group) > label,
+html.vms-admin-surface :where(.eyebrow,.kicker),
+html.vms-portal-surface :where(.eyebrow,.kicker){
+  font-size:var(--vms-label-size)!important;
+  line-height:1.25!important;
+}
+html.vms-admin-surface :where(input,select,textarea),
+html.vms-portal-surface :where(input,select,textarea){
+  font-size:clamp(14px,calc(13.5px + .08vw),15.5px)!important;
+  line-height:1.35!important;
+}
+html.vms-admin-surface :where(.btn,button:not(.icon-btn):not(.close):not(.special-back)),
+html.vms-portal-surface :where(.btn,button:not(.icon-btn):not(.close):not(.special-back)){
+  font-size:var(--vms-button-size);
+}
+html.vms-admin-surface :where(.nav a,.nav button,.vms-admin-nav a),
+html.vms-portal-surface :where(.nav a,.nav button,.side-nav a,.portal-nav a){
+  font-size:clamp(12.5px,calc(12px + .08vw),14px)!important;
+  line-height:1.25!important;
+}
+html.vms-admin-surface :where(.topbar-left small,.vms-admin-page-title small,.vms-admin-foot small,.side-foot small),
+html.vms-portal-surface :where(.topbar-left small,.portal-page-title small,.side-foot small){
+  font-size:clamp(10px,calc(9.6px + .07vw),11.5px)!important;
+}
+html.vms-admin-surface :where(.topbar-left strong,.vms-admin-page-title strong),
+html.vms-portal-surface :where(.topbar-left strong,.portal-page-title strong){
+  font-size:clamp(18px,calc(17px + .22vw),22px)!important;
+}
+html.vms-admin-surface :where(.stat > span,.metric > span),
+html.vms-portal-surface :where(.stat > span,.metric > span){
+  font-size:clamp(10.5px,calc(10px + .07vw),12px)!important;
+}
+html.vms-admin-surface :where(.stat > small,.metric > small,.helper,.hint,.muted),
+html.vms-portal-surface :where(.stat > small,.metric > small,.helper,.hint,.muted){
+  font-size:clamp(11.5px,calc(11px + .07vw),13px)!important;
+  line-height:1.4!important;
+}
+
+/* Compact checkbox / radio foundation. Prevents stretched full-card checkmarks. */
+html.vms-admin-surface input[type="checkbox"],
+html.vms-admin-surface input[type="radio"],
+html.vms-portal-surface input[type="checkbox"],
+html.vms-portal-surface input[type="radio"]{
+  inline-size:18px!important;
+  block-size:18px!important;
+  min-inline-size:18px!important;
+  min-block-size:18px!important;
+  max-inline-size:18px!important;
+  max-block-size:18px!important;
+  flex:0 0 18px!important;
+  padding:0!important;
+  margin:2px 0 0!important;
+  accent-color:var(--vms-navy);
+  vertical-align:top;
+}
+html.vms-admin-surface :where(.check-line,.permission,.check-row,.offer-option,.toggle-row,.setting-row),
+html.vms-portal-surface :where(.check-line,.permission,.check-row,.offer-option,.toggle-row,.setting-row){
+  min-height:auto!important;
+  height:auto!important;
+  align-items:flex-start!important;
+  gap:10px!important;
+}
+html.vms-admin-surface :where(.check-line,.permission,.check-row,.offer-option) > input,
+html.vms-portal-surface :where(.check-line,.permission,.check-row,.offer-option) > input{
+  align-self:flex-start!important;
+}
+
+/* Shared compact switches. Existing custom switch markup can opt in with .vms-switch. */
+.vms-switch{
+  width:44px!important;
+  height:25px!important;
+  min-width:44px!important;
+  padding:2px!important;
+  border-radius:999px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  background:#cdd8dd!important;
+  transition:background .18s ease!important;
+  flex:0 0 44px!important;
+}
+.vms-switch::after{
+  content:"";
+  width:21px;
+  height:21px;
+  border-radius:50%;
+  background:#fff;
+  box-shadow:0 1px 4px rgba(0,30,45,.24);
+  transform:translateX(0);
+  transition:transform .18s ease;
+}
+.vms-switch[aria-checked="true"],.vms-switch.active,.vms-switch.on{background:var(--vms-success)!important}
+.vms-switch[aria-checked="true"]::after,.vms-switch.active::after,.vms-switch.on::after{transform:translateX(19px)}
+
+/* Compact non-stretched status language across the suite. */
+.vms-status-pill,
+html.vms-admin-surface .status-pill,
+html.vms-portal-surface .status-pill{
+  width:auto!important;
+  max-width:max-content!important;
+  min-height:26px!important;
+  padding:5px 9px!important;
+  border-radius:999px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:6px!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  font-size:clamp(10.5px,calc(10px + .06vw),12px)!important;
+  font-weight:850!important;
+}
+.vms-status-pill::before{
+  content:"";
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:currentColor;
+  flex:0 0 7px;
+}
+.vms-status-pill[data-status="active"],.vms-status-pill[data-status="paid"],.vms-status-pill[data-status="published"],.vms-status-pill[data-status="completed"]{color:var(--vms-success);background:#edf8f3;border:1px solid #cfe9dd}
+.vms-status-pill[data-status="pending"],.vms-status-pill[data-status="draft"]{color:var(--vms-warning);background:#fff7e9;border:1px solid #f2ddba}
+.vms-status-pill[data-status="past-due"],.vms-status-pill[data-status="failed"],.vms-status-pill[data-status="disabled"]{color:var(--vms-red);background:#fff0f1;border:1px solid #f1cbd0}
+.vms-status-pill[data-status="inactive"],.vms-status-pill[data-status="archived"]{color:#647681;background:#f1f5f6;border:1px solid #dbe3e6}
+
+/* Action controls should stay compact instead of stretching to card width. */
+html.vms-admin-surface :where(.actions,.top-actions,.row-actions,.panel-actions),
+html.vms-portal-surface :where(.actions,.top-actions,.row-actions,.panel-actions){
+  align-items:center!important;
+}
+.vms-kebab{
+  width:36px!important;
+  height:36px!important;
+  min-width:36px!important;
+  min-height:36px!important;
+  padding:0!important;
+  border:1px solid var(--vms-line)!important;
+  border-radius:10px!important;
+  background:#fff!important;
+  color:var(--vms-navy)!important;
+  display:inline-grid!important;
+  place-items:center!important;
+  font-size:20px!important;
+  line-height:1!important;
+}
+
+/* Desktop: permanent sidebar means no hamburger. Mobile/tablet: drawer control remains available. */
+@media (min-width:821px){
+  html.vms-admin-surface :where(.vms-admin-menu,.mobile-menu,#mobileMenuBtn,.hamburger,.menu-toggle){display:none!important}
+}
+@media (max-width:820px){
+  html.vms-admin-surface :where(.vms-admin-menu,.mobile-menu,#mobileMenuBtn),
+  html.vms-portal-surface :where(.mobile-menu,#mobileMenuBtn,.hamburger,.menu-toggle){
+    min-width:42px!important;
+    width:42px!important;
+    height:42px!important;
+    padding:0!important;
+    align-items:center!important;
+    justify-content:center!important;
+  }
+}
+
+/* Comfortable controls / touch targets. */
+html.vms-admin-surface :where(.btn,input:not([type="checkbox"]):not([type="radio"]),select),
+html.vms-portal-surface :where(.btn,input:not([type="checkbox"]):not([type="radio"]),select){
+  min-height:40px;
+}
+html.vms-admin-surface textarea,html.vms-portal-surface textarea{min-height:88px}
+
+/* Keyboard/accessibility states. */
+html.vms-admin-surface :where(a,button,input,select,textarea):focus-visible,
+html.vms-portal-surface :where(a,button,input,select,textarea):focus-visible,
+html.vms-public-surface :where(a,button,input,select,textarea):focus-visible{
+  outline:3px solid rgba(102,155,188,.42)!important;
+  outline-offset:2px!important;
+}
+
+/* Shared toast layer used by VMSUI.toast()/vms:toast. */
+#vms-global-toast-region{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  z-index:2147483000;
+  display:grid;
+  gap:8px;
+  width:min(380px,calc(100vw - 28px));
+  pointer-events:none;
+}
+.vms-global-toast{
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:9px;
+  align-items:start;
+  padding:12px 14px;
+  border-radius:12px;
+  border:1px solid var(--vms-line);
+  background:#fff;
+  color:#173443;
+  box-shadow:0 18px 55px rgba(0,48,73,.18);
+  font-size:14px;
+  line-height:1.35;
+  opacity:0;
+  transform:translateY(8px);
+  transition:opacity .18s ease,transform .18s ease;
+}
+.vms-global-toast.show{opacity:1;transform:translateY(0)}
+.vms-global-toast::before{content:"✓";font-weight:950;color:var(--vms-success)}
+.vms-global-toast[data-kind="error"]::before{content:"!";color:var(--vms-red)}
+.vms-global-toast[data-kind="warning"]::before{content:"!";color:var(--vms-warning)}
+
+/* Public site keeps readable form controls without disturbing approved layout. */
+html.vms-public-surface :where(input,select,textarea,button){font-size:clamp(15px,calc(14.5px + .08vw),16.5px)}
+
+@media (max-width:600px){
+  #vms-global-toast-region{right:14px;bottom:14px}
+  html.vms-admin-surface :where(.content,.main),html.vms-portal-surface :where(.content,.main){min-width:0!important}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+
+/* =========================================================
+   Phase 2 — Admin consistency / navigation / action cleanup
+   ========================================================= */
+html.vms-phase2-admin .vms-retired-admin-sidebar{display:none!important}
+
+/* Canonical Admin menu: one item, one active state, readable at normal distance. */
+html.vms-phase2-admin :where(aside.sidebar,aside.side,#vms-admin-sidebar) nav,
+html.vms-phase2-admin :where(aside.sidebar,aside.side,#vms-admin-sidebar) .nav{
+  gap:3px!important;
+}
+html.vms-phase2-admin :where(aside.sidebar,aside.side,#vms-admin-sidebar) :where(nav,.nav) > a{
+  min-height:39px!important;
+  padding-block:9px!important;
+  font-size:clamp(12.75px,calc(12.2px + .1vw),14px)!important;
+}
+html.vms-phase2-admin :where(aside.sidebar,aside.side,#vms-admin-sidebar) :where(nav,.nav) > a.active{
+  color:var(--vms-orange)!important;
+}
+
+/* Desktop fixed sidebar and hamburger are mutually exclusive. */
+@media(min-width:821px){
+  html.vms-phase2-admin :where(.mobile-menu,#mobileMenuBtn,.vms-admin-menu,[aria-label*="admin menu" i]){display:none!important}
+}
+
+/* Settings across Service Catalog / Automations / Admin preferences. */
+html.vms-phase2-admin :where(.switch-card,.check-card,.setting-card,.permission,.check-line){
+  min-height:auto!important;
+}
+html.vms-phase2-admin :where(.switch-card,.check-card,.setting-card){
+  align-items:center!important;
+}
+html.vms-phase2-admin :where(.switch-card,.check-card,.setting-card) :where(strong,label){
+  font-size:clamp(12px,calc(11.5px + .07vw),13.5px)!important;
+}
+html.vms-phase2-admin :where(.switch-card,.check-card,.setting-card) :where(span,small,p){
+  font-size:clamp(11px,calc(10.6px + .06vw),12.5px)!important;
+  line-height:1.4!important;
+}
+/* Do not let the global checkbox rule break intentionally custom slider switches. */
+html.vms-phase2-admin label.switch input[type="checkbox"]{
+  position:absolute!important;opacity:0!important;width:1px!important;height:1px!important;min-width:1px!important;min-height:1px!important;margin:0!important;
+}
+html.vms-phase2-admin label.switch{width:44px!important;height:25px!important;min-width:44px!important;flex:0 0 44px!important}
+html.vms-phase2-admin label.switch .slider:before{width:19px!important;height:19px!important;left:3px!important;top:3px!important}
+html.vms-phase2-admin label.switch input:checked+.slider:before{transform:translateX(19px)!important}
+
+/* Three-dot action menus are the standard for dense Admin rows. */
+.vms-phase2-menu-wrap{position:relative!important;display:inline-flex!important;flex:0 0 auto!important}
+.vms-phase2-action-menu{
+  position:absolute!important;top:calc(100% + 7px)!important;right:0!important;z-index:2147482000!important;
+  display:none!important;min-width:190px!important;padding:6px!important;border:1px solid var(--vms-line)!important;
+  border-radius:12px!important;background:#fff!important;box-shadow:0 18px 48px rgba(0,48,73,.18)!important;
+}
+.vms-phase2-menu-wrap.open>.vms-phase2-action-menu{display:grid!important}
+.vms-phase2-action-menu>button{
+  width:100%!important;min-height:38px!important;border:0!important;border-radius:8px!important;background:transparent!important;
+  color:#173443!important;text-align:left!important;justify-content:flex-start!important;padding:8px 10px!important;font-size:13px!important;font-weight:750!important;
+}
+.vms-phase2-action-menu>button:hover{background:#f3f7f8!important}
+.vms-phase2-action-menu>button.danger{color:var(--vms-red)!important}
+.vms-phase2-original-action{display:none!important}
+
+/* Notifications & Activity: Select All beside Filter + one compact Bulk Actions menu. */
+html.vms-phase2-admin #desktopSelectBtn{width:auto!important;min-width:92px!important;padding-inline:13px!important}
+html.vms-phase2-admin #bulkBar{min-height:48px!important;padding:8px 12px!important;align-items:center!important}
+html.vms-phase2-admin #bulkBar .bulk-actions{margin-left:auto!important;display:flex!important;align-items:center!important}
+html.vms-phase2-admin #bulkBar .vms-phase2-bulk-trigger{width:auto!important;min-width:132px!important}
+html.vms-phase2-admin #bulkBar .vms-phase2-original-action{display:none!important}
+html.vms-phase2-admin #bulkCount{font-size:clamp(12px,calc(11.5px + .06vw),13px)!important}
+html.vms-phase2-admin #bulkScope{font-size:clamp(11px,calc(10.6px + .05vw),12px)!important}
+
+/* Promotion / public-service action alignment QA. */
+html.vms-phase2-admin .vms-new-promotion-action{transform:translateY(-3px)}
+html.vms-phase2-admin .vms-view-public-services{align-self:center!important;display:inline-flex!important;align-items:center!important;justify-content:center!important}
+
+/* Keep compact status badges from stretching in table/card layouts. */
+html.vms-phase2-admin :where(.badge,.status-chip,.service-status,.billing-status){max-width:max-content!important;width:auto!important;justify-self:start!important}
+
+@media(max-width:820px){
+  .vms-phase2-action-menu{position:fixed!important;left:12px!important;right:12px!important;top:auto!important;bottom:12px!important;min-width:0!important;border-radius:16px!important}
+  html.vms-phase2-admin #bulkBar.show{grid-template-columns:minmax(0,1fr) auto!important;display:grid!important}
+  html.vms-phase2-admin #bulkBar .bulk-actions{margin-left:0!important;justify-self:end!important}
+  html.vms-phase2-admin #bulkBar .vms-phase2-bulk-trigger{min-width:44px!important;width:44px!important;font-size:0!important;padding:0!important}
+  html.vms-phase2-admin #bulkBar .vms-phase2-bulk-trigger::after{content:"⋯";font-size:20px!important}
+}
+
+/* =========================================================
+   Phase 3 — Client Portal shell + notification settings
+   ========================================================= */
+html.vms-phase3-portal body{font-size:clamp(15px,calc(14.4px + .08vw),16.5px)!important}
+html.vms-phase3-portal :where(.topbar-left strong,#topbarTitle){font-size:clamp(17px,calc(16px + .18vw),20px)!important}
+html.vms-phase3-portal .nav button{font-size:clamp(12.5px,calc(12px + .08vw),14px)!important;line-height:1.25!important}
+html.vms-phase3-portal :where(.card,.panel,.intro,.list-item,.notification-item) :where(p,span:not(.pill):not(.badge),small){line-height:1.48}
+
+/* Notification settings live inside the existing Portal shell — no standalone white-header page. */
+.vms-notification-settings-btn{width:auto!important;white-space:nowrap!important}
+.vms-portal-settings-panel{
+  margin:0 0 14px!important;padding:16px!important;border:1px solid #dfe7ea!important;border-radius:15px!important;
+  background:#fff!important;box-shadow:0 10px 30px rgba(0,48,73,.055)!important;
+}
+.vms-portal-settings-panel[hidden]{display:none!important}
+.vms-portal-settings-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding-bottom:14px;border-bottom:1px solid #e8eef0}
+.vms-portal-settings-head small{display:block;color:#7d919b;font-size:11px!important;font-weight:900;letter-spacing:.11em}
+.vms-portal-settings-head h3{margin:4px 0 6px;color:#003049;font-size:clamp(18px,calc(17px + .18vw),21px)!important;line-height:1.2}
+.vms-portal-settings-head p{margin:0;max-width:720px;color:#6c818b;font-size:13px!important;line-height:1.55!important}
+.vms-portal-pref-group{margin-top:15px;border:1px solid #e0e8eb;border-radius:13px;overflow:hidden;background:#fff}
+.vms-portal-pref-label{padding:9px 12px;background:#f7fafb;color:#6f858f;font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;border-bottom:1px solid #e6edef}
+.vms-portal-pref-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 14px;border-bottom:1px solid #edf1f3}
+.vms-portal-pref-row:last-child{border-bottom:0}
+.vms-portal-pref-row.is-required{background:#fbfdfd}
+.vms-portal-pref-copy{min-width:0}
+.vms-portal-pref-copy strong{display:block;color:#173443;font-size:14px!important;line-height:1.3}
+.vms-portal-pref-copy span{display:block;margin-top:3px;color:#758a94;font-size:12px!important;line-height:1.45}
+.vms-portal-pref-control{display:flex;align-items:center;gap:9px;flex:0 0 auto}
+.vms-required-pill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:5px 8px;background:#edf8f3;color:#26745a;border:1px solid #cfe9dd;font-size:10.5px;font-weight:900;white-space:nowrap}
+.vms-required-pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.vms-portal-switch{position:relative;width:44px!important;height:25px!important;min-width:44px!important;display:inline-block!important;flex:0 0 44px!important;margin:0!important}
+.vms-portal-switch input{position:absolute!important;opacity:0!important;width:1px!important;height:1px!important;min-width:1px!important;min-height:1px!important;margin:0!important}
+.vms-portal-switch span{position:absolute!important;inset:0!important;border-radius:999px!important;background:#ccd8dd!important;transition:.18s ease!important;box-shadow:inset 0 0 0 1px rgba(0,48,73,.05)!important}
+.vms-portal-switch span::before{content:""!important;position:absolute!important;width:19px!important;height:19px!important;left:3px!important;top:3px!important;border-radius:50%!important;background:#fff!important;box-shadow:0 2px 7px rgba(0,48,73,.18)!important;transition:transform .18s ease!important}
+.vms-portal-switch input:checked+span{background:#2b8c69!important}
+.vms-portal-switch input:checked+span::before{transform:translateX(19px)!important}
+.vms-portal-switch input:disabled+span{background:#b9d5c9!important;opacity:.92!important}
+.vms-portal-settings-status{margin-top:10px;color:#738892;font-size:11.5px;line-height:1.45}
+
+/* Stop the old tiny Portal typography from forcing 7–10px readable content. */
+html.vms-phase3-portal :where(.billing-hero small,.billing-item span,.choice span,.notification-copy small,.linkhub-contact span){font-size:clamp(11px,calc(10.7px + .05vw),12px)!important}
+html.vms-phase3-portal :where(.billing-item strong,.choice strong,.notification-copy strong){font-size:clamp(13px,calc(12.6px + .06vw),14px)!important}
+
+@media(max-width:700px){
+  .vms-portal-settings-head{display:grid;grid-template-columns:1fr;gap:10px}
+  .vms-portal-settings-head .btn{width:max-content!important}
+  .vms-portal-pref-row{align-items:flex-start;padding:12px}
+  .vms-portal-pref-control{align-self:center}
+  .vms-required-pill{display:none}
+  .vms-notification-settings-btn{width:100%!important;margin-top:9px!important}
+}

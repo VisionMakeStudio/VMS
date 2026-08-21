@@ -22,7 +22,11 @@ export default async(req:Request)=>{
     if(!Number.isFinite(serviceAmount)||serviceAmount<=0)throw Object.assign(new Error("This service does not have a valid checkout price."),{status:409});
 
     const requiredKey=cleanText(service?.metadata?.requires,120);
-    if(requiredKey){const prerequisite=await supabaseJson(`client_services?client_id=eq.${encodeURIComponent(client.id)}&service_key=eq.${encodeURIComponent(requiredKey)}&service_status=eq.active&billing_status=in.(active,paid,trialing)&select=id&limit=1`);if(!Array.isArray(prerequisite)||!prerequisite[0])throw Object.assign(new Error("This add-on requires the matching paid VMS base service first."),{status:409,code:"missing_prerequisite"})}
+    if(requiredKey){
+      const prerequisiteFilter=String(requiredKey).toLowerCase()==="linkhub-core"?"service_key=in.(linkhub-core,linkhub-pro)":`service_key=eq.${encodeURIComponent(requiredKey)}`;
+      const prerequisite=await supabaseJson(`client_services?client_id=eq.${encodeURIComponent(client.id)}&${prerequisiteFilter}&service_status=in.(active,published,enabled)&billing_status=in.(active,paid,trialing,gifted,comped)&select=id,service_key&limit=10`);
+      if(!Array.isArray(prerequisite)||!prerequisite[0])throw Object.assign(new Error(String(requiredKey).toLowerCase()==="linkhub-core"?"This add-on requires an active LinkHub Core or Pro plan first.":"This add-on requires the matching paid VMS base service first."),{status:409,code:"missing_prerequisite"});
+    }
 
     const customerId=await ensureCustomer(client),paidInvoices=await supabaseJson(`billing_invoices?client_id=eq.${encodeURIComponent(client.id)}&status=eq.paid&select=id&limit=1`),paidPayments=await supabaseJson(`billing_payments?client_id=eq.${encodeURIComponent(client.id)}&status=eq.paid&select=id&limit=1`).catch(()=>[]),activationWaived=service?.metadata?.activationFeeWaived===true,firstPaidOrder=(!Array.isArray(paidInvoices)||paidInvoices.length===0)&&(!Array.isArray(paidPayments)||paidPayments.length===0),activationFee=firstPaidOrder&&!activationWaived?4.99:0;
     const origin=new URL(req.url).origin,params=new URLSearchParams(),mode=recurring?"subscription":"payment";

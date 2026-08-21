@@ -49,8 +49,32 @@
       .vms-reaudit-badge{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:4px 7px;background:#edf8f1;color:#28764a;font-size:8px;font-weight:900}
       .vms-report-priority{margin:8px 0 10px;border:1px solid #e6c9cc;background:#fff8f8;border-radius:10px;padding:10px}.vms-report-priority h3{font-size:11px;margin:0 0 7px;color:#8d1721}.vms-report-priority-item{font-size:9px;color:#5e6870;line-height:1.35;margin-top:5px}.vms-report-priority-item:first-of-type{margin-top:0}
       .assistant-status.error{background:#fff0f1!important;color:#9e1722!important}.assistant-status.running{background:#eef7fb!important;color:#315f79!important}
-      @media(max-width:700px){.vms-manual-bar{align-items:flex-start;flex-direction:column}.vms-manual-bar button{width:100%}.vms-submit-feedback{left:12px;right:12px;bottom:12px;max-width:none}}
-      @media print{.vms-manual-bar,.vms-ai-tech-details,.vms-ai-source-details,.vms-submit-feedback{display:none!important}}
+      .vms-report-link-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid #e4ebee}.vms-report-link-controls label{display:flex;align-items:center;gap:7px;color:#5d737f;font-size:12px;font-weight:800}.vms-report-link-controls select{min-height:38px;border:1px solid #cedbe0;border-radius:9px;background:#fff;color:#173041;padding:0 9px;font-size:13px}.vms-report-link-controls .btn{min-height:38px!important}.vms-report-danger{color:#9e1722!important;border-color:#e1c4c7!important}
+      .vms-ai-live-chip,.vms-priority-count,.vms-reaudit-badge{font-size:10px}.vms-ai-live-note,.vms-priority-item a,.vms-next-step span,.vms-report-priority-item{font-size:11px}.vms-ai-source-details summary,.vms-ai-tech-details summary,.vms-priority-item p,.vms-next-step strong,.vms-manual-bar{font-size:12px}.vms-priority-item strong,.vms-manual-bar strong{font-size:13px}
+      @media(max-width:700px){.vms-manual-bar{align-items:flex-start;flex-direction:column}.vms-manual-bar button{width:100%}.vms-submit-feedback{left:12px;right:12px;bottom:12px;max-width:none}.vms-report-link-controls{display:grid;grid-template-columns:1fr}.vms-report-link-controls label{justify-content:space-between}.vms-report-link-controls select,.vms-report-link-controls .btn{width:100%}}
+
+      /* Client report mode must be completely separate from the unified Admin shell. */
+      body.vms-unified-admin.client-mode{padding:0!important;margin:0!important;background:#eef3f5!important;overflow-x:hidden!important}
+      body.vms-unified-admin.client-mode #vms-admin-sidebar,
+      body.vms-unified-admin.client-mode #vms-admin-topbar,
+      body.vms-unified-admin.client-mode #vms-admin-backdrop,
+      body.vms-unified-admin.client-mode .vms-audit-workspace-tabs,
+      body.vms-unified-admin.client-mode .audit-subnav-wrap,
+      body.vms-unified-admin.client-mode .workspace-steps,
+      body.vms-unified-admin.client-mode .workspace-savebar{display:none!important}
+      body.vms-unified-admin.client-mode .main{margin:0!important;padding:0!important;width:100%!important;max-width:none!important}
+      body.vms-unified-admin.client-mode .content{max-width:980px!important;margin:0 auto!important;padding:28px 18px 60px!important}
+
+      @media print{
+        #vms-admin-sidebar,#vms-admin-topbar,#vms-admin-backdrop,.vms-audit-workspace-tabs,.audit-subnav-wrap,.workspace-steps,.workspace-savebar,
+        .vms-manual-bar,.vms-ai-tech-details,.vms-ai-source-details,.vms-submit-feedback{display:none!important}
+        body.vms-unified-admin,body.vms-unified-admin.client-mode{padding:0!important;margin:0!important;background:#fff!important;overflow:visible!important}
+        body.vms-unified-admin .main,body.vms-unified-admin.client-mode .main{margin:0!important;padding:0!important;width:100%!important;max-width:none!important}
+        body.vms-unified-admin .content,body.vms-unified-admin.client-mode .content{padding:0!important;margin:0!important;max-width:none!important;width:100%!important}
+        body.vms-printing-audit-report *{visibility:hidden!important}
+        body.vms-printing-audit-report #printReport,body.vms-printing-audit-report #printReport *{visibility:visible!important}
+        body.vms-printing-audit-report #printReport{display:block!important;position:absolute!important;left:0!important;top:0!important;width:100%!important;margin:0!important;padding:0!important}
+      }
     `;
     document.head.appendChild(s);
   }
@@ -200,6 +224,7 @@
     let publicText='Live Audit Assistant is temporarily unavailable. You can continue scoring manually.';
     if(status===401||status===403)publicText='Your secure admin session needs to be refreshed. Manual scoring is still available.';
     if(status===400)publicText='The live audit could not use one of the business links. Manual scoring is still available.';
+    if(/quota|billing|credits|exceeded your current quota/i.test(String(e?.message||'')))publicText='The OpenAI API quota is currently unavailable. Your audit is safe and manual scoring remains available; re-run after the API quota or credits are available again.';
     const tech=[status?`HTTP ${status}`:'',code,stage,e?.message||''].filter(Boolean).join(' · ');
     setState('Live audit unavailable — manual scoring available','error');setTechDetails(tech);
     CATS.forEach(cat=>{const s=document.getElementById('aiScore-'+cat);if(s&&s.textContent==='…')s.textContent='—';const r=document.getElementById('aiReason-'+cat);if(r&&r.textContent==='Reviewing live evidence…')r.textContent=publicText;const m=document.getElementById('aiMini'+cap(cat));if(m&&m.textContent==='…')m.textContent='—'});
@@ -220,6 +245,105 @@
       paint(d.result);if(d.result?.warnings?.length)console.info('VMS Audit AI warnings:',d.result.warnings);
     }catch(e){console.error(e);friendlyFailure(e)}
     finally{if(btn){btn.disabled=false;btn.innerHTML='<span class="desktop-label">✦ Re-run Audit</span><span class="mobile-label">✦ Re-run</span>'}}
+  }
+
+  function clientReportPayload(){
+    try{if(typeof update==='function')update()}catch{}
+    const scores={};
+    CATS.forEach(cat=>{try{scores[cat]=typeof score==='function'?score(cat):Number(document.getElementById('report'+cap(cat))?.textContent||0)}catch{scores[cat]=0}});
+    const shownOverall=Number(document.getElementById('overallTotal')?.textContent||document.getElementById('overallScore')?.textContent||NaN);
+    const vals=Object.values(scores).map(Number).filter(v=>Number.isFinite(v));
+    const overall=Number.isFinite(shownOverall)?shownOverall:(vals.length?Math.round(vals.reduce((a,b)=>a+b,0)/vals.length):0);
+    const breakdown={};
+    CATS.forEach(cat=>{
+      const items=[];
+      try{
+        if(typeof D!=='undefined'&&typeof S!=='undefined')D[cat].forEach(([id,title,max,,opts])=>{
+          if(!Object.prototype.hasOwnProperty.call(S[cat]||{},id))return;
+          const v=S[cat][id];if(v===null||typeof v!=='number'||v>=max)return;
+          const chosen=(opts||[]).find(o=>o[1]===v);
+          items.push({title,label:chosen?.[0]||'Selected result',points:v,max,lost:max-v});
+        });
+      }catch{}
+      items.sort((a,b)=>(b.lost||0)-(a.lost||0));
+      breakdown[cat]={score:scores[cat]||0,items:items.slice(0,6),note:field(cat+'You')};
+    });
+    const live=window.__VMS_AUDIT_AI_LIVE_STATE__||{};
+    return {
+      v:2,
+      business_name:field('businessName')||'Business Checkup',
+      industry:field('industry')||'Business audit',
+      scores,
+      overall,
+      grade:(typeof grade==='function'?grade(overall):''),
+      meaning:document.getElementById('reportMeaning')?.textContent?.trim?.()||'',
+      recommendation:document.getElementById('reportRec')?.textContent?.trim?.()||'',
+      breakdown,
+      priority_findings:Array.isArray(live.priority_findings)?live.priority_findings.slice(0,6):[],
+      recommendations:Array.isArray(live.recommendations)?live.recommendations.slice(0,6):[],
+      generated_at:new Date().toISOString()
+    };
+  }
+  function encodeClientPayload(obj){return btoa(unescape(encodeURIComponent(JSON.stringify(obj))))}
+  function buildPublicClientLink(){
+    const target=new URL('../audit-report.html',location.href);target.hash='report='+encodeClientPayload(clientReportPayload());return target.href;
+  }
+  let activeReportToken='';
+  function ensureReportLinkControls(){
+    const panel=document.getElementById('sharePanel');if(!panel)return null;
+    let open=document.getElementById('openShareBtn');const row=panel.querySelector('.share-row');
+    if(!open&&row){open=document.createElement('button');open.type='button';open.id='openShareBtn';open.className='btn light';const copy=document.getElementById('copyShareBtn');if(copy)row.insertBefore(open,copy);else row.appendChild(open)}
+    if(open)open.textContent='View as Client';
+    let controls=document.getElementById('vms-report-link-controls');
+    if(!controls){
+      controls=document.createElement('div');controls.id='vms-report-link-controls';controls.className='vms-report-link-controls';
+      controls.innerHTML=`<label>Link expires <select id="vmsReportExpiry"><option value="7">7 days</option><option value="30" selected>30 days</option><option value="90">90 days</option><option value="0">Never</option></select></label><button type="button" class="btn light" id="vmsRegenerateReportLink">Regenerate</button><button type="button" class="btn light vms-report-danger" id="vmsDisableReportLink">Disable Link</button>`;
+      panel.appendChild(controls);
+    }
+    return controls;
+  }
+  async function reportLinkApi(payload){
+    const t=await token();
+    const r=await fetch('/api/audit-report-links',{method:'POST',headers:{Authorization:`Bearer ${t}`,'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Report link request failed (${r.status}).`);return d;
+  }
+  async function createClientReportLink(regenerate=false){
+    const fieldEl=document.getElementById('shareUrl'),panel=document.getElementById('sharePanel'),help=document.getElementById('shareHelp');
+    ensureReportLinkControls();
+    if(panel)panel.style.display='block';if(help)help.textContent='Creating a revocable client-only report link…';
+    try{
+      if(location.protocol==='file:')throw new Error('local-preview');
+      const days=Number(document.getElementById('vmsReportExpiry')?.value||30);
+      const d=await reportLinkApi({action:'create',report_data:clientReportPayload(),expires_in_days:days,previous_token:regenerate?activeReportToken:''});
+      activeReportToken=d.token||'';if(fieldEl)fieldEl.value=d.public_url||'';
+      if(help)help.textContent=d.expires_at?`Client-only report link ready. It expires ${new Date(d.expires_at).toLocaleDateString()}. You can regenerate or disable it anytime.`:'Client-only report link ready. You can regenerate or disable it anytime.';
+      panel?.scrollIntoView?.({behavior:'smooth',block:'start'});
+      feedback(regenerate?'Client report link regenerated.':'Client report link created.','good');
+      return;
+    }catch(err){
+      if(String(err?.message||'')!=='local-preview')console.warn('Revocable report link unavailable; using static fallback.',err);
+      const url=buildPublicClientLink();activeReportToken='';if(fieldEl)fieldEl.value=url;
+      if(help)help.textContent=location.protocol==='file:'?'Local preview link created. On the hosted VMS site, client report links are revocable and can expire.':'A client-only fallback link was created. Revocation controls require the report-link service to be deployed.';
+      panel?.scrollIntoView?.({behavior:'smooth',block:'start'});
+    }
+  }
+  function installClientReportSharing(){
+    ensureReportLinkControls();
+    document.addEventListener('click',async e=>{
+      const share=e.target.closest?.('#shareBtn');
+      const regen=e.target.closest?.('#vmsRegenerateReportLink');
+      const disable=e.target.closest?.('#vmsDisableReportLink');
+      if(!share&&!regen&&!disable)return;
+      e.preventDefault();e.stopPropagation();if(typeof e.stopImmediatePropagation==='function')e.stopImmediatePropagation();
+      if(disable){
+        const fieldEl=document.getElementById('shareUrl'),help=document.getElementById('shareHelp');
+        if(!activeReportToken){if(help)help.textContent='This fallback link cannot be revoked. Generate a hosted report link after the Phase 5 report service is deployed.';return}
+        disable.disabled=true;
+        try{await reportLinkApi({action:'revoke',token:activeReportToken});activeReportToken='';if(fieldEl)fieldEl.value='';if(help)help.textContent='This client report link is disabled. Generate a new link whenever you are ready.';feedback('Client report link disabled.','good')}catch(err){console.error(err);feedback('The report link could not be disabled.','warn')}finally{disable.disabled=false}
+        return;
+      }
+      try{await createClientReportLink(!!regen)}catch(err){console.error(err);feedback('The client report link could not be generated.','warn')}
+    },true);
   }
 
   function installButton(){
@@ -317,6 +441,7 @@
       const na=e.target.closest('[data-vms-na]');if(na){e.preventDefault();markUnansweredNA(na.dataset.vmsNa);return}
       const manual=e.target.closest('[data-ai-manual]');if(manual){setState('Manual scoring mode — use N/A for anything unverified','');ensureManualControls(manual.dataset.aiManual)}
       const submit=e.target.closest('#submitAuditTop');if(submit){e.preventDefault();e.stopPropagation();submitAudit();return}
+      const print=e.target.closest('#printBtn');if(print){document.body.classList.add('vms-printing-audit-report');setTimeout(()=>document.body.classList.remove('vms-printing-audit-report'),1800)}
     });
     document.addEventListener('click',e=>{if(e.target.closest('[data-action="new-audit"],#newAuditBtn')){window.__VMS_REAUDIT_BASELINE__=null;window.__VMS_AUDIT_AI_LIVE_STATE__=null;setTechDetails('');setTimeout(()=>renderPriority({priority_findings:[],recommendations:[]}),0)}} ,true);
   }
@@ -326,7 +451,7 @@
   }
 
   function boot(){
-    style();localPresenceLabels();ensureTechDetails();CATS.forEach(ensureManualControls);ensurePriorityHosts();ensureSubmit();installButton();overrideAccept();patchPersistence();installControlEvents();decorateHistory();observer();
+    style();localPresenceLabels();ensureTechDetails();CATS.forEach(ensureManualControls);ensurePriorityHosts();ensureSubmit();installButton();installClientReportSharing();overrideAccept();patchPersistence();installControlEvents();decorateHistory();observer();
     setTimeout(()=>{overrideAccept();patchPersistence();localPresenceLabels();decorateHistory()},700);
     setTimeout(()=>{overrideAccept();patchPersistence();localPresenceLabels();decorateHistory()},1800);
   }

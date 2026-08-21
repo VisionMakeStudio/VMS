@@ -22,11 +22,7 @@ function stripeKeyMode(key: string) {
 
 function stripeModeError(mode: string, key: string) {
   const keyMode = stripeKeyMode(key);
-  if (!key) {
-    return mode === "test"
-      ? "Stripe Test Mode is not connected yet. Add STRIPE_TEST_SECRET_KEY before QA checkout."
-      : "Stripe Live Mode is not connected yet.";
-  }
+  if (!key) return "Stripe is not connected yet.";
   if (keyMode === "unknown") return "VMS cannot verify the configured Stripe key mode.";
   if (mode === "test" && keyMode !== "test") {
     return "VMS billing is locked to Stripe Test Mode for QA. Live Stripe requests are disabled.";
@@ -41,22 +37,13 @@ export function billingEnv() {
   const supabaseUrl = env("SUPABASE_URL");
   const publishableKey = env("SUPABASE_PUBLISHABLE_KEY");
   const secretKey = env("SUPABASE_SECRET_KEY") || env("SUPABASE_SERVICE_ROLE_KEY");
+  const stripeSecretKey = env("STRIPE_SECRET_KEY");
+  const rawStripeWebhookSecret = env("STRIPE_WEBHOOK_SECRET");
   const stripeMode = normalizedStripeMode();
-
-  // Phase 12B keeps QA and production Stripe credentials separate.
-  // Test mode NEVER falls back to the legacy/live key.
-  const stripeSecretKey = stripeMode === "test"
-    ? env("STRIPE_TEST_SECRET_KEY")
-    : (env("STRIPE_LIVE_SECRET_KEY") || env("STRIPE_SECRET_KEY"));
-
-  const rawStripeWebhookSecret = stripeMode === "test"
-    ? env("STRIPE_TEST_WEBHOOK_SECRET")
-    : (env("STRIPE_LIVE_WEBHOOK_SECRET") || env("STRIPE_WEBHOOK_SECRET"));
-
   const stripeSafetyError = stripeModeError(stripeMode, stripeSecretKey);
 
-  // Fail closed: no webhook processing if the selected Stripe key is missing
-  // or does not match the selected environment.
+  // Fail closed during QA: when the key mode does not match VMS_STRIPE_MODE,
+  // do not expose the webhook secret to the webhook handler either.
   const stripeWebhookSecret = stripeSafetyError ? "" : rawStripeWebhookSecret;
 
   return {

@@ -49,7 +49,6 @@ async function saveAudit(body:Row){
       internal_notes:clean(body.internal_notes,5000),
       final_notes:body.final_notes&&typeof body.final_notes==="object"?body.final_notes:{},
       assessment_notes:body.assessment_notes&&typeof body.assessment_notes==="object"?body.assessment_notes:{},
-      ai_audit:body.ai_audit&&typeof body.ai_audit==="object"?body.ai_audit:null,
       local_id:localId,
     },
     updated_at:new Date().toISOString(),
