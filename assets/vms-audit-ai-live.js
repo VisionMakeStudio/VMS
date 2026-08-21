@@ -34,28 +34,31 @@
     try{if(typeof scheduleAutosave==='function')scheduleAutosave();else if(typeof saveDraftSilently==='function')saveDraftSilently()}catch{}
   }
   async function run(){
-    const btn=document.getElementById('runAiAudit');const payload=body();if(!payload.business_name){alert('Add the business name before running the audit.');document.getElementById('businessName')?.focus();return}
+    const btn=document.getElementById('runAuditInsideAssistant')||document.getElementById('runAiAudit');const payload=body();if(!payload.business_name){alert('Add the business name before running the audit.');document.getElementById('businessName')?.focus();return}
     if(btn){btn.disabled=true;btn.innerHTML='<span class="ai-loading"><span class="desktop-label">Running Live Audit</span><span class="mobile-label">Running…</span></span>'}
     setState('Checking website + public presence…','running');CATS.forEach(cat=>{const s=document.getElementById('aiScore-'+cat);if(s)s.textContent='…';const r=document.getElementById('aiReason-'+cat);if(r)r.textContent='Reviewing live evidence…';const m=document.getElementById('aiMini'+cap(cat));if(m)m.textContent='…'});
-    try{const t=await token();const r=await fetch('/api/ai-audit',{method:'POST',headers:{Authorization:`Bearer ${t}`,'Content-Type':'application/json'},body:JSON.stringify(payload)});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Audit request failed (${r.status}).`);paint(d.result);if(d.result?.warnings?.length)console.info('VMS Audit AI warnings:',d.result.warnings)}catch(e){console.error(e);const msg=e?.message||'The live audit could not be completed.';setState('Audit needs attention','error');CATS.forEach(cat=>{const s=document.getElementById('aiScore-'+cat);if(s&&s.textContent==='…')s.textContent='—';const r=document.getElementById('aiReason-'+cat);if(r&&r.textContent==='Reviewing live evidence…')r.textContent=msg;const m=document.getElementById('aiMini'+cap(cat));if(m&&m.textContent==='…')m.textContent='—'});alert(msg)}finally{if(btn){btn.disabled=false;btn.innerHTML='<span class="desktop-label">✦ Re-run Audit</span><span class="mobile-label">✦ Re-run</span>'}}
+    try{const t=await token();const r=await fetch('/api/ai-audit',{method:'POST',headers:{Authorization:`Bearer ${t}`,'Content-Type':'application/json'},body:JSON.stringify(payload)});const d=await r.json().catch(()=>({}));if(!r.ok){const err=new Error(d.error||`Audit request failed (${r.status}).`);err.httpStatus=r.status;err.code=d.code||'';throw err}if(!d?.result)throw new Error('Audit service returned no result.');paint(d.result);if(d.result?.warnings?.length)console.info('VMS Audit AI warnings:',d.result.warnings)}catch(e){console.error(e);const suffix=e?.httpStatus?` (HTTP ${e.httpStatus})`:'';const msg=(e?.message||'The live audit could not be completed.')+suffix;setState('Audit needs attention','error');CATS.forEach(cat=>{const s=document.getElementById('aiScore-'+cat);if(s&&s.textContent==='…')s.textContent='—';const r=document.getElementById('aiReason-'+cat);if(r&&r.textContent==='Reviewing live evidence…')r.textContent=msg;const m=document.getElementById('aiMini'+cap(cat));if(m&&m.textContent==='…')m.textContent='—'});alert(msg)}finally{if(btn){btn.disabled=false;btn.innerHTML='<span class="desktop-label">✦ Re-run Audit</span><span class="mobile-label">✦ Re-run</span>'}}
   }
   function installButton(){
-    let old=document.getElementById('runAiAudit');
-    /* v32's visible assistant button forwards to #runAiAudit, but the approved
-       source page does not actually contain that legacy button. Keep a hidden
-       bridge so the existing UI can call the live Audit AI without changing
-       the approved layout. */
-    if(!old){
-      old=document.createElement('button');
-      old.type='button';old.id='runAiAudit';old.hidden=true;old.setAttribute('aria-hidden','true');
-      document.body.appendChild(old);
+    /* The approved v32 page has an older document-capture click bridge.
+       A window-capture listener runs earlier in the event path, so this live
+       production handler becomes the single owner of Run/Re-run Audit. */
+    if(window.__VMS_AUDIT_AI_CLICK_OWNER__)return;
+    window.__VMS_AUDIT_AI_CLICK_OWNER__=true;
+    window.addEventListener('click',e=>{
+      const target=e.target?.closest?.('#runAuditInsideAssistant,[data-action="run-audit"]');
+      if(!target)return;
+      e.preventDefault();
+      e.stopPropagation();
+      if(typeof e.stopImmediatePropagation==='function')e.stopImmediatePropagation();
+      document.getElementById('moreActionsMenu')?.classList.remove('open');
+      run();
+    },true);
+    // Keep a bridge element for any older code that only checks for this id,
+    // but do not attach a runner to it. Visible clicks are owned above.
+    if(!document.getElementById('runAiAudit')){
+      const bridge=document.createElement('button');bridge.type='button';bridge.id='runAiAudit';bridge.hidden=true;bridge.setAttribute('aria-hidden','true');document.body.appendChild(bridge);
     }
-    if(old.dataset.liveAudit==='true')return;
-    const btn=old.cloneNode(true);
-    btn.dataset.liveAudit='true';
-    if(!btn.hidden)btn.innerHTML='<span class="desktop-label">✦ Run Audit</span><span class="mobile-label">✦ Run Audit</span>';
-    old.replaceWith(btn);
-    btn.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();document.getElementById('moreActionsMenu')?.classList.remove('open');run()});
   }
   function patchPersistence(){
     try{if(typeof captureAudit==='function'&&!captureAudit.__vmsAiLive){const original=captureAudit;const wrapped=function(){const data=original();data.aiAudit=window.__VMS_AUDIT_AI_LIVE_STATE__||null;return data};wrapped.__vmsAiLive=true;captureAudit=wrapped}}
