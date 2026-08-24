@@ -782,7 +782,7 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
 .catalog-live-status[data-state="error"]{color:#a82932;border-color:#efd2d5;background:#fff7f8}.catalog-live-status[data-state="error"] .catalog-live-dot{background:#c1121f;box-shadow:0 0 0 3px rgba(193,18,31,.12)}
 .catalog-live-status[data-state="saving"] .catalog-live-dot{animation:vmsCatalogPulse 1s infinite alternate}
 @keyframes vmsCatalogPulse{from{opacity:.35}to{opacity:1}}
-</style><script src="/assets/vms-catalog.js?v=20260824-live-catalog-v1"></script></head>
+</style><link rel="stylesheet" href="/assets/vms-admin-shell.css?v=20260824-catalog-manager-v2"><script src="/assets/vms-catalog.js?v=20260824-live-catalog-v1"></script></head>
 <body>
 <div class="shell">
   <aside class="sidebar" id="sidebar">
@@ -1035,7 +1035,7 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
 <div class="toast" id="toast"></div>
 
 <script src="/assets/vms-service-catalog-manager.js?v=20260824-live-catalog-v1"></script>
-  <script src="../assets/vms-admin-shell.js"></script>
+  <script src="/assets/vms-admin-shell.js?v=20260824-catalog-manager-v2"></script>
 <script id="vms-review-shell">/* Vision Make Studio — canonical Admin shell.
    One shared sidebar/topbar across every protected Admin tool. */
 (()=>{
