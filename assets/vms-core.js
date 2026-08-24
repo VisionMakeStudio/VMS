@@ -4,7 +4,7 @@
   const TEST_EMAIL='info@visionmakestudio.com';
   const isLocal=location.protocol==='file:';
   const ADMIN_FAST_NAV_KEY='vms_admin_fast_nav';
-  const FINAL_POLISH_VERSION='20260824-phase2-admin-portal-ui';
+  const FINAL_POLISH_VERSION='20260824-billing-auth-fix';
 
   function surfaceClass(){
     const path=(location.pathname||'/').toLowerCase();
@@ -155,6 +155,43 @@
 
   function clearAdminFastNav(){
     try{sessionStorage.removeItem(ADMIN_FAST_NAV_KEY)}catch{}
+  }
+
+  function currentAdminFastNav(){
+    try{
+      const raw=sessionStorage.getItem(ADMIN_FAST_NAV_KEY);
+      if(!raw)return null;
+      const data=JSON.parse(raw);
+      const current=normalizeAdminPath(location.pathname);
+      if(!data||Number(data.until||0)<=Date.now()||normalizeAdminPath(data.to)!==current)return null;
+      return data;
+    }catch{
+      return null;
+    }
+  }
+
+  async function getSessionWithNavigationGrace(sb,kind){
+    let session=null;
+    try{
+      ({data:{session}}=await sb.auth.getSession());
+    }catch(e){
+      console.error('VMS session lookup failed',e);
+    }
+
+    /* Internal Admin navigation should never bounce a verified user through the
+       login screen because Supabase storage took a moment to settle. Keep the
+       privacy gate closed and retry briefly; if the session is truly gone, the
+       normal login redirect still happens after the grace window. */
+    if(session||kind!=='admin'||!currentAdminFastNav())return session;
+
+    const deadline=Date.now()+1800;
+    while(!session&&Date.now()<deadline){
+      await new Promise(resolve=>setTimeout(resolve,100));
+      try{
+        ({data:{session}}=await sb.auth.getSession());
+      }catch{}
+    }
+    return session;
   }
 
   function bindAdminFastNavigation(){
@@ -328,13 +365,7 @@
         :portalFail('configuration');
     }
 
-    let session=null;
-
-    try{
-      ({data:{session}}=await sb.auth.getSession());
-    }catch(e){
-      console.error('VMS session lookup failed',e);
-    }
+    const session=await getSessionWithNavigationGrace(sb,kind);
 
     if(!session){
       return kind==='admin'

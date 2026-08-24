@@ -45,15 +45,25 @@ function ensureProtectedRuntime(file,kind){
   let html=fs.readFileSync(file,'utf8');
   if(!/<\/head>/i.test(html)||!/<\/body>/i.test(html))throw new Error(`Protected page is missing head/body: ${path.relative(dist,file)}`);
 
-  /* Put the real production config ahead of any existing vms-core reference. */
+  /* Billing and a few legacy Admin sources used to carry their own vms-core +
+     requireSession bridge. Running that bridge beside the centralized guard can
+     briefly redirect a valid internal Admin navigation through login.html.
+     Production now owns auth bootstrap in exactly one place on every protected page. */
   html=html.replace(/<script\b[^>]*\bsrc=["'][^"']*config\.js(?:\?[^"']*)?["'][^>]*>\s*<\/script>/gi,'');
-  html=html.replace(/<\/head>/i,'<script id="vms-protected-config" src="/config.js?v=20260824-phase3-final-qa"></script></head>');
-
-  const hasCore=/<script\b(?=[^>]*\bsrc=["'][^"']*vms-core\.js(?:\?[^"']*)?["'])[^>]*>\s*<\/script>/i.test(html);
+  html=html.replace(/<script\b[^>]*\bsrc=["'][^"']*vms-core\.js(?:\?[^"']*)?["'][^>]*>\s*<\/script>/gi,'');
+  html=html.replace(/<script\b(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi,(whole,code)=>{
+    const compact=String(code||'').trim().replace(/\s+/g,' ');
+    const legacy=/^(?:if\s*\(\s*window\.VMSAuth\s*\)\s*)?(?:window\.)?VMSAuth(?:\?\.|\.)requireSession\([\s\S]*?\)\s*;?$/.test(compact);
+    return legacy?'':whole;
+  });
   html=html.replace(/<script\b[^>]*id=["']vms-protected-auth-guard["'][^>]*>[\s\S]*?<\/script>/gi,'');
-  const runtime=(hasCore?'':'<script id="vms-protected-core" src="/assets/vms-core.js?v=20260824-phase3-final-qa"></script>')+
-    `<script id="vms-protected-auth-guard" src="/assets/vms-auth-guard.js?v=20260824-phase3-final-qa" data-vms-auth-kind="${kind}"></script>`;
-  html=html.replace(/<\/body>/i,runtime+'</body>');
+
+  const bootstrap='<script id="vms-protected-config" src="/config.js?v=20260824-billing-auth-fix"></script>'+
+    '<script id="vms-protected-core" src="/assets/vms-core.js?v=20260824-billing-auth-fix"></script>';
+  html=html.replace(/<\/head>/i,bootstrap+'</head>');
+
+  const guard=`<script id="vms-protected-auth-guard" src="/assets/vms-auth-guard.js?v=20260824-billing-auth-fix" data-vms-auth-kind="${kind}"></script>`;
+  html=html.replace(/<\/body>/i,guard+'</body>');
   fs.writeFileSync(file,html);
 }
 for(const area of ['admin','portal']){
