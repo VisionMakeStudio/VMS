@@ -14,9 +14,9 @@ body.vms-portal-canonical :where(.section,.panel,.card,.table-wrap,.modal){min-w
 #vmsCanonicalPortalSidebar .vms-portal-brand-copy{min-width:0}
 #vmsCanonicalPortalSidebar .vms-portal-brand-copy strong{display:block;font-size:11px;line-height:1.2;color:#fff;white-space:nowrap}
 #vmsCanonicalPortalSidebar .vms-portal-brand-copy span{display:block;margin-top:3px;color:#adc6d0;font-size:8px;font-weight:900;letter-spacing:.11em}
-#vmsCanonicalPortalSidebar .vms-portal-nav{display:grid;gap:5px;margin-top:13px;overflow-y:auto;overflow-x:hidden;min-height:0;flex:1 1 auto;padding-right:1px;scrollbar-width:none;-ms-overflow-style:none;overscroll-behavior:contain}
+#vmsCanonicalPortalSidebar .vms-portal-nav{display:grid;gap:7px;margin-top:14px;overflow-y:auto;overflow-x:hidden;min-height:0;flex:1 1 auto;padding-right:1px;scrollbar-width:none;-ms-overflow-style:none;overscroll-behavior:contain}
 #vmsCanonicalPortalSidebar .vms-portal-nav::-webkit-scrollbar{width:0;height:0}
-#vmsCanonicalPortalSidebar .vms-portal-nav button{width:100%;border:0;background:transparent;color:#d2e1e7;text-align:left;border-radius:9px;padding:9px 10px;font-size:10px;font-weight:850;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:35px;line-height:1.2;cursor:pointer}
+#vmsCanonicalPortalSidebar .vms-portal-nav button{width:100%;border:0;background:transparent;color:#d2e1e7;text-align:left;border-radius:9px;padding:10px 11px;font-size:10.5px;font-weight:850;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:38px;line-height:1.2;cursor:pointer}
 #vmsCanonicalPortalSidebar .vms-portal-nav button:hover{background:rgba(255,255,255,.065);color:#fff}
 #vmsCanonicalPortalSidebar .vms-portal-nav button.active{background:#EB5E28;color:#fff;box-shadow:0 5px 15px rgba(235,94,40,.19)}
 #vmsCanonicalPortalSidebar .vms-portal-nav .pill{min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:rgba(255,255,255,.13);display:grid;place-items:center;font-size:7px;flex:0 0 auto}
@@ -55,6 +55,15 @@ body.vms-portal-drawer-open{overflow:hidden!important}
   #vmsCanonicalPortalTopbar{padding:0 11px}
   #vmsCanonicalPortalTopbar strong{font-size:16px}
   #vmsCanonicalPortalTopbar .vms-portal-top-actions{display:none!important}
-  #vmsCanonicalPortalSidebar .vms-portal-nav button{min-height:38px;font-size:10.5px}
+  #vmsCanonicalPortalSidebar .vms-portal-nav{gap:7px}
+  #vmsCanonicalPortalSidebar .vms-portal-nav button{min-height:41px;font-size:11px}
 }
 @media print{#vmsCanonicalPortalSidebar,#vmsCanonicalPortalTopbar,#vmsCanonicalPortalBackdrop{display:none!important}body.vms-portal-canonical{padding:0!important;background:#fff!important}}
+
+
+/* Phase 2 UI/UX lock — Aug 24 2026 */
+#vmsCanonicalPortalSidebar .vms-portal-nav button:focus-visible{
+  outline:2px solid rgba(235,94,40,.92);
+  outline-offset:1px;
+}
+#vmsCanonicalPortalSidebar .vms-portal-account{margin-top:14px;}

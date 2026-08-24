@@ -4,7 +4,7 @@
   const TEST_EMAIL='info@visionmakestudio.com';
   const isLocal=location.protocol==='file:';
   const ADMIN_FAST_NAV_KEY='vms_admin_fast_nav';
-  const FINAL_POLISH_VERSION='20260824-admin-portal-recovery2';
+  const FINAL_POLISH_VERSION='20260824-phase2-admin-portal-ui';
 
   function surfaceClass(){
     const path=(location.pathname||'/').toLowerCase();
@@ -32,7 +32,7 @@
       if(document.getElementById('vmsCanonicalAdminSidebar'))return;
       if(document.querySelector('script[data-vms-canonical-admin-shell="1"]'))return;
       const script=document.createElement('script');
-      script.src='/assets/vms-admin-shell.js?v=20260824-admin-shell-recovery2';
+      script.src='/assets/vms-admin-shell.js?v=20260824-phase2-admin-shell';
       script.async=false;
       script.dataset.vmsCanonicalAdminShell='1';
       document.head.appendChild(script);
@@ -45,7 +45,7 @@
       if(document.getElementById('vmsCanonicalPortalSidebar'))return;
       if(document.querySelector('script[data-vms-canonical-portal-shell="1"]'))return;
       const script=document.createElement('script');
-      script.src='/assets/vms-portal-shell.js?v=20260824-portal-shell-recovery2';
+      script.src='/assets/vms-portal-shell.js?v=20260824-phase2-portal-shell';
       script.async=false;
       script.dataset.vmsCanonicalPortalShell='1';
       document.head.appendChild(script);
