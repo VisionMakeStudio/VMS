@@ -774,9 +774,47 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
 .vms-service-action-menu .toggle-publish{border-top:1px solid #edf1f3!important;border-radius:0 0 8px 8px!important;margin-top:3px!important;padding-top:10px!important}
 @media(max-width:760px){.vms-service-action-menu{position:fixed;left:18px;right:18px;top:auto;bottom:22px;min-width:0;padding:8px;border-radius:16px}.vms-service-action-menu button{min-height:46px!important;font-size:15px!important}.vms-service-kebab{width:44px!important;height:44px!important;min-width:44px!important}}
 </style>
+<style id="vms-catalog-readability-v3">
+/* Service Catalog readability tune — desktop-first, scoped to this page only. */
+.service-row{padding:14px 15px;gap:14px;min-height:76px}
+.service-main{gap:13px}
+.service-icon{width:48px;height:48px;border-radius:12px;font-size:11px;line-height:1;font-weight:1000;letter-spacing:-.01em;overflow:hidden;text-align:center;padding:0 3px}
+.service-icon.icon-compact{font-size:9px;letter-spacing:-.035em}
+.service-icon.icon-tiny{font-size:7.5px;letter-spacing:-.055em}
+.preview-service-icon.icon-compact{font-size:9px;letter-spacing:-.035em}
+.preview-service-icon.icon-tiny{font-size:7.5px;letter-spacing:-.055em}
+.service-copy strong{font-size:13px;line-height:1.25}
+.service-copy span{font-size:10.5px;line-height:1.5;margin-top:4px}
+.cell span{font-size:9px;letter-spacing:.035em}
+.cell strong{font-size:11.5px;line-height:1.4;margin-top:5px}
+.badges{gap:6px;margin-top:7px}
+.badge{padding:5px 8px;font-size:9px;line-height:1.15}
+.toolbar input,.toolbar select{font-size:11px}
+.stat small{font-size:9px;line-height:1.3}
+.catalog-note{font-size:10px}
+.empty{font-size:11px}
+.catalog-live-status{font-size:11px}
+.intro p{font-size:11.5px;line-height:1.6}
+@media(max-width:1050px){
+  .service-copy strong{font-size:12.5px}
+  .service-copy span{font-size:10px}
+  .cell strong{font-size:11px}
+}
+@media(max-width:760px){
+  .service-row{min-height:0}
+  .service-main{padding:13px}
+  .service-icon{width:46px;height:46px}
+  .service-copy strong{font-size:13px}
+  .service-copy span{font-size:10.5px}
+  .badges .badge{font-size:9px}
+  .service-row.expanded .cell{padding:11px 13px}
+  .cell span{font-size:9px}
+  .cell strong{font-size:11.5px}
+}
+</style>
 <style id="vms-live-catalog-css">
 /* Live Service Catalog manager */
-.catalog-live-status{margin-top:12px;display:inline-flex;align-items:center;gap:8px;min-height:32px;padding:7px 11px;border:1px solid #d9e5e9;border-radius:999px;background:#fff;color:#607682;font-size:10px;font-weight:800}
+.catalog-live-status{margin-top:12px;display:inline-flex;align-items:center;gap:8px;min-height:32px;padding:7px 11px;border:1px solid #d9e5e9;border-radius:999px;background:#fff;color:#607682;font-size:11px;font-weight:800}
 .catalog-live-dot{width:8px;height:8px;border-radius:50%;background:#d8902f;box-shadow:0 0 0 3px rgba(216,144,47,.12)}
 .catalog-live-status[data-state="ok"]{color:#217a59;border-color:#cfe7dc;background:#f3faf7}.catalog-live-status[data-state="ok"] .catalog-live-dot{background:#2c9a70;box-shadow:0 0 0 3px rgba(44,154,112,.12)}
 .catalog-live-status[data-state="error"]{color:#a82932;border-color:#efd2d5;background:#fff7f8}.catalog-live-status[data-state="error"] .catalog-live-dot{background:#c1121f;box-shadow:0 0 0 3px rgba(193,18,31,.12)}
@@ -1034,7 +1072,7 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
 
 <div class="toast" id="toast"></div>
 
-<script src="/assets/vms-service-catalog-manager.js?v=20260824-live-catalog-v1"></script>
+<script src="/assets/vms-service-catalog-manager.js?v=20260824-catalog-readability-v3"></script>
   <script src="/assets/vms-admin-shell.js?v=20260824-catalog-manager-v2"></script>
 <script id="vms-review-shell">/* Vision Make Studio — canonical Admin shell.
    One shared sidebar/topbar across every protected Admin tool. */

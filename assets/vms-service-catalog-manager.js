@@ -39,6 +39,10 @@
   function priceLabel(s){return window.VMSCatalog?.priceLabel?VMSCatalog.priceLabel(s):'Request pricing'}
   function statusBadge(s){const cls=s.status==='Published'?'green':s.status==='Draft'?'orange':'gray';return `<span class="badge ${cls}">${esc(s.status)}</span>`}
   function kindLabel(kind){return ({service:'Service',subscription:'Subscription',addon:'Add-on',package:'Package',bundle:'Bundle',internal:'Internal'})[kind]||'Service'}
+  function iconClass(icon){
+    const n=String(icon||'VMS').trim().length;
+    return n>=7?'icon-tiny':n>=5?'icon-compact':'';
+  }
 
   function filtered(){
     const q=($('searchInput')?.value||'').trim().toLowerCase();
@@ -71,7 +75,7 @@
     $('catalogList').innerHTML=list.map(s=>`
       <article class="service-row" data-id="${esc(s.id)}">
         <div class="service-main mobile-summary">
-          <div class="service-icon">${esc((s.icon||'VMS').toUpperCase())}</div>
+          <div class="service-icon ${iconClass(s.icon)}" title="${esc((s.icon||'VMS').toUpperCase())}">${esc((s.icon||'VMS').toUpperCase())}</div>
           <div class="service-copy">
             <strong>${esc(s.name)}</strong>
             <span>${esc(s.category||'Uncategorized')} · ${esc(kindLabel(s.kind))} · ${esc(s.description||'No description')}</span>
@@ -205,7 +209,7 @@
   function previewCard(s){
     const button=s.salesMode==='Buy Now'?'Buy Now':'Request Service';
     const feats=(s.features||[]).slice(0,4).map(x=>`<small style="display:block;margin-top:4px;color:#607682">✓ ${esc(x)}</small>`).join('');
-    return `<div class="preview-card"><div class="preview-service-icon">${esc((s.icon||'VMS').toUpperCase())}</div><h4>${esc(s.name)}</h4><p>${esc(s.description||'')}</p><div class="preview-price">${esc(priceLabel(s))}</div>${feats}<button class="btn ${s.salesMode==='Buy Now'?'primary':''}" type="button">${button}</button></div>`;
+    return `<div class="preview-card"><div class="preview-service-icon ${iconClass(s.icon)}">${esc((s.icon||'VMS').toUpperCase())}</div><h4>${esc(s.name)}</h4><p>${esc(s.description||'')}</p><div class="preview-price">${esc(priceLabel(s))}</div>${feats}<button class="btn ${s.salesMode==='Buy Now'?'primary':''}" type="button">${button}</button></div>`;
   }
   function renderPreview(focusId=null){
     const web=services.filter(s=>publicVisible(s,'websiteVisible')).sort((a,b)=>(a.displayOrder||999)-(b.displayOrder||999));
