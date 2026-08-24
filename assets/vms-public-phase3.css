@@ -1,0 +1,24 @@
+/* VMS Phase 3 — public-site interaction polish; no brand/logo replacement. */
+html{scroll-padding-top:92px}
+html.vms-public-surface :where(#services,#pricing,#checkup,#how){scroll-margin-top:92px}
+html.vms-public-surface :where(a,button,input,select,textarea):focus-visible{outline:3px solid rgba(102,155,188,.48)!important;outline-offset:3px!important}
+html.vms-public-surface body.vms-public-menu-open,html.vms-public-surface body.vms-modal-open{overflow:hidden!important}
+html.vms-public-surface .mobile-nav{max-height:calc(100vh - 84px);overflow-y:auto;overscroll-behavior:contain}
+html.vms-public-surface .mobile-nav a,html.vms-public-surface .mobile-nav button{min-height:48px;display:flex;align-items:center}
+html.vms-public-surface .portal-form{display:grid!important;gap:18px!important}
+html.vms-public-surface .portal-submit{margin-top:2px!important;width:100%}
+html.vms-public-surface #portalStatus{min-height:18px;display:block;margin-top:2px}
+html.vms-public-surface .modal{overscroll-behavior:contain}
+html.vms-public-surface #how .section-head{margin-left:auto!important;margin-right:auto!important;text-align:center!important}
+html.vms-public-surface #how .steps{margin-left:auto!important;margin-right:auto!important}
+html.vms-public-surface #how .step{text-align:center!important}
+@media(max-width:900px){html.vms-public-surface .mobile-nav{box-shadow:0 18px 40px rgba(0,28,45,.24)}}
+@media(max-width:650px){
+ html{scroll-padding-top:76px}
+ html.vms-public-surface :where(#services,#pricing,#checkup,#how){scroll-margin-top:76px}
+ html.vms-public-surface .mobile-nav{max-height:calc(100vh - 70px);padding-bottom:max(20px,env(safe-area-inset-bottom))}
+ html.vms-public-surface .modal-backdrop{padding:12px}
+ html.vms-public-surface .modal{max-height:calc(100dvh - 24px);padding:28px 20px 24px;border-radius:18px}
+ html.vms-public-surface .close{right:14px;top:14px;width:42px;height:42px}
+ html.vms-public-surface .service-grid{gap:12px}
+}

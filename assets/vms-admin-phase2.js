@@ -1,4 +1,5 @@
-/* Vision Make Studio — Final Polish Phase 2: Admin consistency */
+/* Vision Make Studio — Phase 1 Admin enhancement bridge
+   Page-level enhancements only. Navigation/shell ownership lives in vms-admin-shell.* */
 (()=>{
   'use strict';
   const path=(location.pathname||'/').toLowerCase();
@@ -10,116 +11,21 @@
   const lower=s=>clean(s).toLowerCase();
   const current=(path.split('/').filter(Boolean).pop()||'index.html').toLowerCase();
 
-  const NAV=[
-    ['index.html','Home','⌂'],
-    ['audit.html','VMS Audit','✦'],
-    ['qr.html','QR Tools','▦'],
-    ['clients.html','Clients','◎'],
-    ['service-catalog.html','Service Catalog','◇'],
-    ['billing.html','Billing / Subscriptions','$'],
-    ['promotions.html','Promotions','%'],
-    ['projects.html','Projects & Requests','✓'],
-    ['files.html','Files & Assets','▤'],
-    ['activity.html','Notifications & Activity','●'],
-    ['linkhub.html','VMS LinkHub','↗'],
-    ['analytics.html','Analytics','◫'],
-    ['leads.html','CRM / Leads','◉'],
-    ['marketing.html','Sales Content','◆'],
-    ['automations.html','Automations','⚡'],
-    ['security.html','Security & Access','⌾']
-  ];
-  const alias={
-    'dashboard':'home','home':'home','vms audit':'vms audit','audit':'vms audit','qr tools':'qr tools','qr':'qr tools',
-    'client directory':'clients','clients':'clients','service catalog':'service catalog','billing':'billing / subscriptions',
-    'billing / subscriptions':'billing / subscriptions','billing & subscriptions':'billing / subscriptions','promotions':'promotions',
-    'projects & requests':'projects & requests','projects and requests':'projects & requests','files & assets':'files & assets',
-    'notifications & activity':'notifications & activity','notifications and activity':'notifications & activity','notifications':'notifications & activity',
-    'vms linkhub':'vms linkhub','linkhub':'vms linkhub','analytics':'analytics','crm / leads':'crm / leads','crm/leads':'crm / leads',
-    'leads':'crm / leads','sales content':'sales content','marketing':'sales content','automation':'automations','automations':'automations',
-    'automation center':'automations','security':'security & access','security & access':'security & access'
-  };
-  const routeByLabel=new Map(NAV.map(([href,label])=>[lower(label),href]));
-  const routeSet=new Set(NAV.map(([href])=>href));
-
-  function adminNavCandidate(nav){
-    const txt=lower(nav.textContent);
-    let score=0;
-    for(const label of ['home','vms audit','qr tools','clients','service catalog','billing','promotions'])if(txt.includes(label))score++;
-    return score>=3;
-  }
-
-  function canonicalKey(el){
-    let text=lower(el.textContent).replace(/[✓→•●⌂✦▦◎◇$%↗◫◉◆⚡⌾]/g,'').trim();
-    text=text.replace(/\b(soon|new)\b$/,'').trim();
-    if(alias[text])return alias[text];
-    const href=(el.getAttribute?.('href')||'').split(/[?#]/)[0].split('/').pop()?.toLowerCase()||'';
-    const known=NAV.find(([r])=>r===href);
-    return known?lower(known[1]):text;
-  }
-
-  function replaceNavContents(nav){
-    if(nav.dataset.vmsPhase2Canonical==='1')return;
-    const existingItems=$$('a,button',nav);
-    const isIconNav=nav.classList.contains('vms-admin-nav')||existingItems.some(x=>x.querySelector?.('.vms-nav-icon'));
-
-    // Preserve legitimate extra Admin destinations not yet in the canonical list.
-    const extras=[];
-    const seenExtra=new Set();
-    existingItems.forEach(el=>{
-      const key=canonicalKey(el);
-      if(routeByLabel.has(key))return;
-      const href=(el.getAttribute?.('href')||'').split(/[?#]/)[0];
-      const label=clean(el.textContent);
-      if(!href||href==='#'||!label||seenExtra.has(key))return;
-      if(/logout|sign out|public website|client portal/i.test(label))return;
-      seenExtra.add(key);extras.push([href,label,'']);
-    });
-
-    nav.innerHTML='';
-    [...NAV,...extras].forEach(([href,label,icon])=>{
-      const a=document.createElement('a');
-      a.href=href;
-      if(isIconNav){
-        a.innerHTML=`<span class="vms-nav-icon" aria-hidden="true">${icon||'•'}</span><span>${label}</span>`;
-      }else a.textContent=label;
-      if(href.toLowerCase()===current){a.classList.add('active');a.setAttribute('aria-current','page')}
-      nav.appendChild(a);
-    });
-    nav.dataset.vmsPhase2Canonical='1';
-  }
-
-  function ensureSharedAdminShell(){
-    if(document.getElementById('vmsCanonicalAdminSidebar'))return;
-    if(!document.querySelector('script[data-vms-canonical-admin-shell="1"],script[src*="vms-admin-shell.js"]')){
+  function ensureSharedAdminFoundation(){
+    if(!document.querySelector('link[href*="vms-admin-shell.css"]')){
+      const link=document.createElement('link');
+      link.rel='stylesheet';
+      link.href='/assets/vms-admin-shell.css?v=20260822-phase1';
+      link.dataset.vmsAdminShellCss='1';
+      document.head.appendChild(link);
+    }
+    if(!document.getElementById('vmsCanonicalAdminSidebar')&&!document.querySelector('script[data-vms-canonical-admin-shell="1"],script[src*="vms-admin-shell.js"]')){
       const script=document.createElement('script');
-      script.src='/assets/vms-admin-shell.js?v=20260821-final';
+      script.src='/assets/vms-admin-shell.js?v=20260822-phase1';
       script.async=false;
       script.dataset.vmsCanonicalAdminShell='1';
       document.head.appendChild(script);
     }
-    return;
-  }
-
-  function canonicalizeAdminNavigation(){
-    const navs=$$('aside nav,aside .nav,.vms-admin-nav').filter(adminNavCandidate);
-    if(!navs.length)return;
-
-    // If an injected canonical sidebar exists, retire any old page-specific sidebar
-    // that would otherwise display a second Admin menu beside it.
-    const canonicalSidebar=$('#vms-admin-sidebar');
-    if(canonicalSidebar){
-      $$('aside').forEach(aside=>{
-        if(aside===canonicalSidebar)return;
-        const nav=$('nav,.nav',aside);
-        if(nav&&adminNavCandidate(nav))aside.classList.add('vms-retired-admin-sidebar');
-      });
-    }
-
-    const target=canonicalSidebar?.querySelector('nav,.vms-admin-nav')||navs[0];
-    replaceNavContents(target);
-
-    // If the page does not use an injected shell, clean its single native menu too.
-    if(!canonicalSidebar)navs.forEach(replaceNavContents);
   }
 
   function dropdown(trigger,items,{align='right'}={}){
@@ -215,16 +121,25 @@
     document.documentElement.classList.add('vms-phase2-admin');
     const pageSlug=current.replace(/\.html?$/i,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')||'index';
     document.documentElement.classList.add(`vms-page-${pageSlug}`);
-    ensureSharedAdminShell();
-    canonicalizeAdminNavigation();
+    ensureSharedAdminFoundation();
     enhanceNotificationActivity();
     enhanceScheduling();
     enhanceGenericRowActions();
     alignPageActions();
 
     let timer;
-    const mo=new MutationObserver(()=>{clearTimeout(timer);timer=setTimeout(()=>{ensureSharedAdminShell();canonicalizeAdminNavigation();enhanceNotificationActivity();enhanceScheduling();enhanceGenericRowActions();alignPageActions()},80)});
+    const mo=new MutationObserver(()=>{
+      clearTimeout(timer);
+      timer=setTimeout(()=>{
+        enhanceNotificationActivity();
+        enhanceScheduling();
+        enhanceGenericRowActions();
+        alignPageActions();
+      },120);
+    });
     mo.observe(document.body,{subtree:true,childList:true});
   }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
+  else boot();
 })();

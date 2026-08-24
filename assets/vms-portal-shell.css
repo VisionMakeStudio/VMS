@@ -1,0 +1,60 @@
+/* VMS Phase 3 — one Client Portal shell. The existing page controls remain the functional source of truth. */
+:root{--vms-portal-sidebar-w:232px;--vms-portal-topbar-h:68px;--vms-portal-gap:22px}
+body.vms-portal-canonical{margin:0!important;padding:calc(var(--vms-portal-topbar-h) + 20px) 22px 42px calc(var(--vms-portal-sidebar-w) + var(--vms-portal-gap))!important;background:#edf3f5!important;min-height:100vh!important;overflow-x:hidden!important}
+body.vms-portal-canonical *{box-sizing:border-box}
+body.vms-portal-canonical>.shell,body.vms-portal-canonical>.app{display:block!important;min-height:0!important;width:100%!important}
+body.vms-portal-canonical .vms-retired-portal-shell{display:none!important}
+body.vms-portal-canonical>.shell>.main,body.vms-portal-canonical>.app>.main,body.vms-portal-canonical>.main,body.vms-portal-canonical>main{margin:0!important;padding:0!important;width:100%!important;max-width:none!important;min-width:0!important}
+body.vms-portal-canonical :where(.content){width:min(100%,1280px)!important;max-width:1280px!important;margin:0 auto!important;padding:0!important;min-width:0!important}
+body.vms-portal-canonical :where(.section,.panel,.card,.table-wrap,.modal){min-width:0}
+
+#vmsCanonicalPortalSidebar{position:fixed;inset:0 auto 0 0;width:var(--vms-portal-sidebar-w);background:#003049;color:#fff;padding:18px 13px 16px;display:flex;flex-direction:column;z-index:2147481801;overflow:hidden;box-shadow:10px 0 26px rgba(0,48,73,.06)}
+#vmsCanonicalPortalSidebar .vms-portal-brand{display:flex;align-items:center;gap:10px;padding:0 8px 14px;border-bottom:1px solid rgba(255,255,255,.13);flex:0 0 auto}
+#vmsCanonicalPortalSidebar .vms-portal-brand img{width:88px;height:44px;display:block;object-fit:contain;object-position:left center;flex:0 0 auto}
+#vmsCanonicalPortalSidebar .vms-portal-brand-copy{min-width:0}
+#vmsCanonicalPortalSidebar .vms-portal-brand-copy strong{display:block;font-size:11px;line-height:1.2;color:#fff;white-space:nowrap}
+#vmsCanonicalPortalSidebar .vms-portal-brand-copy span{display:block;margin-top:3px;color:#adc6d0;font-size:8px;font-weight:900;letter-spacing:.11em}
+#vmsCanonicalPortalSidebar .vms-portal-nav{display:grid;gap:4px;margin-top:13px;overflow-y:auto;overflow-x:hidden;min-height:0;flex:1 1 auto;padding-right:1px;scrollbar-width:none;-ms-overflow-style:none;overscroll-behavior:contain}
+#vmsCanonicalPortalSidebar .vms-portal-nav::-webkit-scrollbar{width:0;height:0}
+#vmsCanonicalPortalSidebar .vms-portal-nav button{width:100%;border:0;background:transparent;color:#d2e1e7;text-align:left;border-radius:9px;padding:9px 10px;font-size:10px;font-weight:850;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:35px;line-height:1.2;cursor:pointer}
+#vmsCanonicalPortalSidebar .vms-portal-nav button:hover{background:rgba(255,255,255,.065);color:#fff}
+#vmsCanonicalPortalSidebar .vms-portal-nav button.active{background:#EB5E28;color:#fff;box-shadow:0 5px 15px rgba(235,94,40,.19)}
+#vmsCanonicalPortalSidebar .vms-portal-nav .pill{min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:rgba(255,255,255,.13);display:grid;place-items:center;font-size:7px;flex:0 0 auto}
+#vmsCanonicalPortalSidebar .vms-portal-account{flex:0 0 auto;margin-top:12px;padding:12px 8px 0;border-top:1px solid rgba(255,255,255,.13)}
+#vmsCanonicalPortalSidebar .vms-portal-account .side-foot{padding:0!important;margin:0!important;border:0!important;background:transparent!important;color:#d8e5e9!important}
+#vmsCanonicalPortalSidebar .vms-portal-account :where(strong,b){color:#fff!important}
+
+#vmsCanonicalPortalTopbar{position:fixed;top:0;right:0;left:var(--vms-portal-sidebar-w);height:var(--vms-portal-topbar-h);z-index:2147481800;background:#fff;border-bottom:1px solid #dfe8ec;display:flex;align-items:center;justify-content:space-between;padding:0 22px;gap:14px;box-shadow:0 4px 18px rgba(0,48,73,.035)}
+#vmsCanonicalPortalTopbar .vms-portal-top-left{display:flex;align-items:center;gap:10px;min-width:0}
+#vmsCanonicalPortalTopbar .vms-portal-page-title{min-width:0}
+#vmsCanonicalPortalTopbar small{display:block;font-size:8px;color:#879aa3;font-weight:950;letter-spacing:.09em}
+#vmsCanonicalPortalTopbar strong{display:block;margin-top:2px;color:#003049;font-size:18px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#vmsCanonicalPortalTopbar .vms-portal-top-actions{display:flex;align-items:center;gap:8px;min-width:0}
+#vmsCanonicalPortalTopbar .vms-portal-menu-btn{display:none;width:40px;height:40px;padding:0;border:1px solid #d7e2e7;background:#fff;color:#003049;border-radius:10px;font-size:18px;place-items:center;flex:0 0 40px}
+#vmsCanonicalPortalBackdrop{display:none;position:fixed;inset:0;background:rgba(0,32,48,.52);z-index:2147481799;backdrop-filter:blur(1px)}
+
+body.vms-portal-canonical .modal-backdrop{z-index:2147482500!important}
+body.vms-portal-canonical .toast{z-index:2147482600!important}
+body.vms-portal-canonical :where(.table-wrap,.table-shell){max-width:100%;overflow-x:auto;overscroll-behavior-x:contain}
+body.vms-portal-canonical :where(img,canvas,svg,video){max-width:100%}
+body.vms-portal-drawer-open{overflow:hidden!important}
+
+@media(max-width:820px){
+  body.vms-portal-canonical{padding:calc(var(--vms-portal-topbar-h) + 14px) 14px 34px!important}
+  #vmsCanonicalPortalSidebar{width:min(84vw,292px);transform:translateX(-105%);transition:transform .2s ease;box-shadow:18px 0 44px rgba(0,32,48,.22)}
+  #vmsCanonicalPortalSidebar.open{transform:translateX(0)}
+  #vmsCanonicalPortalTopbar{left:0;padding:0 14px}
+  #vmsCanonicalPortalTopbar .vms-portal-menu-btn{display:grid}
+  #vmsCanonicalPortalBackdrop.show{display:block}
+  #vmsCanonicalPortalTopbar .vms-portal-top-actions{max-width:48vw;overflow:hidden}
+  body.vms-portal-canonical :where(.content){max-width:none!important}
+}
+@media(max-width:520px){
+  :root{--vms-portal-topbar-h:64px}
+  body.vms-portal-canonical{padding:calc(var(--vms-portal-topbar-h) + 12px) 11px 30px!important}
+  #vmsCanonicalPortalTopbar{padding:0 11px}
+  #vmsCanonicalPortalTopbar strong{font-size:16px}
+  #vmsCanonicalPortalTopbar .vms-portal-top-actions{display:none!important}
+  #vmsCanonicalPortalSidebar .vms-portal-nav button{min-height:38px;font-size:10.5px}
+}
+@media print{#vmsCanonicalPortalSidebar,#vmsCanonicalPortalTopbar,#vmsCanonicalPortalBackdrop{display:none!important}body.vms-portal-canonical{padding:0!important;background:#fff!important}}

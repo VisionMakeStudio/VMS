@@ -24,11 +24,27 @@ else for(const file of walk(root).filter(f=>f.endsWith('.html'))){
   }
 }
 
-const required=['index.html','services.html','get-started.html','404.html','robots.txt','sitemap.xml','config.js','admin/index.html','admin/login.html','admin/service-catalog.html','admin/audit.html','admin/leads.html','admin/automations.html','admin/analytics.html','admin/marketing.html','admin/security.html','portal/index.html','portal/onboarding.html','portal/preferences.html','portal/qr.html','portal/schedule.html','assets/vms-catalog.js','assets/vms-core.js','assets/config.js','assets/vms-audit-ai-live.js'];
+const required=['index.html','services.html','get-started.html','audit-report.html','404.html','robots.txt','sitemap.xml','config.js','admin/index.html','admin/login.html','admin/service-catalog.html','admin/audit.html','admin/leads.html','admin/automations.html','admin/analytics.html','admin/marketing.html','admin/security.html','portal/index.html','portal/onboarding.html','portal/preferences.html','portal/qr.html','portal/schedule.html','assets/vms-catalog.js','assets/vms-core.js','assets/vms-admin-shell.css','assets/vms-admin-shell.js','assets/config.js'];
 for(const item of required)if(!fs.existsSync(path.join(root,item)))failures.push(`dist missing ${item}`);
 
 const protectedAdmin=['index.html','audit.html','qr.html','clients.html','service-catalog.html','billing.html','promotions.html','projects.html','files.html','activity.html','linkhub.html','leads.html','automations.html','analytics.html','marketing.html','security.html'];
-for(const name of protectedAdmin){const file=path.join(root,'admin',name);if(!fs.existsSync(file))continue;stats.protectedAdmin++;const s=fs.readFileSync(file,'utf8');if(!s.includes('vms-auth-pending'))failures.push(`admin/${name}: privacy gate missing in dist`);if(!s.includes('vms-phase10-admin-nav'))failures.push(`admin/${name}: Phase 10 Admin navigation hardening missing`)}
+for(const name of protectedAdmin){const file=path.join(root,'admin',name);if(!fs.existsSync(file))continue;stats.protectedAdmin++;const s=fs.readFileSync(file,'utf8');if(!s.includes('vms-auth-pending'))failures.push(`admin/${name}: privacy gate missing in dist`);if(!s.includes('vms-admin-shell.css'))failures.push(`admin/${name}: shared Admin shell CSS missing`);if(!s.includes('vms-admin-shell.js'))failures.push(`admin/${name}: shared Admin shell JS missing`);if(s.includes('vms-phase10-admin-nav'))failures.push(`admin/${name}: retired Phase 10 per-page navigation injector leaked into dist`);if(/Verifying secure session/i.test(s))failures.push(`admin/${name}: visible verification message leaked into dist`)}
+
+/* Phase 4 canonical-shell assertions. */
+const shellCssFile=path.join(root,'assets','vms-admin-shell.css');
+if(fs.existsSync(shellCssFile)){
+  const css=fs.readFileSync(shellCssFile,'utf8');
+  if(!css.includes('#vmsCanonicalAdminSidebar'))failures.push('assets/vms-admin-shell.css: canonical sidebar rules missing');
+  if(!css.includes('scrollbar-width:none'))failures.push('assets/vms-admin-shell.css: hidden sidebar scrollbar rule missing');
+  if(/#vmsCanonicalAdminSidebar[^}]*overflow\s*:\s*auto/i.test(css))failures.push('assets/vms-admin-shell.css: outer Admin sidebar must not use overflow:auto');
+}
+const shellJsFile=path.join(root,'assets','vms-admin-shell.js');
+if(fs.existsSync(shellJsFile)){
+  const js=fs.readFileSync(shellJsFile,'utf8');
+  for(const label of ['Home','VMS Audit','QR Tools','Clients','Service Catalog','Billing / Subscriptions','Promotions','Projects & Requests','Files & Assets','Notifications & Activity','VMS LinkHub','Analytics','CRM / Leads','Sales Content','Automations','Security & Access'])
+    if(!js.includes(label))failures.push(`assets/vms-admin-shell.js: canonical menu item missing ${label}`);
+}
+
 const protectedPortal=['index.html','onboarding.html','preferences.html','qr.html','schedule.html'];
 for(const name of protectedPortal){const file=path.join(root,'portal',name);if(!fs.existsSync(file))continue;stats.protectedPortal++;const s=fs.readFileSync(file,'utf8');if(!s.includes('vms-auth-pending'))failures.push(`portal/${name}: privacy gate missing in dist`)}
 
@@ -46,10 +62,35 @@ for(const relative of ['config.js','assets/config.js']){
   const code=fs.readFileSync(file,'utf8');
   if(code.includes('vms_admin_visual_trust_until'))failures.push(`${relative}: Admin trusted-tab early-unhide shortcut leaked into production`);
 }
-
-const publishedAudit=path.join(root,'admin','audit.html');
-if(fs.existsSync(publishedAudit)){const auditHtml=fs.readFileSync(publishedAudit,'utf8');if(!auditHtml.includes('vms-audit-ai-live'))failures.push('admin/audit.html: live Audit AI production layer missing');}
 const publishedState=path.join(root,'assets','vms-state.js');
 if(fs.existsSync(publishedState)&&fs.readFileSync(publishedState,'utf8').includes('vms_service_catalog_demo_v1'))failures.push('assets/vms-state.js: retired demo catalog state key leaked into production');
+
+
+
+/* Final Polish Phase 6 integration assertions. */
+function readRequired(relative){const file=path.join(root,relative);if(!fs.existsSync(file)){failures.push(`Phase 6 missing ${relative}`);return ''}return fs.readFileSync(file,'utf8')}
+const phase6Portal=readRequired('portal/index.html');
+for(const marker of ['vms-phase11-portal-payments','vms-portal-phase3','vms-portal-linkhub-phase4','vms-portal-qr-phase4'])
+  if(phase6Portal&&!phase6Portal.includes(marker))failures.push(`portal/index.html: Phase 6 marker missing ${marker}`);
+const phase6Audit=readRequired('admin/audit.html');
+for(const marker of ['vms-admin-phase2','vms-audit-ai-live','vms-phase11-audit-cleanup'])
+  if(phase6Audit&&!phase6Audit.includes(marker))failures.push(`admin/audit.html: Phase 6 marker missing ${marker}`);
+const phase6Clients=readRequired('admin/clients.html');
+if(phase6Clients&&!phase6Clients.includes('vms-phase11-clients-live'))failures.push('admin/clients.html: Clients live layer missing');
+const phase6Billing=readRequired('admin/billing.html');
+if(phase6Billing&&!phase6Billing.includes('vms-phase11-billing-live'))failures.push('admin/billing.html: Billing live layer missing');
+const phase6Report=readRequired('audit-report.html');
+if(phase6Report&&/vms-admin-sidebar|vms-admin-topbar|VMS ADMIN/i.test(phase6Report))failures.push('audit-report.html: Admin chrome leaked into client report');
+if(phase6Report&&!phase6Report.includes('/api/public-audit-report'))failures.push('audit-report.html: public report resolver missing');
+for(const relative of ['index.html','services.html','get-started.html','audit-report.html']){
+  const file=path.join(root,relative);if(!fs.existsSync(file))continue;const html=fs.readFileSync(file,'utf8');
+  if(html.includes('link.visionmakestudio.com'))failures.push(`${relative}: retired LinkHub host leaked into production`);
+  if(/(?:localhost|127\.0\.0\.1)/i.test(html))failures.push(`${relative}: local-only URL leaked into production`);
+}
+for(const secretPattern of [/sk_(?:live|test)_[A-Za-z0-9]{16,}/g,/whsec_[A-Za-z0-9]{16,}/g,/sb_secret_[A-Za-z0-9._-]{12,}/g]){
+  for(const file of walk(root).filter(f=>/\.(?:html|js|mjs|json|txt|css)$/i.test(f))){
+    const hit=fs.readFileSync(file,'utf8').match(secretPattern);if(hit)failures.push(`${path.relative(root,file)}: secret-like credential leaked into dist`);
+  }
+}
 
 const report={ok:!failures.length,checkedAt:new Date().toISOString(),stats,failures};fs.mkdirSync(path.join(project,'qa'),{recursive:true});fs.writeFileSync(path.join(project,'qa','dist-validation.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));if(failures.length)process.exit(1);
