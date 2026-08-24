@@ -4,7 +4,7 @@
   const TEST_EMAIL='info@visionmakestudio.com';
   const isLocal=location.protocol==='file:';
   const ADMIN_FAST_NAV_KEY='vms_admin_fast_nav';
-  const FINAL_POLISH_VERSION='20260824-admin-portal-shell-rescue1';
+  const FINAL_POLISH_VERSION='20260824-admin-portal-recovery2';
 
   function surfaceClass(){
     const path=(location.pathname||'/').toLowerCase();
@@ -32,7 +32,7 @@
       if(document.getElementById('vmsCanonicalAdminSidebar'))return;
       if(document.querySelector('script[data-vms-canonical-admin-shell="1"]'))return;
       const script=document.createElement('script');
-      script.src='/assets/vms-admin-shell.js?v=20260824-admin-shell-rescue1';
+      script.src='/assets/vms-admin-shell.js?v=20260824-admin-shell-recovery2';
       script.async=false;
       script.dataset.vmsCanonicalAdminShell='1';
       document.head.appendChild(script);
@@ -45,7 +45,7 @@
       if(document.getElementById('vmsCanonicalPortalSidebar'))return;
       if(document.querySelector('script[data-vms-canonical-portal-shell="1"]'))return;
       const script=document.createElement('script');
-      script.src='/assets/vms-portal-shell.js?v=20260824-portal-shell-rescue1';
+      script.src='/assets/vms-portal-shell.js?v=20260824-portal-shell-recovery2';
       script.async=false;
       script.dataset.vmsCanonicalPortalShell='1';
       document.head.appendChild(script);
@@ -282,15 +282,24 @@
   }
 
   async function requireSession(kind='client'){
-    const reveal=()=>document.documentElement.classList.remove('vms-auth-pending');
+    const authRoot=document.documentElement;
+    authRoot.dataset.vmsAuthChecking=kind;
+
+    const reveal=()=>{
+      authRoot.classList.remove('vms-auth-pending');
+      authRoot.dataset.vmsAuthVerified=kind;
+      delete authRoot.dataset.vmsAuthChecking;
+    };
 
     const adminFail=code=>{
+      delete authRoot.dataset.vmsAuthChecking;
       clearAdminFastNav();
       location.replace('/admin/login.html?error='+encodeURIComponent(code));
       return null;
     };
 
     const portalFail=code=>{
+      delete authRoot.dataset.vmsAuthChecking;
       location.replace('/?portal=1&portal_error='+encodeURIComponent(code));
       return null;
     };

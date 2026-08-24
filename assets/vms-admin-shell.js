@@ -52,7 +52,7 @@
     const link=document.createElement('link');
     link.id='vmsCanonicalAdminShellCss';
     link.rel='stylesheet';
-    link.href=canonicalPath+'?v=20260824-admin-shell-rescue1';
+    link.href=canonicalPath+'?v=20260824-admin-shell-recovery2';
     link.dataset.vmsAdminShellCss='1';
     document.head.appendChild(link);
   }
@@ -124,7 +124,7 @@
         ${NAV.map(([href,label,icon])=>`<a href="${href}"${normalize(href)===current?' class="active" aria-current="page"':''}><span class="vms-nav-icon" aria-hidden="true">${icon}</span><span class="vms-nav-label">${label}</span></a>`).join('')}
       </nav>
       <div class="vms-admin-foot">
-        <div class="vms-admin-external"><a href="../portal/">Client Portal</a><a href="../">Public Website</a></div>
+        <div class="vms-admin-external"><a href="/portal/">Client Portal</a><a href="/">Public Website</a></div>
         VMS Admin · Private workspace
       </div>`;
 

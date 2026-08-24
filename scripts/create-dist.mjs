@@ -30,9 +30,40 @@ if(fs.existsSync(homepage)){
 /* Phase 4 production privacy hardening.
    Protected content remains hidden until VMSAuth verifies the session, role and MFA,
    but the old full-screen verification copy is intentionally gone. */
-const privacyGate=String.raw`<script id="vms-phase10-privacy-gate">(function(){if(location.protocol==='file:')return;var root=document.documentElement;root.classList.add('vms-auth-pending');try{if(location.pathname.indexOf('/admin/')===0){var raw=sessionStorage.getItem('vms_admin_fast_nav');if(raw){var data=JSON.parse(raw),leaf=(location.pathname||'/').replace(/\/index(?:\.html)?$/i,'/').replace(/\.html$/i,'').replace(/\/+$/,'')||'/';if(data&&data.until>Date.now()&&data.to===leaf)root.classList.add('vms-admin-fast-nav');}}}catch(e){}})();</script><style id="vms-phase10-privacy-style">html.vms-auth-pending body{overflow:hidden!important}html.vms-auth-pending body>*{visibility:hidden!important}html.vms-auth-pending body::before{content:''!important;position:fixed;inset:0;z-index:2147483647;display:block;background:#f4f8f9;visibility:visible!important}html.vms-auth-pending body::after{content:''!important;position:fixed;left:0;right:0;top:0;height:64px;z-index:2147483647;background:#fff;border-bottom:1px solid #d8e4e8;visibility:visible!important}html.vms-auth-pending.vms-admin-surface body::before,html.vms-auth-pending.vms-admin-fast-nav body::before{background:linear-gradient(90deg,#003049 0 236px,#f4f8f9 236px)!important}@media(max-width:820px){html.vms-auth-pending.vms-admin-surface body::before,html.vms-auth-pending.vms-admin-fast-nav body::before{background:#f4f8f9!important}}</style>`;
+const privacyGate=String.raw`<script id="vms-phase10-privacy-gate">(function(){if(location.protocol==='file:')return;var root=document.documentElement;root.classList.add('vms-auth-pending');try{if(location.pathname.indexOf('/admin/')===0){var raw=sessionStorage.getItem('vms_admin_fast_nav');if(raw){var data=JSON.parse(raw),leaf=(location.pathname||'/').replace(/\/index(?:\.html)?$/i,'/').replace(/\.html$/i,'').replace(/\/+$/,'')||'/';if(data&&data.until>Date.now()&&data.to===leaf)root.classList.add('vms-admin-fast-nav');}}}catch(e){}})();</script><style id="vms-phase10-privacy-style">html.vms-auth-pending body{overflow:hidden!important}html.vms-auth-pending body>*{visibility:hidden!important}html.vms-auth-pending body::before{content:''!important;position:fixed;inset:0;z-index:2147483647;display:block;background:#f4f8f9;visibility:visible!important}html.vms-auth-pending body::after{content:''!important;position:fixed;left:0;right:0;top:0;height:64px;z-index:2147483647;background:#fff;border-bottom:1px solid #d8e4e8;visibility:visible!important}html.vms-auth-pending.vms-admin-surface body::before,html.vms-auth-pending.vms-admin-fast-nav body::before{background:linear-gradient(90deg,#003049 0 236px,#f4f8f9 236px)!important}@media(max-width:900px){html.vms-auth-pending.vms-admin-surface body::before,html.vms-auth-pending.vms-admin-fast-nav body::before{background:#f4f8f9!important}}</style>`;
 function ensurePrivacyGate(file){if(!fs.existsSync(file))return;let html=fs.readFileSync(file,'utf8');html=html.replace(/<script\b[^>]*id=["']vms-phase10-privacy-gate["'][^>]*>[\s\S]*?<\/script>\s*<style\b[^>]*id=["']vms-phase10-privacy-style["'][^>]*>[\s\S]*?<\/style>/i,'');if(!/<head\b/i.test(html))throw new Error(`Protected page has no <head>: ${path.relative(dist,file)}`);html=html.replace(/<head([^>]*)>/i,`<head$1>${privacyGate}`);fs.writeFileSync(file,html)}
 for(const area of ['admin','portal']){const dir=path.join(dist,area);if(!fs.existsSync(dir))continue;for(const entry of fs.readdirSync(dir,{withFileTypes:true})){if(!entry.isFile()||!entry.name.endsWith('.html'))continue;if(area==='admin'&&entry.name==='login.html')continue;ensurePrivacyGate(path.join(dir,entry.name))}}
+
+/* Recovery 2: one protected-page runtime for every Admin + Portal page.
+   Legacy pages such as QR Tools, Service Catalog and the original Portal did not
+   call VMSAuth.requireSession(), which left vms-auth-pending on <html> forever.
+   Config is loaded in <head>; vms-core + the guard are guaranteed before </body>. */
+for(const asset of ['vms-core.js','vms-auth-guard.js']){
+  if(!fs.existsSync(path.join(dist,'assets',asset)))throw new Error(`Protected auth runtime missing: assets/${asset}`);
+}
+function ensureProtectedRuntime(file,kind){
+  let html=fs.readFileSync(file,'utf8');
+  if(!/<\/head>/i.test(html)||!/<\/body>/i.test(html))throw new Error(`Protected page is missing head/body: ${path.relative(dist,file)}`);
+
+  /* Put the real production config ahead of any existing vms-core reference. */
+  html=html.replace(/<script\b[^>]*\bsrc=["'][^"']*config\.js(?:\?[^"']*)?["'][^>]*>\s*<\/script>/gi,'');
+  html=html.replace(/<\/head>/i,'<script id="vms-protected-config" src="/config.js?v=20260824-auth-recovery2"></script></head>');
+
+  const hasCore=/<script\b(?=[^>]*\bsrc=["'][^"']*vms-core\.js(?:\?[^"']*)?["'])[^>]*>\s*<\/script>/i.test(html);
+  html=html.replace(/<script\b[^>]*id=["']vms-protected-auth-guard["'][^>]*>[\s\S]*?<\/script>/gi,'');
+  const runtime=(hasCore?'':'<script id="vms-protected-core" src="/assets/vms-core.js?v=20260824-auth-recovery2"></script>')+
+    `<script id="vms-protected-auth-guard" src="/assets/vms-auth-guard.js?v=20260824-auth-recovery2" data-vms-auth-kind="${kind}"></script>`;
+  html=html.replace(/<\/body>/i,runtime+'</body>');
+  fs.writeFileSync(file,html);
+}
+for(const area of ['admin','portal']){
+  const dir=path.join(dist,area);if(!fs.existsSync(dir))continue;
+  for(const entry of fs.readdirSync(dir,{withFileTypes:true})){
+    if(!entry.isFile()||!entry.name.endsWith('.html'))continue;
+    if(area==='admin'&&entry.name==='login.html')continue;
+    ensureProtectedRuntime(path.join(dir,entry.name),area==='admin'?'admin':'client');
+  }
+}
 
 /* Phase 4 canonical Admin shell.
    The build no longer appends links into whatever legacy sidebar a page happens to have.
@@ -52,10 +83,10 @@ function ensureCanonicalAdminShell(file){
   html=html.replace(/<script\b[^>]*\bsrc=["'][^"']*vms-admin-shell\.js[^"']*["'][^>]*>\s*<\/script>/gi,'');
 
   if(!/<\/head>/i.test(html))throw new Error(`Admin page has no </head>: ${path.basename(file)}`);
-  html=html.replace(/<\/head>/i,'<link id="vms-phase4-admin-shell-css" rel="stylesheet" href="/assets/vms-admin-shell.css?v=20260824-admin-shell-rescue1"></head>');
+  html=html.replace(/<\/head>/i,'<link id="vms-phase4-admin-shell-css" rel="stylesheet" href="/assets/vms-admin-shell.css?v=20260824-admin-shell-recovery2"></head>');
 
   if(!/<\/body>/i.test(html))throw new Error(`Admin page has no </body>: ${path.basename(file)}`);
-  html=html.replace(/<\/body>/i,'<script id="vms-phase4-admin-shell" src="/assets/vms-admin-shell.js?v=20260824-admin-shell-rescue1" defer></script></body>');
+  html=html.replace(/<\/body>/i,'<script id="vms-phase4-admin-shell" src="/assets/vms-admin-shell.js?v=20260824-admin-shell-recovery2" defer></script></body>');
   fs.writeFileSync(file,html);
 }
 if(fs.existsSync(adminDir))for(const entry of fs.readdirSync(adminDir,{withFileTypes:true})){
@@ -75,9 +106,9 @@ function ensureCanonicalPortalShell(file){
   html=html.replace(/<link\b[^>]*\bhref=["'][^"']*vms-portal-shell\.css[^"']*["'][^>]*>/gi,'');
   html=html.replace(/<script\b[^>]*\bsrc=["'][^"']*vms-portal-shell\.js[^"']*["'][^>]*>\s*<\/script>/gi,'');
   if(!/<\/head>/i.test(html))throw new Error(`Portal page has no </head>: ${path.basename(file)}`);
-  html=html.replace(/<\/head>/i,'<link id="vms-phase4-portal-shell-css" rel="stylesheet" href="/assets/vms-portal-shell.css?v=20260824-portal-shell-rescue1"></head>');
+  html=html.replace(/<\/head>/i,'<link id="vms-phase4-portal-shell-css" rel="stylesheet" href="/assets/vms-portal-shell.css?v=20260824-portal-shell-recovery2"></head>');
   if(!/<\/body>/i.test(html))throw new Error(`Portal page has no </body>: ${path.basename(file)}`);
-  html=html.replace(/<\/body>/i,'<script id="vms-phase4-portal-shell" src="/assets/vms-portal-shell.js?v=20260824-portal-shell-rescue1" defer></script></body>');
+  html=html.replace(/<\/body>/i,'<script id="vms-phase4-portal-shell" src="/assets/vms-portal-shell.js?v=20260824-portal-shell-recovery2" defer></script></body>');
   fs.writeFileSync(file,html);
 }
 if(fs.existsSync(canonicalPortalDir))for(const entry of fs.readdirSync(canonicalPortalDir,{withFileTypes:true})){
@@ -286,7 +317,7 @@ injectRepair('portal/index.html','../assets/vms-qr-phase4.js?v=20260821-phase4',
     'index.html','services.html','get-started.html','audit-report.html',
     'admin/index.html','admin/audit.html','admin/clients.html','admin/billing.html',
     'portal/index.html',
-    'assets/vms-core.js','assets/vms-final-polish.css','assets/vms-admin-phase2.js','assets/vms-admin-shell.css','assets/vms-admin-shell.js','assets/vms-portal-shell.css','assets/vms-portal-shell.js',
+    'assets/vms-core.js','assets/vms-auth-guard.js','assets/vms-final-polish.css','assets/vms-admin-phase2.js','assets/vms-admin-shell.css','assets/vms-admin-shell.js','assets/vms-portal-shell.css','assets/vms-portal-shell.js',
     'assets/vms-portal-phase3.js','assets/vms-linkhub-phase4.js','assets/vms-qr-phase4.js',
     'assets/vms-audit-ai-live.js','assets/vms-portal-payments.js'
   ]) requireDist(relative);

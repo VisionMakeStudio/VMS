@@ -4,6 +4,7 @@
   if(window.__VMS_PORTAL_SHELL_V3__)return;
   window.__VMS_PORTAL_SHELL_V3__=true;
   const ITEMS=[['home','Home'],['services','My Services'],['qrs','QR Codes'],['linkhub','My LinkHub'],['audits','Audits'],['projects','Projects'],['files','Files'],['notifications','Notifications'],['requests','Requests'],['billing','Billing'],['contact','Contact / Schedule']];
+  const VALID=new Set(ITEMS.map(([section])=>section));
   const $=(sel,root=document)=>root.querySelector(sel);
   const $$=(sel,root=document)=>Array.from(root.querySelectorAll(sel));
   const page=(location.pathname.split('/').filter(Boolean).pop()||'index.html').toLowerCase();
@@ -26,11 +27,13 @@
     const link=document.createElement('link');
     link.id='vmsCanonicalPortalShellCss';
     link.rel='stylesheet';
-    link.href=canonicalPath+'?v=20260824-portal-shell-rescue1';
+    link.href=canonicalPath+'?v=20260824-portal-shell-recovery2';
     link.dataset.vmsPortalShellCss='1';
     document.head.appendChild(link);
   }
   function activate(section){
+    section=String(section||'').toLowerCase();
+    if(!VALID.has(section))return false;
     const source=$(`#nav [data-section="${CSS.escape(section)}"]`);
     if(source){source.click();return true}
     if(page!=='index.html'){location.href=`index.html?section=${encodeURIComponent(section)}`;return true}
@@ -84,7 +87,9 @@
     if(titleSource)new MutationObserver(sync).observe(titleSource,{subtree:true,childList:true,characterData:true});
     document.addEventListener('click',e=>{if(e.target.closest('[data-section-jump]'))setTimeout(sync,0)});
     window.addEventListener('resize',()=>{if(innerWidth>820)close()},{passive:true});
-    const requested=new URLSearchParams(location.search).get('section')||location.hash.replace(/^#/,'')||pageSection;
+    const querySection=String(new URLSearchParams(location.search).get('section')||'').toLowerCase();
+    const hashSection=String(location.hash.replace(/^#/,'')||'').toLowerCase();
+    const requested=VALID.has(querySection)?querySection:VALID.has(hashSection)?hashSection:pageSection;
     if(requested)requestAnimationFrame(()=>{activate(requested);setTimeout(sync,0)});
   }
   ensureStylesheet();

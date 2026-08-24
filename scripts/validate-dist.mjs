@@ -24,11 +24,11 @@ else for(const file of walk(root).filter(f=>f.endsWith('.html'))){
   }
 }
 
-const required=['index.html','services.html','get-started.html','audit-report.html','404.html','robots.txt','sitemap.xml','config.js','admin/index.html','admin/login.html','admin/service-catalog.html','admin/audit.html','admin/leads.html','admin/automations.html','admin/analytics.html','admin/marketing.html','admin/security.html','portal/index.html','portal/onboarding.html','portal/preferences.html','portal/qr.html','portal/schedule.html','assets/vms-catalog.js','assets/vms-core.js','assets/vms-admin-shell.css','assets/vms-admin-shell.js','assets/vms-portal-shell.css','assets/vms-portal-shell.js','assets/config.js'];
+const required=['index.html','services.html','get-started.html','audit-report.html','404.html','robots.txt','sitemap.xml','config.js','admin/index.html','admin/login.html','admin/service-catalog.html','admin/audit.html','admin/leads.html','admin/automations.html','admin/analytics.html','admin/marketing.html','admin/security.html','portal/index.html','portal/onboarding.html','portal/preferences.html','portal/qr.html','portal/schedule.html','assets/vms-catalog.js','assets/vms-core.js','assets/vms-auth-guard.js','assets/vms-admin-shell.css','assets/vms-admin-shell.js','assets/vms-portal-shell.css','assets/vms-portal-shell.js','assets/config.js'];
 for(const item of required)if(!fs.existsSync(path.join(root,item)))failures.push(`dist missing ${item}`);
 
 const protectedAdmin=['index.html','audit.html','qr.html','clients.html','service-catalog.html','billing.html','promotions.html','projects.html','files.html','activity.html','linkhub.html','leads.html','automations.html','analytics.html','marketing.html','security.html'];
-for(const name of protectedAdmin){const file=path.join(root,'admin',name);if(!fs.existsSync(file))continue;stats.protectedAdmin++;const s=fs.readFileSync(file,'utf8');if(!s.includes('vms-auth-pending'))failures.push(`admin/${name}: privacy gate missing in dist`);const hasShellCss=/<link\b(?=[^>]*\brel=["'][^"']*stylesheet[^"']*["'])(?=[^>]*\bhref=["']\/assets\/vms-admin-shell\.css(?:\?[^"']*)?["'])[^>]*>/i.test(s);const hasShellJs=/<script\b(?=[^>]*\bsrc=["']\/assets\/vms-admin-shell\.js(?:\?[^"']*)?["'])[^>]*>\s*<\/script>/i.test(s);if(!hasShellCss)failures.push(`admin/${name}: canonical root Admin shell CSS link missing`);if(!hasShellJs)failures.push(`admin/${name}: canonical root Admin shell JS script missing`);if(s.includes('vms-phase10-admin-nav'))failures.push(`admin/${name}: retired Phase 10 per-page navigation injector leaked into dist`);if(/Verifying secure session/i.test(s))failures.push(`admin/${name}: visible verification message leaked into dist`)}
+for(const name of protectedAdmin){const file=path.join(root,'admin',name);if(!fs.existsSync(file))continue;stats.protectedAdmin++;const s=fs.readFileSync(file,'utf8');if(!s.includes('vms-auth-pending'))failures.push(`admin/${name}: privacy gate missing in dist`);const hasShellCss=/<link\b(?=[^>]*\brel=["'][^"']*stylesheet[^"']*["'])(?=[^>]*\bhref=["']\/assets\/vms-admin-shell\.css(?:\?[^"']*)?["'])[^>]*>/i.test(s);const hasShellJs=/<script\b(?=[^>]*\bsrc=["']\/assets\/vms-admin-shell\.js(?:\?[^"']*)?["'])[^>]*>\s*<\/script>/i.test(s);const hasConfig=/<script\b(?=[^>]*\bsrc=["']\/config\.js(?:\?[^"']*)?["'])[^>]*>\s*<\/script>/i.test(s);const hasCore=/<script\b(?=[^>]*\bsrc=["'][^"']*vms-core\.js(?:\?[^"']*)?["'])[^>]*>\s*<\/script>/i.test(s);const hasGuard=/<script\b(?=[^>]*\bsrc=["']\/assets\/vms-auth-guard\.js(?:\?[^"']*)?["'])[^>]*>\s*<\/script>/i.test(s);if(!hasShellCss)failures.push(`admin/${name}: canonical root Admin shell CSS link missing`);if(!hasShellJs)failures.push(`admin/${name}: canonical root Admin shell JS script missing`);if(!hasConfig)failures.push(`admin/${name}: protected config bootstrap missing`);if(!hasCore)failures.push(`admin/${name}: VMS auth core missing`);if(!hasGuard)failures.push(`admin/${name}: centralized auth guard missing`);if(s.includes('vms-phase10-admin-nav'))failures.push(`admin/${name}: retired Phase 10 per-page navigation injector leaked into dist`);if(/Verifying secure session/i.test(s))failures.push(`admin/${name}: visible verification message leaked into dist`)}
 
 /* Phase 4 canonical-shell assertions. */
 const shellCssFile=path.join(root,'assets','vms-admin-shell.css');
@@ -51,8 +51,14 @@ for(const name of protectedPortal){
   if(!s.includes('vms-auth-pending'))failures.push(`portal/${name}: privacy gate missing in dist`);
   const hasShellCss=/<link\b(?=[^>]*\brel=["'][^"']*stylesheet[^"']*["'])(?=[^>]*\bhref=["']\/assets\/vms-portal-shell\.css(?:\?[^"']*)?["'])[^>]*>/i.test(s);
   const hasShellJs=/<script\b(?=[^>]*\bsrc=["']\/assets\/vms-portal-shell\.js(?:\?[^"']*)?["'])[^>]*>\s*<\/script>/i.test(s);
+  const hasConfig=/<script\b(?=[^>]*\bsrc=["']\/config\.js(?:\?[^"']*)?["'])[^>]*>\s*<\/script>/i.test(s);
+  const hasCore=/<script\b(?=[^>]*\bsrc=["'][^"']*vms-core\.js(?:\?[^"']*)?["'])[^>]*>\s*<\/script>/i.test(s);
+  const hasGuard=/<script\b(?=[^>]*\bsrc=["']\/assets\/vms-auth-guard\.js(?:\?[^"']*)?["'])[^>]*>\s*<\/script>/i.test(s);
   if(!hasShellCss)failures.push(`portal/${name}: canonical root Portal shell CSS link missing`);
   if(!hasShellJs)failures.push(`portal/${name}: canonical root Portal shell JS script missing`);
+  if(!hasConfig)failures.push(`portal/${name}: protected config bootstrap missing`);
+  if(!hasCore)failures.push(`portal/${name}: VMS auth core missing`);
+  if(!hasGuard)failures.push(`portal/${name}: centralized auth guard missing`);
 }
 
 const portalShellCssFile=path.join(root,'assets','vms-portal-shell.css');
@@ -68,6 +74,13 @@ if(fs.existsSync(portalShellJsFile)){
   if(!js.includes('/assets/vms-portal-shell.css'))failures.push('assets/vms-portal-shell.js: root Portal stylesheet rescue missing');
   for(const label of ['Home','My Services','QR Codes','My LinkHub','Audits','Projects','Files','Notifications','Requests','Billing','Contact / Schedule'])
     if(!js.includes(label))failures.push(`assets/vms-portal-shell.js: canonical menu item missing ${label}`);
+}
+const authGuardFile=path.join(root,'assets','vms-auth-guard.js');
+if(fs.existsSync(authGuardFile)){
+  const js=fs.readFileSync(authGuardFile,'utf8');
+  if(!js.includes("requireSession(kind)"))failures.push('assets/vms-auth-guard.js: centralized requireSession call missing');
+  if(!js.includes('repairPortalAuthUrl'))failures.push('assets/vms-auth-guard.js: Portal magic-link recovery missing');
+  if(!js.includes('vmsAuthChecking'))failures.push('assets/vms-auth-guard.js: duplicate-auth protection missing');
 }
 
 const home=fs.existsSync(path.join(root,'index.html'))?fs.readFileSync(path.join(root,'index.html'),'utf8'):'';
