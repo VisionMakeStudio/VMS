@@ -110,6 +110,10 @@ for(const marker of ['vms-phase11-portal-payments','vms-portal-phase3','vms-port
 const phase6Audit=readRequired('admin/audit.html');
 for(const marker of ['vms-admin-phase2','vms-audit-ai-live','vms-phase11-audit-cleanup'])
   if(phase6Audit&&!phase6Audit.includes(marker))failures.push(`admin/audit.html: Phase 6 marker missing ${marker}`);
+if(phase6Audit&&!phase6Audit.includes('/assets/vms-audit-desktop-fix.js?v=20260824-phase3-audit-layout'))failures.push('admin/audit.html: Phase 3 desktop layout repair is missing');
+const phase3AuditFix=path.join(root,'assets','vms-audit-desktop-fix.js');
+if(!fs.existsSync(phase3AuditFix))failures.push('assets/vms-audit-desktop-fix.js: Phase 3 Audit layout asset missing');
+else{const js=fs.readFileSync(phase3AuditFix,'utf8');if(!js.includes('__VMS_AUDIT_DESKTOP_PHASE3__'))failures.push('assets/vms-audit-desktop-fix.js: Phase 3 Audit layout marker missing');}
 const phase6Clients=readRequired('admin/clients.html');
 if(phase6Clients&&!phase6Clients.includes('vms-phase11-clients-live'))failures.push('admin/clients.html: Clients live layer missing');
 const phase6Billing=readRequired('admin/billing.html');

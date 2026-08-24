@@ -371,3 +371,75 @@ body.vms-admin-canonical[data-vms-admin-route="audit"] .phase4-dashboard-shell{
   background:rgba(255,255,255,.07);
   border-color:rgba(255,255,255,.24);
 }
+
+/* ---------------------------------------------------------
+   PHASE 3 — Audit desktop workspace correction
+   The Audit tool already owns its internal section navigation. On desktop,
+   do not reserve a second sidebar column inside the canonical Admin shell.
+   This prevents the dashboard from collapsing into a narrow strip.
+   --------------------------------------------------------- */
+@media(min-width:901px){
+  body.vms-admin-canonical[data-vms-admin-route="audit"]{
+    --vms-audit-content-max:1440px;
+  }
+  body.vms-admin-canonical[data-vms-admin-route="audit"] > .app{
+    display:block!important;
+    width:100%!important;
+    max-width:none!important;
+    min-width:0!important;
+    margin:0!important;
+  }
+  body.vms-admin-canonical[data-vms-admin-route="audit"] > .app > .side{
+    display:none!important;
+  }
+  body.vms-admin-canonical[data-vms-admin-route="audit"] > .app > .main{
+    display:block!important;
+    width:100%!important;
+    max-width:none!important;
+    min-width:0!important;
+    margin:0!important;
+    padding:0!important;
+  }
+  body.vms-admin-canonical[data-vms-admin-route="audit"] > .app > .main > .content{
+    display:block!important;
+    width:min(100%,var(--vms-audit-content-max))!important;
+    max-width:var(--vms-audit-content-max)!important;
+    min-width:0!important;
+    margin:0 auto!important;
+    padding:0 0 36px!important;
+  }
+  body.vms-admin-canonical[data-vms-admin-route="audit"] .phase4-dashboard-shell,
+  body.vms-admin-canonical[data-vms-admin-route="audit"] .overview-shell,
+  body.vms-admin-canonical[data-vms-admin-route="audit"] .audit-layout,
+  body.vms-admin-canonical[data-vms-admin-route="audit"] .phase3-history-shell{
+    width:100%!important;
+    max-width:none!important;
+    min-width:0!important;
+  }
+  body.vms-admin-canonical[data-vms-admin-route="audit"] .phase4-dashboard-shell{
+    margin:0!important;
+  }
+  body.vms-admin-canonical[data-vms-admin-route="audit"] .phase4-stats{
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  }
+  body.vms-admin-canonical[data-vms-admin-route="audit"] .phase4-dashboard-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+  body.vms-admin-canonical[data-vms-admin-route="audit"] .phase4-panel,
+  body.vms-admin-canonical[data-vms-admin-route="audit"] .phase4-stat{
+    min-width:0!important;
+  }
+  /* Dashboard is a landing screen, so workspace section chrome should not
+     consume vertical space until an audit section is actually opened. */
+  body.vms-admin-canonical[data-vms-admin-route="audit"].vms-audit-dashboard-mode .phase2-top,
+  body.vms-admin-canonical[data-vms-admin-route="audit"].vms-audit-dashboard-mode .phase2-tabs,
+  body.vms-admin-canonical[data-vms-admin-route="audit"].vms-audit-dashboard-mode #vmsAuditWorkspaceTabs{
+    display:none!important;
+  }
+}
+
+@media(min-width:901px) and (max-width:1180px){
+  body.vms-admin-canonical[data-vms-admin-route="audit"] .phase4-dashboard-grid{
+    grid-template-columns:1fr!important;
+  }
+}

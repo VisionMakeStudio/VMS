@@ -47,12 +47,12 @@ function ensureProtectedRuntime(file,kind){
 
   /* Put the real production config ahead of any existing vms-core reference. */
   html=html.replace(/<script\b[^>]*\bsrc=["'][^"']*config\.js(?:\?[^"']*)?["'][^>]*>\s*<\/script>/gi,'');
-  html=html.replace(/<\/head>/i,'<script id="vms-protected-config" src="/config.js?v=20260824-phase2-auth-recovery"></script></head>');
+  html=html.replace(/<\/head>/i,'<script id="vms-protected-config" src="/config.js?v=20260824-phase3-final-qa"></script></head>');
 
   const hasCore=/<script\b(?=[^>]*\bsrc=["'][^"']*vms-core\.js(?:\?[^"']*)?["'])[^>]*>\s*<\/script>/i.test(html);
   html=html.replace(/<script\b[^>]*id=["']vms-protected-auth-guard["'][^>]*>[\s\S]*?<\/script>/gi,'');
-  const runtime=(hasCore?'':'<script id="vms-protected-core" src="/assets/vms-core.js?v=20260824-phase2-auth-recovery"></script>')+
-    `<script id="vms-protected-auth-guard" src="/assets/vms-auth-guard.js?v=20260824-phase2-auth-recovery" data-vms-auth-kind="${kind}"></script>`;
+  const runtime=(hasCore?'':'<script id="vms-protected-core" src="/assets/vms-core.js?v=20260824-phase3-final-qa"></script>')+
+    `<script id="vms-protected-auth-guard" src="/assets/vms-auth-guard.js?v=20260824-phase3-final-qa" data-vms-auth-kind="${kind}"></script>`;
   html=html.replace(/<\/body>/i,runtime+'</body>');
   fs.writeFileSync(file,html);
 }
@@ -83,10 +83,10 @@ function ensureCanonicalAdminShell(file){
   html=html.replace(/<script\b[^>]*\bsrc=["'][^"']*vms-admin-shell\.js[^"']*["'][^>]*>\s*<\/script>/gi,'');
 
   if(!/<\/head>/i.test(html))throw new Error(`Admin page has no </head>: ${path.basename(file)}`);
-  html=html.replace(/<\/head>/i,'<link id="vms-phase4-admin-shell-css" rel="stylesheet" href="/assets/vms-admin-shell.css?v=20260824-phase2-admin-shell"></head>');
+  html=html.replace(/<\/head>/i,'<link id="vms-phase4-admin-shell-css" rel="stylesheet" href="/assets/vms-admin-shell.css?v=20260824-phase3-admin-shell"></head>');
 
   if(!/<\/body>/i.test(html))throw new Error(`Admin page has no </body>: ${path.basename(file)}`);
-  html=html.replace(/<\/body>/i,'<script id="vms-phase4-admin-shell" src="/assets/vms-admin-shell.js?v=20260824-phase2-admin-shell" defer></script></body>');
+  html=html.replace(/<\/body>/i,'<script id="vms-phase4-admin-shell" src="/assets/vms-admin-shell.js?v=20260824-phase3-admin-shell" defer></script></body>');
   fs.writeFileSync(file,html);
 }
 if(fs.existsSync(adminDir))for(const entry of fs.readdirSync(adminDir,{withFileTypes:true})){
@@ -106,9 +106,9 @@ function ensureCanonicalPortalShell(file){
   html=html.replace(/<link\b[^>]*\bhref=["'][^"']*vms-portal-shell\.css[^"']*["'][^>]*>/gi,'');
   html=html.replace(/<script\b[^>]*\bsrc=["'][^"']*vms-portal-shell\.js[^"']*["'][^>]*>\s*<\/script>/gi,'');
   if(!/<\/head>/i.test(html))throw new Error(`Portal page has no </head>: ${path.basename(file)}`);
-  html=html.replace(/<\/head>/i,'<link id="vms-phase4-portal-shell-css" rel="stylesheet" href="/assets/vms-portal-shell.css?v=20260824-phase2-portal-shell"></head>');
+  html=html.replace(/<\/head>/i,'<link id="vms-phase4-portal-shell-css" rel="stylesheet" href="/assets/vms-portal-shell.css?v=20260824-phase3-portal-shell"></head>');
   if(!/<\/body>/i.test(html))throw new Error(`Portal page has no </body>: ${path.basename(file)}`);
-  html=html.replace(/<\/body>/i,'<script id="vms-phase4-portal-shell" src="/assets/vms-portal-shell.js?v=20260824-phase2-portal-shell" defer></script></body>');
+  html=html.replace(/<\/body>/i,'<script id="vms-phase4-portal-shell" src="/assets/vms-portal-shell.js?v=20260824-phase3-portal-shell" defer></script></body>');
   fs.writeFileSync(file,html);
 }
 if(fs.existsSync(canonicalPortalDir))for(const entry of fs.readdirSync(canonicalPortalDir,{withFileTypes:true})){
@@ -122,7 +122,7 @@ if(fs.existsSync(canonicalPortalDir))for(const entry of fs.readdirSync(canonical
 const phase11Assets=['vms-audit-desktop-fix.js','vms-audit-ai-live.js','vms-admin-clients-live.js','vms-admin-billing-live.js','vms-portal-payments.js','vms-admin-cleanup.js','vms-get-started-url.js'];
 for(const name of phase11Assets){if(!fs.existsSync(path.join(dist,'assets',name)))throw new Error(`Phase 11 repair asset is missing: assets/${name}`)}
 function injectRepair(relative,src,id){const file=path.join(dist,relative);if(!fs.existsSync(file))throw new Error(`Phase 11 target is missing: ${relative}`);let html=fs.readFileSync(file,'utf8');const idNeedle=`id="${id}"`;if(html.includes(idNeedle)){const re=new RegExp(`<script([^>]*\\s)id=["']${id}["']([^>]*)><\\/script>`,`i`);html=html.replace(re,(tag)=>{if(/\bsrc=["'][^"']*["']/i.test(tag))return tag.replace(/\bsrc=["'][^"']*["']/i,`src="${src}"`);return tag.replace(/<script/i,`<script src="${src}"`)});fs.writeFileSync(file,html);return}if(!/<\/body>/i.test(html))throw new Error(`Phase 11 target has no </body>: ${relative}`);html=html.replace(/<\/body>/i,`<script id="${id}" src="${src}" defer></script></body>`);fs.writeFileSync(file,html)}
-injectRepair('admin/audit.html','../assets/vms-audit-desktop-fix.js','vms-phase11-audit-fix');
+injectRepair('admin/audit.html','/assets/vms-audit-desktop-fix.js?v=20260824-phase3-audit-layout','vms-phase11-audit-fix');
 injectRepair('admin/audit.html','../assets/vms-audit-ai-live.js?v=20260821-phase5','vms-audit-ai-live');
 injectRepair('admin/clients.html','../assets/vms-admin-clients-live.js','vms-phase11-clients-live');
 injectRepair('admin/billing.html','../assets/vms-admin-billing-live.js','vms-phase11-billing-live');
