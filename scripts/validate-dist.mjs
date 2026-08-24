@@ -24,7 +24,7 @@ else for(const file of walk(root).filter(f=>f.endsWith('.html'))){
   }
 }
 
-const required=['index.html','services.html','get-started.html','audit-report.html','404.html','robots.txt','sitemap.xml','config.js','admin/index.html','admin/login.html','admin/service-catalog.html','admin/audit.html','admin/leads.html','admin/automations.html','admin/analytics.html','admin/marketing.html','admin/security.html','portal/index.html','portal/onboarding.html','portal/preferences.html','portal/qr.html','portal/schedule.html','assets/vms-catalog.js','assets/vms-core.js','assets/vms-auth-guard.js','assets/vms-admin-shell.css','assets/vms-admin-shell.js','assets/vms-portal-shell.css','assets/vms-portal-shell.js','assets/config.js'];
+const required=['index.html','services.html','get-started.html','audit-report.html','404.html','robots.txt','sitemap.xml','config.js','admin/index.html','admin/login.html','admin/service-catalog.html','admin/audit.html','admin/leads.html','admin/automations.html','admin/analytics.html','admin/marketing.html','admin/security.html','portal/index.html','portal/onboarding.html','portal/preferences.html','portal/qr.html','portal/schedule.html','assets/vms-catalog.js','assets/vms-service-catalog-manager.js','assets/vms-core.js','assets/vms-auth-guard.js','assets/vms-admin-shell.css','assets/vms-admin-shell.js','assets/vms-portal-shell.css','assets/vms-portal-shell.js','assets/config.js'];
 for(const item of required)if(!fs.existsSync(path.join(root,item)))failures.push(`dist missing ${item}`);
 
 const protectedAdmin=['index.html','audit.html','qr.html','clients.html','service-catalog.html','billing.html','promotions.html','projects.html','files.html','activity.html','linkhub.html','leads.html','automations.html','analytics.html','marketing.html','security.html'];
@@ -155,4 +155,31 @@ for(const secretPattern of [/sk_(?:live|test)_[A-Za-z0-9]{16,}/g,/whsec_[A-Za-z0
   }
 }
 
+
+// Live Service Catalog source-of-truth checks.
+const liveCatalogPage=path.join(root,'admin','service-catalog.html');
+const liveCatalogBridge=path.join(root,'assets','vms-catalog.js');
+const liveCatalogManager=path.join(root,'assets','vms-service-catalog-manager.js');
+if(fs.existsSync(liveCatalogPage)){
+  const s=fs.readFileSync(liveCatalogPage,'utf8');
+  if(!/vms-catalog\.js/.test(s))failures.push('admin/service-catalog.html: live VMS catalog bridge missing');
+  if(!/vms-service-catalog-manager\.js/.test(s))failures.push('admin/service-catalog.html: live catalog manager missing');
+  if(/vms_service_catalog_v2|demoServices/.test(s))failures.push('admin/service-catalog.html: retired 4-item local prototype catalog is still present');
+}
+if(fs.existsSync(liveCatalogBridge)){
+  const s=fs.readFileSync(liveCatalogBridge,'utf8');
+  if(!/from\(['"]service_catalog['"]\)/.test(s))failures.push('assets/vms-catalog.js: Supabase service_catalog read missing');
+  if(!/upsert\(dbRow/.test(s))failures.push('assets/vms-catalog.js: live service_catalog save bridge missing');
+  if(!/id:'linkhub-pro'[\s\S]{0,500}recurringPrice:19\.99/.test(s))failures.push('assets/vms-catalog.js: LinkHub Pro fallback must be 19.99');
+}
+if(fs.existsSync(liveCatalogManager)){
+  const s=fs.readFileSync(liveCatalogManager,'utf8');
+  if(!/VMSCatalog\.load\(\)/.test(s))failures.push('assets/vms-service-catalog-manager.js: live catalog load missing');
+  if(!/VMSCatalog\.save\(/.test(s))failures.push('assets/vms-service-catalog-manager.js: live catalog save missing');
+}
+const publicHome=path.join(root,'index.html');
+if(fs.existsSync(publicHome)){
+  const s=fs.readFileSync(publicHome,'utf8');
+  if(!/VMSCatalog\.load\(\{channel:['"]website['"]\}\)/.test(s))failures.push('index.html: public website is not loading the live website catalog');
+}
 const report={ok:!failures.length,checkedAt:new Date().toISOString(),stats,failures};fs.mkdirSync(path.join(project,'qa'),{recursive:true});fs.writeFileSync(path.join(project,'qa','dist-validation.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));if(failures.length)process.exit(1);

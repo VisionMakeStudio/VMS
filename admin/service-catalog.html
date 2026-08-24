@@ -261,8 +261,508 @@ html,body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sa
 .content{max-width:1500px;margin-left:auto;margin-right:auto}
 .panel,.card,.phase4-panel,.phase4-stat,.stat{border-color:var(--line);box-shadow:0 1px 0 rgba(0,48,73,.02)}
 .btn{border-radius:9px}
+
 @media(max-width:900px){.shell,.app{grid-template-columns:1fr}.mobile-menu{display:inline-flex}.sidebar.open{transform:translateX(0)}}
 </style>
+<style id="vms-review-final-css">/* Vision Make Studio — Final Polish shared UI foundation (Phase 1 checkpoint) */
+:root{
+  --vms-navy:#003049;
+  --vms-deep:#08283d;
+  --vms-cream:#FDF0D5;
+  --vms-red:#C1121F;
+  --vms-blue:#669BBC;
+  --vms-orange:#EB5E28;
+  --vms-success:#23825f;
+  --vms-warning:#b66d10;
+  --vms-muted:#667e89;
+  --vms-line:#dce7eb;
+  --vms-control-h:42px;
+  --vms-radius:11px;
+  --vms-body-size:clamp(15.5px,calc(14.9px + .13vw),17px);
+  --vms-label-size:clamp(11.5px,calc(11px + .08vw),12.5px);
+  --vms-button-size:clamp(13px,calc(12.5px + .09vw),14.5px);
+}
+
+html.vms-admin-surface body,
+html.vms-portal-surface body,
+html.vms-public-surface body{
+  -webkit-text-size-adjust:100%;
+  text-size-adjust:100%;
+  font-size:var(--vms-body-size)!important;
+  line-height:1.5;
+  text-rendering:optimizeLegibility;
+}
+
+/* Readable UI type without inflating device mockups / QR artwork previews. */
+html.vms-admin-surface :where(.content,.main,.panel,.card,.modal,.toolbar,.topbar,#vms-admin-topbar) :where(p,li,td,th),
+html.vms-portal-surface :where(.content,.main,.panel,.card,.modal,.toolbar,.topbar) :where(p,li,td,th){
+  line-height:1.48;
+}
+html.vms-admin-surface :where(.field,.form-field,.control-group) > label,
+html.vms-portal-surface :where(.field,.form-field,.control-group) > label,
+html.vms-admin-surface :where(.eyebrow,.kicker),
+html.vms-portal-surface :where(.eyebrow,.kicker){
+  font-size:var(--vms-label-size)!important;
+  line-height:1.25!important;
+}
+html.vms-admin-surface :where(input,select,textarea),
+html.vms-portal-surface :where(input,select,textarea){
+  font-size:clamp(14px,calc(13.5px + .08vw),15.5px)!important;
+  line-height:1.35!important;
+}
+html.vms-admin-surface :where(.btn,button:not(.icon-btn):not(.close):not(.special-back)),
+html.vms-portal-surface :where(.btn,button:not(.icon-btn):not(.close):not(.special-back)){
+  font-size:var(--vms-button-size);
+}
+html.vms-admin-surface :where(.nav a,.nav button,.vms-admin-nav a),
+html.vms-portal-surface :where(.nav a,.nav button,.side-nav a,.portal-nav a){
+  font-size:clamp(12.5px,calc(12px + .08vw),14px)!important;
+  line-height:1.25!important;
+}
+html.vms-admin-surface :where(.topbar-left small,.vms-admin-page-title small,.vms-admin-foot small,.side-foot small),
+html.vms-portal-surface :where(.topbar-left small,.portal-page-title small,.side-foot small){
+  font-size:clamp(10px,calc(9.6px + .07vw),11.5px)!important;
+}
+html.vms-admin-surface :where(.topbar-left strong,.vms-admin-page-title strong),
+html.vms-portal-surface :where(.topbar-left strong,.portal-page-title strong){
+  font-size:clamp(18px,calc(17px + .22vw),22px)!important;
+}
+html.vms-admin-surface :where(.stat > span,.metric > span),
+html.vms-portal-surface :where(.stat > span,.metric > span){
+  font-size:clamp(10.5px,calc(10px + .07vw),12px)!important;
+}
+html.vms-admin-surface :where(.stat > small,.metric > small,.helper,.hint,.muted),
+html.vms-portal-surface :where(.stat > small,.metric > small,.helper,.hint,.muted){
+  font-size:clamp(11.5px,calc(11px + .07vw),13px)!important;
+  line-height:1.4!important;
+}
+
+/* Compact checkbox / radio foundation. Prevents stretched full-card checkmarks. */
+html.vms-admin-surface input[type="checkbox"],
+html.vms-admin-surface input[type="radio"],
+html.vms-portal-surface input[type="checkbox"],
+html.vms-portal-surface input[type="radio"]{
+  inline-size:18px!important;
+  block-size:18px!important;
+  min-inline-size:18px!important;
+  min-block-size:18px!important;
+  max-inline-size:18px!important;
+  max-block-size:18px!important;
+  flex:0 0 18px!important;
+  padding:0!important;
+  margin:2px 0 0!important;
+  accent-color:var(--vms-navy);
+  vertical-align:top;
+}
+html.vms-admin-surface :where(.check-line,.permission,.check-row,.offer-option,.toggle-row,.setting-row),
+html.vms-portal-surface :where(.check-line,.permission,.check-row,.offer-option,.toggle-row,.setting-row){
+  min-height:auto!important;
+  height:auto!important;
+  align-items:flex-start!important;
+  gap:10px!important;
+}
+html.vms-admin-surface :where(.check-line,.permission,.check-row,.offer-option) > input,
+html.vms-portal-surface :where(.check-line,.permission,.check-row,.offer-option) > input{
+  align-self:flex-start!important;
+}
+
+/* Shared compact switches. Existing custom switch markup can opt in with .vms-switch. */
+.vms-switch{
+  width:44px!important;
+  height:25px!important;
+  min-width:44px!important;
+  padding:2px!important;
+  border-radius:999px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  background:#cdd8dd!important;
+  transition:background .18s ease!important;
+  flex:0 0 44px!important;
+}
+.vms-switch::after{
+  content:"";
+  width:21px;
+  height:21px;
+  border-radius:50%;
+  background:#fff;
+  box-shadow:0 1px 4px rgba(0,30,45,.24);
+  transform:translateX(0);
+  transition:transform .18s ease;
+}
+.vms-switch[aria-checked="true"],.vms-switch.active,.vms-switch.on{background:var(--vms-success)!important}
+.vms-switch[aria-checked="true"]::after,.vms-switch.active::after,.vms-switch.on::after{transform:translateX(19px)}
+
+/* Compact non-stretched status language across the suite. */
+.vms-status-pill,
+html.vms-admin-surface .status-pill,
+html.vms-portal-surface .status-pill{
+  width:auto!important;
+  max-width:max-content!important;
+  min-height:26px!important;
+  padding:5px 9px!important;
+  border-radius:999px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:6px!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  font-size:clamp(10.5px,calc(10px + .06vw),12px)!important;
+  font-weight:850!important;
+}
+.vms-status-pill::before{
+  content:"";
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:currentColor;
+  flex:0 0 7px;
+}
+.vms-status-pill[data-status="active"],.vms-status-pill[data-status="paid"],.vms-status-pill[data-status="published"],.vms-status-pill[data-status="completed"]{color:var(--vms-success);background:#edf8f3;border:1px solid #cfe9dd}
+.vms-status-pill[data-status="pending"],.vms-status-pill[data-status="draft"]{color:var(--vms-warning);background:#fff7e9;border:1px solid #f2ddba}
+.vms-status-pill[data-status="past-due"],.vms-status-pill[data-status="failed"],.vms-status-pill[data-status="disabled"]{color:var(--vms-red);background:#fff0f1;border:1px solid #f1cbd0}
+.vms-status-pill[data-status="inactive"],.vms-status-pill[data-status="archived"]{color:#647681;background:#f1f5f6;border:1px solid #dbe3e6}
+
+/* Action controls should stay compact instead of stretching to card width. */
+html.vms-admin-surface :where(.actions,.top-actions,.row-actions,.panel-actions),
+html.vms-portal-surface :where(.actions,.top-actions,.row-actions,.panel-actions){
+  align-items:center!important;
+}
+.vms-kebab{
+  width:36px!important;
+  height:36px!important;
+  min-width:36px!important;
+  min-height:36px!important;
+  padding:0!important;
+  border:1px solid var(--vms-line)!important;
+  border-radius:10px!important;
+  background:#fff!important;
+  color:var(--vms-navy)!important;
+  display:inline-grid!important;
+  place-items:center!important;
+  font-size:20px!important;
+  line-height:1!important;
+}
+
+/* Desktop: permanent sidebar means no hamburger. Mobile/tablet: drawer control remains available. */
+@media (min-width:821px){
+  html.vms-admin-surface :where(.vms-admin-menu,.mobile-menu,#mobileMenuBtn,.hamburger,.menu-toggle){display:none!important}
+}
+@media (max-width:820px){
+  html.vms-admin-surface :where(.vms-admin-menu,.mobile-menu,#mobileMenuBtn),
+  html.vms-portal-surface :where(.mobile-menu,#mobileMenuBtn,.hamburger,.menu-toggle){
+    min-width:42px!important;
+    width:42px!important;
+    height:42px!important;
+    padding:0!important;
+    align-items:center!important;
+    justify-content:center!important;
+  }
+}
+
+/* Comfortable controls / touch targets. */
+html.vms-admin-surface :where(.btn,input:not([type="checkbox"]):not([type="radio"]),select),
+html.vms-portal-surface :where(.btn,input:not([type="checkbox"]):not([type="radio"]),select){
+  min-height:40px;
+}
+html.vms-admin-surface textarea,html.vms-portal-surface textarea{min-height:88px}
+
+/* Keyboard/accessibility states. */
+html.vms-admin-surface :where(a,button,input,select,textarea):focus-visible,
+html.vms-portal-surface :where(a,button,input,select,textarea):focus-visible,
+html.vms-public-surface :where(a,button,input,select,textarea):focus-visible{
+  outline:3px solid rgba(102,155,188,.42)!important;
+  outline-offset:2px!important;
+}
+
+/* Shared toast layer used by VMSUI.toast()/vms:toast. */
+#vms-global-toast-region{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  z-index:2147483000;
+  display:grid;
+  gap:8px;
+  width:min(380px,calc(100vw - 28px));
+  pointer-events:none;
+}
+.vms-global-toast{
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:9px;
+  align-items:start;
+  padding:12px 14px;
+  border-radius:12px;
+  border:1px solid var(--vms-line);
+  background:#fff;
+  color:#173443;
+  box-shadow:0 18px 55px rgba(0,48,73,.18);
+  font-size:14px;
+  line-height:1.35;
+  opacity:0;
+  transform:translateY(8px);
+  transition:opacity .18s ease,transform .18s ease;
+}
+.vms-global-toast.show{opacity:1;transform:translateY(0)}
+.vms-global-toast::before{content:"✓";font-weight:950;color:var(--vms-success)}
+.vms-global-toast[data-kind="error"]::before{content:"!";color:var(--vms-red)}
+.vms-global-toast[data-kind="warning"]::before{content:"!";color:var(--vms-warning)}
+
+/* Public site keeps readable form controls without disturbing approved layout. */
+html.vms-public-surface :where(input,select,textarea,button){font-size:clamp(15px,calc(14.5px + .08vw),16.5px)}
+
+@media (max-width:600px){
+  #vms-global-toast-region{right:14px;bottom:14px}
+  html.vms-admin-surface :where(.content,.main),html.vms-portal-surface :where(.content,.main){min-width:0!important}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+
+/* =========================================================
+   Phase 2 — Admin consistency / navigation / action cleanup
+   ========================================================= */
+html.vms-phase2-admin .vms-retired-admin-sidebar{display:none!important}
+
+/* Canonical Admin menu: one item, one active state, readable at normal distance. */
+html.vms-phase2-admin :where(aside.sidebar,aside.side,#vms-admin-sidebar) nav,
+html.vms-phase2-admin :where(aside.sidebar,aside.side,#vms-admin-sidebar) .nav{
+  gap:3px!important;
+}
+html.vms-phase2-admin :where(aside.sidebar,aside.side,#vms-admin-sidebar) :where(nav,.nav) > a{
+  min-height:39px!important;
+  padding-block:9px!important;
+  font-size:clamp(12.75px,calc(12.2px + .1vw),14px)!important;
+}
+html.vms-phase2-admin :where(aside.sidebar,aside.side,#vms-admin-sidebar) :where(nav,.nav) > a.active{
+  color:var(--vms-orange)!important;
+}
+
+/* Desktop fixed sidebar and hamburger are mutually exclusive. */
+@media(min-width:821px){
+  html.vms-phase2-admin :where(.mobile-menu,#mobileMenuBtn,.vms-admin-menu,[aria-label*="admin menu" i]){display:none!important}
+}
+
+/* Settings across Service Catalog / Automations / Admin preferences. */
+html.vms-phase2-admin :where(.switch-card,.check-card,.setting-card,.permission,.check-line){
+  min-height:auto!important;
+}
+html.vms-phase2-admin :where(.switch-card,.check-card,.setting-card){
+  align-items:center!important;
+}
+html.vms-phase2-admin :where(.switch-card,.check-card,.setting-card) :where(strong,label){
+  font-size:clamp(12px,calc(11.5px + .07vw),13.5px)!important;
+}
+html.vms-phase2-admin :where(.switch-card,.check-card,.setting-card) :where(span,small,p){
+  font-size:clamp(11px,calc(10.6px + .06vw),12.5px)!important;
+  line-height:1.4!important;
+}
+/* Do not let the global checkbox rule break intentionally custom slider switches. */
+html.vms-phase2-admin label.switch input[type="checkbox"]{
+  position:absolute!important;opacity:0!important;width:1px!important;height:1px!important;min-width:1px!important;min-height:1px!important;margin:0!important;
+}
+html.vms-phase2-admin label.switch{width:44px!important;height:25px!important;min-width:44px!important;flex:0 0 44px!important}
+html.vms-phase2-admin label.switch .slider:before{width:19px!important;height:19px!important;left:3px!important;top:3px!important}
+html.vms-phase2-admin label.switch input:checked+.slider:before{transform:translateX(19px)!important}
+
+/* Three-dot action menus are the standard for dense Admin rows. */
+.vms-phase2-menu-wrap{position:relative!important;display:inline-flex!important;flex:0 0 auto!important}
+.vms-phase2-action-menu{
+  position:absolute!important;top:calc(100% + 7px)!important;right:0!important;z-index:2147482000!important;
+  display:none!important;min-width:190px!important;padding:6px!important;border:1px solid var(--vms-line)!important;
+  border-radius:12px!important;background:#fff!important;box-shadow:0 18px 48px rgba(0,48,73,.18)!important;
+}
+.vms-phase2-menu-wrap.open>.vms-phase2-action-menu{display:grid!important}
+.vms-phase2-action-menu>button{
+  width:100%!important;min-height:38px!important;border:0!important;border-radius:8px!important;background:transparent!important;
+  color:#173443!important;text-align:left!important;justify-content:flex-start!important;padding:8px 10px!important;font-size:13px!important;font-weight:750!important;
+}
+.vms-phase2-action-menu>button:hover{background:#f3f7f8!important}
+.vms-phase2-action-menu>button.danger{color:var(--vms-red)!important}
+.vms-phase2-original-action{display:none!important}
+
+/* Notifications & Activity: Select All beside Filter + one compact Bulk Actions menu. */
+html.vms-phase2-admin #desktopSelectBtn{width:auto!important;min-width:92px!important;padding-inline:13px!important}
+html.vms-phase2-admin #bulkBar{min-height:48px!important;padding:8px 12px!important;align-items:center!important}
+html.vms-phase2-admin #bulkBar .bulk-actions{margin-left:auto!important;display:flex!important;align-items:center!important}
+html.vms-phase2-admin #bulkBar .vms-phase2-bulk-trigger{width:auto!important;min-width:132px!important}
+html.vms-phase2-admin #bulkBar .vms-phase2-original-action{display:none!important}
+html.vms-phase2-admin #bulkCount{font-size:clamp(12px,calc(11.5px + .06vw),13px)!important}
+html.vms-phase2-admin #bulkScope{font-size:clamp(11px,calc(10.6px + .05vw),12px)!important}
+
+/* Promotion / public-service action alignment QA. */
+html.vms-phase2-admin .vms-new-promotion-action{transform:translateY(-3px)}
+html.vms-phase2-admin .vms-view-public-services{align-self:center!important;display:inline-flex!important;align-items:center!important;justify-content:center!important}
+
+/* Keep compact status badges from stretching in table/card layouts. */
+html.vms-phase2-admin :where(.badge,.status-chip,.service-status,.billing-status){max-width:max-content!important;width:auto!important;justify-self:start!important}
+
+@media(max-width:820px){
+  .vms-phase2-action-menu{position:fixed!important;left:12px!important;right:12px!important;top:auto!important;bottom:12px!important;min-width:0!important;border-radius:16px!important}
+  html.vms-phase2-admin #bulkBar.show{grid-template-columns:minmax(0,1fr) auto!important;display:grid!important}
+  html.vms-phase2-admin #bulkBar .bulk-actions{margin-left:0!important;justify-self:end!important}
+  html.vms-phase2-admin #bulkBar .vms-phase2-bulk-trigger{min-width:44px!important;width:44px!important;font-size:0!important;padding:0!important}
+  html.vms-phase2-admin #bulkBar .vms-phase2-bulk-trigger::after{content:"⋯";font-size:20px!important}
+}
+
+/* =========================================================
+   Phase 3 — Client Portal shell + notification settings
+   ========================================================= */
+html.vms-phase3-portal body{font-size:clamp(15px,calc(14.4px + .08vw),16.5px)!important}
+html.vms-phase3-portal :where(.topbar-left strong,#topbarTitle){font-size:clamp(17px,calc(16px + .18vw),20px)!important}
+html.vms-phase3-portal .nav button{font-size:clamp(12.5px,calc(12px + .08vw),14px)!important;line-height:1.25!important}
+html.vms-phase3-portal :where(.card,.panel,.intro,.list-item,.notification-item) :where(p,span:not(.pill):not(.badge),small){line-height:1.48}
+
+/* Notification settings live inside the existing Portal shell — no standalone white-header page. */
+.vms-notification-settings-btn{width:auto!important;white-space:nowrap!important}
+.vms-portal-settings-panel{
+  margin:0 0 14px!important;padding:16px!important;border:1px solid #dfe7ea!important;border-radius:15px!important;
+  background:#fff!important;box-shadow:0 10px 30px rgba(0,48,73,.055)!important;
+}
+.vms-portal-settings-panel[hidden]{display:none!important}
+.vms-portal-settings-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding-bottom:14px;border-bottom:1px solid #e8eef0}
+.vms-portal-settings-head small{display:block;color:#7d919b;font-size:11px!important;font-weight:900;letter-spacing:.11em}
+.vms-portal-settings-head h3{margin:4px 0 6px;color:#003049;font-size:clamp(18px,calc(17px + .18vw),21px)!important;line-height:1.2}
+.vms-portal-settings-head p{margin:0;max-width:720px;color:#6c818b;font-size:13px!important;line-height:1.55!important}
+.vms-portal-pref-group{margin-top:15px;border:1px solid #e0e8eb;border-radius:13px;overflow:hidden;background:#fff}
+.vms-portal-pref-label{padding:9px 12px;background:#f7fafb;color:#6f858f;font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;border-bottom:1px solid #e6edef}
+.vms-portal-pref-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 14px;border-bottom:1px solid #edf1f3}
+.vms-portal-pref-row:last-child{border-bottom:0}
+.vms-portal-pref-row.is-required{background:#fbfdfd}
+.vms-portal-pref-copy{min-width:0}
+.vms-portal-pref-copy strong{display:block;color:#173443;font-size:14px!important;line-height:1.3}
+.vms-portal-pref-copy span{display:block;margin-top:3px;color:#758a94;font-size:12px!important;line-height:1.45}
+.vms-portal-pref-control{display:flex;align-items:center;gap:9px;flex:0 0 auto}
+.vms-required-pill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:5px 8px;background:#edf8f3;color:#26745a;border:1px solid #cfe9dd;font-size:10.5px;font-weight:900;white-space:nowrap}
+.vms-required-pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.vms-portal-switch{position:relative;width:44px!important;height:25px!important;min-width:44px!important;display:inline-block!important;flex:0 0 44px!important;margin:0!important}
+.vms-portal-switch input{position:absolute!important;opacity:0!important;width:1px!important;height:1px!important;min-width:1px!important;min-height:1px!important;margin:0!important}
+.vms-portal-switch span{position:absolute!important;inset:0!important;border-radius:999px!important;background:#ccd8dd!important;transition:.18s ease!important;box-shadow:inset 0 0 0 1px rgba(0,48,73,.05)!important}
+.vms-portal-switch span::before{content:""!important;position:absolute!important;width:19px!important;height:19px!important;left:3px!important;top:3px!important;border-radius:50%!important;background:#fff!important;box-shadow:0 2px 7px rgba(0,48,73,.18)!important;transition:transform .18s ease!important}
+.vms-portal-switch input:checked+span{background:#2b8c69!important}
+.vms-portal-switch input:checked+span::before{transform:translateX(19px)!important}
+.vms-portal-switch input:disabled+span{background:#b9d5c9!important;opacity:.92!important}
+.vms-portal-settings-status{margin-top:10px;color:#738892;font-size:11.5px;line-height:1.45}
+
+/* Stop the old tiny Portal typography from forcing 7–10px readable content. */
+html.vms-phase3-portal :where(.billing-hero small,.billing-item span,.choice span,.notification-copy small,.linkhub-contact span){font-size:clamp(11px,calc(10.7px + .05vw),12px)!important}
+html.vms-phase3-portal :where(.billing-item strong,.choice strong,.notification-copy strong){font-size:clamp(13px,calc(12.6px + .06vw),14px)!important}
+
+@media(max-width:700px){
+  .vms-portal-settings-head{display:grid;grid-template-columns:1fr;gap:10px}
+  .vms-portal-settings-head .btn{width:max-content!important}
+  .vms-portal-pref-row{align-items:flex-start;padding:12px}
+  .vms-portal-pref-control{align-self:center}
+  .vms-required-pill{display:none}
+  .vms-notification-settings-btn{width:100%!important;margin-top:9px!important}
+}
+
+/* =========================================================
+   Final review fixes — unified shell, spacing, controls, previews
+   ========================================================= */
+
+/* Homepage: the shared section-heading rule must never darken the How It Works heading. */
+html.vms-public-surface .workflow .section-head h2,
+html.vms-public-surface #how .section-head h2{
+  color:#FDF0D5!important;
+  -webkit-text-fill-color:#FDF0D5!important;
+}
+html.vms-public-surface .workflow .section-head p,
+html.vms-public-surface #how .section-head p{color:#c0d3dc!important}
+
+/* Service Catalog: separate the dark intro/banner area from the summary cards. */
+html.vms-admin-surface .intro + .status-strip{margin-top:8px!important}
+html.vms-admin-surface .intro{margin-bottom:30px!important}
+
+/* Shared VMS buttons — one control language across Admin + Portal.
+   Page-specific primary/red/green classes keep their existing meaning. */
+html.vms-admin-surface :where(button,.btn,[role="button"]),
+html.vms-portal-surface :where(button,.btn,[role="button"]){
+  border-radius:10px!important;
+  font-weight:850!important;
+  letter-spacing:0!important;
+  transition:background-color .16s ease,border-color .16s ease,color .16s ease,box-shadow .16s ease,transform .16s ease!important;
+}
+html.vms-admin-surface :where(button,.btn):not(:disabled):hover,
+html.vms-portal-surface :where(button,.btn):not(:disabled):hover{transform:translateY(-1px)}
+html.vms-admin-surface :where(button,.btn):disabled,
+html.vms-portal-surface :where(button,.btn):disabled{opacity:.52!important;cursor:not-allowed!important;transform:none!important}
+
+/* Refined shared toggle geometry. This deliberately covers the common VMS switch
+   patterns while leaving plain checkboxes/radios alone. */
+html.vms-admin-surface :where(.toggle,.switch,.vms-switch,.vms-portal-switch),
+html.vms-portal-surface :where(.toggle,.switch,.vms-switch,.vms-portal-switch){
+  --vms-switch-w:46px;
+  --vms-switch-h:26px;
+  --vms-switch-dot:20px;
+}
+html.vms-admin-surface button.toggle,
+html.vms-portal-surface button.toggle,
+html.vms-admin-surface .vms-switch,
+html.vms-portal-surface .vms-switch{
+  width:var(--vms-switch-w)!important;height:var(--vms-switch-h)!important;min-width:var(--vms-switch-w)!important;min-height:var(--vms-switch-h)!important;
+  padding:3px!important;border:1px solid #b9c9d0!important;border-radius:999px!important;background:#d7e1e5!important;box-shadow:inset 0 1px 2px rgba(0,48,73,.08)!important;
+}
+html.vms-admin-surface button.toggle::after,
+html.vms-portal-surface button.toggle::after,
+html.vms-admin-surface .vms-switch::after,
+html.vms-portal-surface .vms-switch::after{
+  content:"";display:block;width:var(--vms-switch-dot)!important;height:var(--vms-switch-dot)!important;border-radius:50%!important;background:#fff!important;box-shadow:0 2px 6px rgba(0,48,73,.22)!important;transform:translateX(0);transition:transform .18s ease!important;
+}
+html.vms-admin-surface button.toggle.active,
+html.vms-admin-surface button.toggle[aria-pressed="true"],
+html.vms-admin-surface button.toggle[aria-checked="true"],
+html.vms-portal-surface button.toggle.active,
+html.vms-portal-surface button.toggle[aria-pressed="true"],
+html.vms-portal-surface button.toggle[aria-checked="true"],
+html.vms-admin-surface .vms-switch.active,
+html.vms-admin-surface .vms-switch[aria-checked="true"],
+html.vms-portal-surface .vms-switch.active,
+html.vms-portal-surface .vms-switch[aria-checked="true"]{
+  background:#2b8c69!important;border-color:#2b8c69!important;
+}
+html.vms-admin-surface button.toggle.active::after,
+html.vms-admin-surface button.toggle[aria-pressed="true"]::after,
+html.vms-admin-surface button.toggle[aria-checked="true"]::after,
+html.vms-portal-surface button.toggle.active::after,
+html.vms-portal-surface button.toggle[aria-pressed="true"]::after,
+html.vms-portal-surface button.toggle[aria-checked="true"]::after,
+html.vms-admin-surface .vms-switch.active::after,
+html.vms-admin-surface .vms-switch[aria-checked="true"]::after,
+html.vms-portal-surface .vms-switch.active::after,
+html.vms-portal-surface .vms-switch[aria-checked="true"]::after{transform:translateX(20px)!important}
+
+/* Native label.switch pattern. */
+html.vms-admin-surface label.switch,
+html.vms-portal-surface label.switch{width:46px!important;height:26px!important;min-width:46px!important;flex:0 0 46px!important}
+html.vms-admin-surface label.switch .slider,
+html.vms-portal-surface label.switch .slider{border:1px solid #b9c9d0!important;background:#d7e1e5!important;border-radius:999px!important;box-shadow:inset 0 1px 2px rgba(0,48,73,.08)!important}
+html.vms-admin-surface label.switch .slider:before,
+html.vms-portal-surface label.switch .slider:before{width:20px!important;height:20px!important;left:2px!important;top:2px!important;background:#fff!important;box-shadow:0 2px 6px rgba(0,48,73,.22)!important}
+html.vms-admin-surface label.switch input:checked + .slider,
+html.vms-portal-surface label.switch input:checked + .slider{background:#2b8c69!important;border-color:#2b8c69!important}
+html.vms-admin-surface label.switch input:checked + .slider:before,
+html.vms-portal-surface label.switch input:checked + .slider:before{transform:translateX(20px)!important}
+
+/* QR Tools: the live preview visibly changes when a print/layout preset is selected. */
+html.vms-admin-surface #previewCanvas{
+  width:min(100%,330px)!important;
+  margin-inline:auto!important;
+  transition:width .2s ease,min-height .2s ease,border-radius .2s ease,box-shadow .2s ease,padding .2s ease!important;
+  transform-origin:top center;
+}
+html.vms-admin-surface #previewCanvas.vms-layout-qr-only{min-height:405px!important;border-radius:18px!important;padding:28px 24px!important}
+html.vms-admin-surface #previewCanvas.vms-layout-sticker{width:min(100%,285px)!important;min-height:285px!important;aspect-ratio:1/1!important;border-radius:28px!important;padding:20px!important;box-shadow:0 0 0 2px #fff,0 0 0 3px #d6e1e5,0 16px 34px rgba(0,48,73,.10)!important}
+html.vms-admin-surface #previewCanvas.vms-layout-counter{width:min(100%,292px)!important;min-height:390px!important;aspect-ratio:3/4!important;border-radius:16px!important;padding:27px 22px!important;box-shadow:0 18px 36px rgba(0,48,73,.12)!important}
+html.vms-admin-surface #previewCanvas.vms-layout-flyer{width:min(100%,300px)!important;min-height:388px!important;aspect-ratio:8.5/11!important;border-radius:7px!important;padding:30px 24px!important;box-shadow:0 18px 42px rgba(0,48,73,.14)!important}
+html.vms-admin-surface #previewCanvas.vms-layout-sticker .preview-url,
+html.vms-admin-surface #previewCanvas.vms-layout-sticker .preview-foot{display:none!important}
+html.vms-admin-surface #previewCanvas.vms-layout-flyer .preview-title{font-size:21px!important;margin-top:22px!important}
+html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-size:19px!important}
+
+.vms-preview-logo-slot{display:block;width:88px;height:44px;flex:0 0 88px}#vmsCanonicalAdminSidebar .vms-preview-logo-slot,#vmsCanonicalPortalSidebar .vms-preview-logo-slot{background:transparent!important}</style>
 <style id="vms-review-v2-service-actions">
 .vms-service-action-wrap{position:relative;display:inline-flex;justify-content:flex-end}
 .vms-service-kebab{width:40px!important;height:40px!important;min-width:40px!important;padding:0!important;border:1px solid #d7e2e7!important;border-radius:10px!important;background:#fff!important;color:#003049!important;font-size:24px!important;line-height:1!important;display:grid!important;place-items:center!important}
@@ -274,9 +774,15 @@ html,body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sa
 .vms-service-action-menu .toggle-publish{border-top:1px solid #edf1f3!important;border-radius:0 0 8px 8px!important;margin-top:3px!important;padding-top:10px!important}
 @media(max-width:760px){.vms-service-action-menu{position:fixed;left:18px;right:18px;top:auto;bottom:22px;min-width:0;padding:8px;border-radius:16px}.vms-service-action-menu button{min-height:46px!important;font-size:15px!important}.vms-service-kebab{width:44px!important;height:44px!important;min-width:44px!important}}
 </style>
-<link rel="stylesheet" href="../assets/vms-admin-shell.css?v=20260822-phase2">
-<link rel="stylesheet" href="../assets/vms-final-polish.css?v=20260822-phase2">
-</head>
+<style id="vms-live-catalog-css">
+/* Live Service Catalog manager */
+.catalog-live-status{margin-top:12px;display:inline-flex;align-items:center;gap:8px;min-height:32px;padding:7px 11px;border:1px solid #d9e5e9;border-radius:999px;background:#fff;color:#607682;font-size:10px;font-weight:800}
+.catalog-live-dot{width:8px;height:8px;border-radius:50%;background:#d8902f;box-shadow:0 0 0 3px rgba(216,144,47,.12)}
+.catalog-live-status[data-state="ok"]{color:#217a59;border-color:#cfe7dc;background:#f3faf7}.catalog-live-status[data-state="ok"] .catalog-live-dot{background:#2c9a70;box-shadow:0 0 0 3px rgba(44,154,112,.12)}
+.catalog-live-status[data-state="error"]{color:#a82932;border-color:#efd2d5;background:#fff7f8}.catalog-live-status[data-state="error"] .catalog-live-dot{background:#c1121f;box-shadow:0 0 0 3px rgba(193,18,31,.12)}
+.catalog-live-status[data-state="saving"] .catalog-live-dot{animation:vmsCatalogPulse 1s infinite alternate}
+@keyframes vmsCatalogPulse{from{opacity:.35}to{opacity:1}}
+</style><script src="/assets/vms-catalog.js?v=20260824-live-catalog-v1"></script></head>
 <body>
 <div class="shell">
   <aside class="sidebar" id="sidebar">
@@ -315,7 +821,8 @@ html,body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sa
 
     <div class="content">
       <div class="intro">
-        <p>Create and manage every service Vision Make Studio sells. Publish once here, then the real VMS website and Client Portal can pull the same service, pricing, availability, and sales rules automatically.</p>
+        <p>Create and manage every service Vision Make Studio sells. Changes save to the live VMS catalog in Supabase, so published prices and service details are used by VisionMakeStudio.com and eligible Client Portal catalog views without another website deploy.</p>
+        <div class="catalog-live-status" id="catalogSyncStatus" data-state="loading"><span class="catalog-live-dot"></span><strong>Connecting to live catalog…</strong></div>
       </div>
 
 
@@ -343,8 +850,9 @@ html,body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sa
         </select>
         <select id="salesFilter">
           <option value="all">All sales modes</option>
-          <option value="Request Only">Request Only</option>
+          <option value="Request First">Request First</option>
           <option value="Buy Now">Buy Now</option>
+          <option value="Internal">Internal</option>
         </select>
       </section>
 
@@ -376,6 +884,17 @@ html,body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sa
           <input id="categoryInput" placeholder="Example: Websites">
         </div>
         <div class="field">
+          <label>OFFER TYPE</label>
+          <select id="kindInput">
+            <option value="service">Service</option>
+            <option value="subscription">Subscription</option>
+            <option value="addon">Add-on</option>
+            <option value="package">Package</option>
+            <option value="bundle">Bundle</option>
+            <option value="internal">Internal</option>
+          </select>
+        </div>
+        <div class="field">
           <label>SHORT LABEL / ICON</label>
           <input id="iconInput" maxlength="6" placeholder="WEB">
         </div>
@@ -391,6 +910,14 @@ html,body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sa
           <label>PUBLIC DESCRIPTION <span>Website + Portal copy</span></label>
           <textarea id="descriptionInput" placeholder="Explain what the client gets and why it helps their business."></textarea>
         </div>
+        <div class="field full">
+          <label>SERVICE HIGHLIGHTS <span>One item per line</span></label>
+          <textarea id="featuresInput" placeholder="Responsive website build&#10;Contact / lead pathway&#10;Launch support"></textarea>
+        </div>
+        <div class="field full">
+          <label>PACKAGE / BUNDLE INCLUDES <span>Optional · one item per line</span></label>
+          <textarea id="includedInput" placeholder="Use this for packages or bundles that include other VMS offers."></textarea>
+        </div>
 
         <div class="field">
           <label>PRICING MODEL</label>
@@ -405,8 +932,9 @@ html,body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sa
         <div class="field">
           <label>SALES MODE</label>
           <select id="salesModeInput">
-            <option>Request Only</option>
+            <option>Request First</option>
             <option>Buy Now</option>
+            <option>Internal</option>
           </select>
         </div>
         <div class="field">
@@ -450,6 +978,10 @@ html,body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sa
           <label class="switch"><input id="promoEligibleInput" type="checkbox"><span class="slider"></span></label>
         </div>
         <div class="switch-card">
+          <div class="switch-copy"><strong>Show price as “From”</strong><span>Use for starting prices when the final scope can vary.</span></div>
+          <label class="switch"><input id="startingAtInput" type="checkbox"><span class="slider"></span></label>
+        </div>
+        <div class="switch-card">
           <div class="switch-copy"><strong>Featured Service</strong><span>Highlight this offer ahead of standard services.</span></div>
           <label class="switch"><input id="featuredInput" type="checkbox"><span class="slider"></span></label>
         </div>
@@ -457,7 +989,7 @@ html,body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sa
 
       <div class="sync-note">
         <div class="sync-dot"></div>
-        <div>Publishing a service controls its catalog availability. Website/Portal visibility switches decide where a published service appears. Draft and Hidden services never appear publicly.</div>
+        <div>Save writes directly to the live VMS catalog. Published + Website visibility controls VisionMakeStudio.com; Published + Portal visibility controls eligible Client Portal catalog views. Existing client agreements keep their agreed billing price unless you intentionally change that client separately.</div>
       </div>
     </div>
 
@@ -491,7 +1023,7 @@ html,body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sa
       </div>
       <div class="sync-note">
         <div class="sync-dot"></div>
-        <div>This preview uses the same catalog records. In the real hosted version, the website and portal would query the backend and update automatically after you publish a change.</div>
+        <div>This preview uses the same live catalog records. VisionMakeStudio.com queries the published website catalog from Supabase on page load, so a saved price or description change does not require another deploy.</div>
       </div>
     </div>
     <div class="modal-foot">
@@ -502,429 +1034,158 @@ html,body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sa
 
 <div class="toast" id="toast"></div>
 
-<script>
-(function(){
-  const STORAGE='vms_service_catalog_v2';
+<script src="/assets/vms-service-catalog-manager.js?v=20260824-live-catalog-v1"></script>
+  <script src="../assets/vms-admin-shell.js"></script>
+<script id="vms-review-shell">/* Vision Make Studio — canonical Admin shell.
+   One shared sidebar/topbar across every protected Admin tool. */
+(()=>{
+  if(window.__VMS_ADMIN_SHELL_V2__)return;
+  window.__VMS_ADMIN_SHELL_V2__=true;
 
-  const demoServices=[
-    {
-      id:'smart-qr',
-      name:'VMS Smart QR',
-      category:'QR & Growth',
-      icon:'QR',
-      description:'A branded Dynamic QR managed by Vision Make Studio with destination changes, scan tracking, and client reporting.',
-      status:'Published',
-      pricingModel:'Setup + Recurring',
-      setupPrice:99,
-      recurringPrice:19,
-      cadence:'Monthly',
-      salesMode:'Buy Now',
-      websiteVisible:true,
-      portalVisible:true,
-      promoEligible:true,
-      featured:true,
-      order:1,
-      archived:false
-    },
-    {
-      id:'website-revamp',
-      name:'Website Revamp',
-      category:'Websites',
-      icon:'WEB',
-      description:'A modern redesign of an existing business website, planned and built directly with Vision Make Studio.',
-      status:'Published',
-      pricingModel:'Quote Only',
-      setupPrice:'',
-      recurringPrice:'',
-      cadence:'Monthly',
-      salesMode:'Request Only',
-      websiteVisible:true,
-      portalVisible:true,
-      promoEligible:false,
-      featured:true,
-      order:2,
-      archived:false
-    },
-    {
-      id:'vms-audit',
-      name:'VMS Business & Website Audit',
-      category:'Business Review',
-      icon:'AUD',
-      description:'A structured review of the business website, digital presence, trust signals, customer path, and improvement opportunities.',
-      status:'Published',
-      pricingModel:'Quote Only',
-      setupPrice:'',
-      recurringPrice:'',
-      cadence:'Monthly',
-      salesMode:'Request Only',
-      websiteVisible:true,
-      portalVisible:true,
-      promoEligible:false,
-      featured:false,
-      order:3,
-      archived:false
-    },
-    {
-      id:'google-presence',
-      name:'Google Presence',
-      category:'Local Growth',
-      icon:'GO',
-      description:'Improve how the business appears across Google with profile cleanup, information updates, and visibility recommendations.',
-      status:'Draft',
-      pricingModel:'Quote Only',
-      setupPrice:'',
-      recurringPrice:'',
-      cadence:'Monthly',
-      salesMode:'Request Only',
-      websiteVisible:true,
-      portalVisible:true,
-      promoEligible:false,
-      featured:false,
-      order:4,
-      archived:false
-    }
+  const NAV=[
+    ['index.html','Home'],
+    ['audit.html','VMS Audit'],
+    ['qr.html','QR Tools'],
+    ['clients.html','Clients'],
+    ['service-catalog.html','Service Catalog'],
+    ['billing.html','Billing / Subscriptions'],
+    ['promotions.html','Promotions'],
+    ['projects.html','Projects & Requests'],
+    ['files.html','Files & Assets'],
+    ['activity.html','Notifications & Activity'],
+    ['linkhub.html','VMS LinkHub'],
+    ['analytics.html','Analytics'],
+    ['leads.html','CRM / Leads'],
+    ['marketing.html','Sales Content'],
+    ['automations.html','Automations'],
+    ['security.html','Security & Access']
   ];
 
-  let services=load();
-  let editingId=null;
+  const normalize=value=>{
+    const s=String(value||'').split('?')[0].split('#')[0];
+    return (s.split('/').filter(Boolean).pop()||'index.html').toLowerCase();
+  };
+  const current=normalize(location.pathname);
+  const title=(NAV.find(([href])=>normalize(href)===current)||[null,'VMS Admin'])[1];
 
-  const $=id=>document.getElementById(id);
-  const esc=str=>String(str??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  function css(){return `
+    :root{--vms-admin-sidebar-w:230px;--vms-admin-topbar-h:64px;--vms-admin-gap:20px}
+    body.vms-admin-canonical{margin:0!important;padding:calc(var(--vms-admin-topbar-h) + 18px) 20px 40px calc(var(--vms-admin-sidebar-w) + var(--vms-admin-gap))!important;background:#f4f8f9!important;min-height:100vh!important;overflow-x:hidden!important}
+    body.vms-admin-canonical *{box-sizing:border-box}
+    body.vms-admin-canonical>.app,body.vms-admin-canonical>.shell{display:block!important;min-height:0!important;width:100%!important}
+    body.vms-admin-canonical .vms-retired-admin-shell{display:none!important}
+    body.vms-admin-canonical>.app>.main,body.vms-admin-canonical>.shell>.main,body.vms-admin-canonical>.main,body.vms-admin-canonical>main.page{margin:0!important;padding:0!important;width:100%!important;max-width:none!important;min-width:0!important;min-height:0!important}
+    body.vms-admin-canonical :where(.content){width:min(100%,1500px)!important;max-width:1500px!important;margin:0 auto!important;padding:0!important}
+    body.vms-admin-canonical>main.page{width:min(100%,1220px)!important;max-width:1220px!important;margin:0 auto!important}
 
-  function load(){
-    try{
-      const raw=localStorage.getItem(STORAGE);
-      if(raw){const parsed=JSON.parse(raw);if(Array.isArray(parsed)&&parsed.length)return parsed;}
-    }catch(e){}
-    return structuredClone(demoServices);
-  }
+    #vmsCanonicalAdminSidebar{position:fixed;top:0;bottom:0;left:0;width:var(--vms-admin-sidebar-w);background:#003049;color:#fff;padding:18px 14px 22px;display:flex;flex-direction:column;z-index:2147482001;overflow:auto;box-shadow:10px 0 26px rgba(0,48,73,.06)}
+    #vmsCanonicalAdminSidebar .vms-admin-brand{display:flex;align-items:center;gap:11px;padding:0 8px 16px;border-bottom:1px solid rgba(255,255,255,.14)}
+    #vmsCanonicalAdminSidebar .vms-admin-brand img{display:block;width:88px;height:44px;object-fit:contain;object-position:left center;flex:0 0 auto}
+    #vmsCanonicalAdminSidebar .vms-admin-brand-copy{min-width:0}
+    #vmsCanonicalAdminSidebar .vms-admin-brand-copy strong{display:block;font-size:11px;line-height:1.2;white-space:nowrap;color:#fff}
+    #vmsCanonicalAdminSidebar .vms-admin-brand-copy span{display:block;margin-top:3px;color:#b4c8d1;font-size:8px;font-weight:900;letter-spacing:.12em}
+    #vmsCanonicalAdminSidebar .vms-admin-nav{display:grid;gap:4px;margin-top:16px}
+    #vmsCanonicalAdminSidebar .vms-admin-nav a{display:flex;align-items:center;min-height:34px;padding:9px 10px;border-radius:8px;color:#e5eef2;text-decoration:none;font-size:10px;font-weight:800;line-height:1.2;transition:.15s ease}
+    #vmsCanonicalAdminSidebar .vms-admin-nav a:hover{background:rgba(255,255,255,.06);color:#fff}
+    #vmsCanonicalAdminSidebar .vms-admin-nav a.active{color:#ff7a45;background:rgba(255,255,255,.09)}
+    #vmsCanonicalAdminSidebar .vms-admin-foot{margin-top:auto;padding:18px 8px 0;color:#8fb0bf;font-size:8px;line-height:1.55;border-top:1px solid rgba(255,255,255,.1)}
+    #vmsCanonicalAdminSidebar .vms-admin-external{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px}
+    #vmsCanonicalAdminSidebar .vms-admin-external a{border:1px solid rgba(255,255,255,.16);border-radius:8px;padding:8px 7px;color:#dce9ee;text-decoration:none;text-align:center;font-size:7.5px;font-weight:850}
 
-  function persist(){
-    try{localStorage.setItem(STORAGE,JSON.stringify(services));}catch(e){}
-  }
+    #vmsCanonicalAdminTopbar{position:fixed;top:0;right:0;left:var(--vms-admin-sidebar-w);height:var(--vms-admin-topbar-h);z-index:2147482000;background:#fff;border-bottom:1px solid #d8e4e8;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:11px 20px}
+    #vmsCanonicalAdminTopbar .vms-admin-top-left{display:flex;align-items:center;gap:9px;min-width:0}
+    #vmsCanonicalAdminTopbar .vms-admin-page-title{min-width:0}
+    #vmsCanonicalAdminTopbar .vms-admin-page-title small{display:block;color:#8ca0a9;font-size:8px;font-weight:950;letter-spacing:.12em}
+    #vmsCanonicalAdminTopbar .vms-admin-page-title strong{display:block;margin-top:3px;color:#08364b;font-size:19px;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    #vmsCanonicalAdminTopbar .vms-admin-top-actions{display:flex;align-items:center;gap:8px;min-width:0}
+    #vmsCanonicalAdminTopbar .vms-admin-top-actions:empty{display:none}
+    #vmsCanonicalAdminTopbar .vms-admin-menu-btn{display:none;width:42px;height:42px;padding:0;border:1px solid #d8e4e8;border-radius:9px;background:#fff;color:#003049;font-size:18px;line-height:1;place-items:center}
+    #vmsCanonicalAdminBackdrop{display:none;position:fixed;inset:0;background:rgba(0,32,48,.5);z-index:2147481999}
 
-  function toast(message){
-    const t=$('toast');
-    t.textContent=message;
-    t.classList.add('show');
-    clearTimeout(window.__vmsCatalogToast);
-    window.__vmsCatalogToast=setTimeout(()=>t.classList.remove('show'),2200);
-  }
+    /* Make page-local headers stop reserving space after they are retired. */
+    body.vms-admin-canonical :where(.main,.page){min-width:0!important}
+    body.vms-admin-canonical :where(.intro,.overview,.hero):first-child{margin-top:0!important}
 
-  function money(v){
-    const n=Number(v);
-    return Number.isFinite(n)?new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',minimumFractionDigits:n%1?2:0}).format(n):'$0';
-  }
-
-  function slug(name){
-    return String(name||'service').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')+'-'+Date.now();
-  }
-
-  function publicVisible(s,channel){
-    return !s.archived && s.status==='Published' && !!s[channel];
-  }
-
-  function priceLabel(s){
-    switch(s.pricingModel){
-      case 'Free': return 'Free';
-      case 'One-Time': return s.setupPrice!==''?money(s.setupPrice):'Price not set';
-      case 'Recurring': return `${money(s.recurringPrice)}/${s.cadence==='Annual'?'yr':'mo'}`;
-      case 'Setup + Recurring':
-        return `${money(s.setupPrice)} setup + ${money(s.recurringPrice)}/${s.cadence==='Annual'?'yr':'mo'}`;
-      default: return 'Custom Quote';
+    @media(max-width:820px){
+      body.vms-admin-canonical{padding:calc(var(--vms-admin-topbar-h) + 14px) 14px 34px!important}
+      #vmsCanonicalAdminSidebar{width:min(82vw,280px);transform:translateX(-105%);transition:transform .2s ease}
+      #vmsCanonicalAdminSidebar.open{transform:translateX(0)}
+      #vmsCanonicalAdminTopbar{left:0;padding:11px 14px}
+      #vmsCanonicalAdminTopbar .vms-admin-menu-btn{display:grid}
+      #vmsCanonicalAdminBackdrop.show{display:block}
+      #vmsCanonicalAdminTopbar .vms-admin-top-actions{max-width:54vw;overflow:auto;scrollbar-width:none}
     }
+  `}
+
+  function findOldTopbar(){
+    return document.querySelector('body > .app > .main > header.topbar, body > .shell > .main > header.topbar, body > .main > header.topbar, body > header.topbar, body > .app > .main > .topbar, body > .shell > .main > .topbar');
+  }
+  function retireOldShell(){
+    document.querySelectorAll('body > .app > aside.sidebar,body > .shell > aside.sidebar,body > aside.sidebar,body > aside.side,body > .app > aside.side,body > .shell > aside.side').forEach(el=>el.classList.add('vms-retired-admin-shell'));
+    const oldTop=findOldTopbar();
+    if(oldTop)oldTop.classList.add('vms-retired-admin-shell');
+    document.querySelectorAll('body > .drawer-backdrop,body > .app > .drawer-backdrop,body > .shell > .drawer-backdrop').forEach(el=>el.classList.add('vms-retired-admin-shell'));
+    return oldTop;
   }
 
-  function statusBadge(s){
-    const cls=s.status==='Published'?'green':s.status==='Draft'?'orange':'gray';
-    return `<span class="badge ${cls}">${esc(s.status)}</span>`;
+  function extractActions(oldTop){
+    if(!oldTop)return null;
+    const preferred=oldTop.querySelector('.top-actions,.topbar-actions,.actions,.header-actions');
+    if(preferred)return preferred;
+    const kids=Array.from(oldTop.children);
+    if(kids.length>1)return kids[kids.length-1];
+    return null;
   }
 
-  function filtered(){
-    const q=$('searchInput').value.trim().toLowerCase();
-    const status=$('statusFilter').value;
-    const channel=$('channelFilter').value;
-    const sales=$('salesFilter').value;
+  function install(){
+    if(document.getElementById('vmsCanonicalAdminSidebar'))return;
+    document.body.classList.add('vms-admin-canonical');
 
-    return services
-      .filter(s=>!s.archived)
-      .filter(s=>{
-        const hay=`${s.name} ${s.category} ${s.description}`.toLowerCase();
-        const channelMatch=
-          channel==='all'
-          || (channel==='website' && s.websiteVisible)
-          || (channel==='portal' && s.portalVisible)
-          || (channel==='both' && s.websiteVisible && s.portalVisible);
+    const style=document.createElement('style');
+    style.id='vms-canonical-admin-shell-style';
+    style.textContent=css();
+    document.head.appendChild(style);
 
-        return (!q||hay.includes(q))
-          && (status==='all'||s.status===status)
-          && channelMatch
-          && (sales==='all'||s.salesMode===sales);
-      })
-      .sort((a,b)=>(Number(a.order)||999)-(Number(b.order)||999)||a.name.localeCompare(b.name));
-  }
+    const oldTop=findOldTopbar();
+    const actionNode=extractActions(oldTop);
+    retireOldShell();
 
-  function updateStats(){
-    const active=services.filter(s=>!s.archived);
-    $('statTotal').textContent=active.length;
-    $('statPublished').textContent=active.filter(s=>s.status==='Published').length;
-    $('statWebsite').textContent=active.filter(s=>publicVisible(s,'websiteVisible')).length;
-    $('statPortal').textContent=active.filter(s=>publicVisible(s,'portalVisible')).length;
-    $('statRecurring').textContent=active.filter(s=>['Recurring','Setup + Recurring'].includes(s.pricingModel)).length;
-  }
-
-  function render(){
-    updateStats();
-    const list=filtered();
-    $('emptyState').style.display=list.length?'none':'block';
-    $('catalogList').innerHTML=list.map(s=>`
-      <article class="service-row" data-id="${s.id}">
-        <div class="service-main mobile-summary">
-          <div class="service-icon">${esc((s.icon||'VMS').toUpperCase())}</div>
-          <div class="service-copy">
-            <strong>${esc(s.name)}</strong>
-            <span>${esc(s.category||'Uncategorized')} · ${esc(s.description||'No description')}</span>
-            <div class="badges">
-              ${statusBadge(s)}
-              <span class="badge ${s.salesMode==='Buy Now'?'blue':'gray'}">${esc(s.salesMode)}</span>
-              ${s.featured?'<span class="badge orange">Featured</span>':''}
-            </div>
-          </div>
-        </div>
-
-        <div class="cell">
-          <span>PRICE</span>
-          <strong>${esc(priceLabel(s))}</strong>
-        </div>
-
-        <div class="cell">
-          <span>CHANNELS</span>
-          <div class="badges">
-            ${s.websiteVisible?'<span class="badge blue">Website</span>':''}
-            ${s.portalVisible?'<span class="badge blue">Portal</span>':''}
-            ${!s.websiteVisible&&!s.portalVisible?'<span class="badge gray">Internal only</span>':''}
-          </div>
-        </div>
-
-        <div class="cell portal-cell">
-          <span>PROMOS / ORDER</span>
-          <strong>${s.promoEligible?'Promo eligible':'No promos'} · #${Number(s.order)||'-'}</strong>
-        </div>
-
-        <div class="row-actions">
-          <div class="vms-service-action-wrap">
-            <button class="vms-service-kebab" data-id="${s.id}" type="button" aria-label="Actions for ${esc(s.name)}" aria-expanded="false">⋯</button>
-            <div class="vms-service-action-menu" data-menu-for="${s.id}" role="menu">
-              <button class="preview-one" data-id="${s.id}" type="button" role="menuitem">Preview</button>
-              <button class="edit-service" data-id="${s.id}" type="button" role="menuitem">Edit</button>
-              <button class="duplicate-service" data-id="${s.id}" type="button" role="menuitem">Duplicate</button>
-              <button class="toggle-publish" data-id="${s.id}" type="button" role="menuitem">${s.status==='Published'?'Hide':'Publish'}</button>
-            </div>
-          </div>
-        </div>
-      </article>
-    `).join('');
-  }
-
-  function openServiceModal(id=null){
-    editingId=id;
-    const s=id?services.find(x=>x.id===id):null;
-    $('serviceModalTitle').textContent=s?'Edit Service':'Add Service';
-    $('archiveServiceBtn').style.visibility=s?'visible':'hidden';
-
-    $('serviceNameInput').value=s?.name||'';
-    $('categoryInput').value=s?.category||'';
-    $('iconInput').value=s?.icon||'';
-    $('statusInput').value=s?.status||'Draft';
-    $('descriptionInput').value=s?.description||'';
-    $('pricingModelInput').value=s?.pricingModel||'Quote Only';
-    $('salesModeInput').value=s?.salesMode||'Request Only';
-    $('setupPriceInput').value=s?.setupPrice??'';
-    $('recurringPriceInput').value=s?.recurringPrice??'';
-    $('cadenceInput').value=s?.cadence||'Monthly';
-    $('orderInput').value=s?.order||Math.max(1,services.filter(x=>!x.archived).length+1);
-    $('websiteVisibleInput').checked=s?.websiteVisible??true;
-    $('portalVisibleInput').checked=s?.portalVisible??true;
-    $('promoEligibleInput').checked=s?.promoEligible??false;
-    $('featuredInput').checked=s?.featured??false;
-
-    updateEditorPreview();
-    $('serviceModal').classList.add('show');
-  }
-
-  function closeModal(id){$(id).classList.remove('show')}
-
-  function editorData(){
-    return {
-      name:$('serviceNameInput').value.trim(),
-      category:$('categoryInput').value.trim(),
-      icon:$('iconInput').value.trim(),
-      status:$('statusInput').value,
-      description:$('descriptionInput').value.trim(),
-      pricingModel:$('pricingModelInput').value,
-      salesMode:$('salesModeInput').value,
-      setupPrice:$('setupPriceInput').value.trim()===''?'':Number($('setupPriceInput').value),
-      recurringPrice:$('recurringPriceInput').value.trim()===''?'':Number($('recurringPriceInput').value),
-      cadence:$('cadenceInput').value,
-      order:Number($('orderInput').value)||1,
-      websiteVisible:$('websiteVisibleInput').checked,
-      portalVisible:$('portalVisibleInput').checked,
-      promoEligible:$('promoEligibleInput').checked,
-      featured:$('featuredInput').checked
-    };
-  }
-
-  function updateEditorPreview(){
-    const s={...editorData(),id:'preview',archived:false};
-    $('pricePreview').textContent=priceLabel(s);
-    $('actionPreview').textContent=s.salesMode==='Buy Now'?'Buy Now':'Request Service';
-    $('statusPreview').textContent=s.status;
-  }
-
-  function saveService(){
-    const d=editorData();
-    if(!d.name){toast('Enter a service name');$('serviceNameInput').focus();return}
-
-    if(d.salesMode==='Buy Now' && d.pricingModel==='Quote Only'){
-      toast('Buy Now needs a fixed pricing model');
-      $('pricingModelInput').focus();
-      return;
-    }
-
-    if(editingId){
-      const i=services.findIndex(x=>x.id===editingId);
-      if(i>-1)services[i]={...services[i],...d,updatedAt:new Date().toISOString()};
-    }else{
-      services.push({...d,id:slug(d.name),archived:false,createdAt:new Date().toISOString()});
-    }
-
-    persist();render();closeModal('serviceModal');
-    toast(d.status==='Published'?'Service saved · published channels refreshed':'Service saved');
-  }
-
-  function archiveService(){
-    const s=services.find(x=>x.id===editingId);
-    if(!s)return;
-    if(!confirm(`Archive "${s.name}"? It will disappear from the website and client portal.`))return;
-    s.archived=true;
-    persist();render();closeModal('serviceModal');toast('Service archived');
-  }
-
-  function duplicateService(id){
-    const s=services.find(x=>x.id===id);if(!s)return;
-    services.push({...structuredClone(s),id:slug(s.name),name:s.name+' Copy',status:'Draft',featured:false,order:services.length+1,createdAt:new Date().toISOString()});
-    persist();render();toast('Service duplicated as Draft');
-  }
-
-  function togglePublish(id){
-    const s=services.find(x=>x.id===id);if(!s)return;
-    s.status=s.status==='Published'?'Hidden':'Published';
-    persist();render();
-    toast(s.status==='Published'?'Service published · website/portal can sync':'Service hidden from public channels');
-  }
-
-  function previewCard(s,channel){
-    const button=s.salesMode==='Buy Now'?'Buy Now':'Request Service';
-    return `
-      <div class="preview-card">
-        <div class="preview-service-icon">${esc((s.icon||'VMS').toUpperCase())}</div>
-        <h4>${esc(s.name)}</h4>
-        <p>${esc(s.description||'')}</p>
-        <div class="preview-price">${esc(priceLabel(s))}</div>
-        <button class="btn ${s.salesMode==='Buy Now'?'primary':''}" type="button">${button}</button>
+    const aside=document.createElement('aside');
+    aside.id='vmsCanonicalAdminSidebar';
+    aside.setAttribute('aria-label','VMS Admin tools');
+    aside.innerHTML=`
+      <div class="vms-admin-brand">
+        <span class="vms-preview-logo-slot" aria-label="Existing VMS logo stays unchanged"></span>
+        <div class="vms-admin-brand-copy"><strong>Vision Make Studio</strong><span>ADMIN</span></div>
       </div>
-    `;
+      <nav class="vms-admin-nav">${NAV.map(([href,label])=>`<a href="${href}"${normalize(href)===current?' class="active"':''}>${label}</a>`).join('')}</nav>
+      <div class="vms-admin-foot"><div class="vms-admin-external"><a href="../portal/">Client Portal</a><a href="../">Public Website</a></div>Your private command center for clients, work, revenue, services, alerts, and every VMS tool.</div>`;
+
+    const top=document.createElement('header');
+    top.id='vmsCanonicalAdminTopbar';
+    top.innerHTML=`<div class="vms-admin-top-left"><button class="vms-admin-menu-btn" type="button" aria-label="Open Admin menu" aria-expanded="false">☰</button><div class="vms-admin-page-title"><small>VMS ADMIN</small><strong>${title}</strong></div></div><div class="vms-admin-top-actions"></div>`;
+    const actionHost=top.querySelector('.vms-admin-top-actions');
+    if(actionNode){
+      actionNode.classList.remove('vms-retired-admin-shell');
+      actionHost.appendChild(actionNode);
+    }
+
+    const shade=document.createElement('div');
+    shade.id='vmsCanonicalAdminBackdrop';
+    document.body.prepend(shade);
+    document.body.prepend(top);
+    document.body.prepend(aside);
+
+    const btn=top.querySelector('.vms-admin-menu-btn');
+    const close=()=>{aside.classList.remove('open');shade.classList.remove('show');btn.setAttribute('aria-expanded','false')};
+    btn.addEventListener('click',()=>{const open=!aside.classList.contains('open');aside.classList.toggle('open',open);shade.classList.toggle('show',open);btn.setAttribute('aria-expanded',String(open))});
+    shade.addEventListener('click',close);
+    aside.querySelectorAll('a').forEach(a=>a.addEventListener('click',close));
+    document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
   }
 
-  function renderPreview(focusId=null){
-    const web=services.filter(s=>publicVisible(s,'websiteVisible')).sort((a,b)=>(a.order||999)-(b.order||999));
-    const portal=services.filter(s=>publicVisible(s,'portalVisible')).sort((a,b)=>(a.order||999)-(b.order||999));
-
-    const only = id => focusId ? id===focusId : true;
-    const webShow=web.filter(s=>only(s.id));
-    const portalShow=portal.filter(s=>only(s.id));
-
-    $('websitePreview').innerHTML=webShow.length?webShow.map(s=>previewCard(s,'website')).join('<div style="height:8px"></div>'):'<div class="empty">Nothing published to the website.</div>';
-    $('portalPreview').innerHTML=portalShow.length?portalShow.map(s=>previewCard(s,'portal')).join('<div style="height:8px"></div>'):'<div class="empty">Nothing published to the Client Portal.</div>';
-    $('previewModal').classList.add('show');
-  }
-
-  // Modal/editor events
-  $('topAddServiceBtn').onclick=()=>openServiceModal();
-  $('previewCatalogBtn').onclick=()=>renderPreview();
-  $('saveServiceBtn').onclick=saveService;
-  $('archiveServiceBtn').onclick=archiveService;
-
-  document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>closeModal(b.dataset.close));
-  document.querySelectorAll('.modal-backdrop').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('show')}));
-
-  [
-    'pricingModelInput','salesModeInput','setupPriceInput','recurringPriceInput','cadenceInput',
-    'statusInput','websiteVisibleInput','portalVisibleInput'
-  ].forEach(id=>$(id).addEventListener('input',updateEditorPreview));
-
-  // Catalog actions + mobile expand
-  $('catalogList').addEventListener('click',e=>{
-    const kebab=e.target.closest('.vms-service-kebab');
-    if(kebab){
-      e.stopPropagation();
-      const wrap=kebab.closest('.vms-service-action-wrap');
-      const menu=wrap?.querySelector('.vms-service-action-menu');
-      const willOpen=menu && !menu.classList.contains('open');
-      document.querySelectorAll('.vms-service-action-menu.open').forEach(x=>x.classList.remove('open'));
-      document.querySelectorAll('.vms-service-kebab[aria-expanded="true"]').forEach(x=>x.setAttribute('aria-expanded','false'));
-      if(menu && willOpen){menu.classList.add('open');kebab.setAttribute('aria-expanded','true')}
-      return;
-    }
-    const edit=e.target.closest('.edit-service');
-    const dup=e.target.closest('.duplicate-service');
-    const pub=e.target.closest('.toggle-publish');
-    const prev=e.target.closest('.preview-one');
-
-    if(edit)return openServiceModal(edit.dataset.id);
-    if(dup)return duplicateService(dup.dataset.id);
-    if(pub)return togglePublish(pub.dataset.id);
-    if(prev)return renderPreview(prev.dataset.id);
-
-    if(window.matchMedia('(max-width:760px)').matches){
-      const summary=e.target.closest('.mobile-summary');
-      if(summary){
-        const row=summary.closest('.service-row');
-        const was=row.classList.contains('expanded');
-        document.querySelectorAll('.service-row.expanded').forEach(x=>x.classList.remove('expanded'));
-        row.classList.toggle('expanded',!was);
-      }
-    }
-  });
-
-  document.addEventListener('click',e=>{
-    if(!e.target.closest('.vms-service-action-wrap')){
-      document.querySelectorAll('.vms-service-action-menu.open').forEach(x=>x.classList.remove('open'));
-      document.querySelectorAll('.vms-service-kebab[aria-expanded="true"]').forEach(x=>x.setAttribute('aria-expanded','false'));
-    }
-  });
-
-  // Filters
-  ['searchInput','statusFilter','channelFilter','salesFilter'].forEach(id=>{
-    $(id).addEventListener(id==='searchInput'?'input':'change',render);
-  });
-
-  // Mobile drawer
-  $('mobileMenuBtn').onclick=()=>{
-    $('sidebar').classList.add('open');
-    $('drawerBackdrop').classList.add('show');
-  };
-  $('drawerBackdrop').onclick=()=>{
-    $('sidebar').classList.remove('open');
-    $('drawerBackdrop').classList.remove('show');
-  };
-
-  $('billingNavBtn').onclick=()=>toast('Billing / Subscriptions will be its own VMS Admin tool later');
-  $('promotionsNavBtn').onclick=()=>toast('Promotions will connect to Service Catalog later');
-
-  render();
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});
+  else install();
 })();
-</script>
-<script src="../assets/vms-admin-shell.js?v=20260822-phase2"></script>
-</body>
+</script></body>
 </html>

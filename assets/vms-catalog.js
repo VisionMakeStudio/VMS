@@ -27,7 +27,7 @@
     },
     {
       id:'website-care',name:'Monthly Website Care',kind:'subscription',category:'Websites',icon:'CARE',status:'Published',featured:true,displayOrder:12,
-      description:'Ongoing content changes, small updates, and support for a VMS-managed website.',pricingModel:'Recurring',oneTimePrice:null,recurringPrice:49,cadence:'Monthly',startingAt:false,salesMode:'Request First',websiteVisible:true,portalVisible:true,promoEligible:true,
+      description:'Ongoing content changes, small updates, and support for a VMS-managed website.',pricingModel:'Recurring',oneTimePrice:null,recurringPrice:49.99,cadence:'Monthly',startingAt:false,salesMode:'Request First',websiteVisible:true,portalVisible:true,promoEligible:true,
       features:['Content and image changes','Small page/section updates','Routine maintenance','VMS support requests'],included:[],metadata:{family:'website'}
     },
     {
@@ -37,12 +37,12 @@
     },
     {
       id:'local-presence-care',name:'Local Presence Care',kind:'subscription',category:'Local Growth',icon:'LOCAL+',status:'Published',featured:false,displayOrder:21,
-      description:'Ongoing monitoring and updates for core business information and local visibility signals.',pricingModel:'Recurring',oneTimePrice:null,recurringPrice:29,cadence:'Monthly',startingAt:false,salesMode:'Request First',websiteVisible:true,portalVisible:true,promoEligible:true,
+      description:'Ongoing monitoring and updates for core business information and local visibility signals.',pricingModel:'Recurring',oneTimePrice:null,recurringPrice:29.99,cadence:'Monthly',startingAt:false,salesMode:'Request First',websiteVisible:true,portalVisible:true,promoEligible:true,
       features:['Listing monitoring','Business info corrections','Hours/link updates','Visibility recommendations'],included:[],metadata:{family:'local'}
     },
     {
       id:'review-growth',name:'Review Growth',kind:'subscription',category:'Reputation',icon:'REV',status:'Published',featured:true,displayOrder:30,
-      description:'A practical system for consistently making it easier for happy customers to leave reviews.',pricingModel:'Recurring',oneTimePrice:null,recurringPrice:39,cadence:'Monthly',startingAt:false,salesMode:'Request First',websiteVisible:true,portalVisible:true,promoEligible:true,
+      description:'A practical system for consistently making it easier for happy customers to leave reviews.',pricingModel:'Recurring',oneTimePrice:null,recurringPrice:39.99,cadence:'Monthly',startingAt:false,salesMode:'Request First',websiteVisible:true,portalVisible:true,promoEligible:true,
       features:['Review pathways and calls-to-action','QR / LinkHub review routes','Review-growth workflow','Ongoing recommendations'],included:[],metadata:{family:'reviews'}
     },
     {
@@ -51,7 +51,7 @@
       features:['Branded QR artwork','Website, reviews, booking, social, and custom destinations','Print-ready export','No monthly fee for the standard version'],included:[],metadata:{family:'qr',analyticsIncluded:false}
     },
     {
-      id:'linkhub-core',name:'VMS LinkHub Core',kind:'service',category:'LinkHub',icon:'LH',status:'Published',featured:true,displayOrder:50,
+      id:'linkhub-core',name:'VMS LinkHub Core',kind:'subscription',category:'LinkHub',icon:'LH',status:'Published',featured:true,displayOrder:50,
       description:'A polished digital business card with your profile, contact actions, links, social icons, colors, and Visit Us page.',pricingModel:'Recurring',oneTimePrice:null,recurringPrice:5.99,cadence:'Monthly',startingAt:false,salesMode:'Buy Now',websiteVisible:true,portalVisible:true,promoEligible:true,
       features:['Business profile and contact actions','Custom links and social icons','Theme and brand colors','Visit Us / Directions page','QR code to your LinkHub'],included:[],metadata:{family:'linkhub',plan:'core'}
     },
@@ -77,27 +77,27 @@
     },
     {
       id:'vision-starter',name:'Vision Starter',kind:'package',category:'Packages',icon:'START',status:'Published',featured:true,displayOrder:70,
-      description:'An affordable digital-foundation package for an existing local business that wants a cleaner, more professional presence.',pricingModel:'One-Time',oneTimePrice:249,recurringPrice:null,cadence:null,startingAt:false,salesMode:'Request First',websiteVisible:true,portalVisible:true,promoEligible:true,
-      features:['VMS Business & Website Audit','Local Presence Setup','VMS Smart QR','VMS LinkHub Core','First 3 months of LinkHub Pro'],included:['VMS Business & Website Audit','Local Presence Setup','VMS Smart QR','VMS LinkHub Core','3 months VMS LinkHub Pro'],metadata:{family:'package',activationFeeWaived:true}
+      description:'An affordable digital-foundation package for an existing local business that wants a cleaner, more professional presence.',pricingModel:'One-Time',oneTimePrice:249.99,recurringPrice:null,cadence:null,startingAt:false,salesMode:'Request First',websiteVisible:true,portalVisible:true,promoEligible:true,
+      features:['VMS Business & Website Audit','Local Presence Setup','VMS Smart QR','First 3 months of LinkHub Pro'],included:['VMS Business & Website Audit','Local Presence Setup','VMS Smart QR','3 months VMS LinkHub Pro'],metadata:{family:'package',activationFeeWaived:true}
     },
     {
       id:'website-refresh-package',name:'Website Refresh Package',kind:'package',category:'Packages',icon:'REFRESH',status:'Published',featured:true,displayOrder:71,
-      description:'Refresh the website and the surrounding digital presence together instead of treating them as separate projects.',pricingModel:'One-Time',oneTimePrice:749,recurringPrice:null,cadence:null,startingAt:false,salesMode:'Request First',websiteVisible:true,portalVisible:true,promoEligible:true,
-      features:['Website Refresh / Revamp','VMS Business & Website Audit','Local Presence Setup','VMS LinkHub Core'],included:['Website Refresh / Revamp','VMS Business & Website Audit','Local Presence Setup','VMS LinkHub Core'],metadata:{family:'package',activationFeeWaived:true}
+      description:'Refresh the website and the surrounding digital presence together instead of treating them as separate projects.',pricingModel:'One-Time',oneTimePrice:749.99,recurringPrice:null,cadence:null,startingAt:false,salesMode:'Request First',websiteVisible:true,portalVisible:true,promoEligible:true,
+      features:['Website Refresh / Revamp','VMS Business & Website Audit','Local Presence Setup'],included:['Website Refresh / Revamp','VMS Business & Website Audit','Local Presence Setup'],metadata:{family:'package',activationFeeWaived:true}
     },
     {
       id:'business-launch',name:'VMS Business Launch',kind:'package',category:'Packages',icon:'LAUNCH',status:'Published',featured:true,displayOrder:72,
-      description:'A polished launch package for a business that needs a website plus the essential digital tools around it.',pricingModel:'One-Time',oneTimePrice:999,recurringPrice:null,cadence:null,startingAt:false,salesMode:'Request First',websiteVisible:true,portalVisible:true,promoEligible:true,
-      features:['New Business Website','Local Presence Setup','VMS Smart QR','VMS LinkHub Core','First 3 months of LinkHub Pro'],included:['New Business Website','Local Presence Setup','VMS Smart QR','VMS LinkHub Core','3 months VMS LinkHub Pro'],metadata:{family:'package',activationFeeWaived:true}
+      description:'A polished launch package for a business that needs a website plus the essential digital tools around it.',pricingModel:'One-Time',oneTimePrice:849.99,recurringPrice:null,cadence:null,startingAt:false,salesMode:'Request First',websiteVisible:true,portalVisible:true,promoEligible:true,
+      features:['New Business Website','Local Presence Setup','VMS Smart QR','First 3 months of LinkHub Pro'],included:['New Business Website','Local Presence Setup','VMS Smart QR','3 months VMS LinkHub Pro'],metadata:{family:'package',activationFeeWaived:true}
     },
     {
       id:'digital-presence',name:'VMS Digital Presence',kind:'subscription',category:'Bundles',icon:'DP',status:'Published',featured:true,displayOrder:80,
-      description:'A simple monthly bundle for businesses that want local visibility, review growth, and a fully managed LinkHub.',pricingModel:'Recurring',oneTimePrice:null,recurringPrice:59,cadence:'Monthly',startingAt:false,salesMode:'Request First',websiteVisible:true,portalVisible:true,promoEligible:true,
+      description:'A simple monthly bundle for businesses that want local visibility, review growth, and a fully managed LinkHub.',pricingModel:'Recurring',oneTimePrice:null,recurringPrice:59.99,cadence:'Monthly',startingAt:false,salesMode:'Request First',websiteVisible:true,portalVisible:true,promoEligible:true,
       features:['Local Presence Care','Review Growth','VMS LinkHub Pro'],included:['Local Presence Care','Review Growth','VMS LinkHub Pro'],metadata:{family:'bundle',activationFeeWaived:true}
     },
     {
       id:'growth-care',name:'VMS Growth Care',kind:'subscription',category:'Bundles',icon:'GROW',status:'Published',featured:true,displayOrder:81,
-      description:'The ongoing VMS bundle for a business that wants website care plus local, review, and LinkHub management.',pricingModel:'Recurring',oneTimePrice:null,recurringPrice:99,cadence:'Monthly',startingAt:false,salesMode:'Request First',websiteVisible:true,portalVisible:true,promoEligible:true,
+      description:'The ongoing VMS bundle for a business that wants website care plus local, review, and LinkHub management.',pricingModel:'Recurring',oneTimePrice:null,recurringPrice:89.99,cadence:'Monthly',startingAt:false,salesMode:'Request First',websiteVisible:true,portalVisible:true,promoEligible:true,
       features:['Everything in Digital Presence','Monthly Website Care','Priority content updates','Periodic VMS digital checkups'],included:['Monthly Website Care','Local Presence Care','Review Growth','VMS LinkHub Pro'],metadata:{family:'bundle',activationFeeWaived:true,recommended:true}
     },
     {
@@ -116,10 +116,10 @@
       oneTimePrice:row.one_time_price===null||row.one_time_price===undefined?(row.oneTimePrice??null):Number(row.one_time_price),
       recurringPrice:row.recurring_price===null||row.recurring_price===undefined?(row.recurringPrice??null):Number(row.recurring_price),cadence:row.cadence||null,startingAt:!!(row.starting_at??row.startingAt),
       salesMode:row.sales_mode||row.salesMode||'Request First',websiteVisible:!!(row.website_visible??row.websiteVisible),portalVisible:!!(row.portal_visible??row.portalVisible),promoEligible:!!(row.promo_eligible??row.promoEligible),
-      features:Array.isArray(row.features)?row.features:[],included:Array.isArray(row.included)?row.included:[],metadata:row.metadata&&typeof row.metadata==='object'?row.metadata:{}
+      features:Array.isArray(row.features)?row.features:[],included:Array.isArray(row.included)?row.included:[],metadata:row.metadata&&typeof row.metadata==='object'?row.metadata:{},archived:!!(row.archived??row.metadata?.archived)
     }
   }
-  function dbRow(s){return {id:s.id,name:s.name,kind:s.kind,category:s.category,icon:s.icon,status:s.status,featured:!!s.featured,display_order:Number(s.displayOrder)||999,description:s.description||'',pricing_model:s.pricingModel||'Quote Only',one_time_price:s.oneTimePrice===''||s.oneTimePrice===undefined?null:s.oneTimePrice,recurring_price:s.recurringPrice===''||s.recurringPrice===undefined?null:s.recurringPrice,cadence:s.cadence||null,starting_at:!!s.startingAt,sales_mode:s.salesMode||'Request First',website_visible:!!s.websiteVisible,portal_visible:!!s.portalVisible,promo_eligible:!!s.promoEligible,features:s.features||[],included:s.included||[],metadata:s.metadata||{},updated_at:new Date().toISOString()}}
+  function dbRow(s){const metadata={...(s.metadata||{})};if(s.archived!==undefined)metadata.archived=!!s.archived;return {id:s.id,name:s.name,kind:s.kind,category:s.category,icon:s.icon,status:s.status,featured:!!s.featured,display_order:Number(s.displayOrder)||999,description:s.description||'',pricing_model:s.pricingModel||'Quote Only',one_time_price:s.oneTimePrice===''||s.oneTimePrice===undefined?null:s.oneTimePrice,recurring_price:s.recurringPrice===''||s.recurringPrice===undefined?null:s.recurringPrice,cadence:s.cadence||null,starting_at:!!s.startingAt,sales_mode:s.salesMode||'Request First',website_visible:!!s.websiteVisible,portal_visible:!!s.portalVisible,promo_eligible:!!s.promoEligible,features:s.features||[],included:s.included||[],metadata,updated_at:new Date().toISOString()}}
   function localRead(){try{const raw=localStorage.getItem(LOCAL_KEY);if(raw){const parsed=JSON.parse(raw);if(Array.isArray(parsed)&&parsed.length)return parsed.map(normalize)}}catch{}return clone(DEFAULTS)}
   function localWrite(rows){try{localStorage.setItem(LOCAL_KEY,JSON.stringify(rows.map(normalize)))}catch{}}
   function configReady(){const c=window.VMS_CONFIG||{};return !!(c.supabaseUrl&&c.supabaseAnonKey&&!String(c.supabaseUrl).includes('PASTE_')&&!String(c.supabaseAnonKey).includes('PASTE_'))}
@@ -135,8 +135,8 @@
       }catch(e){console.warn('VMS catalog cloud read failed; using fallback.',e)}
     }
     if(!list)list=localRead();
-    if(opts.channel==='website')list=list.filter(x=>x.status==='Published'&&x.websiteVisible&&x.kind!=='internal');
-    if(opts.channel==='portal')list=list.filter(x=>x.status==='Published'&&x.portalVisible&&x.kind!=='internal');
+    if(opts.channel==='website')list=list.filter(x=>!x.archived&&x.status==='Published'&&x.websiteVisible&&x.kind!=='internal');
+    if(opts.channel==='portal')list=list.filter(x=>!x.archived&&x.status==='Published'&&x.portalVisible&&x.kind!=='internal');
     if(opts.kind)list=list.filter(x=>x.kind===opts.kind);
     return list.sort((a,b)=>(a.displayOrder||999)-(b.displayOrder||999));
   }
