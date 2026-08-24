@@ -12,16 +12,20 @@
   const current=(path.split('/').filter(Boolean).pop()||'index.html').toLowerCase();
 
   function ensureSharedAdminFoundation(){
-    if(!document.querySelector('link[href*="vms-admin-shell.css"]')){
+    const shellCss=Array.from(document.querySelectorAll('link[rel~="stylesheet"][href*="vms-admin-shell.css"]')).find(link=>{
+      try{return new URL(link.getAttribute('href')||'',location.href).pathname==='/assets/vms-admin-shell.css';}
+      catch{return false;}
+    });
+    if(!shellCss){
       const link=document.createElement('link');
       link.rel='stylesheet';
-      link.href='/assets/vms-admin-shell.css?v=20260822-phase1';
+      link.href='/assets/vms-admin-shell.css?v=20260824-admin-shell-rescue1';
       link.dataset.vmsAdminShellCss='1';
       document.head.appendChild(link);
     }
     if(!document.getElementById('vmsCanonicalAdminSidebar')&&!document.querySelector('script[data-vms-canonical-admin-shell="1"],script[src*="vms-admin-shell.js"]')){
       const script=document.createElement('script');
-      script.src='/assets/vms-admin-shell.js?v=20260822-phase1';
+      script.src='/assets/vms-admin-shell.js?v=20260824-admin-shell-rescue1';
       script.async=false;
       script.dataset.vmsCanonicalAdminShell='1';
       document.head.appendChild(script);

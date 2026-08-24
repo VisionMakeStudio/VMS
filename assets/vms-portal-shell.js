@@ -1,5 +1,6 @@
 /* VMS Phase 3 — canonical Client Portal shell. Mirrors the existing Portal controls instead of moving them. */
 (()=>{
+  'use strict';
   if(window.__VMS_PORTAL_SHELL_V3__)return;
   window.__VMS_PORTAL_SHELL_V3__=true;
   const ITEMS=[['home','Home'],['services','My Services'],['qrs','QR Codes'],['linkhub','My LinkHub'],['audits','Audits'],['projects','Projects'],['files','Files'],['notifications','Notifications'],['requests','Requests'],['billing','Billing'],['contact','Contact / Schedule']];
@@ -11,6 +12,24 @@
   const sourceTopbar=()=>$('body > .shell > .main > header.topbar,body > .app > .main > header.topbar,body > .main > header.topbar,body > header.topbar');
   const sourceNav=()=>$('#nav');
   const sourceTitle=()=>$('#topbarTitle');
+  function ensureStylesheet(){
+    const canonicalPath='/assets/vms-portal-shell.css';
+    const existing=Array.from(document.querySelectorAll('link[rel~="stylesheet"][href*="vms-portal-shell.css"]'))
+      .find(link=>{
+        try{return new URL(link.getAttribute('href')||'',location.href).pathname===canonicalPath;}
+        catch{return false;}
+      });
+    if(existing){
+      existing.id=existing.id||'vmsCanonicalPortalShellCss';
+      return;
+    }
+    const link=document.createElement('link');
+    link.id='vmsCanonicalPortalShellCss';
+    link.rel='stylesheet';
+    link.href=canonicalPath+'?v=20260824-portal-shell-rescue1';
+    link.dataset.vmsPortalShellCss='1';
+    document.head.appendChild(link);
+  }
   function activate(section){
     const source=$(`#nav [data-section="${CSS.escape(section)}"]`);
     if(source){source.click();return true}
@@ -18,6 +37,7 @@
     return false;
   }
   function install(){
+    ensureStylesheet();
     if($('#vmsCanonicalPortalSidebar'))return;
     document.body.classList.add('vms-portal-canonical');
     const side=sourceSidebar(), topSource=sourceTopbar(), navSource=sourceNav(), titleSource=sourceTitle();
@@ -30,7 +50,7 @@
     const sourceLogo=side?.querySelector('.brand img');
     const logo=sourceLogo?sourceLogo.cloneNode(true):null;
     aside.innerHTML=`<div class="vms-portal-brand"><div class="vms-portal-logo-host"></div><div class="vms-portal-brand-copy"><strong>Vision Make Studio</strong><span>CLIENT PORTAL</span></div></div><nav class="vms-portal-nav" aria-label="Client Portal sections"></nav><div class="vms-portal-account"></div>`;
-    if(logo)aside.querySelector('.vms-portal-logo-host').appendChild(logo);
+    if(logo){logo.src='/assets/vms-logo.png';aside.querySelector('.vms-portal-logo-host').appendChild(logo);}
     const account=side?.querySelector('.side-foot');if(account)aside.querySelector('.vms-portal-account').appendChild(account.cloneNode(true));
     const nav=aside.querySelector('.vms-portal-nav');
     ITEMS.forEach(([section,label])=>{const b=document.createElement('button');b.type='button';b.dataset.section=section;b.innerHTML=`<span>${label}</span><span class="vms-portal-badge-host"></span>`;b.addEventListener('click',()=>activate(section));nav.appendChild(b)});
@@ -67,5 +87,6 @@
     const requested=new URLSearchParams(location.search).get('section')||location.hash.replace(/^#/,'')||pageSection;
     if(requested)requestAnimationFrame(()=>{activate(requested);setTimeout(sync,0)});
   }
+  ensureStylesheet();
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
 })();

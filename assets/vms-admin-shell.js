@@ -9,22 +9,22 @@
   if(!/(^|\/)admin\//.test(path)||/\/admin\/login(?:\.html)?\/?$/.test(path))return;
 
   const NAV=[
-    ['index.html','Home','⌂'],
-    ['audit.html','VMS Audit','✦'],
-    ['qr.html','QR Tools','▦'],
-    ['clients.html','Clients','◎'],
-    ['service-catalog.html','Service Catalog','◇'],
-    ['billing.html','Billing / Subscriptions','$'],
-    ['promotions.html','Promotions','%'],
-    ['projects.html','Projects & Requests','✓'],
-    ['files.html','Files & Assets','▤'],
-    ['activity.html','Notifications & Activity','●'],
-    ['linkhub.html','VMS LinkHub','↗'],
-    ['analytics.html','Analytics','◫'],
-    ['leads.html','CRM / Leads','◉'],
-    ['marketing.html','Sales Content','◆'],
-    ['automations.html','Automations','⚡'],
-    ['security.html','Security & Access','⌾']
+    ['/admin/','Home','⌂'],
+    ['/admin/audit.html','VMS Audit','✦'],
+    ['/admin/qr.html','QR Tools','▦'],
+    ['/admin/clients.html','Clients','◎'],
+    ['/admin/service-catalog.html','Service Catalog','◇'],
+    ['/admin/billing.html','Billing / Subscriptions','$'],
+    ['/admin/promotions.html','Promotions','%'],
+    ['/admin/projects.html','Projects & Requests','✓'],
+    ['/admin/files.html','Files & Assets','▤'],
+    ['/admin/activity.html','Notifications & Activity','●'],
+    ['/admin/linkhub.html','VMS LinkHub','↗'],
+    ['/admin/analytics.html','Analytics','◫'],
+    ['/admin/leads.html','CRM / Leads','◉'],
+    ['/admin/marketing.html','Sales Content','◆'],
+    ['/admin/automations.html','Automations','⚡'],
+    ['/admin/security.html','Security & Access','⌾']
   ];
 
   const normalize=value=>{
@@ -39,10 +39,20 @@
   const route=current.replace(/\.html$/,'')||'index';
 
   function ensureStylesheet(){
-    if(document.querySelector('link[href*="vms-admin-shell.css"]'))return;
+    const canonicalPath='/assets/vms-admin-shell.css';
+    const existing=Array.from(document.querySelectorAll('link[rel~="stylesheet"][href*="vms-admin-shell.css"]'))
+      .find(link=>{
+        try{return new URL(link.getAttribute('href')||'',location.href).pathname===canonicalPath;}
+        catch{return false;}
+      });
+    if(existing){
+      existing.id=existing.id||'vmsCanonicalAdminShellCss';
+      return;
+    }
     const link=document.createElement('link');
+    link.id='vmsCanonicalAdminShellCss';
     link.rel='stylesheet';
-    link.href='/assets/vms-admin-shell.css?v=20260822-phase2';
+    link.href=canonicalPath+'?v=20260824-admin-shell-rescue1';
     link.dataset.vmsAdminShellCss='1';
     document.head.appendChild(link);
   }
@@ -107,7 +117,7 @@
     aside.setAttribute('aria-label','VMS Admin tools');
     aside.innerHTML=`
       <div class="vms-admin-brand">
-        <img src="../assets/vms-logo.png" alt="Vision Make Studio" onerror="this.style.display='none'">
+        <img src="/assets/vms-logo.png" alt="Vision Make Studio" onerror="this.style.display='none'">
         <div class="vms-admin-brand-copy"><strong>Vision Make Studio</strong><span>ADMIN</span></div>
       </div>
       <nav class="vms-admin-nav" aria-label="Admin navigation">

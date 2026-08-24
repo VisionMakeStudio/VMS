@@ -45,19 +45,44 @@ function ensureCanonicalAdminShell(file){
   let html=fs.readFileSync(file,'utf8');
   html=html.replace(/<script\b[^>]*id=["']vms-phase10-admin-nav["'][^>]*>[\s\S]*?<\/script>/gi,'');
   html=html.replace(/<script\b[^>]*id=["']vms-review-shell["'][^>]*>[\s\S]*?<\/script>/gi,'');
-  if(!html.includes('vms-admin-shell.css')){
-    if(!/<\/head>/i.test(html))throw new Error(`Admin page has no </head>: ${path.basename(file)}`);
-    html=html.replace(/<\/head>/i,'<link id="vms-phase4-admin-shell-css" rel="stylesheet" href="../assets/vms-admin-shell.css?v=20260822-phase4"></head>');
-  }
-  if(!/vms-admin-shell\.js/i.test(html)){
-    if(!/<\/body>/i.test(html))throw new Error(`Admin page has no </body>: ${path.basename(file)}`);
-    html=html.replace(/<\/body>/i,'<script id="vms-phase4-admin-shell" src="../assets/vms-admin-shell.js?v=20260822-phase4" defer></script></body>');
-  }
+
+  /* Never treat a filename mentioned in comments/JavaScript as a loaded stylesheet.
+     Remove stale shell tags and write one root-absolute canonical CSS + JS reference. */
+  html=html.replace(/<link\b[^>]*\bhref=["'][^"']*vms-admin-shell\.css[^"']*["'][^>]*>/gi,'');
+  html=html.replace(/<script\b[^>]*\bsrc=["'][^"']*vms-admin-shell\.js[^"']*["'][^>]*>\s*<\/script>/gi,'');
+
+  if(!/<\/head>/i.test(html))throw new Error(`Admin page has no </head>: ${path.basename(file)}`);
+  html=html.replace(/<\/head>/i,'<link id="vms-phase4-admin-shell-css" rel="stylesheet" href="/assets/vms-admin-shell.css?v=20260824-admin-shell-rescue1"></head>');
+
+  if(!/<\/body>/i.test(html))throw new Error(`Admin page has no </body>: ${path.basename(file)}`);
+  html=html.replace(/<\/body>/i,'<script id="vms-phase4-admin-shell" src="/assets/vms-admin-shell.js?v=20260824-admin-shell-rescue1" defer></script></body>');
   fs.writeFileSync(file,html);
 }
 if(fs.existsSync(adminDir))for(const entry of fs.readdirSync(adminDir,{withFileTypes:true})){
   if(!entry.isFile()||!entry.name.endsWith('.html')||entry.name==='login.html')continue;
   ensureCanonicalAdminShell(path.join(adminDir,entry.name));
+}
+
+/* Phase 4 canonical Client Portal shell.
+   Portal pages use the same root-absolute rescue strategy as Admin so a clean
+   Netlify URL can never strand the Portal with raw, unstyled shell markup. */
+for(const asset of ['vms-portal-shell.css','vms-portal-shell.js']){
+  if(!fs.existsSync(path.join(dist,'assets',asset)))throw new Error(`Canonical Portal shell asset missing: assets/${asset}`);
+}
+const canonicalPortalDir=path.join(dist,'portal');
+function ensureCanonicalPortalShell(file){
+  let html=fs.readFileSync(file,'utf8');
+  html=html.replace(/<link\b[^>]*\bhref=["'][^"']*vms-portal-shell\.css[^"']*["'][^>]*>/gi,'');
+  html=html.replace(/<script\b[^>]*\bsrc=["'][^"']*vms-portal-shell\.js[^"']*["'][^>]*>\s*<\/script>/gi,'');
+  if(!/<\/head>/i.test(html))throw new Error(`Portal page has no </head>: ${path.basename(file)}`);
+  html=html.replace(/<\/head>/i,'<link id="vms-phase4-portal-shell-css" rel="stylesheet" href="/assets/vms-portal-shell.css?v=20260824-portal-shell-rescue1"></head>');
+  if(!/<\/body>/i.test(html))throw new Error(`Portal page has no </body>: ${path.basename(file)}`);
+  html=html.replace(/<\/body>/i,'<script id="vms-phase4-portal-shell" src="/assets/vms-portal-shell.js?v=20260824-portal-shell-rescue1" defer></script></body>');
+  fs.writeFileSync(file,html);
+}
+if(fs.existsSync(canonicalPortalDir))for(const entry of fs.readdirSync(canonicalPortalDir,{withFileTypes:true})){
+  if(!entry.isFile()||!entry.name.endsWith('.html'))continue;
+  ensureCanonicalPortalShell(path.join(canonicalPortalDir,entry.name));
 }
 
 /* Phase 11: inject the production repair layers without replacing the user's
@@ -261,7 +286,7 @@ injectRepair('portal/index.html','../assets/vms-qr-phase4.js?v=20260821-phase4',
     'index.html','services.html','get-started.html','audit-report.html',
     'admin/index.html','admin/audit.html','admin/clients.html','admin/billing.html',
     'portal/index.html',
-    'assets/vms-core.js','assets/vms-final-polish.css','assets/vms-admin-phase2.js','assets/vms-admin-shell.css','assets/vms-admin-shell.js',
+    'assets/vms-core.js','assets/vms-final-polish.css','assets/vms-admin-phase2.js','assets/vms-admin-shell.css','assets/vms-admin-shell.js','assets/vms-portal-shell.css','assets/vms-portal-shell.js',
     'assets/vms-portal-phase3.js','assets/vms-linkhub-phase4.js','assets/vms-qr-phase4.js',
     'assets/vms-audit-ai-live.js','assets/vms-portal-payments.js'
   ]) requireDist(relative);

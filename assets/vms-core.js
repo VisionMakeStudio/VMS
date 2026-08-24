@@ -4,7 +4,7 @@
   const TEST_EMAIL='info@visionmakestudio.com';
   const isLocal=location.protocol==='file:';
   const ADMIN_FAST_NAV_KEY='vms_admin_fast_nav';
-  const FINAL_POLISH_VERSION='20260821-unified-admin-shell-v2';
+  const FINAL_POLISH_VERSION='20260824-admin-portal-shell-rescue1';
 
   function surfaceClass(){
     const path=(location.pathname||'/').toLowerCase();
@@ -32,12 +32,25 @@
       if(document.getElementById('vmsCanonicalAdminSidebar'))return;
       if(document.querySelector('script[data-vms-canonical-admin-shell="1"]'))return;
       const script=document.createElement('script');
-      script.src='/assets/vms-admin-shell.js?v=20260821-final';
+      script.src='/assets/vms-admin-shell.js?v=20260824-admin-shell-rescue1';
       script.async=false;
       script.dataset.vmsCanonicalAdminShell='1';
       document.head.appendChild(script);
     };
     if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ensureAdminShell,{once:true});else ensureAdminShell();
+
+    const ensurePortalShell=()=>{
+      const path=(location.pathname||'/').toLowerCase();
+      if(!(path==='/portal'||path==='/portal/'||path.startsWith('/portal/')))return;
+      if(document.getElementById('vmsCanonicalPortalSidebar'))return;
+      if(document.querySelector('script[data-vms-canonical-portal-shell="1"]'))return;
+      const script=document.createElement('script');
+      script.src='/assets/vms-portal-shell.js?v=20260824-portal-shell-rescue1';
+      script.async=false;
+      script.dataset.vmsCanonicalPortalShell='1';
+      document.head.appendChild(script);
+    };
+    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ensurePortalShell,{once:true});else ensurePortalShell();
 
     if(!document.querySelector('link[data-vms-final-polish="1"]')){
       const link=document.createElement('link');
