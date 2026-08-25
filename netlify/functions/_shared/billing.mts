@@ -37,9 +37,13 @@ export function billingEnv() {
   const supabaseUrl = env("SUPABASE_URL");
   const publishableKey = env("SUPABASE_PUBLISHABLE_KEY");
   const secretKey = env("SUPABASE_SECRET_KEY") || env("SUPABASE_SERVICE_ROLE_KEY");
-  const stripeSecretKey = env("STRIPE_SECRET_KEY");
-  const rawStripeWebhookSecret = env("STRIPE_WEBHOOK_SECRET");
   const stripeMode = normalizedStripeMode();
+  const stripeSecretKey = stripeMode === "live"
+    ? env("STRIPE_SECRET_KEY")
+    : env("STRIPE_TEST_SECRET_KEY");
+  const rawStripeWebhookSecret = stripeMode === "live"
+    ? env("STRIPE_WEBHOOK_SECRET")
+    : env("STRIPE_TEST_WEBHOOK_SECRET");
   const stripeSafetyError = stripeModeError(stripeMode, stripeSecretKey);
 
   // Fail closed during QA: when the key mode does not match VMS_STRIPE_MODE,
