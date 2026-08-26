@@ -1808,7 +1808,7 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
     const nums=parts.map(Number);if(nums.some(n=>n<0||n>255))return '';
     return '#'+nums.map(n=>n.toString(16).padStart(2,'0')).join('').toUpperCase();
   }
-  function linkHubStyle(){return {...THEME_PRESETS.navy,...(THEME_PRESETS[state.linkHub.theme]||{}),...(state.linkHub.style||{})}}
+  function linkHubStyle(){const style={...THEME_PRESETS.navy,...(THEME_PRESETS[state.linkHub.theme]||{}),...(state.linkHub.style||{})},g=style.gradient;if(g?.a&&g?.b)style.bg=`linear-gradient(${g.dir||'145deg'},${g.a},${g.b})`;return style}
   function socialGlyph(platform){
     const p=String(platform||'').toLowerCase();
     return ({instagram:'IG',facebook:'f',whatsapp:'WA',tiktok:'♪',youtube:'▶',x:'X',linkedin:'in',email:'@',phone:'☎',website:'↗'})[p]||'+';
@@ -2381,7 +2381,7 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
       state.activity.unshift({title:'LinkHub updated by client',detail:'Profile, buttons, social icons, Wi-Fi, menu, Visit Us, or appearance changes were published.',at:nowLabel()});
       addNotification({category:'Activity',icon:'LH',title:'LinkHub changes published',detail:'Your Smart Business Card is up to date.',section:'linkhub',unread:false});
       bridgeEvent('client_linkhub_updated',{...state.linkHub});
-      save();renderAll();toast('Your LinkHub was saved and published');
+      save();renderLinkHub();renderActivity();renderNotifications();toast('Your LinkHub was saved and published');
     }catch(err){
       console.error('VMS LinkHub publish failed',err);
       toast(err?.message||'Could not publish your LinkHub. Your edits are still saved in the portal.');
@@ -2743,6 +2743,7 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
     if(field==='closed')renderLinkHubVisitHoursEditor();renderLinkHubVisitPreview();
   }
   $('linkHubVisitHoursEditor').addEventListener('input',updateLinkHubVisitHours);$('linkHubVisitHoursEditor').addEventListener('change',updateLinkHubVisitHours);
+  document.addEventListener('vms-linkhub-style',e=>{const style=e.detail?.style;if(!style||typeof style!=='object')return;state.linkHub.theme='custom';state.linkHub.style={...style};setLinkHubColorFields();renderLinkHubPreview()});
   $('linkHubThemeGrid').onclick=e=>{const choice=e.target.closest('[data-linkhub-theme]');if(!choice)return;state.linkHub.theme=choice.dataset.linkhubTheme;state.linkHub.style={...THEME_PRESETS[state.linkHub.theme]};setLinkHubColorFields();renderLinkHubPreview()};
   function syncAdvancedColor(pickerId,hexId,rgbId,key){
     const apply=value=>{if(!validHex(value))return;const v=value.toUpperCase();state.linkHub.theme='custom';state.linkHub.style={...linkHubStyle(),[key]:v};$(pickerId).value=v;$(hexId).value=v;$(rgbId).value=hexToRgb(v);document.querySelectorAll('[data-linkhub-theme]').forEach(b=>b.classList.remove('active'));renderLinkHubPreview()};
