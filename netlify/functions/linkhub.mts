@@ -329,7 +329,7 @@ export default async (req: Request, _context: Context) => {
       const slug = String(body?.slug || "").trim().toLowerCase().replace(/[^a-z0-9-]/g, "").slice(0, 80);
       const type = body?.type === "click" ? "linkhub_click" : body?.type === "view" ? "linkhub_view" : "";
       if (!slug || !type) return Response.json({ error: "Invalid LinkHub activity." }, { status: 400 });
-      const pages = await sbAdmin(`linkhub_pages?slug=eq.${encodeURIComponent(slug)}&status=eq.published&select=id,client_id&limit=1`);
+      const pages = await sbAdmin(`linkhub_pages?slug=eq.${encodeURIComponent(slug)}&status=eq.published&select=client_id&limit=1`);
       const page = Array.isArray(pages) ? pages[0] : null;
       if (!page) return new Response(null, { status: 204 });
       const kind = String(body?.kind || "").replace(/[^a-z0-9 _-]/gi, "").slice(0, 40);
@@ -344,7 +344,7 @@ export default async (req: Request, _context: Context) => {
           detail: type === "linkhub_view" ? "A visitor opened the public LinkHub." : `A visitor clicked ${label || kind || "a LinkHub action"}.`,
           needs_action: false,
           resolved: true,
-          metadata: { source: "public_linkhub", linkhub_page_id: page.id, slug, kind, label },
+          metadata: { source: "public_linkhub", slug, kind, label },
         },
       });
       return Response.json({ ok: true });
