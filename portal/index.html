@@ -913,6 +913,7 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
   .client-linkhub-head{padding:28px 36px 16px;border-bottom:0}.client-linkhub-head h2{font-size:29px;letter-spacing:-.04em;font-weight:600}.client-linkhub-head-copy p{max-width:730px;font-size:10px;line-height:1.45;color:#669bbc}
   .client-linkhub-tabs{padding:12px 36px 15px;gap:12px}.client-linkhub-tab{min-height:37px;padding:8px 17px;background:#e1e1e1;border-color:#fff;color:#669bbc;font-size:9px;font-weight:500}.client-linkhub-tab.active{background:#003049;border-color:#003049;color:#fdf0d5}
   .client-linkhub-workspace{padding:0 36px 28px;background:#fff}.client-linkhub-workspace .linkhub-layout{grid-template-columns:minmax(0,1fr) 317px;gap:26px}.client-linkhub-workspace .linkhub-editor{padding:0 4px 12px 0}.client-linkhub-workspace .linkhub-preview-wrap{padding:0;overflow:visible}
+  .client-linkhub-workspace{overflow:hidden}.client-linkhub-workspace .linkhub-layout{min-height:0}.client-linkhub-workspace .linkhub-editor{height:100%;overflow-y:auto;overscroll-behavior:contain}.client-linkhub-workspace .linkhub-preview-wrap{max-height:100%;overflow:hidden}.linkhub-publish-stats{margin:14px 14px 0}.linkhub-publish-stats .preview-stat{background:#f9fbfc}
   .client-linkhub-workspace .linkhub-panel{border-color:#e7e7e7;border-radius:14px;box-shadow:none}.client-linkhub-workspace .linkhub-panel .panel-head{background:#fff}.client-linkhub-workspace .linkhub-phone{width:317px!important;height:634px!important;min-height:634px!important;border-radius:30px!important}.client-linkhub-workspace .linkhub-phone > .linkhub-phone-view{height:618px!important;min-height:618px!important}.client-linkhub-workspace .preview-label{font-size:9px;color:#669bbc;margin-top:8px}
 }
 </style><link href="../assets/vms-portal-shell.css" id="vms-phase3-portal-shell-css" rel="stylesheet"/></head>
@@ -1274,14 +1275,14 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
 </div>
 <div class="linkhub-panel client-linkhub-pane" data-client-linkhub-pane="publish">
 <div class="linkhub-panel-head"><div><h3>Publish &amp; QR</h3><p>Share your live LinkHub, download its QR code, and view real public activity.</p></div></div>
-<div id="linkHubPublishPanelHost"></div>
-</div>
-<div class="linkhub-preview-wrap">
-<div class="preview-stats">
+<div class="preview-stats linkhub-publish-stats" aria-label="Live LinkHub activity">
 <div class="preview-stat"><span>VIEWS</span><strong id="linkHubViews">—</strong></div>
 <div class="preview-stat"><span>LINK CLICKS</span><strong id="linkHubClicks">—</strong></div>
 <div class="preview-stat"><span>STATUS</span><strong id="linkHubStatusText">Live</strong></div>
 </div>
+<div id="linkHubPublishPanelHost"></div>
+</div>
+<div class="linkhub-preview-wrap">
 <div class="preview-mode-tabs">
 <button class="active" data-linkhub-preview="main" type="button">Main Card</button>
 <button data-linkhub-preview="wifi" type="button">Wi-Fi</button>
