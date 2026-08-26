@@ -8,7 +8,7 @@ const dist=path.join(root,'dist');
 fs.rmSync(dist,{recursive:true,force:true});
 fs.mkdirSync(dist,{recursive:true});
 
-for(const item of ['index.html','services.html','get-started.html','audit-report.html','404.html','robots.txt','sitemap.xml','config.js','assets','admin','portal']){
+for(const item of ['index.html','services.html','get-started.html','audit-report.html','privacy.html','terms.html','refund-cancellation.html','404.html','robots.txt','sitemap.xml','config.js','assets','admin','portal']){
   const src=path.join(root,item),dst=path.join(dist,item);
   if(!fs.existsSync(src))throw new Error(`Required publish input is missing: ${item}`);
   fs.cpSync(src,dst,{recursive:true});
@@ -34,6 +34,47 @@ const privacyGate=String.raw`<script id="vms-phase10-privacy-gate">(function(){i
 function ensurePrivacyGate(file){if(!fs.existsSync(file))return;let html=fs.readFileSync(file,'utf8');html=html.replace(/<script\b[^>]*id=["']vms-phase10-privacy-gate["'][^>]*>[\s\S]*?<\/script>\s*<style\b[^>]*id=["']vms-phase10-privacy-style["'][^>]*>[\s\S]*?<\/style>/i,'');if(!/<head\b/i.test(html))throw new Error(`Protected page has no <head>: ${path.relative(dist,file)}`);html=html.replace(/<head([^>]*)>/i,`<head$1>${privacyGate}`);fs.writeFileSync(file,html)}
 for(const area of ['admin','portal']){const dir=path.join(dist,area);if(!fs.existsSync(dir))continue;for(const entry of fs.readdirSync(dir,{withFileTypes:true})){if(!entry.isFile()||!entry.name.endsWith('.html'))continue;if(area==='admin'&&entry.name==='login.html')continue;ensurePrivacyGate(path.join(dir,entry.name))}}
 
+/* Recovery 2: one protected-page runtime for every Admin + Portal page.
+   Legacy pages such as QR Tools, Service Catalog and the original Portal did not
+   call VMSAuth.requireSession(), which left vms-auth-pending on <html> forever.
+   Config is loaded in <head>; vms-core + the guard are guaranteed before </body>. */
+for(const asset of ['vms-core.js','vms-auth-guard.js']){
+  if(!fs.existsSync(path.join(dist,'assets',asset)))throw new Error(`Protected auth runtime missing: assets/${asset}`);
+}
+function ensureProtectedRuntime(file,kind){
+  let html=fs.readFileSync(file,'utf8');
+  if(!/<\/head>/i.test(html)||!/<\/body>/i.test(html))throw new Error(`Protected page is missing head/body: ${path.relative(dist,file)}`);
+
+  /* Billing and a few legacy Admin sources used to carry their own vms-core +
+     requireSession bridge. Running that bridge beside the centralized guard can
+     briefly redirect a valid internal Admin navigation through login.html.
+     Production now owns auth bootstrap in exactly one place on every protected page. */
+  html=html.replace(/<script\b[^>]*\bsrc=["'][^"']*config\.js(?:\?[^"']*)?["'][^>]*>\s*<\/script>/gi,'');
+  html=html.replace(/<script\b[^>]*\bsrc=["'][^"']*vms-core\.js(?:\?[^"']*)?["'][^>]*>\s*<\/script>/gi,'');
+  html=html.replace(/<script\b(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi,(whole,code)=>{
+    const compact=String(code||'').trim().replace(/\s+/g,' ');
+    const legacy=/^(?:if\s*\(\s*window\.VMSAuth\s*\)\s*)?(?:window\.)?VMSAuth(?:\?\.|\.)requireSession\([\s\S]*?\)\s*;?$/.test(compact);
+    return legacy?'':whole;
+  });
+  html=html.replace(/<script\b[^>]*id=["']vms-protected-auth-guard["'][^>]*>[\s\S]*?<\/script>/gi,'');
+
+  const bootstrap='<script id="vms-protected-config" src="/config.js?v=20260824-billing-auth-fix"></script>'+ 
+    '<script id="vms-protected-core" src="/assets/vms-core.js?v=20260824-billing-auth-fix"></script>';
+  html=html.replace(/<\/head>/i,bootstrap+'</head>');
+
+  const guard=`<script id="vms-protected-auth-guard" src="/assets/vms-auth-guard.js?v=20260824-billing-auth-fix" data-vms-auth-kind="${kind}"></script>`;
+  html=html.replace(/<\/body>/i,guard+'</body>');
+  fs.writeFileSync(file,html);
+}
+for(const area of ['admin','portal']){
+  const dir=path.join(dist,area);if(!fs.existsSync(dir))continue;
+  for(const entry of fs.readdirSync(dir,{withFileTypes:true})){
+    if(!entry.isFile()||!entry.name.endsWith('.html'))continue;
+    if(area==='admin'&&entry.name==='login.html')continue;
+    ensureProtectedRuntime(path.join(dir,entry.name),area==='admin'?'admin':'client');
+  }
+}
+
 /* Phase 4 canonical Admin shell.
    The build no longer appends links into whatever legacy sidebar a page happens to have.
    Every protected Admin tool receives the exact same shared shell CSS + JS. */
@@ -52,10 +93,10 @@ function ensureCanonicalAdminShell(file){
   html=html.replace(/<script\b[^>]*\bsrc=["'][^"']*vms-admin-shell\.js[^"']*["'][^>]*>\s*<\/script>/gi,'');
 
   if(!/<\/head>/i.test(html))throw new Error(`Admin page has no </head>: ${path.basename(file)}`);
-  html=html.replace(/<\/head>/i,'<link id="vms-phase4-admin-shell-css" rel="stylesheet" href="/assets/vms-admin-shell.css?v=20260824-admin-shell-rescue1"></head>');
+  html=html.replace(/<\/head>/i,'<link id="vms-phase4-admin-shell-css" rel="stylesheet" href="/assets/vms-admin-shell.css?v=20260824-phase3-admin-shell"></head>');
 
   if(!/<\/body>/i.test(html))throw new Error(`Admin page has no </body>: ${path.basename(file)}`);
-  html=html.replace(/<\/body>/i,'<script id="vms-phase4-admin-shell" src="/assets/vms-admin-shell.js?v=20260824-admin-shell-rescue1" defer></script></body>');
+  html=html.replace(/<\/body>/i,'<script id="vms-phase4-admin-shell" src="/assets/vms-admin-shell.js?v=20260824-phase3-admin-shell" defer></script></body>');
   fs.writeFileSync(file,html);
 }
 if(fs.existsSync(adminDir))for(const entry of fs.readdirSync(adminDir,{withFileTypes:true})){
@@ -75,9 +116,9 @@ function ensureCanonicalPortalShell(file){
   html=html.replace(/<link\b[^>]*\bhref=["'][^"']*vms-portal-shell\.css[^"']*["'][^>]*>/gi,'');
   html=html.replace(/<script\b[^>]*\bsrc=["'][^"']*vms-portal-shell\.js[^"']*["'][^>]*>\s*<\/script>/gi,'');
   if(!/<\/head>/i.test(html))throw new Error(`Portal page has no </head>: ${path.basename(file)}`);
-  html=html.replace(/<\/head>/i,'<link id="vms-phase4-portal-shell-css" rel="stylesheet" href="/assets/vms-portal-shell.css?v=20260824-portal-shell-rescue1"></head>');
+  html=html.replace(/<\/head>/i,'<link id="vms-phase4-portal-shell-css" rel="stylesheet" href="/assets/vms-portal-shell.css?v=20260824-phase3-portal-shell"></head>');
   if(!/<\/body>/i.test(html))throw new Error(`Portal page has no </body>: ${path.basename(file)}`);
-  html=html.replace(/<\/body>/i,'<script id="vms-phase4-portal-shell" src="/assets/vms-portal-shell.js?v=20260824-portal-shell-rescue1" defer></script></body>');
+  html=html.replace(/<\/body>/i,'<script id="vms-phase4-portal-shell" src="/assets/vms-portal-shell.js?v=20260824-phase3-portal-shell" defer></script></body>');
   fs.writeFileSync(file,html);
 }
 if(fs.existsSync(canonicalPortalDir))for(const entry of fs.readdirSync(canonicalPortalDir,{withFileTypes:true})){
@@ -91,7 +132,7 @@ if(fs.existsSync(canonicalPortalDir))for(const entry of fs.readdirSync(canonical
 const phase11Assets=['vms-audit-desktop-fix.js','vms-audit-ai-live.js','vms-admin-clients-live.js','vms-admin-billing-live.js','vms-portal-payments.js','vms-admin-cleanup.js','vms-get-started-url.js'];
 for(const name of phase11Assets){if(!fs.existsSync(path.join(dist,'assets',name)))throw new Error(`Phase 11 repair asset is missing: assets/${name}`)}
 function injectRepair(relative,src,id){const file=path.join(dist,relative);if(!fs.existsSync(file))throw new Error(`Phase 11 target is missing: ${relative}`);let html=fs.readFileSync(file,'utf8');const idNeedle=`id="${id}"`;if(html.includes(idNeedle)){const re=new RegExp(`<script([^>]*\\s)id=["']${id}["']([^>]*)><\\/script>`,`i`);html=html.replace(re,(tag)=>{if(/\bsrc=["'][^"']*["']/i.test(tag))return tag.replace(/\bsrc=["'][^"']*["']/i,`src="${src}"`);return tag.replace(/<script/i,`<script src="${src}"`)});fs.writeFileSync(file,html);return}if(!/<\/body>/i.test(html))throw new Error(`Phase 11 target has no </body>: ${relative}`);html=html.replace(/<\/body>/i,`<script id="${id}" src="${src}" defer></script></body>`);fs.writeFileSync(file,html)}
-injectRepair('admin/audit.html','../assets/vms-audit-desktop-fix.js','vms-phase11-audit-fix');
+injectRepair('admin/audit.html','/assets/vms-audit-desktop-fix.js?v=20260824-phase3-audit-layout','vms-phase11-audit-fix');
 injectRepair('admin/audit.html','../assets/vms-audit-ai-live.js?v=20260821-phase5','vms-audit-ai-live');
 injectRepair('admin/clients.html','../assets/vms-admin-clients-live.js','vms-phase11-clients-live');
 injectRepair('admin/billing.html','../assets/vms-admin-billing-live.js','vms-phase11-billing-live');
@@ -286,7 +327,7 @@ injectRepair('portal/index.html','../assets/vms-qr-phase4.js?v=20260821-phase4',
     'index.html','services.html','get-started.html','audit-report.html',
     'admin/index.html','admin/audit.html','admin/clients.html','admin/billing.html',
     'portal/index.html',
-    'assets/vms-core.js','assets/vms-final-polish.css','assets/vms-admin-phase2.js','assets/vms-admin-shell.css','assets/vms-admin-shell.js','assets/vms-portal-shell.css','assets/vms-portal-shell.js',
+    'assets/vms-core.js','assets/vms-auth-guard.js','assets/vms-final-polish.css','assets/vms-admin-phase2.js','assets/vms-admin-shell.css','assets/vms-admin-shell.js','assets/vms-portal-shell.css','assets/vms-portal-shell.js',
     'assets/vms-portal-phase3.js','assets/vms-linkhub-phase4.js','assets/vms-qr-phase4.js',
     'assets/vms-audit-ai-live.js','assets/vms-portal-payments.js'
   ]) requireDist(relative);
@@ -330,4 +371,3 @@ injectRepair('portal/index.html','../assets/vms-qr-phase4.js?v=20260821-phase4',
 }
 
 console.log(`VMS Phase 6 publish directory created and integration guards passed: ${dist}`);
-
