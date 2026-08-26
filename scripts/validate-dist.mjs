@@ -96,6 +96,7 @@ if(fs.existsSync(coreFile)){
   const js=fs.readFileSync(coreFile,'utf8');
   if(!js.includes('getSessionWithNavigationGrace'))failures.push('assets/vms-core.js: internal Admin navigation session grace missing');
   if(!js.includes('currentAdminFastNav'))failures.push('assets/vms-core.js: fast-navigation destination verification missing');
+  for(const needle of ['capturePortalAuthCallback','finishPortalAuthCallback','verifyOtp({token_hash:callback.tokenHash','exchangeCodeForSession(callback.code)','setSession({'])if(!js.includes(needle))failures.push(`assets/vms-core.js: Portal mobile magic-link recovery missing ${needle}`);
 }
 
 const authGuardFile=path.join(root,'assets','vms-auth-guard.js');

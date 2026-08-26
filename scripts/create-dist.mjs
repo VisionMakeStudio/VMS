@@ -58,11 +58,11 @@ function ensureProtectedRuntime(file,kind){
   });
   html=html.replace(/<script\b[^>]*id=["']vms-protected-auth-guard["'][^>]*>[\s\S]*?<\/script>/gi,'');
 
-  const bootstrap='<script id="vms-protected-config" src="/config.js?v=20260824-billing-auth-fix"></script>'+ 
-    '<script id="vms-protected-core" src="/assets/vms-core.js?v=20260824-billing-auth-fix"></script>';
+  const bootstrap='<script id="vms-protected-config" src="/config.js?v=20260826-mobile-magic-link1"></script>'+ 
+    '<script id="vms-protected-core" src="/assets/vms-core.js?v=20260826-mobile-magic-link1"></script>';
   html=html.replace(/<\/head>/i,bootstrap+'</head>');
 
-  const guard=`<script id="vms-protected-auth-guard" src="/assets/vms-auth-guard.js?v=20260824-billing-auth-fix" data-vms-auth-kind="${kind}"></script>`;
+  const guard=`<script id="vms-protected-auth-guard" src="/assets/vms-auth-guard.js?v=20260826-mobile-magic-link1" data-vms-auth-kind="${kind}"></script>`;
   html=html.replace(/<\/body>/i,guard+'</body>');
   fs.writeFileSync(file,html);
 }
@@ -211,7 +211,7 @@ function injectFinalPolish(relative,{admin=false}={}){
   if(!fs.existsSync(file))return;
   let html=fs.readFileSync(file,'utf8');
   const prefix=relative.startsWith('admin/')||relative.startsWith('portal/')?'../':'';
-  const css=`<link id="vms-final-polish-css" rel="stylesheet" href="${prefix}assets/vms-final-polish.css?v=20260826-linkhub-recovery2">`;
+  const css=`<link id="vms-final-polish-css" rel="stylesheet" href="${prefix}assets/vms-final-polish.css?v=20260826-linkhub-iphone-parity1">`;
   if(!html.includes('id="vms-final-polish-css"')){
     if(!/<\/head>/i.test(html))throw new Error(`Final polish target has no </head>: ${relative}`);
     html=html.replace(/<\/head>/i,css+'</head>');
@@ -266,7 +266,7 @@ const p4Linkhub=firstExisting(['admin/linkhub.html','admin/VMS-LinkHub.html','ad
 const p4Qr=firstExisting(['admin/qr.html','admin/vms_qr_tools_FINAL_MOBILE_FIXED.html','admin/qr-tools.html']);
 if(!p4Linkhub)throw new Error('Phase 4 could not find the Admin LinkHub page.');
 if(!p4Qr)throw new Error('Phase 4 could not find the Admin QR Tools page.');
-injectRepair(p4Linkhub,'../assets/vms-linkhub-phase4.js?v=20260826-linkhub-recovery2','vms-linkhub-phase4');
+injectRepair(p4Linkhub,'../assets/vms-linkhub-phase4.js?v=20260826-linkhub-sync3','vms-linkhub-phase4');
 /* The legacy prototype used an unconfigured link.visionmakestudio.com host.
    Production uses the working Netlify function route under the primary domain. */
 {
@@ -277,7 +277,7 @@ injectRepair(p4Linkhub,'../assets/vms-linkhub-phase4.js?v=20260826-linkhub-recov
 }
 
 injectRepair(p4Qr,'../assets/vms-qr-phase4.js?v=20260821-phase4','vms-qr-phase4');
-injectRepair('portal/index.html','../assets/vms-linkhub-phase4.js?v=20260826-linkhub-recovery2','vms-portal-linkhub-phase4');
+injectRepair('portal/index.html','../assets/vms-linkhub-phase4.js?v=20260826-linkhub-sync3','vms-portal-linkhub-phase4');
 injectRepair('portal/index.html','../assets/vms-qr-phase4.js?v=20260821-phase4','vms-portal-qr-phase4');
 
 /* QR branding is mandatory in VMS Phase 4. Older saved records that explicitly
