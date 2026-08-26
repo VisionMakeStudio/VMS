@@ -63,6 +63,41 @@ async function sbRest(path: string, options: {
   return payload;
 }
 
+async function sbAdmin(path: string, options: { method?: string; body?: any; prefer?: string } = {}) {
+  const { url } = supabasePublicEnv();
+  const secret = env("SUPABASE_SERVICE_ROLE_KEY");
+  if (!secret) throw Object.assign(new Error("LinkHub analytics is not configured."), { status: 503 });
+  const res = await fetch(`${url}/rest/v1/${path}`, {
+    method: options.method || "GET",
+    headers: {
+      apikey: secret,
+      Authorization: `Bearer ${secret}`,
+      "Content-Type": "application/json",
+      ...(options.prefer ? { Prefer: options.prefer } : {}),
+    },
+    body: options.body === undefined ? undefined : JSON.stringify(options.body),
+  });
+  const raw = await res.text();
+  const payload = raw ? (() => { try { return JSON.parse(raw); } catch { return raw; } })() : null;
+  if (!res.ok) throw Object.assign(new Error(payload?.message || `LinkHub analytics request failed (${res.status}).`), { status: 502 });
+  return payload;
+}
+
+function analyticsSummary(events: any[]) {
+  const views = events.filter((event) => event.event_type === "linkhub_view").length;
+  const clicks = events.filter((event) => event.event_type === "linkhub_click").length;
+  return {
+    views,
+    clicks,
+    recent: events.slice(0, 30).map((event) => ({
+      type: event.event_type === "linkhub_view" ? "view" : "click",
+      label: event.metadata?.label || event.title || (event.event_type === "linkhub_view" ? "LinkHub viewed" : "Link clicked"),
+      kind: event.metadata?.kind || "",
+      at: event.created_at,
+    })),
+  };
+}
+
 async function currentClient(req: Request) {
   const token = bearer(req);
   const rows = await sbRest("clients?select=id,business_name,owner_email&limit=1", { token });
@@ -157,7 +192,7 @@ function formatHours(hours: any) {
   }).join("");
 }
 
-function renderPublic(data: any) {
+function renderPublic(data: any, slug: string) {
   const style = data?.style || {};
   const bg = safeHex(style.bg, "#003049");
   const text = safeHex(style.text, "#FFFFFF");
@@ -170,18 +205,18 @@ function renderPublic(data: any) {
   const photoSafe = /^(data:image\/(?:png|jpeg|jpg|webp);base64,|https?:\/\/)/i.test(photo) ? photo : "";
 
   const contacts: string[] = [];
-  if (data?.phone) contacts.push(`<a href="tel:${esc(String(data.phone).replace(/^tel:/i, ""))}">Call</a>`);
-  if (data?.email) contacts.push(`<a href="mailto:${esc(String(data.email).replace(/^mailto:/i, ""))}">Email</a>`);
+  if (data?.phone) contacts.push(`<a data-track-kind="contact" data-track-label="Call" href="tel:${esc(String(data.phone).replace(/^tel:/i, ""))}">Call</a>`);
+  if (data?.email) contacts.push(`<a data-track-kind="contact" data-track-label="Email" href="mailto:${esc(String(data.email).replace(/^mailto:/i, ""))}">Email</a>`);
   const website = safeHttp(data?.website);
-  if (website) contacts.push(`<a href="${esc(website)}" target="_blank" rel="noopener">Website</a>`);
+  if (website) contacts.push(`<a data-track-kind="contact" data-track-label="Website" href="${esc(website)}" target="_blank" rel="noopener">Website</a>`);
   const maps = safeHttp(data?.mapUrl || data?.visit?.mapsUrl || data?.restaurant?.mapsUrl);
-  if (maps) contacts.push(`<a href="${esc(maps)}" target="_blank" rel="noopener">Directions</a>`);
+  if (maps) contacts.push(`<a data-track-kind="contact" data-track-label="Directions" href="${esc(maps)}" target="_blank" rel="noopener">Directions</a>`);
 
   const links = (Array.isArray(data?.links) ? data.links : [])
     .filter((x: any) => x?.visible !== false && x?.label)
     .map((x: any) => {
       const href = safeHttp(x.url);
-      return href ? `<a class="main-link" href="${esc(href)}" target="_blank" rel="noopener">${esc(x.label)}</a>` : "";
+      return href ? `<a class="main-link" data-track-kind="link" data-track-label="${esc(x.label)}" href="${esc(href)}" target="_blank" rel="noopener">${esc(x.label)}</a>` : "";
     }).join("");
 
   const socials = (Array.isArray(data?.socials) ? data.socials : [])
@@ -189,13 +224,13 @@ function renderPublic(data: any) {
     .map((x: any) => {
       const href = socialHref(x.platform, x.url);
       if (!href) return "";
-      return `<a class="social" href="${esc(href)}" ${/^https?:/i.test(href) ? 'target="_blank" rel="noopener"' : ""} aria-label="${esc(x.label || x.platform)}" title="${esc(x.label || x.platform)}">${iconSvg(x.platform)}</a>`;
+      return `<a class="social" data-track-kind="social" data-track-label="${esc(x.label || x.platform)}" href="${esc(href)}" ${/^https?:/i.test(href) ? 'target="_blank" rel="noopener"' : ""} aria-label="${esc(x.label || x.platform)}" title="${esc(x.label || x.platform)}">${iconSvg(x.platform)}</a>`;
     }).join("");
 
   const wifi = data?.wifi || {};
   const wifiHtml = wifi?.enabled ? `
     <details class="feature">
-      <summary>Wi‑Fi <span>›</span></summary>
+      <summary data-track-kind="feature" data-track-label="Wi-Fi">Wi‑Fi <span>›</span></summary>
       <div class="feature-body">
         <div class="feature-kicker">NETWORK</div>
         <b class="feature-title">${esc(wifi.ssid || "Wi‑Fi Network")}</b>
@@ -209,7 +244,7 @@ function renderPublic(data: any) {
   const sections = (Array.isArray(restaurant.sections) ? restaurant.sections : []).filter((x: any) => x?.visible !== false);
   const menuHtml = restaurant?.enabled ? `
     <details class="feature">
-      <summary>${esc(restaurant.name || "Restaurant Menu")} <span>›</span></summary>
+      <summary data-track-kind="feature" data-track-label="Restaurant Menu">${esc(restaurant.name || "Restaurant Menu")} <span>›</span></summary>
       <div class="feature-body restaurant">
         <b class="feature-title">${esc(restaurant.name || name)}</b>
         ${restaurant.cuisine ? `<p>${esc(restaurant.cuisine)}</p>` : ""}
@@ -230,14 +265,14 @@ function renderPublic(data: any) {
   const visitMap = safeHttp(visit.mapsUrl || data?.mapUrl);
   const visitHtml = visit?.enabled ? `
     <details class="feature">
-      <summary>Visit Us <span>›</span></summary>
+      <summary data-track-kind="feature" data-track-label="Visit Us">Visit Us <span>›</span></summary>
       <div class="feature-body">
         <b class="feature-title">${esc(visit.name || data?.businessName || "Visit Us")}</b>
         ${visit.category ? `<p>${esc(visit.category)}</p>` : ""}
         ${visit.bio ? `<p>${esc(visit.bio)}</p>` : ""}
         ${visit.address ? `<p>${esc(visit.address)}</p>` : ""}
         ${formatHours(visit.hours)}
-        ${visitMap ? `<a class="mini-link" href="${esc(visitMap)}" target="_blank" rel="noopener">Open in Maps</a>` : ""}
+        ${visitMap ? `<a class="mini-link" data-track-kind="feature" data-track-label="Visit Us directions" href="${esc(visitMap)}" target="_blank" rel="noopener">Open in Maps</a>` : ""}
       </div>
     </details>` : "";
 
@@ -269,6 +304,14 @@ ${socials ? `<div class="socials">${socials}</div>` : ""}
 <div class="powered">VMS LinkHub · Smart Business Card by <a href="https://visionmakestudio.com" target="_blank" rel="noopener">Vision Make Studio</a></div>
 </main>
 <script>
+const LINKHUB_SLUG=${JSON.stringify(slug)};
+function trackLinkHub(type,kind='',label=''){
+  const body=JSON.stringify({slug:LINKHUB_SLUG,type,kind,label});
+  try{if(navigator.sendBeacon){navigator.sendBeacon('/api/linkhub-event',new Blob([body],{type:'application/json'}));return}}catch{}
+  fetch('/api/linkhub-event',{method:'POST',headers:{'Content-Type':'application/json'},body,keepalive:true}).catch(()=>{});
+}
+try{const key='vms_lh_view_'+LINKHUB_SLUG,last=Number(sessionStorage.getItem(key)||0);if(Date.now()-last>1800000){sessionStorage.setItem(key,String(Date.now()));trackLinkHub('view')}}catch{trackLinkHub('view')}
+document.querySelectorAll('[data-track-kind]').forEach(link=>link.addEventListener('click',()=>trackLinkHub('click',link.dataset.trackKind||'',link.dataset.trackLabel||link.textContent||''),{capture:true}));
 const pass=document.getElementById('wifiPass');
 document.getElementById('toggleWifi')?.addEventListener('click',e=>{if(!pass)return;const show=pass.type==='password';pass.type=show?'text':'password';e.currentTarget.textContent=show?'Hide':'Show'});
 document.getElementById('copyWifi')?.addEventListener('click',async e=>{if(!pass)return;try{await navigator.clipboard.writeText(pass.value);e.currentTarget.textContent='Copied';setTimeout(()=>e.currentTarget.textContent='Copy',1200)}catch{}});
@@ -279,6 +322,33 @@ document.getElementById('copyWifi')?.addEventListener('click',async e=>{if(!pass
 export default async (req: Request, _context: Context) => {
   try {
     const u = new URL(req.url);
+
+    if (u.pathname === "/api/linkhub-event") {
+      if (req.method !== "POST") return new Response("Method not allowed", { status: 405 });
+      const body: any = await req.json().catch(() => ({}));
+      const slug = String(body?.slug || "").trim().toLowerCase().replace(/[^a-z0-9-]/g, "").slice(0, 80);
+      const type = body?.type === "click" ? "linkhub_click" : body?.type === "view" ? "linkhub_view" : "";
+      if (!slug || !type) return Response.json({ error: "Invalid LinkHub activity." }, { status: 400 });
+      const pages = await sbAdmin(`linkhub_pages?slug=eq.${encodeURIComponent(slug)}&status=eq.published&select=id,client_id&limit=1`);
+      const page = Array.isArray(pages) ? pages[0] : null;
+      if (!page) return new Response(null, { status: 204 });
+      const kind = String(body?.kind || "").replace(/[^a-z0-9 _-]/gi, "").slice(0, 40);
+      const label = String(body?.label || "").replace(/[<>]/g, "").trim().slice(0, 120);
+      await sbAdmin("activity_events", {
+        method: "POST",
+        prefer: "return=minimal",
+        body: {
+          client_id: page.client_id,
+          event_type: type,
+          title: type === "linkhub_view" ? "LinkHub viewed" : `LinkHub click${label ? ` · ${label}` : ""}`,
+          detail: type === "linkhub_view" ? "A visitor opened the public LinkHub." : `A visitor clicked ${label || kind || "a LinkHub action"}.`,
+          needs_action: false,
+          resolved: true,
+          metadata: { source: "public_linkhub", linkhub_page_id: page.id, slug, kind, label },
+        },
+      });
+      return Response.json({ ok: true });
+    }
 
     if (u.pathname.startsWith("/link/")) {
       if (req.method !== "GET") return new Response("Method not allowed", { status: 405 });
@@ -293,7 +363,7 @@ export default async (req: Request, _context: Context) => {
           headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" }
         });
       }
-      return new Response(renderPublic(page.published_data || {}), {
+      return new Response(renderPublic(page.published_data || {}, slug), {
         headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=60, stale-while-revalidate=300" }
       });
     }
@@ -305,6 +375,7 @@ export default async (req: Request, _context: Context) => {
       const { token, client } = await currentClient(req);
       const page = await ownPage(client.id, token);
       const slug = page?.slug || `${slugify(client.business_name)}-${String(client.id).replace(/-/g, "").slice(0, 6)}`;
+      const events = await sbAdmin(`activity_events?client_id=eq.${encodeURIComponent(client.id)}&event_type=in.(linkhub_view,linkhub_click)&select=event_type,title,detail,created_at,metadata&order=created_at.desc&limit=5000`).catch(() => []);
       return Response.json({
         ok: true,
         slug,
@@ -312,6 +383,7 @@ export default async (req: Request, _context: Context) => {
         status: page?.status || "draft",
         publishedAt: page?.published_at || null,
         publishedData: page?.published_data && Object.keys(page.published_data).length ? page.published_data : null,
+        analytics: analyticsSummary(Array.isArray(events) ? events : []),
       });
     }
 
@@ -360,4 +432,4 @@ export default async (req: Request, _context: Context) => {
   }
 };
 
-export const config: Config = { path: ["/api/linkhub", "/link/*"] };
+export const config: Config = { path: ["/api/linkhub", "/api/linkhub-event", "/link/*"] };
