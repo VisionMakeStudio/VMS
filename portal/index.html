@@ -234,6 +234,7 @@ a{color:inherit}
 .mini-btn{width:30px;height:30px;border:1px solid #dbe5e9;background:#fff;color:var(--navy);border-radius:8px;font-size:9px;font-weight:900}
 .mini-btn.danger{color:var(--red)}
 .linkhub-preview-wrap{position:sticky;top:82px}
+.client-linkhub-head{flex:0 0 auto;margin:0!important;padding:15px 17px 12px;border-bottom:1px solid #e4ebee;background:#fff}.client-linkhub-head h2{margin:0 0 4px;color:var(--navy);font-size:16px}.client-linkhub-head-copy{min-width:0}.client-linkhub-close{width:38px;padding:0!important;font-size:19px!important;color:#78909a!important}.client-linkhub-preview-toggle{display:none}.client-linkhub-tabs{display:flex;gap:6px;overflow-x:auto;flex:0 0 auto;padding:10px 17px;border-bottom:1px solid #e4ebee;background:#fff;scrollbar-width:none}.client-linkhub-tabs::-webkit-scrollbar{display:none}.client-linkhub-tab{flex:0 0 auto;border:1px solid #dce6ea;border-radius:999px;background:#fff;color:#6f838d;padding:9px 13px;font-size:9px;font-weight:900}.client-linkhub-tab.active{background:var(--navy);border-color:var(--navy);color:#fff}.client-linkhub-pane{display:none!important}.client-linkhub-pane.active{display:block!important}#section-linkhub.active{position:fixed;inset:18px 22px;z-index:2147482200;width:auto;max-width:1480px;margin:auto;background:#fff;border-radius:18px;box-shadow:0 0 0 100vmax rgba(0,34,49,.46),0 26px 80px rgba(0,34,49,.26);overflow:hidden;flex-direction:column}#section-linkhub.active{display:flex}.client-linkhub-workspace{min-width:0;min-height:0;flex:1;padding:13px 15px 15px;background:#f7fafb}.client-linkhub-workspace .linkhub-layout{height:100%;min-width:0;min-height:0;grid-template-columns:minmax(0,1.65fr) minmax(300px,.75fr);align-items:stretch}.client-linkhub-workspace .linkhub-editor{min-width:0;min-height:0;overflow-y:auto;padding-right:4px;overscroll-behavior:contain}.client-linkhub-workspace .linkhub-preview-wrap{position:sticky;top:0;align-self:start;max-height:100%;overflow:auto;padding:0 4px 8px}.client-linkhub-workspace .linkhub-panel{min-width:0;margin-bottom:10px}
 .preview-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:9px}
 .preview-stat{background:#fff;border:1px solid var(--line);border-radius:10px;padding:9px;text-align:center}
 .preview-stat span{display:block;color:#8da0a9;font-size:6px;font-weight:950}
@@ -301,6 +302,7 @@ a{color:inherit}
   .catalog-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .linkhub-layout{grid-template-columns:1fr}
   .linkhub-preview-wrap{position:static;max-width:380px;margin:0 auto;width:100%}
+  #section-linkhub.active{inset:8px;width:calc(100vw - 16px);max-width:none;min-width:0;border-radius:16px}.client-linkhub-workspace{overflow-y:auto}.client-linkhub-workspace .linkhub-layout{display:block;width:100%;height:auto}.client-linkhub-workspace .linkhub-preview-wrap{display:none;position:static;overflow:visible;width:min(100%,380px);margin:0 auto}.client-linkhub-workspace .linkhub-editor{overflow:visible;padding:0}.client-linkhub-preview-toggle{display:inline-flex}.client-linkhub-head{min-width:0;display:grid!important;grid-template-columns:minmax(0,1fr) auto;gap:9px}.client-linkhub-head .intro-actions{min-width:0;grid-column:1/-1}.client-linkhub-close{position:absolute;right:14px;top:13px}.client-linkhub-head-copy{padding-right:38px}#section-linkhub.mobile-preview-open .client-linkhub-workspace .linkhub-editor{display:none}#section-linkhub.mobile-preview-open .client-linkhub-workspace .linkhub-preview-wrap{display:block}
 }
 @media(max-width:700px){
   .shell{display:block}
@@ -320,6 +322,7 @@ a{color:inherit}
   .intro p{font-size:9px}
   .intro-actions{justify-content:stretch;display:grid;grid-template-columns:1fr 1fr;margin-top:10px}
   .intro-actions .btn{width:100%;min-height:42px}
+  .client-linkhub-head{padding:13px 14px 10px}.client-linkhub-head .client-linkhub-head-copy p{display:none}.client-linkhub-head .intro-actions{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:7px;margin-top:4px}.client-linkhub-head #requestLinkHubHelpBtn{display:none}.client-linkhub-head .client-linkhub-preview-toggle,.client-linkhub-head #saveLinkHubBtn{min-width:0!important;min-height:40px;padding-left:7px!important;padding-right:7px!important;font-size:8.5px!important}.client-linkhub-tabs{padding:8px 12px}.client-linkhub-workspace{padding:10px}.client-linkhub-workspace :where(input,select,textarea){min-width:0;max-width:100%}
   .status-strip{gap:8px;margin-bottom:10px}
   .stat{padding:11px}
   .stat strong{font-size:20px}
@@ -1082,16 +1085,22 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
 </div>
 </section>
 <section class="section" id="section-linkhub">
-<div class="intro">
+<div class="intro client-linkhub-head">
+<div class="client-linkhub-head-copy"><h2>Manage Your LinkHub</h2>
 <p>Edit every client-safe part of your VMS LinkHub Smart Business Card. Your profile, buttons, social media, guest Wi-Fi, restaurant menu, Visit Us page, and colors all stay connected to the LinkHub VMS manages for you.</p>
+</div>
 <div class="intro-actions">
 <button class="btn" id="requestLinkHubHelpBtn" type="button">Ask VMS for Help</button>
+<button class="btn client-linkhub-preview-toggle" id="toggleClientLinkHubPreviewBtn" type="button" aria-pressed="false">Preview</button>
 <button class="btn primary" id="saveLinkHubBtn" type="button">Save &amp; Publish</button>
+<button class="btn client-linkhub-close" id="closeClientLinkHubWorkspace" type="button" aria-label="Close LinkHub editor">×</button>
 </div>
 </div>
+<div class="client-linkhub-tabs" role="tablist" aria-label="LinkHub editor sections"><button class="client-linkhub-tab active" data-client-linkhub-tab="profile" type="button">Profile</button><button class="client-linkhub-tab" data-client-linkhub-tab="links" type="button">Links &amp; Socials</button><button class="client-linkhub-tab" data-client-linkhub-tab="features" type="button">Features</button><button class="client-linkhub-tab" data-client-linkhub-tab="appearance" type="button">Appearance</button></div>
+<div class="client-linkhub-workspace">
 <div class="linkhub-layout">
 <div class="linkhub-editor">
-<div class="linkhub-panel">
+<div class="linkhub-panel client-linkhub-pane active" data-client-linkhub-pane="profile">
 <div class="linkhub-panel-head">
 <div><h3>Business Profile</h3><p>Control the public identity and contact information on your LinkHub.</p></div>
 <span class="badge green" id="linkHubStatusBadge">Active</span>
@@ -1116,21 +1125,21 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
 </div>
 </div>
 </div>
-<div class="linkhub-panel">
+<div class="linkhub-panel client-linkhub-pane" data-client-linkhub-pane="links">
 <div class="linkhub-panel-head">
 <div><h3>Links &amp; Buttons</h3><p>Add buttons, drag to reorder, or use the three-dot menu to edit each one.</p></div>
 <button class="btn primary small" id="addLinkHubLinkBtn" type="button">+ Add Link</button>
 </div>
 <div class="link-editor-list" id="linkHubLinkList"></div>
 </div>
-<div class="linkhub-panel">
+<div class="linkhub-panel client-linkhub-pane" data-client-linkhub-pane="links">
 <div class="linkhub-panel-head">
 <div><h3>Social Media &amp; Contact Icons</h3><p>Add the compact social icons that appear below your public LinkHub buttons.</p></div>
 <button class="btn primary small" id="addLinkHubSocialBtn" type="button">+ Add Social</button>
 </div>
 <div class="social-list" id="linkHubSocialList"></div>
 </div>
-<div class="linkhub-panel">
+<div class="linkhub-panel client-linkhub-pane" data-client-linkhub-pane="features">
 <div class="linkhub-panel-head"><div><h3>Optional Features</h3><p>Add only the extras that fit your business. Their setup stays hidden until you choose one.</p></div></div>
 <div class="optional-feature-grid">
 <article class="optional-feature-card" id="linkHubWifiFeatureCard">
@@ -1159,7 +1168,7 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
 </article>
 </div>
 </div>
-<div class="linkhub-panel optional-feature-editor" hidden="" id="linkHubWifiFeatureEditor">
+<div class="linkhub-panel optional-feature-editor client-linkhub-pane" data-client-linkhub-pane="features" hidden="" id="linkHubWifiFeatureEditor">
 <input hidden="" id="linkHubWifiEnabled" type="checkbox"/>
 <div class="linkhub-panel-head">
 <div><h3>Guest Wi-Fi Setup</h3><p>Enter the network details that visitors will see after tapping Wi-Fi.</p></div>
@@ -1173,7 +1182,7 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
 <div class="field" style="align-content:end"><label class="check-line"><input id="linkHubWifiReveal" type="checkbox"/><span><strong>Reveal on tap</strong><span>Hide the password until a visitor asks to see it.</span></span></label></div>
 </div>
 </div>
-<div class="linkhub-panel optional-feature-editor" hidden="" id="linkHubMenuFeatureEditor">
+<div class="linkhub-panel optional-feature-editor client-linkhub-pane" data-client-linkhub-pane="features" hidden="" id="linkHubMenuFeatureEditor">
 <input hidden="" id="linkHubMenuEnabled" type="checkbox"/>
 <div class="linkhub-panel-head">
 <div><h3>Restaurant Menu Setup</h3><p>Build the digital menu that appears after visitors tap Menu.</p></div>
@@ -1201,7 +1210,7 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
 </div>
 <div class="menu-builder-list" id="linkHubMenuBuilder"></div>
 </div>
-<div class="linkhub-panel optional-feature-editor" hidden="" id="linkHubVisitFeatureEditor">
+<div class="linkhub-panel optional-feature-editor client-linkhub-pane" data-client-linkhub-pane="features" hidden="" id="linkHubVisitFeatureEditor">
 <input hidden="" id="linkHubVisitEnabled" type="checkbox"/>
 <div class="linkhub-panel-head">
 <div><h3>Visit Us Page Setup</h3><p>Create the location page visitors see after tapping Directions on your LinkHub.</p></div>
@@ -1228,7 +1237,7 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
 </div>
 <div class="note" style="margin-top:10px">Leave any field blank to keep it synchronized with the main LinkHub. Enter a value only when you want this page to use something different.</div>
 </div>
-<div class="linkhub-panel">
+<div class="linkhub-panel client-linkhub-pane" data-client-linkhub-pane="appearance">
 <div class="linkhub-panel-head"><div><h3>Appearance</h3><p>Choose a quick palette or enter exact HEX and RGB colors. The preview updates live.</p></div></div>
 <div class="theme-grid" id="linkHubThemeGrid">
 <button class="theme-choice" data-linkhub-theme="navy" type="button"><div class="theme-swatch sw-navy"></div><span>VMS Navy</span></button>
@@ -1264,10 +1273,12 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
 <button data-linkhub-preview="visit" type="button">Visit Us</button>
 </div>
 <div class="linkhub-phone">
+<div class="linkhub-phone-island" aria-hidden="true"><span></span></div>
 <div class="linkhub-phone-view linkhub-phone-screen active" id="linkHubPreviewScreen"></div>
 <div class="linkhub-phone-view special-screen" id="linkHubWifiScreen"></div>
 <div class="linkhub-phone-view special-screen" id="linkHubMenuScreen"></div>
 <div class="linkhub-phone-view special-screen visit-screen" id="linkHubVisitScreen"></div>
+</div>
 </div>
 </div>
 </div>
@@ -1852,6 +1863,22 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
   function openModal(id){$(id).classList.add('show')}
   function closeModal(id){$(id).classList.remove('show')}
 
+  let clientLinkHubPane='profile';
+  function setClientLinkHubMobilePreview(open=false){
+    const section=$('section-linkhub'),button=$('toggleClientLinkHubPreviewBtn');
+    section?.classList.toggle('mobile-preview-open',!!open);
+    if(button){button.textContent=open?'Back to Editor':'Preview';button.setAttribute('aria-pressed',String(!!open))}
+    const workspace=section?.querySelector('.client-linkhub-workspace');
+    if(workspace)workspace.scrollTop=0;
+  }
+  function setClientLinkHubPane(name,resetScroll=true){
+    clientLinkHubPane=['profile','links','features','appearance'].includes(name)?name:'profile';
+    setClientLinkHubMobilePreview(false);
+    document.querySelectorAll('[data-client-linkhub-tab]').forEach(button=>button.classList.toggle('active',button.dataset.clientLinkhubTab===clientLinkHubPane));
+    document.querySelectorAll('[data-client-linkhub-pane]').forEach(pane=>pane.classList.toggle('active',pane.dataset.clientLinkhubPane===clientLinkHubPane));
+    if(resetScroll){const editor=document.querySelector('#section-linkhub .linkhub-editor');if(editor)editor.scrollTop=0}
+  }
+
   function showSection(name){
     document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
     const target=$('section-'+name);
@@ -1861,6 +1888,7 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
     $('topbarTitle').textContent=sectionTitles[name]||'Client Portal';
     closeDrawer();
     window.scrollTo({top:0,behavior:'smooth'});
+    if(name==='linkhub')requestAnimationFrame(()=>{setClientLinkHubMobilePreview(false);setClientLinkHubPane(clientLinkHubPane,false)});
   }
 
   function openDrawer(){
@@ -2574,6 +2602,9 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
     const b=e.target.closest('button[data-section]');
     if(b)showSection(b.dataset.section);
   });
+  document.querySelector('.client-linkhub-tabs')?.addEventListener('click',e=>{const tab=e.target.closest('[data-client-linkhub-tab]');if(tab)setClientLinkHubPane(tab.dataset.clientLinkhubTab)});
+  $('toggleClientLinkHubPreviewBtn').onclick=()=>setClientLinkHubMobilePreview(!$('section-linkhub').classList.contains('mobile-preview-open'));
+  $('closeClientLinkHubWorkspace').onclick=()=>{setClientLinkHubMobilePreview(false);showSection('home')};
   document.addEventListener('click',e=>{
     const jump=e.target.closest('[data-section-jump]');
     if(jump)showSection(jump.dataset.sectionJump);
