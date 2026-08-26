@@ -1096,7 +1096,7 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
 <button class="btn client-linkhub-close" id="closeClientLinkHubWorkspace" type="button" aria-label="Close LinkHub editor">×</button>
 </div>
 </div>
-<div class="client-linkhub-tabs" role="tablist" aria-label="LinkHub editor sections"><button class="client-linkhub-tab active" data-client-linkhub-tab="profile" type="button">Profile</button><button class="client-linkhub-tab" data-client-linkhub-tab="links" type="button">Links &amp; Socials</button><button class="client-linkhub-tab" data-client-linkhub-tab="features" type="button">Features</button><button class="client-linkhub-tab" data-client-linkhub-tab="appearance" type="button">Appearance</button></div>
+<div class="client-linkhub-tabs" role="tablist" aria-label="LinkHub editor sections"><button class="client-linkhub-tab active" data-client-linkhub-tab="profile" type="button">Profile</button><button class="client-linkhub-tab" data-client-linkhub-tab="links" type="button">Links &amp; Socials</button><button class="client-linkhub-tab" data-client-linkhub-tab="features" type="button">Features</button><button class="client-linkhub-tab" data-client-linkhub-tab="appearance" type="button">Appearance</button><button class="client-linkhub-tab" data-client-linkhub-tab="publish" type="button">Publish &amp; QR</button></div>
 <div class="client-linkhub-workspace">
 <div class="linkhub-layout">
 <div class="linkhub-editor">
@@ -1259,6 +1259,10 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
 </div>
 <span class="color-help">HEX example: #003049 · RGB example: 0, 48, 73</span>
 </div>
+</div>
+<div class="linkhub-panel client-linkhub-pane" data-client-linkhub-pane="publish">
+<div class="linkhub-panel-head"><div><h3>Publish &amp; QR</h3><p>Share your live LinkHub, download its QR code, and view real public activity.</p></div></div>
+<div id="linkHubPublishPanelHost"></div>
 </div>
 <div class="linkhub-preview-wrap">
 <div class="preview-stats">
@@ -1872,7 +1876,7 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
     if(workspace)workspace.scrollTop=0;
   }
   function setClientLinkHubPane(name,resetScroll=true){
-    clientLinkHubPane=['profile','links','features','appearance'].includes(name)?name:'profile';
+    clientLinkHubPane=['profile','links','features','appearance','publish'].includes(name)?name:'profile';
     setClientLinkHubMobilePreview(false);
     document.querySelectorAll('[data-client-linkhub-tab]').forEach(button=>button.classList.toggle('active',button.dataset.clientLinkhubTab===clientLinkHubPane));
     document.querySelectorAll('[data-client-linkhub-pane]').forEach(pane=>pane.classList.toggle('active',pane.dataset.clientLinkhubPane===clientLinkHubPane));

@@ -117,11 +117,8 @@ window.VMS_CONFIG = {
       .vms-linkhub-qr{display:grid;place-items:center;background:#fff;border:1px solid #e1e9ec;border-radius:12px;padding:8px;min-height:132px}.vms-linkhub-qr svg{width:112px!important;height:112px!important;display:block}
       .vms-linkhub-qr small{color:#8b9ca4;font-size:7px;text-align:center;line-height:1.35}
       .vms-linkhub-activity{grid-column:1/-1;border-top:1px solid #edf2f4;padding-top:11px}.vms-linkhub-activity-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:7px}.vms-linkhub-activity-head strong{font-size:10px;color:#003049}.vms-linkhub-activity-head span{font-size:7px;color:#80939c}.vms-linkhub-activity-list{display:grid;gap:6px}.vms-linkhub-activity-row{display:grid;grid-template-columns:28px minmax(0,1fr) auto;align-items:center;gap:8px;padding:7px 8px;border:1px solid #edf2f4;border-radius:9px;background:#fbfcfd}.vms-linkhub-activity-icon{width:28px;height:28px;border-radius:8px;background:#edf5f8;color:#003049;display:grid;place-items:center;font-size:7px;font-weight:950}.vms-linkhub-activity-row strong{font-size:8px;color:#183746;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.vms-linkhub-activity-row small{font-size:7px;color:#84969f;white-space:nowrap}.vms-linkhub-activity-empty{padding:10px;border:1px dashed #d6e1e5;border-radius:9px;color:#78909b;font-size:8px;text-align:center}
-      .vms-linkhub-mobile-publish{display:none}
       @media(max-width:760px){
         .vms-linkhub-share{padding:12px}.vms-linkhub-share-head{display:grid}.vms-linkhub-share-grid{grid-template-columns:1fr}.vms-linkhub-urlrow{grid-template-columns:1fr 1fr}.vms-linkhub-urlrow input{grid-column:1/-1;height:46px;font-size:10px}.vms-linkhub-urlrow .btn{width:100%}.vms-linkhub-share-actions{display:grid;grid-template-columns:1fr}.vms-linkhub-share-actions .btn{width:100%;min-height:46px}.vms-linkhub-qr{min-height:160px}.vms-linkhub-qr svg{width:142px!important;height:142px!important}
-        .vms-linkhub-mobile-publish{display:block;position:sticky;bottom:8px;z-index:15;margin:12px 0 0;padding:8px;background:rgba(255,255,255,.94);border:1px solid #dfe8ec;border-radius:13px;box-shadow:0 12px 30px rgba(0,48,73,.16);backdrop-filter:blur(12px)}
-        .vms-linkhub-mobile-publish button{width:100%;min-height:48px}
       }
     `;
     document.head.appendChild(style);
@@ -230,7 +227,7 @@ window.VMS_CONFIG = {
     if($('vmsLinkHubSharePanel'))return;
     const section=$('section-linkhub');
     if(!section)return;
-    const intro=section.querySelector('.intro');
+    const host=$('linkHubPublishPanelHost');
     const panel=document.createElement('div');
     panel.className='vms-linkhub-share';
     panel.id='vmsLinkHubSharePanel';
@@ -255,12 +252,7 @@ window.VMS_CONFIG = {
         <div class="vms-linkhub-qr" id="vmsLinkHubQr"><small>Loading your LinkHub…</small></div>
         <div class="vms-linkhub-activity"><div class="vms-linkhub-activity-head"><strong>Real LinkHub Activity</strong><span>Public views and clicks only</span></div><div class="vms-linkhub-activity-list" id="vmsLinkHubActivityList"><div class="vms-linkhub-activity-empty">Loading real activity…</div></div></div>
       </div>`;
-    if(intro?.nextSibling)section.insertBefore(panel,intro.nextSibling);else section.prepend(panel);
-
-    const mobile=document.createElement('div');
-    mobile.className='vms-linkhub-mobile-publish';
-    mobile.innerHTML='<button class="btn primary" id="vmsLinkHubMobilePublishBtn" type="button">Publish LinkHub Changes</button>';
-    section.appendChild(mobile);
+    if(host)host.appendChild(panel);else section.appendChild(panel);
 
     $('vmsLinkHubCopyBtn').onclick=async()=>{
       const url=$('vmsLinkHubPublicUrl').value;
@@ -269,7 +261,6 @@ window.VMS_CONFIG = {
     };
     $('vmsLinkHubOpenBtn').onclick=()=>{const url=$('vmsLinkHubPublicUrl').value;if(url)window.open(url,'_blank','noopener')};
     $('vmsLinkHubPublishBtn').onclick=()=>publishCurrentLinkHub(true);
-    $('vmsLinkHubMobilePublishBtn').onclick=()=>publishCurrentLinkHub(true);
     $('vmsLinkHubDownloadQrBtn').onclick=downloadQr;
 
     const native=$('saveLinkHubBtn');
@@ -285,13 +276,11 @@ window.VMS_CONFIG = {
   }
 
   function setPublishControlsBusy(busy){
-    ['vmsLinkHubPublishBtn','vmsLinkHubMobilePublishBtn','saveLinkHubBtn'].forEach(id=>{
+    ['vmsLinkHubPublishBtn','saveLinkHubBtn'].forEach(id=>{
       const button=$(id);if(button)button.disabled=!!busy;
     });
     const main=$('vmsLinkHubPublishBtn');
-    const mobile=$('vmsLinkHubMobilePublishBtn');
     if(main)main.textContent=busy?'Publishing…':'Publish Changes';
-    if(mobile)mobile.textContent=busy?'Publishing…':'Publish LinkHub Changes';
   }
 
   function readCurrentLinkHub(){
@@ -369,7 +358,7 @@ window.VMS_CONFIG = {
     section.addEventListener('input',e=>{if(!e.target.closest('#vmsLinkHubSharePanel'))markDirty()},true);
     section.addEventListener('change',e=>{if(!e.target.closest('#vmsLinkHubSharePanel'))markDirty()},true);
     section.addEventListener('click',e=>{
-      if(e.target.closest('#vmsLinkHubSharePanel,.vms-linkhub-mobile-publish,#saveLinkHubBtn,#requestLinkHubHelpBtn'))return;
+      if(e.target.closest('#vmsLinkHubSharePanel,#saveLinkHubBtn,#requestLinkHubHelpBtn'))return;
       if(e.target.closest('button'))markDirty();
     },true);
   }
