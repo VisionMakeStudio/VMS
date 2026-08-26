@@ -95,12 +95,27 @@ for(const needle of ['/api/linkhub-event','linkhub_view','linkhub_click','activi
 const portalSource=fs.readFileSync(path.join(root,'portal','index.html'),'utf8');
 if(/id="linkHubViews">1,284|id="linkHubClicks">63/.test(portalSource))failures.push('Portal LinkHub still exposes placeholder analytics totals');
 const adminLinkHubSource=fs.readFileSync(path.join(root,'admin','linkhub.html'),'utf8');
-for(const needle of ['<summary>Actions</summary>','linkhub-phone-screen public-page','row-actions-menu'])if(!adminLinkHubSource.includes(needle))failures.push(`Admin LinkHub parity repair missing ${needle}`);
+for(const needle of ['<summary>Actions</summary>','linkhub-phone-screen public-page','linkhub-phone-island','row-actions-menu'])if(!adminLinkHubSource.includes(needle))failures.push(`Admin LinkHub parity repair missing ${needle}`);
 if(adminLinkHubSource.includes('data-link-action="up" type="button"')&&!adminLinkHubSource.includes('Move up</button>'))failures.push('Admin LinkHub still exposes separate row action buttons');
+for(const needle of ['id="publishQr"','../assets/vms-qrcode.js','vms-linkhub-admin-cloud'])if(!adminLinkHubSource.includes(needle))failures.push(`Admin LinkHub live-state repair missing ${needle}`);
+if(adminLinkHubSource.includes("$('hubWifiEnabled').checked=true")||adminLinkHubSource.includes("$('hubMenuEnabled').checked=true"))failures.push('Admin LinkHub plan rules still force optional public features on');
 const linkHubPhase4=fs.readFileSync(path.join(root,'assets','vms-linkhub-phase4.js'),'utf8');
 for(const needle of ['vms-linkhub-style','pendingStyle=null'])if(!linkHubPhase4.includes(needle))failures.push(`LinkHub appearance state repair missing ${needle}`);
+if(linkHubPhase4.includes("attributes:true,attributeFilter:['class','style']"))failures.push('LinkHub observer still resets the Admin modal while scrolling');
 if(!portalSource.includes('save();renderLinkHub();renderActivity();renderNotifications()'))failures.push('Portal LinkHub publish still performs an unsafe full-page redraw');
+for(const needle of ['client-linkhub-workspace','data-client-linkhub-tab="profile"','data-client-linkhub-tab="appearance"','setClientLinkHubPane','closeClientLinkHubWorkspace','toggleClientLinkHubPreviewBtn','setClientLinkHubMobilePreview','mobile-preview-open'])if(!portalSource.includes(needle))failures.push(`Client LinkHub floating workspace missing ${needle}`);
+if(!portalSource.includes('linkhub-phone-island'))failures.push('Client LinkHub iPhone shell marker is missing');
+const finalPolish=fs.readFileSync(path.join(root,'assets','vms-final-polish.css'),'utf8');
+for(const needle of ['aspect-ratio:9/19.5','linkhub-phone-island','outline:3px solid #6f7a80'])if(!finalPolish.includes(needle))failures.push(`Shared LinkHub iPhone shell repair missing ${needle}`);
 if(!linkhubFunction.includes('linear-gradient(${gradientDir},${gradientA},${gradientB})'))failures.push('Public LinkHub gradient renderer is missing');
+for(const needle of ['const pageColor = gradientA && gradientB ? gradientA','--pageBg:${pageColor}','min-height:100dvh','env(safe-area-inset-bottom)','body:before'])if(!linkhubFunction.includes(needle))failures.push(`Public LinkHub full-viewport background repair missing ${needle}`);
+if(linkhubFunction.includes('<meta name="theme-color" content="${bg}"'))failures.push('Public LinkHub is sending an invalid gradient as the mobile browser theme color');
+const legacyPublicLinkhub=fs.readFileSync(path.join(root,'netlify','functions','public-linkhub.mts'),'utf8');
+for(const needle of ['themeColor=hasGradient','--page-bg:${themeColor}','min-height:100dvh','env(safe-area-inset-bottom)','body:before'])if(!legacyPublicLinkhub.includes(needle))failures.push(`Fallback public LinkHub full-viewport repair missing ${needle}`);
+const authCore=fs.readFileSync(path.join(root,'assets','vms-core.js'),'utf8');
+for(const needle of ['capturePortalAuthCallback','finishPortalAuthCallback','verifyOtp({token_hash:callback.tokenHash','exchangeCodeForSession(callback.code)','setSession({'])if(!authCore.includes(needle))failures.push(`Portal mobile magic-link recovery missing ${needle}`);
+const memberMagicLink=fs.readFileSync(path.join(root,'netlify','functions','member-magic-link.mts'),'utf8');
+for(const needle of ['hashedToken','token_hash','auth_callback'])if(!memberMagicLink.includes(needle))failures.push(`Member magic-link first-party callback missing ${needle}`);
 
 for(const accidental of ['promotions.html','marketing.html','intake.mts','marketing-content.mts','public-sales.mts','public-sales (1).mts','service-page.mts','20260820_phase9_public_sales_marketing.sql'])if(fs.existsSync(path.join(root,accidental)))failures.push(`accidental root upload remains: ${accidental}`);
 
