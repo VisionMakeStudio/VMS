@@ -2062,6 +2062,12 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
     target.innerHTML=photoData?`<img src="${photoData}" alt="${esc(businessName)}">`:esc(initials(businessName));
   }
 
+  function linkHubFeatureIcon(kind){
+    if(kind==='wifi')return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 10.5a10.2 10.2 0 0 1 14 0"/><path d="M8 13.5a5.9 5.9 0 0 1 8 0"/><path d="M10.8 16.4a1.9 1.9 0 0 1 2.4 0"/><circle cx="12" cy="19" r=".8" fill="currentColor" stroke="none"/></svg>';
+    if(kind==='menu')return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M7 5h13M7 12h13M7 19h13"/><circle cx="3.5" cy="5" r="1" fill="currentColor" stroke="none"/><circle cx="3.5" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="3.5" cy="19" r="1" fill="currentColor" stroke="none"/></svg>';
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s6-5.2 6-11a6 6 0 1 0-12 0c0 5.8 6 11 6 11z"/><circle cx="12" cy="10" r="2"/></svg>';
+  }
+
   function renderLinkHubMainPreview(){
     const h=state.linkHub,st=linkHubStyle(),screen=$('linkHubPreviewScreen');
     screen.style.setProperty('--lh-bg',st.bg);screen.style.setProperty('--lh-text',st.text);screen.style.setProperty('--lh-button',st.button);screen.style.setProperty('--lh-button-text',st.buttonText);
@@ -2070,14 +2076,20 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
     if(h.email)contacts.push({label:'Email',url:`mailto:${h.email}`});
     if(h.website)contacts.push({label:'Website',url:normalizeUrl(h.website)});
     const maps=directionsHref(h.address,h.mapUrl);if(maps!=='#')contacts.push(h.visit?.enabled?{label:'Directions',special:'visit'}:{label:'Directions',url:maps});
-    const features=[];if(h.wifi?.enabled)features.push({kind:'wifi',label:'Wi-Fi',icon:'⌁'});if(h.restaurant?.enabled)features.push({kind:'menu',label:'Menu',icon:'☷'});if(h.specialFeatureOrder==='menu-wifi')features.sort((a,b)=>a.kind==='menu'?-1:b.kind==='menu'?1:0);
+    const features=[];
+    if(h.wifi?.enabled)features.push({kind:'wifi',label:'Wi-Fi'});
+    if(h.restaurant?.enabled)features.push({kind:'menu',label:'Menu'});
+    if(h.visit?.enabled)features.push({kind:'visit',label:'Visit Us'});
+    if(h.specialFeatureOrder==='menu-wifi')features.sort((a,b)=>a.kind==='menu'?-1:b.kind==='menu'?1:0);
     const links=(h.links||[]).filter(l=>l.visible),socials=(h.socials||[]).filter(s=>s.visible);
+    const business=String(h.businessName||'Your Business').trim(),title=String(h.title||'').trim(),bio=String(h.bio||'').trim();
+    const subtitle=[title&&title.toLowerCase()!==business.toLowerCase()?title:'',bio].filter(Boolean).join(' · ');
     screen.innerHTML=`
       <div class="linkhub-phone-photo" id="linkHubPreviewPhoto">${esc(initials(h.businessName))}</div>
-      <h3>${esc(h.businessName||'Your Business')}</h3>
-      <p>${esc([h.title,h.bio].filter(Boolean).join(' · ')||'Everything your customers need, all in one place.')}</p>
+      <h3>${esc(business)}</h3>
+      ${subtitle?`<p>${esc(subtitle)}</p>`:''}
       <div class="linkhub-contact">${contacts.map(c=>c.special?`<button data-preview-special="${esc(c.special)}" type="button">${esc(c.label)}</button>`:`<button data-preview-url="${esc(c.url)}" type="button">${esc(c.label)}</button>`).join('')}</div>
-      ${features.length?`<div class="linkhub-public-features">${features.map(f=>`<button class="linkhub-public-feature" data-preview-special="${f.kind}" type="button"><i>${f.icon}</i><span>${f.label}</span></button>`).join('')}</div>`:''}
+      ${features.length?`<div class="linkhub-public-features">${features.map(f=>`<button class="linkhub-public-feature" data-preview-special="${f.kind}" type="button"><i>${linkHubFeatureIcon(f.kind)}</i><span>${f.label}</span></button>`).join('')}</div>`:''}
       <div class="linkhub-public-links">${links.length?links.map(l=>h.visit?.enabled&&String(l.type).toLowerCase()==='directions'?`<button class="linkhub-public-link" data-preview-special="visit" type="button">${esc(l.label)}</button>`:`<button class="linkhub-public-link" data-preview-url="${esc(normalizeUrl(l.url)||'#')}" type="button">${esc(l.label)}</button>`).join(''):'<div class="linkhub-public-empty">Add a link to begin building your Smart Business Card.</div>'}</div>
       ${socials.length?`<div class="linkhub-public-socials">${socials.map(s=>`<button class="linkhub-public-social" data-preview-url="${esc(socialHref(s.platform,s.url))}" title="${esc(s.label||s.platform)}" type="button">${esc(socialGlyph(s.platform))}</button>`).join('')}</div>`:''}
       <div class="linkhub-powered">VMS LinkHub · Smart Business Card by Vision Make Studio</div>`;
@@ -2355,12 +2367,27 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
     h.visit={...h.visit,enabled:$('linkHubVisitEnabled').checked,name:$('linkHubVisitName').value.trim()||h.businessName||'Your Business',category:$('linkHubVisitCategory').value.trim(),bio:$('linkHubVisitBio').value.trim(),phone:$('linkHubVisitPhone').value.trim(),email:$('linkHubVisitEmail').value.trim(),address:$('linkHubVisitAddress').value.trim(),mapsUrl:$('linkHubVisitMaps').value.trim(),hours:normalizeVisitHours(h.visit?.hours)};
   }
 
-  function saveLinkHub(){
+  async function saveLinkHub(){
     syncLinkHubFromForm();
     if(!state.linkHub.businessName){toast('Add your business or display name');$('linkHubBusinessName').focus();return}
-    state.activity.unshift({title:'LinkHub updated by client',detail:'Profile, buttons, social icons, Wi-Fi, menu, Visit Us, or appearance changes were published.',at:nowLabel()});
-    addNotification({category:'Activity',icon:'LH',title:'LinkHub changes published',detail:'Your Smart Business Card is up to date.',section:'linkhub',unread:false});
-    save();bridgeEvent('client_linkhub_updated',{...state.linkHub});renderAll();toast('Your LinkHub was saved and published');
+    const button=$('saveLinkHubBtn'),oldLabel=button?.textContent||'Save & Publish';
+    save();
+    if(button){button.disabled=true;button.textContent='Publishing…'}
+    try{
+      const publish=window.VMSLinkHubCloud?.publishPortal;
+      if(typeof publish!=='function')throw new Error('LinkHub publishing is still loading. Refresh the portal and try again.');
+      const snapshot=JSON.parse(JSON.stringify(state.linkHub));
+      await publish(snapshot);
+      state.activity.unshift({title:'LinkHub updated by client',detail:'Profile, buttons, social icons, Wi-Fi, menu, Visit Us, or appearance changes were published.',at:nowLabel()});
+      addNotification({category:'Activity',icon:'LH',title:'LinkHub changes published',detail:'Your Smart Business Card is up to date.',section:'linkhub',unread:false});
+      bridgeEvent('client_linkhub_updated',{...state.linkHub});
+      save();renderAll();toast('Your LinkHub was saved and published');
+    }catch(err){
+      console.error('VMS LinkHub publish failed',err);
+      toast(err?.message||'Could not publish your LinkHub. Your edits are still saved in the portal.');
+    }finally{
+      if(button){button.disabled=false;button.textContent=oldLabel}
+    }
   }
 
   function openLinkHubLinkEditor(linkId=null){

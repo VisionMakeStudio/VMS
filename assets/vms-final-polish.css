@@ -477,3 +477,18 @@ html.vms-portal-surface .linkhub-phone .linkhub-public-social svg{
   width:22px!important;
   height:22px!important;
 }
+
+/* LinkHub compact utility icons — Wi-Fi / Menu / Visit Us stay small inside phone previews. */
+html.vms-admin-surface .manage-preview :where(.public-feature,.linkhub-public-feature) :where(i,span):has(svg),
+html.vms-portal-surface .linkhub-phone .linkhub-public-feature i{
+  width:38px!important;
+  height:38px!important;
+  display:grid!important;
+  place-items:center!important;
+}
+html.vms-admin-surface .manage-preview :where(.public-feature,.linkhub-public-feature) svg,
+html.vms-portal-surface .linkhub-phone .linkhub-public-feature svg{
+  width:16px!important;
+  height:16px!important;
+  display:block!important;
+}
