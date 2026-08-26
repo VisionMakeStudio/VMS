@@ -90,6 +90,10 @@ for(const forbidden of ['Smart QR monthly','setupPrice:99'])if(allProductText.in
 
 const funcs=['ai-audit.mts','analytics.mts','analytics-snapshot.mts','audits.mts','automation-events-runner.mts','automation-runner.mts','automations.mts','billing-account.mts','billing-checkout.mts','client-account.mts','client-event.mts','health.mts','intake.mts','leads.mts','linkhub.mts','marketing-content.mts','notification-preferences.mts','notify.mts','onboarding.mts','public-sales.mts','qr.mts','qr-redirect.mts','requests.mts','review-lookup.mts','schedule.mts','service-page.mts','stripe-webhook.mts'];
 for(const f of funcs)if(!fs.existsSync(path.join(root,'netlify','functions',f)))failures.push(`Netlify function missing ${f}`);
+const linkhubFunction=fs.readFileSync(path.join(root,'netlify','functions','linkhub.mts'),'utf8');
+for(const needle of ['/api/linkhub-event','linkhub_view','linkhub_click','activity_events'])if(!linkhubFunction.includes(needle))failures.push(`LinkHub real analytics bridge missing ${needle}`);
+const portalSource=fs.readFileSync(path.join(root,'portal','index.html'),'utf8');
+if(/id="linkHubViews">1,284|id="linkHubClicks">63/.test(portalSource))failures.push('Portal LinkHub still exposes placeholder analytics totals');
 
 for(const accidental of ['promotions.html','marketing.html','intake.mts','marketing-content.mts','public-sales.mts','public-sales (1).mts','service-page.mts','20260820_phase9_public_sales_marketing.sql'])if(fs.existsSync(path.join(root,accidental)))failures.push(`accidental root upload remains: ${accidental}`);
 
