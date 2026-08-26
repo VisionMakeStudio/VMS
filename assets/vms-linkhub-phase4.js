@@ -13,6 +13,7 @@
   const ACTIVE_BILLING=new Set(['active','paid','trialing','gifted','comped']);
   const ADMIN_STORAGE='vms_linkhub_admin_v2';
   const PORTAL_STORAGE='vms_client_portal_v3';
+  const PORTAL_STORAGE_FALLBACK='vms_client_portal_v4';
   const CLOUD_BOOT_KEY='vms_phase4_linkhub_cloud_boot';
   const gradientDefs={
     midnight:{label:'Midnight',a:'#08283D',b:'#176B87',dir:'145deg'},
@@ -65,7 +66,12 @@
     $('#vmsP4ApplyGradient')?.addEventListener('click',()=>setGradient({a:$('#vmsP4GradA').value,b:$('#vmsP4GradB').value,dir:$('#vmsP4GradDir').value,accent:$('#vmsP4Accent').value}));
   }
   function currentAdminHub(){try{const name=$('#hubClient')?.value,all=JSON.parse(localStorage.getItem(ADMIN_STORAGE)||'[]');return Array.isArray(all)?all.find(h=>h.client===name):null}catch{return null}}
-  function currentPortalHub(){try{return JSON.parse(localStorage.getItem(PORTAL_STORAGE)||'{}')?.linkHub||null}catch{return null}}
+  function currentPortalHub(){
+    for(const key of [PORTAL_STORAGE,PORTAL_STORAGE_FALLBACK]){
+      try{const h=JSON.parse(localStorage.getItem(key)||'{}')?.linkHub;if(h&&typeof h==='object')return h}catch{}
+    }
+    return null
+  }
   function localHub(){return isAdmin?currentAdminHub():currentPortalHub()}
   function setGradient(g){if(!/^#[0-9a-f]{6}$/i.test(g.a)||!/^#[0-9a-f]{6}$/i.test(g.b))return toast('Use 6-digit HEX colors for the gradient.','error');const hub=localHub()||{};pendingStyle={...(hub.style||{}),gradient:{a:g.a.toUpperCase(),b:g.b.toUpperCase(),dir:g.dir||'145deg'},accent:/^#[0-9a-f]{6}$/i.test(g.accent||'')?g.accent.toUpperCase():g.b.toUpperCase()};hub.style=pendingStyle;persistLocalHub(hub);applyGradient(hub.style);toast('Gradient applied — save to publish it.')}
   function persistLocalHub(hub){try{if(isAdmin){const name=$('#hubClient')?.value,all=JSON.parse(localStorage.getItem(ADMIN_STORAGE)||'[]');if(Array.isArray(all)){const i=all.findIndex(x=>x.client===name);if(i>=0){all[i]={...all[i],...hub};localStorage.setItem(ADMIN_STORAGE,JSON.stringify(all))}}}else{const st=JSON.parse(localStorage.getItem(PORTAL_STORAGE)||'{}');st.linkHub={...(st.linkHub||{}),...hub};localStorage.setItem(PORTAL_STORAGE,JSON.stringify(st))}}catch{}}
@@ -80,6 +86,7 @@
     await loadEntitlements(client.id);
     if(!ent.base)throw new Error('LinkHub is not included on this account yet.');
     let h=snapshot&&typeof snapshot==='object'?JSON.parse(JSON.stringify(snapshot)):currentPortalHub();
+    if(!h&&page){h=portalFromCanonical(page.draft_data||page.published_data||{})}
     if(!h)throw new Error('Could not read your current LinkHub changes. Refresh the portal and try again.');
     if(pendingStyle){h.style=pendingStyle;persistLocalHub(h)}
     const canonical=canonicalFromPortal(h);
