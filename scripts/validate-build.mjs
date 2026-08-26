@@ -94,6 +94,13 @@ const linkhubFunction=fs.readFileSync(path.join(root,'netlify','functions','link
 for(const needle of ['/api/linkhub-event','linkhub_view','linkhub_click','activity_events'])if(!linkhubFunction.includes(needle))failures.push(`LinkHub real analytics bridge missing ${needle}`);
 const portalSource=fs.readFileSync(path.join(root,'portal','index.html'),'utf8');
 if(/id="linkHubViews">1,284|id="linkHubClicks">63/.test(portalSource))failures.push('Portal LinkHub still exposes placeholder analytics totals');
+const adminLinkHubSource=fs.readFileSync(path.join(root,'admin','linkhub.html'),'utf8');
+for(const needle of ['<summary>Actions</summary>','linkhub-phone-screen public-page','row-actions-menu'])if(!adminLinkHubSource.includes(needle))failures.push(`Admin LinkHub parity repair missing ${needle}`);
+if(adminLinkHubSource.includes('data-link-action="up" type="button"')&&!adminLinkHubSource.includes('Move up</button>'))failures.push('Admin LinkHub still exposes separate row action buttons');
+const linkHubPhase4=fs.readFileSync(path.join(root,'assets','vms-linkhub-phase4.js'),'utf8');
+for(const needle of ['vms-linkhub-style','pendingStyle=null'])if(!linkHubPhase4.includes(needle))failures.push(`LinkHub appearance state repair missing ${needle}`);
+if(!portalSource.includes('save();renderLinkHub();renderActivity();renderNotifications()'))failures.push('Portal LinkHub publish still performs an unsafe full-page redraw');
+if(!linkhubFunction.includes('linear-gradient(${gradientDir},${gradientA},${gradientB})'))failures.push('Public LinkHub gradient renderer is missing');
 
 for(const accidental of ['promotions.html','marketing.html','intake.mts','marketing-content.mts','public-sales.mts','public-sales (1).mts','service-page.mts','20260820_phase9_public_sales_marketing.sql'])if(fs.existsSync(path.join(root,accidental)))failures.push(`accidental root upload remains: ${accidental}`);
 
