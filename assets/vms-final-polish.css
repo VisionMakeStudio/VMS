@@ -492,3 +492,61 @@ html.vms-portal-surface .linkhub-phone .linkhub-public-feature svg{
   height:16px!important;
   display:block!important;
 }
+
+/* LinkHub preview parity — Admin and Client Portal share one real iPhone shell. */
+html.vms-admin-surface .manage-preview .linkhub-phone,
+html.vms-portal-surface .linkhub-phone{
+  position:relative!important;
+  width:100%!important;
+  min-height:0!important;
+  aspect-ratio:9/19.5!important;
+  border:8px solid #111c22!important;
+  outline:3px solid #6f7a80!important;
+  outline-offset:0!important;
+  border-radius:48px!important;
+  background:#111c22!important;
+  overflow:hidden!important;
+  box-shadow:
+    0 0 0 2px #26343a,
+    0 20px 48px rgba(0,48,73,.18)!important;
+}
+html.vms-admin-surface .manage-preview .linkhub-phone-screen,
+html.vms-portal-surface .linkhub-phone > .linkhub-phone-view{
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  padding:58px 20px 28px!important;
+  border-radius:39px!important;
+  overflow-y:auto!important;
+  scrollbar-width:none!important;
+}
+html.vms-admin-surface .manage-preview .linkhub-phone-screen::-webkit-scrollbar,
+html.vms-portal-surface .linkhub-phone > .linkhub-phone-view::-webkit-scrollbar{
+  display:none!important;
+}
+html.vms-admin-surface .manage-preview .linkhub-phone-island,
+html.vms-portal-surface .linkhub-phone-island{
+  position:absolute!important;
+  z-index:12!important;
+  top:16px!important;
+  left:50%!important;
+  width:86px!important;
+  height:25px!important;
+  transform:translateX(-50%)!important;
+  border-radius:999px!important;
+  background:#020609!important;
+  box-shadow:inset 0 -1px 0 rgba(255,255,255,.04)!important;
+  pointer-events:none!important;
+}
+html.vms-admin-surface .manage-preview .linkhub-phone-island span,
+html.vms-portal-surface .linkhub-phone-island span{
+  position:absolute!important;
+  top:50%!important;
+  right:9px!important;
+  width:7px!important;
+  height:7px!important;
+  transform:translateY(-50%)!important;
+  border-radius:50%!important;
+  background:#0c2d48!important;
+  box-shadow:inset 0 0 0 2px #183d5a!important;
+}

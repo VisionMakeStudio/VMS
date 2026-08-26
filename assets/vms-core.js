@@ -5,6 +5,37 @@
   const isLocal=location.protocol==='file:';
   const ADMIN_FAST_NAV_KEY='vms_admin_fast_nav';
   const FINAL_POLISH_VERSION='20260824-billing-auth-fix';
+  const PORTAL_AUTH_TYPES=new Set(['email','invite','recovery','email_change']);
+
+  function isPortalLocation(){
+    const path=(location.pathname||'/').toLowerCase();
+    return path==='/portal'||path==='/portal/'||path.startsWith('/portal/');
+  }
+
+  /* Capture the auth payload synchronously, before any Portal router can turn
+     the callback fragment into a UI section or replace it with #home. */
+  function capturePortalAuthCallback(){
+    if(!isPortalLocation())return null;
+    try{
+      const url=new URL(location.href);
+      const query=url.searchParams;
+      const fragment=new URLSearchParams((url.hash||'').replace(/^#/,''));
+      const callback={
+        tokenHash:query.get('token_hash')||'',
+        type:query.get('type')||'',
+        code:query.get('code')||'',
+        accessToken:fragment.get('access_token')||'',
+        refreshToken:fragment.get('refresh_token')||'',
+        error:query.get('error_description')||query.get('error')||fragment.get('error_description')||fragment.get('error')||''
+      };
+      return Object.values(callback).some(Boolean)?callback:null;
+    }catch(error){
+      console.warn('VMS Portal auth callback capture skipped',error);
+      return null;
+    }
+  }
+
+  const PORTAL_AUTH_CALLBACK=capturePortalAuthCallback();
 
   function surfaceClass(){
     const path=(location.pathname||'/').toLowerCase();
@@ -194,6 +225,68 @@
     return session;
   }
 
+  function cleanPortalAuthCallbackUrl(){
+    if(!isPortalLocation())return;
+    try{
+      const url=new URL(location.href);
+      for(const key of ['token_hash','type','code','sb_flow_id','auth_callback','error','error_code','error_description'])url.searchParams.delete(key);
+      const search=url.searchParams.toString();
+      history.replaceState(history.state||null,'',url.pathname+(search?'?'+search:'')+'#home');
+    }catch(error){
+      console.warn('VMS Portal auth callback cleanup skipped',error);
+    }
+  }
+
+  async function waitForPortalSession(sb,timeout=5000){
+    const deadline=Date.now()+timeout;
+    while(Date.now()<deadline){
+      try{
+        const {data:{session}}=await sb.auth.getSession();
+        if(session)return session;
+      }catch{}
+      await new Promise(resolve=>setTimeout(resolve,100));
+    }
+    return null;
+  }
+
+  async function finishPortalAuthCallback(sb){
+    const callback=PORTAL_AUTH_CALLBACK;
+    if(!callback)return null;
+    if(callback.error)throw new Error(callback.error);
+
+    /* Supabase may already have consumed an implicit fragment while the client
+       initialized. Prefer that session before attempting a second exchange. */
+    let session=null;
+    try{({data:{session}}=await sb.auth.getSession())}catch{}
+
+    if(!session&&callback.tokenHash){
+      const type=PORTAL_AUTH_TYPES.has(callback.type)?callback.type:'email';
+      const {data,error}=await sb.auth.verifyOtp({token_hash:callback.tokenHash,type});
+      if(error)throw error;
+      session=data?.session||null;
+    }
+
+    if(!session&&callback.code){
+      const {data,error}=await sb.auth.exchangeCodeForSession(callback.code);
+      if(error)throw error;
+      session=data?.session||null;
+    }
+
+    if(!session&&callback.accessToken&&callback.refreshToken){
+      const {data,error}=await sb.auth.setSession({
+        access_token:callback.accessToken,
+        refresh_token:callback.refreshToken
+      });
+      if(error)throw error;
+      session=data?.session||null;
+    }
+
+    if(!session)session=await waitForPortalSession(sb);
+    if(!session)throw new Error('The secure sign-in link could not be completed.');
+    cleanPortalAuthCallbackUrl();
+    return session;
+  }
+
   function bindAdminFastNavigation(){
     if(document.documentElement.dataset.vmsFastNavBound==='1')return;
     document.documentElement.dataset.vmsFastNavBound='1';
@@ -365,7 +458,17 @@
         :portalFail('configuration');
     }
 
-    const session=await getSessionWithNavigationGrace(sb,kind);
+    let callbackSession=null;
+    if(kind==='client'&&PORTAL_AUTH_CALLBACK){
+      try{
+        callbackSession=await finishPortalAuthCallback(sb);
+      }catch(e){
+        console.error('VMS Portal magic-link completion failed',e);
+        return portalFail('magic_link_failed');
+      }
+    }
+
+    const session=callbackSession||await getSessionWithNavigationGrace(sb,kind);
 
     if(!session){
       return kind==='admin'
