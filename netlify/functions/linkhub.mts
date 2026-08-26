@@ -65,7 +65,7 @@ async function sbRest(path: string, options: {
 
 async function sbAdmin(path: string, options: { method?: string; body?: any; prefer?: string } = {}) {
   const { url } = supabasePublicEnv();
-  const secret = env("SUPABASE_SERVICE_ROLE_KEY");
+  const secret = env("SUPABASE_SECRET_KEY") || env("SUPABASE_SERVICE_ROLE_KEY");
   if (!secret) throw Object.assign(new Error("LinkHub analytics is not configured."), { status: 503 });
   const res = await fetch(`${url}/rest/v1/${path}`, {
     method: options.method || "GET",
