@@ -194,7 +194,11 @@ function formatHours(hours: any) {
 
 function renderPublic(data: any, slug: string) {
   const style = data?.style || {};
-  const bg = safeHex(style.bg, "#003049");
+  const gradient = style?.gradient;
+  const gradientA = safeHex(gradient?.a, "");
+  const gradientB = safeHex(gradient?.b, "");
+  const gradientDir = /^(?:45|90|145|180)deg$/.test(String(gradient?.dir || "")) ? String(gradient.dir) : "145deg";
+  const bg = gradientA && gradientB ? `linear-gradient(${gradientDir},${gradientA},${gradientB})` : safeHex(style.bg, "#003049");
   const text = safeHex(style.text, "#FFFFFF");
   const button = safeHex(style.button, "#FFFFFF");
   const buttonText = safeHex(style.buttonText, "#003049");
