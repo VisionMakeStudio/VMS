@@ -36,7 +36,8 @@ async function generateMagicLink(supabaseUrl:string,secret:string,email:string,r
   if(!response.ok)throw new Error(clean(data?.msg||data?.message||`Magic-link generation failed (${response.status}).`,500));
   const actionLink=clean(data?.action_link||data?.properties?.action_link,8000);
   if(!actionLink)throw new Error('Magic-link generation returned no secure link.');
-  return actionLink;
+  const hashedToken=clean(data?.hashed_token||data?.properties?.hashed_token,8000);
+  return {actionLink,hashedToken};
 }
 
 function brandedEmail({actionLink,businessName,contactName,origin}:{actionLink:string,businessName:string,contactName:string,origin:string}){
@@ -87,7 +88,18 @@ export default async (req:Request)=>{
     /* Avoid account enumeration: unknown/blocked addresses receive the same public response. */
     if(!client||blocked)return json({ok:true,message:'If this email is linked to a VMS client account, a secure sign-in link will arrive shortly.'});
 
-    const actionLink=await generateMagicLink(supabaseUrl,secret,email,redirectTo);
+    const generated=await generateMagicLink(supabaseUrl,secret,email,redirectTo);
+    /* A first-party token-hash callback avoids the fragile mobile redirect
+       handoff through a Supabase URL. Keep the generated action link as a safe
+       fallback for projects that do not return hashed_token. */
+    let actionLink=generated.actionLink;
+    if(generated.hashedToken){
+      const callbackUrl=new URL('/portal/',requestOrigin);
+      callbackUrl.searchParams.set('token_hash',generated.hashedToken);
+      callbackUrl.searchParams.set('type','email');
+      callbackUrl.searchParams.set('auth_callback','1');
+      actionLink=callbackUrl.href;
+    }
     const html=brandedEmail({
       actionLink,
       businessName:clean(client.business_name,180),
