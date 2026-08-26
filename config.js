@@ -57,7 +57,7 @@ window.VMS_CONFIG = {
       whatsapp:`<svg ${common}><path d="M20 11.7a8 8 0 0 1-11.8 7l-4 .9 1-3.9A8 8 0 1 1 20 11.7Z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9.1 7.8c.3-.4.6-.3.9-.1l1.1 1.4c.2.3.2.5 0 .8l-.6.8c.8 1.6 1.8 2.6 3.5 3.4l.8-.7c.3-.2.5-.2.8 0l1.3 1c.3.2.4.5.2.8-.5.9-1.4 1.5-2.4 1.4-3.3-.4-7-4-7.3-7.4-.1-.5.4-1.1.7-1.4Z" fill="currentColor"/></svg>`,
       tiktok:`<svg ${common}><path d="M14.2 3v11.3a4.3 4.3 0 1 1-3.3-4.2v2.7a1.8 1.8 0 1 0 .8 1.5V3h2.5Zm0 0c.6 2.4 2.1 3.8 4.5 4.1v2.6c-2-.1-3.5-.8-4.5-1.8V3Z" fill="currentColor"/></svg>`,
       youtube:`<svg ${common}><rect x="2.8" y="6" width="18.4" height="12" rx="4" fill="currentColor"/><path d="m10 9 6 3-6 3V9Z" fill="white"/></svg>`,
-      x:`<svg ${common}><path d="M5 4 19 20M19 4 5 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>`,
+      x:`<svg ${common} fill="currentColor"><path d="M18.6 3H22l-7.4 8.5L23.3 21h-6.8l-5.3-7-6.1 7H1.7l7.9-9.1L1.3 3h7l4.8 6.4L18.6 3zm-1.2 16.3h1.9L7.3 4.6H5.2l12.2 14.7z"/></svg>`,
       linkedin:`<svg ${common}><rect x="4" y="9" width="3.3" height="10" rx=".6" fill="currentColor"/><circle cx="5.65" cy="5.7" r="1.8" fill="currentColor"/><path d="M10 9h3.2v1.4c.8-1.1 1.9-1.7 3.4-1.7 2.8 0 3.9 1.8 3.9 5V19h-3.3v-4.7c0-1.7-.4-2.8-1.9-2.8-1.7 0-2.1 1.3-2.1 3V19H10V9Z" fill="currentColor"/></svg>`,
       email:`<svg ${common}><rect x="3" y="5.5" width="18" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m4.5 7 7.5 6 7.5-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>`,
       phone:`<svg ${common}><path d="M6.2 3.8 9 3l2 4.6-1.8 1.3c1.1 2.4 2.6 3.9 5 5l1.3-1.8 4.6 2-.8 2.8c-.3 1.1-1.3 1.8-2.4 1.7-6.5-.8-11.8-6-12.5-12.5-.1-1.1.7-2.1 1.8-2.3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>`,
@@ -116,6 +116,7 @@ window.VMS_CONFIG = {
       #vmsLinkHubPublishBtn{background:#003049;color:#fff;border-color:#003049}
       .vms-linkhub-qr{display:grid;place-items:center;background:#fff;border:1px solid #e1e9ec;border-radius:12px;padding:8px;min-height:132px}.vms-linkhub-qr svg{width:112px!important;height:112px!important;display:block}
       .vms-linkhub-qr small{color:#8b9ca4;font-size:7px;text-align:center;line-height:1.35}
+      .vms-linkhub-activity{grid-column:1/-1;border-top:1px solid #edf2f4;padding-top:11px}.vms-linkhub-activity-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:7px}.vms-linkhub-activity-head strong{font-size:10px;color:#003049}.vms-linkhub-activity-head span{font-size:7px;color:#80939c}.vms-linkhub-activity-list{display:grid;gap:6px}.vms-linkhub-activity-row{display:grid;grid-template-columns:28px minmax(0,1fr) auto;align-items:center;gap:8px;padding:7px 8px;border:1px solid #edf2f4;border-radius:9px;background:#fbfcfd}.vms-linkhub-activity-icon{width:28px;height:28px;border-radius:8px;background:#edf5f8;color:#003049;display:grid;place-items:center;font-size:7px;font-weight:950}.vms-linkhub-activity-row strong{font-size:8px;color:#183746;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.vms-linkhub-activity-row small{font-size:7px;color:#84969f;white-space:nowrap}.vms-linkhub-activity-empty{padding:10px;border:1px dashed #d6e1e5;border-radius:9px;color:#78909b;font-size:8px;text-align:center}
       .vms-linkhub-mobile-publish{display:none}
       @media(max-width:760px){
         .vms-linkhub-share{padding:12px}.vms-linkhub-share-head{display:grid}.vms-linkhub-share-grid{grid-template-columns:1fr}.vms-linkhub-urlrow{grid-template-columns:1fr 1fr}.vms-linkhub-urlrow input{grid-column:1/-1;height:46px;font-size:10px}.vms-linkhub-urlrow .btn{width:100%}.vms-linkhub-share-actions{display:grid;grid-template-columns:1fr}.vms-linkhub-share-actions .btn{width:100%;min-height:46px}.vms-linkhub-qr{min-height:160px}.vms-linkhub-qr svg{width:142px!important;height:142px!important}
@@ -176,6 +177,18 @@ window.VMS_CONFIG = {
     if(lastPublishError)setStatus(lastPublishError,'error');
     else if(published)setStatus('Published','live');
     else setStatus('Not published yet');
+    const analytics=linkhubInfo.analytics||{views:0,clicks:0,recent:[]};
+    for(const key of [PORTAL_STORAGE,'vms_client_portal_v3']){
+      try{const saved=JSON.parse(localStorage.getItem(key)||'null');if(saved?.linkHub){saved.linkHub.views=Number(analytics.views||0);saved.linkHub.clicks=Number(analytics.clicks||0);localStorage.setItem(key,JSON.stringify(saved))}}catch{}
+    }
+    const views=$('linkHubViews'),clicks=$('linkHubClicks');
+    if(views)views.textContent=Number(analytics.views||0).toLocaleString();
+    if(clicks)clicks.textContent=Number(analytics.clicks||0).toLocaleString();
+    const list=$('vmsLinkHubActivityList');
+    if(list){
+      const recent=Array.isArray(analytics.recent)?analytics.recent:[];
+      list.innerHTML=recent.length?recent.slice(0,12).map(event=>`<div class="vms-linkhub-activity-row"><div class="vms-linkhub-activity-icon">${event.type==='view'?'VIEW':'CLICK'}</div><strong>${esc(event.label||(event.type==='view'?'Public LinkHub viewed':'LinkHub action clicked'))}</strong><small>${event.at?new Date(event.at).toLocaleString([], {month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):''}</small></div>`).join(''):'<div class="vms-linkhub-activity-empty">No real LinkHub activity yet. New public views and clicks will appear here.</div>';
+    }
     renderQr(linkhubInfo.url||'');
   }
 
@@ -240,6 +253,7 @@ window.VMS_CONFIG = {
           </div>
         </div>
         <div class="vms-linkhub-qr" id="vmsLinkHubQr"><small>Loading your LinkHub…</small></div>
+        <div class="vms-linkhub-activity"><div class="vms-linkhub-activity-head"><strong>Real LinkHub Activity</strong><span>Public views and clicks only</span></div><div class="vms-linkhub-activity-list" id="vmsLinkHubActivityList"><div class="vms-linkhub-activity-empty">Loading real activity…</div></div></div>
       </div>`;
     if(intro?.nextSibling)section.insertBefore(panel,intro.nextSibling);else section.prepend(panel);
 
@@ -261,7 +275,12 @@ window.VMS_CONFIG = {
     const native=$('saveLinkHubBtn');
     if(native){
       native.textContent='Publish Changes';
-      native.addEventListener('click',()=>setTimeout(()=>publishCurrentLinkHub(false),0));
+      native.addEventListener('click',()=>setTimeout(()=>{
+        // Phase 4 owns the Portal publish flow when it is available. Do not run
+        // this older API publisher a second time after the same click.
+        if(typeof window.VMSLinkHubCloud?.publishPortal==='function')return;
+        publishCurrentLinkHub(false);
+      },0));
     }
   }
 
@@ -276,10 +295,13 @@ window.VMS_CONFIG = {
   }
 
   function readCurrentLinkHub(){
-    try{
-      const state=JSON.parse(localStorage.getItem(PORTAL_STORAGE)||'null');
-      return state?.linkHub&&typeof state.linkHub==='object'?state.linkHub:null;
-    }catch{return null}
+    for(const key of [PORTAL_STORAGE,'vms_client_portal_v3']){
+      try{
+        const state=JSON.parse(localStorage.getItem(key)||'null');
+        if(state?.linkHub&&typeof state.linkHub==='object')return state.linkHub;
+      }catch{}
+    }
+    return null;
   }
 
   async function publishCurrentLinkHub(runNativeSave){
@@ -293,7 +315,13 @@ window.VMS_CONFIG = {
         if(!native||typeof native.onclick!=='function')throw new Error('LinkHub save control is unavailable. Refresh the Portal and try again.');
         // Run the Portal's existing synchronous save routine directly. This updates
         // localStorage with the latest form values without depending on a second event.
-        native.onclick.call(native,new Event('click'));
+        const nativeResult=native.onclick.call(native,new Event('click'));
+        if(typeof window.VMSLinkHubCloud?.publishPortal==='function'){
+          await nativeResult;
+          lastPublishError='';
+          setStatus('Published','live');
+          return;
+        }
         await new Promise(resolve=>setTimeout(resolve,0));
       }
       const data=readCurrentLinkHub();
