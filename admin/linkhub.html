@@ -228,6 +228,10 @@ border:8px solid #fff;outline:1px solid #dce5e9;border-radius:5px}
               <div class="section-head"><strong>Buttons & Links</strong><button class="btn small primary" id="addLinkBtn" type="button">+ Add Link</button></div>
               <div class="section-body"><div class="link-list" id="linkList"></div></div>
             </div>
+            <div class="section-card">
+              <div class="section-head"><strong>Social Icons</strong><button class="btn small primary" id="addSocialBtn" type="button">+ Add Social</button></div>
+              <div class="section-body"><div class="link-list" id="socialList"></div></div>
+            </div>
           </div>
 
           <div class="manage-pane" data-pane-content="appearance">
@@ -261,8 +265,8 @@ border:8px solid #fff;outline:1px solid #dce5e9;border-radius:5px}
                 </div>
                 <div class="feature-options" style="margin-top:9px">
                   <div class="feature-option"><label class="check-line"><input id="hubWifiEnabled" type="checkbox"><div><strong>Guest Wi-Fi</strong><span>$6.99 one time with Core · included with Pro.</span></div></label><div class="feature-fields" id="hubWifiFields"><div class="field"><label>SSID</label><input id="hubWifiSsid" placeholder="Guest Wi-Fi"></div><div class="field"><label>SECURITY</label><select id="hubWifiSecurity"><option>WPA2</option><option>WPA3</option><option>WPA/WPA2</option><option>Open</option></select></div><div class="field full"><label>PASSWORD</label><input id="hubWifiPassword" type="password" placeholder="Wi-Fi password"></div></div></div>
-                  <div class="feature-option"><label class="check-line"><input id="hubMenuEnabled" type="checkbox"><div><strong>Restaurant Menu</strong><span>$49.99 one time with Core · included with Pro.</span></div></label><div class="feature-fields" id="hubMenuFields"><div class="field"><label>RESTAURANT NAME</label><input id="hubRestaurantName"></div><div class="field"><label>CUISINE / TYPE</label><input id="hubRestaurantCuisine"></div><div class="field"><label>PHONE</label><input id="hubRestaurantPhone"></div><div class="field"><label>WEBSITE</label><input id="hubRestaurantWebsite"></div><div class="field full"><label>HOURS / SUMMARY</label><input id="hubRestaurantHours" placeholder="Mon–Sat 11 AM–9 PM"></div></div></div>
-                  <div class="feature-option"><label class="check-line"><input id="hubVisitEnabled" type="checkbox"><div><strong>Visit Us / Directions</strong><span>Included with Core and Pro.</span></div></label></div>
+                  <div class="feature-option"><label class="check-line"><input id="hubMenuEnabled" type="checkbox"><div><strong>Restaurant Menu</strong><span>$49.99 one time with Core · included with Pro.</span></div></label><div class="feature-fields" id="hubMenuFields"><div class="field"><label>RESTAURANT NAME</label><input id="hubRestaurantName"></div><div class="field"><label>CUISINE / TYPE</label><input id="hubRestaurantCuisine"></div><div class="field full"><label>DESCRIPTION</label><textarea id="hubRestaurantDescription"></textarea></div><div class="field"><label>PHONE</label><input id="hubRestaurantPhone"></div><div class="field"><label>WEBSITE</label><input id="hubRestaurantWebsite"></div><div class="field"><label>ADDRESS</label><input id="hubRestaurantAddress"></div><div class="field"><label>MAPS URL</label><input id="hubRestaurantMapUrl" placeholder="https://maps.google.com/..."></div><div class="field"><label>RESERVATION URL</label><input id="hubRestaurantReservationUrl" placeholder="https://..."></div><div class="field"><label>ORDER URL</label><input id="hubRestaurantOrderUrl" placeholder="https://..."></div><div class="field full"><label>HOURS / SUMMARY</label><input id="hubRestaurantHours" placeholder="Mon–Sat 11 AM–9 PM"></div><div class="field"><label class="check-line"><input id="hubRestaurantShowPrices" type="checkbox" checked><div><strong>Show prices</strong></div></label></div><div class="field"><label class="check-line"><input id="hubRestaurantShowPhotos" type="checkbox"><div><strong>Show item photos</strong></div></label></div></div></div>
+                  <div class="feature-option"><label class="check-line"><input id="hubVisitEnabled" type="checkbox"><div><strong>Visit Us / Directions</strong><span>Included with Core and Pro.</span></div></label><div class="feature-fields" id="hubVisitFields"><div class="field"><label>PLACE NAME</label><input id="hubVisitName"></div><div class="field"><label>CATEGORY</label><input id="hubVisitCategory"></div><div class="field full"><label>DESCRIPTION</label><textarea id="hubVisitBio"></textarea></div><div class="field"><label>PHONE</label><input id="hubVisitPhone"></div><div class="field"><label>EMAIL</label><input id="hubVisitEmail"></div><div class="field"><label>WEBSITE</label><input id="hubVisitWebsite"></div><div class="field"><label>ADDRESS</label><input id="hubVisitAddress"></div><div class="field full"><label>MAPS URL</label><input id="hubVisitMapUrl" placeholder="https://maps.google.com/..."></div><div class="field full"><label>HOURS / SUMMARY</label><input id="hubVisitHours"></div></div></div>
                   <div class="feature-option"><label class="check-line"><input id="hubClientManage" type="checkbox"><div><strong>Client Portal Management</strong><span>Allow the client to manage enabled LinkHub content from their portal.</span></div></label></div>
                 </div>
                 <div class="pro-note"><strong>Pro rule:</strong> selecting Pro automatically includes Wi-Fi, Restaurant Menu, Smart Scan Activity and Client Portal management. No QR or LinkHub setup fee is charged; Billing can add the one-time $4.99 VMS Activation Fee only on the customer’s first standalone paid order.</div>
@@ -358,6 +362,18 @@ border:8px solid #fff;outline:1px solid #dce5e9;border-radius:5px}
   </div>
 </div>
 
+<!-- ADD/EDIT SOCIAL -->
+<div class="modal-backdrop" id="socialModal"><div class="modal small">
+  <div class="modal-head"><div><h3 id="socialModalTitle">Add Social Icon</h3><p>Shown as a branded icon below the main LinkHub buttons.</p></div><button class="close" data-close="socialModal" type="button">×</button></div>
+  <div class="modal-body"><div class="form-grid">
+    <div class="field"><label>PLATFORM</label><select id="socialPlatform"><option>Instagram</option><option>Facebook</option><option>TikTok</option><option>YouTube</option><option>X</option><option>LinkedIn</option><option>WhatsApp</option><option>Yelp</option></select></div>
+    <div class="field"><label>LABEL</label><input id="socialLabel" placeholder="Optional accessible label"></div>
+    <div class="field full"><label>PROFILE URL</label><input id="socialUrl" placeholder="https://..."></div>
+    <div class="field full"><label class="check-line"><input id="socialVisible" type="checkbox" checked><div><strong>Visible on public LinkHub</strong><span>Hidden accounts stay saved without appearing publicly.</span></div></label></div>
+  </div></div>
+  <div class="modal-foot"><button class="btn" data-close="socialModal" type="button">Cancel</button><button class="btn primary" id="saveSocialBtn" type="button">Save Social</button></div>
+</div></div>
+
 <!-- ADD/EDIT LINK -->
 <div class="modal-backdrop" id="linkModal">
   <div class="modal small">
@@ -433,6 +449,7 @@ border:8px solid #fff;outline:1px solid #dce5e9;border-radius:5px}
   let currentView='all';
   let editingId=null;
   let editingLinkId=null;
+  let editingSocialId=null;
   let floatingId=null;
   let pendingDeleteId=null;
 
@@ -627,12 +644,15 @@ border:8px solid #fff;outline:1px solid #dce5e9;border-radius:5px}
   }
   function draftFromForm(){
     const h=hubFor(editingId);if(!h)return null;
+    const wifi={...(h.wifi||h.features?.wifi||{}),enabled:$('hubWifiEnabled').checked,ssid:$('hubWifiSsid').value.trim(),security:$('hubWifiSecurity').value,password:$('hubWifiPassword').value};
+    const restaurant={...(h.restaurant||h.features?.restaurant||{}),enabled:$('hubMenuEnabled').checked,name:$('hubRestaurantName').value.trim(),cuisine:$('hubRestaurantCuisine').value.trim(),description:$('hubRestaurantDescription').value.trim(),phone:$('hubRestaurantPhone').value.trim(),website:$('hubRestaurantWebsite').value.trim(),address:$('hubRestaurantAddress').value.trim(),mapUrl:$('hubRestaurantMapUrl').value.trim(),reservationUrl:$('hubRestaurantReservationUrl').value.trim(),orderUrl:$('hubRestaurantOrderUrl').value.trim(),hours:$('hubRestaurantHours').value.trim(),showPrices:$('hubRestaurantShowPrices').checked,showPhotos:$('hubRestaurantShowPhotos').checked};
+    const visit={...(h.visit||h.features?.visit||{}),enabled:$('hubVisitEnabled').checked,name:$('hubVisitName').value.trim(),category:$('hubVisitCategory').value.trim(),bio:$('hubVisitBio').value.trim(),phone:$('hubVisitPhone').value.trim(),email:$('hubVisitEmail').value.trim(),website:$('hubVisitWebsite').value.trim(),address:$('hubVisitAddress').value.trim(),mapUrl:$('hubVisitMapUrl').value.trim(),hours:$('hubVisitHours').value.trim()};
     return {
       ...h,client:$('hubClient').value,title:$('hubTitle').value.trim(),bio:$('hubBio').value.trim(),phone:$('hubPhone').value.trim(),
       email:$('hubEmail').value.trim(),website:$('hubWebsite').value.trim(),address:$('hubAddress').value.trim(),slug:slugify($('hubSlug').value),
       theme:document.querySelector('.theme-choice.active')?.dataset.theme||h.theme||'navy',published:$('hubPublished').checked,manualDisabled:$('hubManualDisabled').checked,
       billing:{...h.billing,status:$('hubBilling').value,pastDueSince:$('hubPastDueSince').value,graceDays:Number($('hubGraceDays').value)||0,autoSuspend:$('hubAutoSuspend').checked,price:Number($('hubPrice').value)||0},
-      plan:$('hubPlan').value,features:{...h.features,wifi:{...(h.features?.wifi||{}),enabled:$('hubWifiEnabled').checked,ssid:$('hubWifiSsid').value.trim(),security:$('hubWifiSecurity').value,password:$('hubWifiPassword').value},restaurant:{...(h.features?.restaurant||{}),enabled:$('hubMenuEnabled').checked,name:$('hubRestaurantName').value.trim(),cuisine:$('hubRestaurantCuisine').value.trim(),phone:$('hubRestaurantPhone').value.trim(),website:$('hubRestaurantWebsite').value.trim(),hours:$('hubRestaurantHours').value.trim()},visit:{...(h.features?.visit||{}),enabled:$('hubVisitEnabled').checked},smartScan:$('hubSmartScan').value==='on',clientManage:$('hubClientManage').checked},
+      plan:$('hubPlan').value,wifi,restaurant,visit,features:{...h.features,wifi,restaurant,visit,smartScan:$('hubSmartScan').value==='on',clientManage:$('hubClientManage').checked},
       permissions:{profile:$('permProfile').checked,contact:$('permContact').checked,links:$('permLinks').checked,order:$('permOrder').checked,theme:$('permTheme').checked}
     };
   }
@@ -644,7 +664,8 @@ border:8px solid #fff;outline:1px solid #dce5e9;border-radius:5px}
   }
   function renderPreview(){
     const h=draftFromForm()||hubFor(editingId);if(!h)return;
-    const theme=h.theme||'navy',links=(h.links||[]).filter(x=>x.visible);
+    const theme=h.theme||'navy',links=(h.links||[]).filter(x=>x.visible!==false),socials=(h.socials||[]).filter(x=>x.visible!==false&&x.url);
+    const wifi=h.wifi||h.features?.wifi||{},restaurant=h.restaurant||h.features?.restaurant||{},visit=h.visit||h.features?.visit||{};
     const src=clientLogo(h.client);
     $('publicPreview').className=`public-page theme-${theme}`;
     $('publicPreview').innerHTML=`
@@ -655,6 +676,8 @@ border:8px solid #fff;outline:1px solid #dce5e9;border-radius:5px}
         ${h.phone?'<button type="button">Call</button>':''}${h.email?'<button type="button">Email</button>':''}${h.website?'<button type="button">Website</button>':''}${h.address?'<button type="button">Directions</button>':''}
       </div>
       <div class="public-links">${links.length?links.map(l=>`<button class="public-link" type="button" data-url="${esc(l.url)}">${esc(l.label)}</button>`).join(''):'<div style="font-size:8px;opacity:.7;padding:18px 0">No public links yet.</div>'}</div>
+      ${(wifi.enabled||restaurant.enabled||visit.enabled!==false)?`<div class="public-contact">${wifi.enabled?'<button type="button">Wi-Fi</button>':''}${restaurant.enabled?'<button type="button">Menu</button>':''}${visit.enabled!==false?'<button type="button">Visit Us</button>':''}</div>`:''}
+      ${socials.length?`<div class="public-contact">${socials.map(s=>`<button type="button" title="${esc(s.platform||s.label||'Social')}">${esc(s.platform||s.label||'Social')}</button>`).join('')}</div>`:''}
       <div class="public-powered">Smart Business Card by Vision Make Studio</div>`;
     $('hubPublicUrl').value=publicUrl(h);
     document.querySelectorAll('.theme-choice').forEach(x=>x.classList.toggle('active',x.dataset.theme===theme));
@@ -684,6 +707,11 @@ border:8px solid #fff;outline:1px solid #dce5e9;border-radius:5px}
     </div>`).join(''):'<div class="empty" style="display:block;padding:18px 6px">No links yet. Add the first button for this LinkHub.</div>';
     renderPreview();
   }
+  function renderSocials(){
+    const h=hubFor(editingId);if(!h)return;h.socials=Array.isArray(h.socials)?h.socials:[];
+    $('socialList').innerHTML=h.socials.length?h.socials.map((s,i)=>`<div class="link-row" data-id="${esc(s.id)}"><div class="link-drag">☷</div><div class="link-copy"><strong>${esc(s.platform||s.label||'Social')}</strong><span>${esc(s.url||'')} ${s.visible===false?'· Hidden':''}</span></div><div class="link-actions"><button class="btn" data-social-action="up" type="button" ${i===0?'disabled':''}>↑</button><button class="btn" data-social-action="down" type="button" ${i===h.socials.length-1?'disabled':''}>↓</button><button class="btn" data-social-action="toggle" type="button">${s.visible===false?'Show':'Hide'}</button><button class="btn" data-social-action="edit" type="button">Edit</button><button class="btn red" data-social-action="delete" type="button">Delete</button></div></div>`).join(''):'<div class="empty" style="display:block;padding:18px 6px">No social icons yet.</div>';
+    renderPreview();
+  }
   function openManage(id){
     const h=hubFor(id);if(!h)return;
     editingId=id;setPane('profile');
@@ -693,10 +721,10 @@ border:8px solid #fff;outline:1px solid #dce5e9;border-radius:5px}
     $('hubTitle').value=h.title||'';$('hubBio').value=h.bio||'';$('hubPhone').value=h.phone||'';$('hubEmail').value=h.email||'';$('hubWebsite').value=h.website||'';$('hubAddress').value=h.address||'';
     $('hubSlug').value=h.slug||slugify(h.client);$('hubPublished').checked=!!h.published;$('hubManualDisabled').checked=!!h.manualDisabled;
     $('hubBilling').value=h.billing?.status||'Paid';$('hubPastDueSince').value=h.billing?.pastDueSince||'';$('hubGraceDays').value=String(h.billing?.graceDays??7);$('hubAutoSuspend').checked=h.billing?.autoSuspend!==false;$('hubPrice').value=Number(h.billing?.price)||0;
-    $('hubPlan').value=h.plan||((Number(h.billing?.price)||0)>0?'Pro':'Core');const feat=h.features||{};$('hubWifiEnabled').checked=!!feat.wifi?.enabled;$('hubWifiSsid').value=feat.wifi?.ssid||'';$('hubWifiSecurity').value=feat.wifi?.security||'WPA2';$('hubWifiPassword').value=feat.wifi?.password||'';$('hubMenuEnabled').checked=!!feat.restaurant?.enabled;$('hubRestaurantName').value=feat.restaurant?.name||h.client;$('hubRestaurantCuisine').value=feat.restaurant?.cuisine||'';$('hubRestaurantPhone').value=feat.restaurant?.phone||h.phone||'';$('hubRestaurantWebsite').value=feat.restaurant?.website||h.website||'';$('hubRestaurantHours').value=feat.restaurant?.hours||'';$('hubVisitEnabled').checked=feat.visit?.enabled!==false;$('hubSmartScan').value=feat.smartScan?'on':'off';$('hubClientManage').checked=feat.clientManage!==false;applyPlanRules(false);
+    $('hubPlan').value=h.plan||((Number(h.billing?.price)||0)>0?'Pro':'Core');const feat=h.features||{},wifi=h.wifi||feat.wifi||{},restaurant=h.restaurant||feat.restaurant||{},visit=h.visit||feat.visit||{};$('hubWifiEnabled').checked=!!wifi.enabled;$('hubWifiSsid').value=wifi.ssid||'';$('hubWifiSecurity').value=wifi.security||'WPA2';$('hubWifiPassword').value=wifi.password||'';$('hubMenuEnabled').checked=!!restaurant.enabled;$('hubRestaurantName').value=restaurant.name||h.client;$('hubRestaurantCuisine').value=restaurant.cuisine||'';$('hubRestaurantDescription').value=restaurant.description||'';$('hubRestaurantPhone').value=restaurant.phone||h.phone||'';$('hubRestaurantWebsite').value=restaurant.website||h.website||'';$('hubRestaurantAddress').value=restaurant.address||h.address||'';$('hubRestaurantMapUrl').value=restaurant.mapUrl||'';$('hubRestaurantReservationUrl').value=restaurant.reservationUrl||'';$('hubRestaurantOrderUrl').value=restaurant.orderUrl||'';$('hubRestaurantHours').value=restaurant.hours||'';$('hubRestaurantShowPrices').checked=restaurant.showPrices!==false;$('hubRestaurantShowPhotos').checked=!!restaurant.showPhotos;$('hubVisitEnabled').checked=visit.enabled!==false;$('hubVisitName').value=visit.name||h.client;$('hubVisitCategory').value=visit.category||'';$('hubVisitBio').value=visit.bio||'';$('hubVisitPhone').value=visit.phone||h.phone||'';$('hubVisitEmail').value=visit.email||h.email||'';$('hubVisitWebsite').value=visit.website||h.website||'';$('hubVisitAddress').value=visit.address||h.address||'';$('hubVisitMapUrl').value=visit.mapUrl||h.mapsUrl||'';$('hubVisitHours').value=visit.hours||'';$('hubSmartScan').value=feat.smartScan?'on':'off';$('hubClientManage').checked=feat.clientManage!==false;applyPlanRules(false);
     $('permProfile').checked=!!h.permissions?.profile;$('permContact').checked=!!h.permissions?.contact;$('permLinks').checked=!!h.permissions?.links;$('permOrder').checked=!!h.permissions?.order;$('permTheme').checked=!!h.permissions?.theme;
     $('archiveHubBtn').textContent=h.archived?'Restore':'Archive';$('archiveHubBtn').className=h.archived?'btn green':'btn red';
-    renderLinks();renderPreview();$('manageModal').classList.add('show');
+    renderLinks();renderSocials();renderPreview();$('manageModal').classList.add('show');
   }
   function saveHub(){
     const h=hubFor(editingId);if(!h)return;
@@ -723,7 +751,7 @@ border:8px solid #fff;outline:1px solid #dce5e9;border-radius:5px}
       id,client,title:client,bio:'',phone:c.phone||'',email:c.email||'',website:'',address:'',slug:slugify(client),
       theme:'navy',published:false,manualDisabled:false,archived:false,createdAt:todayISO(),updatedAt:todayISO(),
       billing:{status:'Paid',pastDueSince:'',graceDays:7,autoSuspend:true,price:14.99,giftPromo:null},
-      plan:'Pro',features:{wifi:{enabled:true,ssid:'',security:'WPA2',password:''},restaurant:{enabled:true,name:client,cuisine:'',phone:c.phone||'',website:'',hours:''},visit:{enabled:true},smartScan:true,clientManage:true},
+      plan:'Pro',wifi:{enabled:true,ssid:'',security:'WPA2',password:''},restaurant:{enabled:true,name:client,cuisine:'',phone:c.phone||'',website:'',hours:'',sections:[]},visit:{enabled:true},socials:[],features:{wifi:{enabled:true,ssid:'',security:'WPA2',password:''},restaurant:{enabled:true,name:client,cuisine:'',phone:c.phone||'',website:'',hours:'',sections:[]},visit:{enabled:true},smartScan:true,clientManage:true},
       permissions:{profile:true,contact:true,links:true,order:true,theme:true},links:[],analytics:{views:0,clicks:0,qr:0}
     });
     persist();render();openManage(id);
@@ -770,6 +798,25 @@ border:8px solid #fff;outline:1px solid #dce5e9;border-radius:5px}
     if(action==='delete')h.links.splice(i,1);
     if(action==='edit')return openLinkModal(id);
     h.updatedAt=todayISO();persist();renderLinks();render();
+  }
+  function openSocialModal(id=''){
+    const h=hubFor(editingId);if(!h)return;editingSocialId=id;const s=(h.socials||[]).find(x=>x.id===id);
+    $('socialModalTitle').textContent=s?'Edit Social Icon':'Add Social Icon';$('socialPlatform').value=s?.platform||'Instagram';$('socialLabel').value=s?.label||'';$('socialUrl').value=s?.url||'';$('socialVisible').checked=s?.visible!==false;$('socialModal').classList.add('show');
+  }
+  function saveSocial(){
+    const h=hubFor(editingId);if(!h)return;const url=$('socialUrl').value.trim();if(!url)return toast('Add the social profile URL');h.socials=Array.isArray(h.socials)?h.socials:[];
+    const obj={id:editingSocialId||'social-'+Date.now(),platform:$('socialPlatform').value,label:$('socialLabel').value.trim()||$('socialPlatform').value,url,visible:$('socialVisible').checked};
+    if(editingSocialId){const i=h.socials.findIndex(x=>x.id===editingSocialId);if(i>=0)h.socials[i]=obj}else h.socials.push(obj);
+    h.updatedAt=todayISO();persist();renderSocials();render();closeModal('socialModal');toast('Social icon saved');
+  }
+  function socialAction(id,action){
+    const h=hubFor(editingId);if(!h)return;const i=(h.socials||[]).findIndex(x=>x.id===id);if(i<0)return;
+    if(action==='up'&&i>0)[h.socials[i-1],h.socials[i]]=[h.socials[i],h.socials[i-1]];
+    if(action==='down'&&i<h.socials.length-1)[h.socials[i+1],h.socials[i]]=[h.socials[i],h.socials[i+1]];
+    if(action==='toggle')h.socials[i].visible=h.socials[i].visible===false;
+    if(action==='delete')h.socials.splice(i,1);
+    if(action==='edit')return openSocialModal(id);
+    h.updatedAt=todayISO();persist();renderSocials();render();
   }
 
   function generatedGiftCode(h){
@@ -841,14 +888,15 @@ border:8px solid #fff;outline:1px solid #dce5e9;border-radius:5px}
   document.addEventListener('click',e=>{if(!e.target.closest('.dot-btn')&&!e.target.closest('#floatingMenu'))closeMenu()});window.addEventListener('resize',closeMenu);
 
   document.querySelectorAll('.manage-tab').forEach(b=>b.onclick=()=>setPane(b.dataset.pane));
-  ['hubTitle','hubBio','hubPhone','hubEmail','hubWebsite','hubAddress','hubSlug','hubPublished','hubManualDisabled','hubBilling','hubPastDueSince','hubGraceDays','hubAutoSuspend','hubPrice','hubPlan','hubWifiEnabled','hubWifiSsid','hubWifiSecurity','hubWifiPassword','hubMenuEnabled','hubRestaurantName','hubRestaurantCuisine','hubRestaurantPhone','hubRestaurantWebsite','hubRestaurantHours','hubVisitEnabled','hubSmartScan','hubClientManage','permProfile','permContact','permLinks','permOrder','permTheme'].forEach(id=>$(id).addEventListener('input',renderPreview));
+  ['hubTitle','hubBio','hubPhone','hubEmail','hubWebsite','hubAddress','hubSlug','hubPublished','hubManualDisabled','hubBilling','hubPastDueSince','hubGraceDays','hubAutoSuspend','hubPrice','hubPlan','hubWifiEnabled','hubWifiSsid','hubWifiSecurity','hubWifiPassword','hubMenuEnabled','hubRestaurantName','hubRestaurantCuisine','hubRestaurantDescription','hubRestaurantPhone','hubRestaurantWebsite','hubRestaurantAddress','hubRestaurantMapUrl','hubRestaurantReservationUrl','hubRestaurantOrderUrl','hubRestaurantHours','hubRestaurantShowPrices','hubRestaurantShowPhotos','hubVisitEnabled','hubVisitName','hubVisitCategory','hubVisitBio','hubVisitPhone','hubVisitEmail','hubVisitWebsite','hubVisitAddress','hubVisitMapUrl','hubVisitHours','hubSmartScan','hubClientManage','permProfile','permContact','permLinks','permOrder','permTheme'].forEach(id=>$(id).addEventListener('input',renderPreview));
   $('hubPlan').addEventListener('change',()=>{applyPlanRules(true);renderPreview()});
   $('hubClient').addEventListener('change',()=>{if(!$('hubTitle').value.trim())$('hubTitle').value=$('hubClient').value;if(!$('hubSlug').value.trim())$('hubSlug').value=slugify($('hubClient').value);renderPreview()});
   $('themeGrid').onclick=e=>{const b=e.target.closest('.theme-choice');if(!b)return;document.querySelectorAll('.theme-choice').forEach(x=>x.classList.toggle('active',x===b));renderPreview()};
   $('publicPreview').onclick=e=>{const b=e.target.closest('.public-link');if(b?.dataset.url)window.open(b.dataset.url,'_blank')};
 
-  $('saveHubBtn').onclick=saveHub;$('archiveHubBtn').onclick=archiveCurrent;$('addLinkBtn').onclick=()=>openLinkModal();$('saveLinkBtn').onclick=saveLink;
+  $('saveHubBtn').onclick=saveHub;$('archiveHubBtn').onclick=archiveCurrent;$('addLinkBtn').onclick=()=>openLinkModal();$('saveLinkBtn').onclick=saveLink;$('addSocialBtn').onclick=()=>openSocialModal();$('saveSocialBtn').onclick=saveSocial;
   $('linkList').onclick=e=>{const row=e.target.closest('.link-row'),action=e.target.closest('[data-link-action]')?.dataset.linkAction;if(row&&action)linkAction(row.dataset.id,action)};
+  $('socialList').onclick=e=>{const row=e.target.closest('.link-row'),action=e.target.closest('[data-social-action]')?.dataset.socialAction;if(row&&action)socialAction(row.dataset.id,action)};
   $('giftServiceBtn').onclick=openGift;$('saveGiftBtn').onclick=saveGift;$('clearGiftBtn').onclick=clearGift;
   $('openBillingBtn').onclick=()=>window.location.href='billing.html';
   $('openPromotionsBtn').onclick=()=>window.location.href='promotions.html';
