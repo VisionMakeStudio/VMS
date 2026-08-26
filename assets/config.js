@@ -116,6 +116,7 @@ window.VMS_CONFIG = {
       #vmsLinkHubPublishBtn{background:#003049;color:#fff;border-color:#003049}
       .vms-linkhub-qr{display:grid;place-items:center;background:#fff;border:1px solid #e1e9ec;border-radius:12px;padding:8px;min-height:132px}.vms-linkhub-qr svg{width:112px!important;height:112px!important;display:block}
       .vms-linkhub-qr small{color:#8b9ca4;font-size:7px;text-align:center;line-height:1.35}
+      .vms-linkhub-activity{grid-column:1/-1;border-top:1px solid #edf2f4;padding-top:11px}.vms-linkhub-activity-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:7px}.vms-linkhub-activity-head strong{font-size:10px;color:#003049}.vms-linkhub-activity-head span{font-size:7px;color:#80939c}.vms-linkhub-activity-list{display:grid;gap:6px}.vms-linkhub-activity-row{display:grid;grid-template-columns:28px minmax(0,1fr) auto;align-items:center;gap:8px;padding:7px 8px;border:1px solid #edf2f4;border-radius:9px;background:#fbfcfd}.vms-linkhub-activity-icon{width:28px;height:28px;border-radius:8px;background:#edf5f8;color:#003049;display:grid;place-items:center;font-size:7px;font-weight:950}.vms-linkhub-activity-row strong{font-size:8px;color:#183746;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.vms-linkhub-activity-row small{font-size:7px;color:#84969f;white-space:nowrap}.vms-linkhub-activity-empty{padding:10px;border:1px dashed #d6e1e5;border-radius:9px;color:#78909b;font-size:8px;text-align:center}
       .vms-linkhub-mobile-publish{display:none}
       @media(max-width:760px){
         .vms-linkhub-share{padding:12px}.vms-linkhub-share-head{display:grid}.vms-linkhub-share-grid{grid-template-columns:1fr}.vms-linkhub-urlrow{grid-template-columns:1fr 1fr}.vms-linkhub-urlrow input{grid-column:1/-1;height:46px;font-size:10px}.vms-linkhub-urlrow .btn{width:100%}.vms-linkhub-share-actions{display:grid;grid-template-columns:1fr}.vms-linkhub-share-actions .btn{width:100%;min-height:46px}.vms-linkhub-qr{min-height:160px}.vms-linkhub-qr svg{width:142px!important;height:142px!important}
@@ -176,6 +177,18 @@ window.VMS_CONFIG = {
     if(lastPublishError)setStatus(lastPublishError,'error');
     else if(published)setStatus('Published','live');
     else setStatus('Not published yet');
+    const analytics=linkhubInfo.analytics||{views:0,clicks:0,recent:[]};
+    for(const key of [PORTAL_STORAGE,'vms_client_portal_v3']){
+      try{const saved=JSON.parse(localStorage.getItem(key)||'null');if(saved?.linkHub){saved.linkHub.views=Number(analytics.views||0);saved.linkHub.clicks=Number(analytics.clicks||0);localStorage.setItem(key,JSON.stringify(saved))}}catch{}
+    }
+    const views=$('linkHubViews'),clicks=$('linkHubClicks');
+    if(views)views.textContent=Number(analytics.views||0).toLocaleString();
+    if(clicks)clicks.textContent=Number(analytics.clicks||0).toLocaleString();
+    const list=$('vmsLinkHubActivityList');
+    if(list){
+      const recent=Array.isArray(analytics.recent)?analytics.recent:[];
+      list.innerHTML=recent.length?recent.slice(0,12).map(event=>`<div class="vms-linkhub-activity-row"><div class="vms-linkhub-activity-icon">${event.type==='view'?'VIEW':'CLICK'}</div><strong>${esc(event.label||(event.type==='view'?'Public LinkHub viewed':'LinkHub action clicked'))}</strong><small>${event.at?new Date(event.at).toLocaleString([], {month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):''}</small></div>`).join(''):'<div class="vms-linkhub-activity-empty">No real LinkHub activity yet. New public views and clicks will appear here.</div>';
+    }
     renderQr(linkhubInfo.url||'');
   }
 
@@ -240,6 +253,7 @@ window.VMS_CONFIG = {
           </div>
         </div>
         <div class="vms-linkhub-qr" id="vmsLinkHubQr"><small>Loading your LinkHub…</small></div>
+        <div class="vms-linkhub-activity"><div class="vms-linkhub-activity-head"><strong>Real LinkHub Activity</strong><span>Public views and clicks only</span></div><div class="vms-linkhub-activity-list" id="vmsLinkHubActivityList"><div class="vms-linkhub-activity-empty">Loading real activity…</div></div></div>
       </div>`;
     if(intro?.nextSibling)section.insertBefore(panel,intro.nextSibling);else section.prepend(panel);
 
