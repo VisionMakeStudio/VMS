@@ -30,6 +30,7 @@ export default async(req:Request)=>{
       }
       if(action==='archive'){await write(`qr_codes?id=eq.${encodeURIComponent(String(b.id||''))}`,'PATCH',{status:'archived',updated_at:new Date().toISOString()});return Response.json({ok:true})}
       if(action==='restore'){await write(`qr_codes?id=eq.${encodeURIComponent(String(b.id||''))}`,'PATCH',{status:'active',updated_at:new Date().toISOString()});return Response.json({ok:true})}
+      if(action==='delete'){const qrId=String(b.id||'');if(!qrId)throw Object.assign(new Error('QR id required.'),{status:400});await write(`qr_codes?id=eq.${encodeURIComponent(qrId)}`,'DELETE',undefined,'return=minimal');return Response.json({ok:true})}
       throw Object.assign(new Error('Unknown QR action.'),{status:400});
     }
     return Response.json({error:'Method not allowed.'},{status:405});

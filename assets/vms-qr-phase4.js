@@ -70,11 +70,23 @@
       }catch(error){toast(error?.message||'Could not save the live Dynamic QR.','error');save.disabled=false}
     },true);
   }
+  function installServerDelete(){
+    if(!isAdmin||document.documentElement.dataset.vmsRealQrDelete)return;document.documentElement.dataset.vmsRealQrDelete='1';let pendingServerId='';
+    document.addEventListener('click',async event=>{
+      const remove=event.target.closest('.delete-saved');
+      const profileRemove=event.target.closest('#profileDeleteBtn');
+      if(remove){pendingServerId=readLibrary().find(item=>String(item.id)===String(remove.dataset.id))?.serverId||'';return}
+      if(profileRemove){const title=$('#profileModalTitle')?.textContent||'';pendingServerId=readLibrary().find(item=>item.serverId&&String(item.name||item.client||'')===title)?.serverId||pendingServerId;return}
+      if(!event.target.closest('#confirmDeleteBtn')||!pendingServerId)return;
+      const serverId=pendingServerId;pendingServerId='';event.preventDefault();event.stopImmediatePropagation();
+      try{await qrApi('POST',{action:'delete',id:serverId});writeLibrary(readLibrary().filter(item=>String(item.serverId)!==String(serverId)));sessionStorage.removeItem(QR_SYNC_KEY);toast('QR and its real scan history were deleted.');setTimeout(()=>location.reload(),250)}catch(error){toast(error?.message||'Could not delete the live QR.','error')}
+    },true);
+  }
   const dims={"qr-only":'QR Only · square',sticker:'Sticker · square/circle',counter:'Countertop · 3:4',flyer:'Flyer · 8.5 × 11 in'};
   function setPreset(preset){const canvas=$('#previewCanvas');if(!canvas)return;Object.keys(dims).forEach(k=>canvas.classList.remove(`vms-layout-${k}`));canvas.classList.add(`vms-layout-${preset}`);let label=$('#vmsP4LayoutLabel');if(!label){label=document.createElement('div');label.id='vmsP4LayoutLabel';label.className='vms-p4-layout-label';canvas.insertAdjacentElement('afterend',label)}label.textContent=dims[preset]||preset}
   function installPresetPreview(){const choices=$('#presetChoices');if(choices&&!choices.dataset.vmsP4){choices.dataset.vmsP4='1';choices.addEventListener('click',e=>{const b=e.target.closest('[data-preset]');if(b)setPreset(b.dataset.preset)},true)}$$('.use-template').forEach(b=>{if(b.dataset.vmsP4)return;b.dataset.vmsP4='1';b.addEventListener('click',()=>setPreset(b.dataset.preset),true)});setPreset('qr-only')}
   function renderPortalQrLock(){if(!isPortal)return;const section=$('#section-qrs');if(!section)return;let b=$('#vmsP4PortalQrEnt');if(!b){b=document.createElement('div');b.id='vmsP4PortalQrEnt';b.className='vms-p4-entitlement-banner';section.querySelector('.intro')?.insertAdjacentElement('afterend',b)}const p=price(dynamicService);b.innerHTML=allowed?'<div><span>QR MODE</span><strong>Dynamic QR Active</strong><small>Tracking and destination management are included.</small></div><span class="vms-status-pill vms-status-green">Active</span>':`<div><span>QR MODE</span><strong>Static QR</strong><small>Dynamic tracking is not included on this account.</small></div><button class="vms-p4-buy" id="vmsP4PortalDynamicInfo" type="button">${dynamicService?`Add Dynamic QR${p?` · ${p}`:''}`:'Dynamic QR Info'}</button>`;$('#vmsP4PortalDynamicInfo')?.addEventListener('click',openLocked);const select=$('#qrEditType');if(select){const dyn=[...select.options].find(o=>/dynamic/i.test(o.textContent));if(dyn)dyn.disabled=!allowed;if(!allowed&&/dynamic/i.test(select.value)){const staticOpt=[...select.options].find(o=>/static/i.test(o.textContent));if(staticOpt)select.value=staticOpt.value}}}
   function observe(){let t;new MutationObserver(()=>{clearTimeout(t);t=setTimeout(()=>{forceBranding();installPresetPreview();installTrackingGuard();if(isAdmin)renderLock();else renderPortalQrLock()},100)}).observe(document.body,{subtree:true,childList:true})}
-  async function boot(){installStyle();forceBranding();installPresetPreview();installRealTrackingSave();installTrackingGuard();try{await loadCatalog();if(isAdmin){await refreshAdminEntitlement();await syncRealQrLibrary()}else await refreshPortalEntitlement()}catch(e){console.warn('VMS QR entitlement check',e);if(isAdmin)renderLock('Dynamic entitlement could not be checked. Static QR remains available.')}observe()}
+  async function boot(){installStyle();forceBranding();installPresetPreview();installRealTrackingSave();installServerDelete();installTrackingGuard();try{await loadCatalog();if(isAdmin){await refreshAdminEntitlement();await syncRealQrLibrary()}else await refreshPortalEntitlement()}catch(e){console.warn('VMS QR entitlement check',e);if(isAdmin)renderLock('Dynamic entitlement could not be checked. Static QR remains available.')}observe()}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
