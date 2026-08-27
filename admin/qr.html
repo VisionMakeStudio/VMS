@@ -1881,12 +1881,16 @@ body.client-report-mode .client-report-shell{display:block}
 <link rel="stylesheet" href="../assets/vms-final-polish.css?v=20260822-phase2">
 <style id="vms-qr-library-layering-fix">
 /* QR library polish: give the page heading room and let row Actions escape the library card. */
+html.vms-page-qr .subnav-wrap{background:#fff!important;border-bottom:1px solid #e1eaed!important;padding:12px 28px!important}
+html.vms-page-qr .subnav button{background:#f3f7f8!important;border-color:#dbe6ea!important;color:#476875!important}
+html.vms-page-qr .subnav button.active{background:#003049!important;border-color:#003049!important;color:#fff!important}
 html.vms-page-qr .content{padding-top:18px!important}
 html.vms-page-qr #view-saved .list-card{position:relative;overflow:visible!important;z-index:1}
 html.vms-page-qr #view-saved .qr-list{position:relative;overflow:visible;border-radius:0 0 16px 16px}
 html.vms-page-qr #view-saved .qr-row{position:relative;z-index:0}
 html.vms-page-qr #view-saved .qr-row:has(.vms-phase2-menu-wrap.open){z-index:2}
 html.vms-page-qr #view-saved .vms-phase2-menu-wrap.open{z-index:2147482001!important}
+@media(max-width:700px){html.vms-page-qr .subnav-wrap{padding:10px 12px!important}}
 </style>
 </head>
 <body>
