@@ -1868,7 +1868,15 @@ body.client-report-mode .client-report-shell{display:block}
 .vms-live-layout-choices{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
 .vms-live-layout-choices button{min-height:38px;border:1px solid #d5e2e7;border-radius:9px;background:#fff;color:#385461;font-size:11px;font-weight:850;padding:6px 8px}
 .vms-live-layout-choices button.active{background:#003049!important;border-color:#003049!important;color:#fff!important;box-shadow:0 5px 14px rgba(0,48,73,.15)}
-#previewCanvas.vms-layout-qr-only{width:min(100%,330px)!important;min-height:405px!important;aspect-ratio:auto!important}
+/* Keep the QR-only card compact: it should frame the code instead of leaving a large
+   empty area under it in the builder preview. */
+#previewCanvas.vms-layout-qr-only{width:min(100%,330px)!important;min-height:0!important;height:auto!important;aspect-ratio:auto!important;justify-content:flex-start!important;padding:28px 24px 32px!important}
+#previewCanvas.vms-layout-qr-only .preview-business{margin:0 0 14px!important}
+#previewCanvas.vms-layout-qr-only .real-qr{margin:0 auto 22px!important}
+#previewCanvas.vms-layout-qr-only .preview-title{margin:0 0 10px!important}
+#previewCanvas.vms-layout-qr-only .preview-sub{margin:0 0 14px!important}
+#previewCanvas.vms-layout-qr-only .preview-url{margin:0!important}
+#previewCanvas.vms-layout-qr-only .preview-foot{margin:22px 0 0!important}
 @media(max-width:620px){.vms-live-layout-panel{margin:0 14px 12px}.vms-live-layout-choices{grid-template-columns:1fr 1fr}.vms-live-layout-choices button{min-height:42px;font-size:12px}}
 </style>
 <style id="vms-final-qr-two-layouts">
@@ -2663,10 +2671,10 @@ html.vms-page-qr #view-saved .vms-phase2-menu-wrap.open{z-index:2147482001!impor
   let savedQrs=[];
   try{
     const raw=localStorage.getItem('vms_qr_saved_library_v3');
-    savedQrs=raw?JSON.parse(raw):demoSavedQrs;
-    if(!Array.isArray(savedQrs)) savedQrs=demoSavedQrs;
+    savedQrs=raw?JSON.parse(raw):[];
+    if(!Array.isArray(savedQrs)) savedQrs=[];
   }catch(e){
-    savedQrs=demoSavedQrs;
+    savedQrs=[];
   }
 
   // Normalize older saved records so the new controls work with them.

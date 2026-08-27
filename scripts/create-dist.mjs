@@ -276,9 +276,9 @@ injectRepair(p4Linkhub,'../assets/vms-linkhub-phase4.js?v=20260826-linkhub-sync3
   fs.writeFileSync(file,html);
 }
 
-injectRepair(p4Qr,'../assets/vms-qr-phase4.js?v=20260821-phase4','vms-qr-phase4');
+injectRepair(p4Qr,'../assets/vms-qr-phase4.js?v=20260827-qr-real-activity-logo1','vms-qr-phase4');
 injectRepair('portal/index.html','../assets/vms-linkhub-phase4.js?v=20260826-linkhub-sync3','vms-portal-linkhub-phase4');
-injectRepair('portal/index.html','../assets/vms-qr-phase4.js?v=20260821-phase4','vms-portal-qr-phase4');
+injectRepair('portal/index.html','../assets/vms-qr-phase4.js?v=20260827-qr-real-activity-logo1','vms-portal-qr-phase4');
 
 /* QR branding is mandatory in VMS Phase 4. Older saved records that explicitly
    disabled it are normalized to branded output as they are opened/exported. */
