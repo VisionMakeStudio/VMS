@@ -22,7 +22,10 @@ export default async (req: Request) => {
       matchedName: { type: "string" }, sourceName: { type: "string" }, sourceUrl: { type: "string" }, confidence: { type: "integer", minimum: 0, maximum: 100 }
     }, required: ["rating","reviewCount","matchedName","sourceName","sourceUrl","confidence"] };
     const prompt = `Verify the current public review rating and review count for this business listing. Use web search and the supplied URL. Do not guess. If either value cannot be confidently verified, return null for it.\nPlatform: ${String(body.platform||'')}\nListing URL: ${url}\nBusiness name: ${String(body.businessName||'')}\nIndustry: ${String(body.industry||'')}`;
-    const response = await fetch("https://api.openai.com/v1/responses", { method: "POST", headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" }, body: JSON.stringify({ model: Netlify.env.get("OPENAI_AUDIT_MODEL") || "gpt-5.6-luna", store: false, tools: [{ type: "web_search" }], input: prompt, text: { format: { type: "json_schema", name: "vms_review_lookup", strict: false, schema } } }) });
+    const requestedModel=String(Netlify.env.get("OPENAI_AUDIT_MODEL")||"").trim();
+    const supportedModels=new Set(["gpt-4o-mini","gpt-4.1-mini","gpt-4.1","gpt-5-mini","gpt-5"]);
+    const model=supportedModels.has(requestedModel)?requestedModel:"gpt-4o-mini";
+    const response = await fetch("https://api.openai.com/v1/responses", { method: "POST", headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" }, body: JSON.stringify({ model, store: false, tools: [{ type: "web_search" }], input: prompt, text: { format: { type: "json_schema", name: "vms_review_lookup", strict: false, schema } } }) });
     const data: any = await response.json();
     if (!response.ok) throw Object.assign(new Error(data?.error?.message || "Review lookup failed."), { status: 502 });
     const text = outputText(data); if (!text) throw Object.assign(new Error("No review data was returned."), { status: 502 });
