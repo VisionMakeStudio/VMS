@@ -1879,6 +1879,15 @@ body.client-report-mode .client-report-shell{display:block}
 #previewCanvas.vms-layout-qr-card{width:min(100%,360px)!important;min-height:430px!important;aspect-ratio:auto!important}
 </style><link rel="stylesheet" href="../assets/vms-admin-shell.css?v=20260822-phase2">
 <link rel="stylesheet" href="../assets/vms-final-polish.css?v=20260822-phase2">
+<style id="vms-qr-library-layering-fix">
+/* QR library polish: give the page heading room and let row Actions escape the library card. */
+html.vms-page-qr .content{padding-top:18px!important}
+html.vms-page-qr #view-saved .list-card{position:relative;overflow:visible!important;z-index:1}
+html.vms-page-qr #view-saved .qr-list{position:relative;overflow:visible;border-radius:0 0 16px 16px}
+html.vms-page-qr #view-saved .qr-row{position:relative;z-index:0}
+html.vms-page-qr #view-saved .qr-row:has(.vms-phase2-menu-wrap.open){z-index:2}
+html.vms-page-qr #view-saved .vms-phase2-menu-wrap.open{z-index:2147482001!important}
+</style>
 </head>
 <body>
 
