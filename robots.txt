@@ -4,6 +4,5 @@ Disallow: /admin/
 Disallow: /portal/
 Disallow: /api/
 Disallow: /q/
-Disallow: /get-started.html
 
 Sitemap: https://visionmakestudio.com/sitemap.xml
