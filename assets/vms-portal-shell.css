@@ -67,3 +67,16 @@ body.vms-portal-drawer-open{overflow:hidden!important}
   outline-offset:1px;
 }
 #vmsCanonicalPortalSidebar .vms-portal-account{margin-top:14px;}
+
+/* ============================================================
+   VMS unified button system (Client Portal) - matches Admin
+   ============================================================ */
+html body .btn.btn{
+  border-radius:10px!important;
+  font-size:12px!important;
+  font-weight:800!important;
+  letter-spacing:0!important;
+  min-height:40px;
+}
+html body .btn.btn.small,html body .btn.btn.sm{min-height:36px;}
+html body .btn.btn:focus-visible,html body .tab:focus-visible{outline:3px solid rgba(235,94,40,.55);outline-offset:2px;}

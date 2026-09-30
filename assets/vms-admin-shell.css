@@ -443,3 +443,58 @@ body.vms-admin-canonical[data-vms-admin-route="audit"] .phase4-dashboard-shell{
     grid-template-columns:1fr!important;
   }
 }
+
+
+/* ============================================================
+   VMS unified button system (all admin pages)
+   One shape, one size scale, one meaning per color:
+   navy = main action, white = secondary, red outline = destructive
+   (solid red only inside confirmation dialogs), orange = accents only.
+   ============================================================ */
+body.vms-admin-canonical :is(.btn,button.btn,a.btn){
+  border-radius:10px!important;
+  font-size:12px!important;
+  font-weight:800!important;
+  letter-spacing:0!important;
+  line-height:1.2;
+  min-height:40px;
+}
+body.vms-admin-canonical :is(.btn.small,.btn.sm,.btn-small){
+  min-height:34px;
+}
+body.vms-admin-canonical :is(.btn.primary,.btn.orange){
+  background:#003049;border-color:#003049;color:#fff;
+}
+body.vms-admin-canonical :is(.btn.primary,.btn.orange):hover:not(:disabled){
+  background:#00243a;border-color:#00243a;
+}
+body.vms-admin-canonical .btn.red{
+  background:#fff;border:1px solid #efc8cd;color:#b3121d;
+}
+body.vms-admin-canonical .btn.red:hover:not(:disabled){
+  background:#c1121f;border-color:#c1121f;color:#fff;
+}
+body.vms-admin-canonical :is(.modal,.modal-card,.modal-foot,[role="dialog"]) .btn.red{
+  background:#c1121f;border-color:#c1121f;color:#fff;
+}
+/* Security page uses its own class names; give them the same look. */
+body.vms-admin-canonical :is(.primary-btn,.secondary-btn){
+  border-radius:10px!important;
+  font-size:13px!important;
+  font-weight:800!important;
+  min-height:44px;
+}
+body.vms-admin-canonical .primary-btn{
+  background:#003049!important;background-image:none!important;color:#fff!important;
+}
+/* Tabs and filter pills: same pill shape and readable size everywhere. */
+body.vms-admin-canonical :is(.tab,.filter-btn){
+  border-radius:999px!important;
+  font-size:12px!important;
+  font-weight:800!important;
+  min-height:36px;
+}
+body.vms-admin-canonical :is(.btn,.tab,.primary-btn,.secondary-btn):focus-visible{
+  outline:3px solid rgba(235,94,40,.55);outline-offset:2px;
+}
+body.vms-admin-canonical .phase4-link-btn{font-size:11px!important;font-weight:800!important;}
