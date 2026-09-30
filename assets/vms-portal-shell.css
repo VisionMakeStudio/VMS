@@ -80,3 +80,11 @@ html body .btn.btn{
 }
 html body .btn.btn.small,html body .btn.btn.sm{min-height:36px;}
 html body .btn.btn:focus-visible,html body .tab:focus-visible{outline:3px solid rgba(235,94,40,.55);outline-offset:2px;}
+
+/* ============================================================
+   Readability floor + contrast fixes (applied by the shell script)
+   ============================================================ */
+body [data-vms-fs]{font-size:11px!important}
+body [data-vms-cf][data-vms-cf]{color:var(--vms-cf)}
+#vmsCanonicalPortalSidebar .vms-portal-nav button{font-size:12px!important}
+#vmsCanonicalPortalTopbar small{font-size:11px!important;color:#5b7480!important}

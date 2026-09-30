@@ -498,3 +498,11 @@ body.vms-admin-canonical :is(.btn,.tab,.primary-btn,.secondary-btn):focus-visibl
   outline:3px solid rgba(235,94,40,.55);outline-offset:2px;
 }
 body.vms-admin-canonical .phase4-link-btn{font-size:11px!important;font-weight:800!important;}
+
+/* ============================================================
+   Readability floor + contrast fixes (applied by the shell script)
+   ============================================================ */
+body [data-vms-fs]{font-size:11px!important}
+body [data-vms-cf][data-vms-cf]{color:var(--vms-cf)}
+#vmsCanonicalAdminSidebar .vms-nav-label{font-size:12px!important}
+#vmsCanonicalAdminSidebar .vms-nav-label[data-vms-fs]{font-size:12px!important}
