@@ -34,18 +34,18 @@
   backdrop-filter:saturate(150%) blur(16px);
   -webkit-backdrop-filter:saturate(150%) blur(16px);
 }
-.header-inner{height:82px;display:flex;align-items:center;justify-content:space-between;gap:26px}
+.header-inner{height:84px;display:flex;align-items:center;justify-content:space-between;gap:28px}
 .brand{display:flex;align-items:center;min-width:0;flex:0 0 auto}
-.header-logo{display:block;width:132px;height:58px;object-fit:contain;object-position:left center}
-.desktop-nav{margin-left:auto;display:flex;align-items:center;gap:28px;color:rgba(253,240,213,.82);font-size:14px;font-weight:760}
-.desktop-nav a{position:relative;padding:8px 0;transition:color .18s ease,opacity .18s ease}
-.desktop-nav a:hover,.desktop-nav a.active{color:var(--cream)}
+.header-logo{display:block;width:118px;height:66px;object-fit:contain;object-position:left center}
+.desktop-nav{margin-left:auto;display:flex;align-items:center;gap:30px;color:#f8eed8;font-size:14px;font-weight:780}
+.desktop-nav a{position:relative;padding:8px 0;opacity:.84;transition:color .18s ease,opacity .18s ease}
+.desktop-nav a:hover,.desktop-nav a.active{color:var(--cream);opacity:1}
 .desktop-nav a.active:after{content:"";position:absolute;left:0;right:0;bottom:-5px;height:2px;border-radius:999px;background:var(--red)}
-.header-actions{display:flex;align-items:center;gap:10px}
-.header-cta{min-height:44px;padding:0 17px;border-radius:13px;background:var(--red);color:#fff;font-size:13px;font-weight:880;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 12px 28px rgba(193,18,31,.22);white-space:nowrap;transition:transform .18s ease,box-shadow .18s ease}
+.header-actions{display:flex;align-items:center;gap:9px}
+.header-cta{min-height:49px;padding:0 19px;border-radius:13px;background:var(--red);color:#fff;font-size:16.77px;font-weight:900;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 12px 28px rgba(193,18,31,.22);white-space:nowrap;transition:transform .18s ease,box-shadow .18s ease}
 .header-cta:hover{transform:translateY(-1px);box-shadow:0 15px 32px rgba(193,18,31,.28)}
 .menu-btn{display:none;width:46px;height:46px;border:1px solid rgba(253,240,213,.18);background:rgba(253,240,213,.045);color:var(--cream);border-radius:13px;font-size:22px;align-items:center;justify-content:center}
-.mobile-nav{display:none;position:fixed;top:82px;left:0;right:0;background:rgba(0,48,73,.99);z-index:99;padding:14px 20px 22px;border-bottom:1px solid rgba(253,240,213,.10);box-shadow:0 20px 35px rgba(0,48,73,.18)}
+.mobile-nav{display:none;position:fixed;top:84px;left:0;right:0;background:rgba(0,48,73,.99);z-index:99;padding:14px 20px 22px;border-bottom:1px solid rgba(253,240,213,.10);box-shadow:0 20px 35px rgba(0,48,73,.18)}
 .mobile-nav.open{display:grid}.mobile-nav a{padding:14px 2px;border-bottom:1px solid rgba(253,240,213,.09);font-size:15px;font-weight:820;color:var(--cream)}.mobile-nav a:last-child{border:0}
 
 .page{padding:70px 0 96px;position:relative;overflow:hidden}.page:before{content:"";position:absolute;right:-220px;top:-190px;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(102,155,188,.16),rgba(102,155,188,0) 70%);pointer-events:none}.page:after{content:"";position:absolute;left:-220px;bottom:-250px;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(193,18,31,.065),rgba(193,18,31,0) 70%);pointer-events:none}.page-inner{position:relative;z-index:2;display:grid;grid-template-columns:minmax(0,.78fr) minmax(520px,1.22fr);gap:68px;align-items:start}
@@ -60,20 +60,21 @@
 .site-footer{border-top:1px solid rgba(0,48,73,.08);background:#fff}.footer-inner{min-height:88px;display:flex;align-items:center;justify-content:space-between;gap:18px;color:#5a717d;font-size:12px}.footer-links{display:flex;gap:20px;align-items:center}.footer-links a{color:var(--navy);font-weight:800}
 
 @media(max-width:980px){.desktop-nav{display:none}.portal-link{display:none}.menu-btn{display:flex;margin-left:auto}.page-inner{grid-template-columns:1fr;gap:30px}.intro{position:static;text-align:center;padding:0}.intro>p{margin-left:auto;margin-right:auto}.trust{max-width:520px;margin:26px auto 0;text-align:left}.selected-summary{max-width:600px;margin:24px auto 0;text-align:left}.form-card{max-width:760px;margin:auto;width:100%}}
-@media(max-width:700px){.container{width:min(100% - 28px,1180px)}.header-inner{height:72px}.mobile-nav{top:72px}.brand-copy{display:none}.logo-tile{width:86px;height:44px}.page{padding:46px 0 70px}.intro h1{font-size:clamp(44px,13vw,58px)}.intro>p{font-size:16px}.form-card{padding:23px;border-radius:22px}.form-head{margin-bottom:22px}.form-head h2{font-size:27px}.step-badge{display:none}.form-grid{grid-template-columns:1fr}.field.full,.divider,.group,.promo-note,.form-actions,.error-box{grid-column:1}.service-options{grid-template-columns:1fr;max-height:none}.segmented{grid-template-columns:1fr}.segment{min-height:48px}.footer-inner{padding:24px 0;align-items:flex-start;flex-direction:column}.footer-links{flex-wrap:wrap}}
+@media(max-width:700px){.container{width:min(100% - 28px,1180px)}.header-inner{height:70px}.mobile-nav{top:70px}.brand-copy{display:none}.logo-tile{width:86px;height:44px}.page{padding:46px 0 70px}.intro h1{font-size:clamp(44px,13vw,58px)}.intro>p{font-size:16px}.form-card{padding:23px;border-radius:22px}.form-head{margin-bottom:22px}.form-head h2{font-size:27px}.step-badge{display:none}.form-grid{grid-template-columns:1fr}.field.full,.divider,.group,.promo-note,.form-actions,.error-box{grid-column:1}.service-options{grid-template-columns:1fr;max-height:none}.segmented{grid-template-columns:1fr}.segment{min-height:48px}.footer-inner{padding:24px 0;align-items:flex-start;flex-direction:column}.footer-links{flex-wrap:wrap}}
 @media(max-width:900px){
   .desktop-nav{display:none}.menu-btn{display:flex}
 }
 @media(max-width:640px){
   .container{width:min(100% - 24px,1180px)}
-  .header-inner{height:68px;gap:10px}
-  .header-logo{width:96px;height:50px}
+  .header-inner{height:70px;gap:10px}
+  .header-logo{width:94px;height:54px}
   .header-actions{gap:8px;margin-left:auto}
-  .header-cta{display:inline-flex;min-height:46px;padding:0 14px;border-radius:14px;font-size:12px}
-  .menu-btn{width:44px;height:44px;border-radius:13px;font-size:21px}
-  .mobile-nav{top:68px;padding:12px 18px 20px}
+  .header-cta{display:inline-flex;min-height:43px;padding:0 13px;border-radius:13px;font-size:11px}
+  .menu-btn{width:46px;height:46px;border-radius:12px;font-size:15px}
+  .mobile-nav{top:70px;padding:12px 18px 20px}
 }
 
+.desktop-nav a[href="/?portal=1"]{opacity:1}
 </style>
 </head>
 <body>
@@ -82,25 +83,10 @@
     <a class="brand" href="/" aria-label="Vision Make Studio home">
       <img class="header-logo" src="/assets/vms-logo.png" alt="Vision Make Studio">
     </a>
-    <nav class="desktop-nav" aria-label="Primary navigation">
-      <a href="/services.html">Services</a>
-      <a href="/#checkup">Business Checkup</a>
-      <a href="/#process">How It Works</a>
-      <a href="/#pricing">Pricing</a>
-      <a href="/#subscriptions">Subscriptions</a>
-    </nav>
-    <div class="header-actions">
-      <a class="header-cta" href="/#checkup">Free Checkup</a>
-      <button class="menu-btn" id="menuBtn" type="button" aria-label="Open menu" aria-expanded="false">☰</button>
-    </div>
+    <nav class="desktop-nav" aria-label="Primary navigation"> <a href="/services.html">Services</a> <a href="/#pricing">Pricing</a> <a href="/#checkup">Business Checkup</a> <a href="/#how">How It Works</a> <a href="/?portal=1">Member Portal</a> </nav>
+    <div class="header-actions"> <button class="menu-btn" id="menuBtn" type="button" aria-label="Open menu" aria-expanded="false">☰</button> <a class="header-cta" href="/#checkup">Free Checkup</a> </div>
   </div>
-  <nav class="mobile-nav" id="mobileNav" aria-label="Mobile navigation">
-    <a href="/services.html">Services</a>
-    <a href="/#checkup">Business Checkup</a>
-    <a href="/#process">How It Works</a>
-    <a href="/#pricing">Pricing</a>
-    <a href="/#subscriptions">Subscriptions</a>
-  </nav>
+  <nav class="mobile-nav" id="mobileNav" aria-label="Mobile navigation"> <a href="/services.html">Services</a> <a href="/#pricing">Pricing</a> <a href="/#checkup">Business Checkup</a> <a href="/#how">How It Works</a> <a href="/?portal=1">Member Portal</a> </nav>
 </header>
 
 <main class="page">
