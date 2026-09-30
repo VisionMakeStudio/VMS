@@ -441,6 +441,13 @@ window.VMS_CONFIG = {
   let liveContext=null;
   let cleanupRunning=false;
 
+  /* A service is recurring only when its catalog pricing model is Recurring.
+     (Without a catalog row, fall back to a real monthly/yearly cadence - never "one-time".) */
+  function isRecurring(row,cat){
+    const model=String(cat?.pricing_model||'').trim().toLowerCase();
+    if(model)return model==='recurring';
+    return /^(month|year|annual|week|quarter)/i.test(String(row?.billing_cadence||'').trim());
+  }
   function portalState(){
     try{return JSON.parse(localStorage.getItem(PORTAL_KEY)||'null')}catch{return null}
   }
@@ -568,7 +575,7 @@ window.VMS_CONFIG = {
     if(note)note.textContent='Canceling does not erase your client history. VMS will confirm the effective date and any paid-through access before changing the service.';
 
     const catalogMap=new Map((catalog||[]).map(x=>[x.id,x]));
-    const recurring=(rows||[]).filter(activeService).filter(row=>row.billing_cadence||catalogMap.get(row.service_key)?.pricing_model==='Recurring');
+    const recurring=(rows||[]).filter(activeService).filter(row=>isRecurring(row,catalogMap.get(row.service_key)));
     const pause=$('pauseSubscriptionBtn'),cancel=$('cancelSubscriptionBtn');
     if(pause)pause.textContent='Request Pause';
     if(cancel)cancel.textContent='Request Cancellation';
@@ -601,6 +608,7 @@ window.VMS_CONFIG = {
   }
 
   function scrubQrForUnconfiguredRealClient(email){
+    return; // The portal now builds the QR list from the client's real QR codes.
     if(lower(email)===TEST_EMAIL)return;
     const state=portalState();
     if(!state?.qr||state.qr.destination)return;
@@ -671,9 +679,16 @@ window.VMS_CONFIG = {
     if(['canceled','cancelled'].includes(s))return 'muted';
     return 'blue';
   };
+  /* A service is recurring only when its catalog pricing model is Recurring.
+     (Without a catalog row, fall back to a real monthly/yearly cadence - never "one-time".) */
+  function isRecurring(row,cat){
+    const model=String(cat?.pricing_model||'').trim().toLowerCase();
+    if(model)return model==='recurring';
+    return /^(month|year|annual|week|quarter)/i.test(String(row?.billing_cadence||'').trim());
+  }
   const recurringRow=(row,catalogMap)=>{
     const cat=catalogMap.get(row?.service_key);
-    return !!row?.billing_cadence||lower(cat?.pricing_model)==='recurring';
+    return isRecurring(row,cat);
   };
   const serviceActive=row=>!['canceled','cancelled'].includes(lower(row?.service_status));
   let running=false;

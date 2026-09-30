@@ -1,4 +1,5 @@
 import type { Config } from "@netlify/functions";
+import {claudeMessage,extractJson,hasClaudeKey} from "./_shared/claude.mts";
 import { jsonError, requireAdmin } from "./_shared/auth.mts";
 
 type Row = Record<string, any>;
@@ -212,18 +213,28 @@ function annotationSources(r:Row){
   for(const item of Array.isArray(r.output)?r.output:[]){for(const c of Array.isArray(item?.content)?item.content:[]){for(const a of Array.isArray(c?.annotations)?c.annotations:[]){const url=clean(a?.url||a?.url_citation?.url,1000);if(/^https?:\/\//i.test(url))out.push({url,title:clean(a?.title||a?.url_citation?.title,200)||new URL(url).hostname,supports:"Public web evidence used by Audit AI"})}}}
   return out;
 }
+const AUDIT_INSTRUCTIONS=`You are the internal audit engine for Vision Make Studio (VMS). Produce a rigorous business presence audit using the exact VMS rubric supplied by the application.\n\nRules:\n1. Use the supplied live website snapshot as factual evidence for the website category. Do not claim Lighthouse/Core Web Vitals measurements; the snapshot is a lightweight live technical check.\n2. Use web search to verify the public business footprint, especially Google/local presence, reviews, reputation, and visible competitors. Prefer official business pages, the business website, Google-visible results, major review platforms, and credible directory/business sources.\n3. Never invent a Google profile, rating, review count, review recency, hours, address, competitor comparison, booking system, automation, CRM, follow-up system, or internal workflow. If evidence is insufficient, use points=null and label="N/A" and explain what needs manual review.\n4. For internal YOU-only systems (follow-up, organization, automation, integration, review request process), only score them when the supplied reviewer notes explicitly establish the fact. Otherwise return N/A.\n5. Every numeric points value must exactly match one allowed points value for that rubric item. No arbitrary numbers.\n6. Keep reasons and Assessment Notes concise, professional, client-safe, and natural. Do not say "the AI thinks" or "AI-generated". Use wording such as "The assessment found" or "Current evidence shows".\n7. Recommendations must be specific and actionable.\n8. Do not lower a score merely because evidence is unavailable; use N/A instead.\n9. Use no more web searching than necessary.\n10. Treat the "google" category key as VMS Local Presence: Google Business Profile is one source, but also use Yelp, Apple Maps, Bing, major directories, listing consistency, and other relevant public local-search evidence when available.\n11. Create priority_findings only for issues that deserve immediate attention beyond an ordinary score deduction, such as a broken or hijacked old domain, customer misdirection, serious listing/contact/hour conflicts, broken booking/contact paths, security/trust problems, or reputation risks. Do not manufacture priority findings just to fill the array.\n12. Output only the structured response schema.`;
+
+async function claudeAudit(context:Row){
+  const system=AUDIT_INSTRUCTIONS+"\n\nOUTPUT FORMAT: Reply with exactly one JSON object and nothing else (no markdown fences, no commentary). It must validate against this JSON Schema:\n"+JSON.stringify(RESPONSE_SCHEMA);
+  const out=await claudeMessage({system,user:JSON.stringify(context),maxTokens:6500,timeoutMs:42000,webSearchUses:4});
+  if(!out.text)throw Object.assign(new Error("Audit AI returned no structured result."),{status:502});
+  const parsed=extractJson(out.text,"categories");
+  if(!parsed)throw Object.assign(new Error("Audit AI returned an invalid structured result."),{status:502});
+  return {parsed,model:out.model,responseId:out.responseId,usage:out.usage,annotationSources:out.sources};
+}
 async function openAiAudit(context:Row){
   const netlifyEnv=(globalThis as any)?.Netlify?.env;
   const processEnv=((globalThis as any)?.process?.env||{}) as Record<string,string|undefined>;
   const getEnv=(name:string)=>clean(netlifyEnv?.get?.(name)??processEnv[name],500);
-  const key=getEnv("OPENAI_API_KEY");if(!key)throw Object.assign(new Error("Audit AI is not connected yet. Add OPENAI_API_KEY in Netlify first."),{status:503,code:"openai_not_configured"});
+  const key=getEnv("OPENAI_API_KEY");if(!key)throw Object.assign(new Error("Audit AI is not connected yet. Add ANTHROPIC_API_KEY in Netlify first."),{status:503,code:"openai_not_configured"});
   /* Codex workspace labels are not public OpenAI API model IDs. Keep the audit
      on a supported, economical Responses model even when an old site setting
      still contains one of those labels. */
   const requestedModel=clean(getEnv("OPENAI_AUDIT_MODEL"),120);
   const supportedModels=new Set(["gpt-4o-mini","gpt-4.1-mini","gpt-4.1","gpt-5-mini","gpt-5"]);
   const model=supportedModels.has(requestedModel)?requestedModel:"gpt-4o-mini";
-  const instructions=`You are the internal audit engine for Vision Make Studio (VMS). Produce a rigorous business presence audit using the exact VMS rubric supplied by the application.\n\nRules:\n1. Use the supplied live website snapshot as factual evidence for the website category. Do not claim Lighthouse/Core Web Vitals measurements; the snapshot is a lightweight live technical check.\n2. Use web search to verify the public business footprint, especially Google/local presence, reviews, reputation, and visible competitors. Prefer official business pages, the business website, Google-visible results, major review platforms, and credible directory/business sources.\n3. Never invent a Google profile, rating, review count, review recency, hours, address, competitor comparison, booking system, automation, CRM, follow-up system, or internal workflow. If evidence is insufficient, use points=null and label="N/A" and explain what needs manual review.\n4. For internal YOU-only systems (follow-up, organization, automation, integration, review request process), only score them when the supplied reviewer notes explicitly establish the fact. Otherwise return N/A.\n5. Every numeric points value must exactly match one allowed points value for that rubric item. No arbitrary numbers.\n6. Keep reasons and Assessment Notes concise, professional, client-safe, and natural. Do not say "the AI thinks" or "AI-generated". Use wording such as "The assessment found" or "Current evidence shows".\n7. Recommendations must be specific and actionable.\n8. Do not lower a score merely because evidence is unavailable; use N/A instead.\n9. Use no more web searching than necessary.\n10. Treat the "google" category key as VMS Local Presence: Google Business Profile is one source, but also use Yelp, Apple Maps, Bing, major directories, listing consistency, and other relevant public local-search evidence when available.\n11. Create priority_findings only for issues that deserve immediate attention beyond an ordinary score deduction, such as a broken or hijacked old domain, customer misdirection, serious listing/contact/hour conflicts, broken booking/contact paths, security/trust problems, or reputation risks. Do not manufacture priority findings just to fill the array.\n12. Output only the structured response schema.`;
+  const instructions=AUDIT_INSTRUCTIONS;
   const payload={model,store:false,instructions,input:JSON.stringify(context),tools:[{type:"web_search"}],tool_choice:"auto",max_output_tokens:6500,text:{verbosity:"medium",format:{type:"json_schema",name:"vms_business_audit",description:"VMS business audit with exact rubric selections and evidence.",strict:true,schema:RESPONSE_SCHEMA}}};
   const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),42000);
   try{
@@ -283,8 +294,8 @@ export default async(req:Request)=>{
     stage="website_scan";
     if(websiteUrl){try{website=await buildWebsiteSnapshot(websiteUrl)}catch(e:any){websiteError=clean(e?.message,500)}}
     const context={business:{name:businessName,industry:clean(body.industry??body.businessIndustry,180),website_url:websiteUrl,google_url:googleUrl,reviewer_notes:reviewerNotes,review_platforms:reviewPlatforms.slice(0,8)},live_website_snapshot:website,website_check_error:websiteError||null,vms_rubric:rubricForPrompt(),task:"Score only what can be supported by evidence. Use web search for public local/review evidence and the live snapshot for website evidence. Return N/A for internal facts not established by reviewer notes."};
-    stage="openai";
-    const ai=await openAiAudit(context);
+    stage="ai";
+    const ai=hasClaudeKey()?await claudeAudit(context):await openAiAudit(context);
     stage="finalize";
     const result=finalize(ai.parsed,website,ai);if(websiteError)result.warnings.unshift(`Website live check: ${websiteError}`);
     return Response.json({ok:true,result},{headers:{"Cache-Control":"no-store"}});

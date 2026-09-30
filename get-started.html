@@ -106,7 +106,7 @@
     <section class="form-card" aria-labelledby="formTitle">
       <div id="formWrap">
         <div class="form-head"><div><h2 id="formTitle">Your VMS request</h2><p>Usually takes about 2 minutes.</p></div><span class="step-badge">Secure request</span></div>
-        <form id="leadForm" novalidate>
+        <form id="leadForm" novalidate><div aria-hidden="true" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden"><label>Leave this field empty<input type="text" name="companyWebsite" id="companyWebsite" tabindex="-1" autocomplete="off"></label></div>
           <div class="form-grid">
             <div class="field"><label for="businessName">Business name *</label><input id="businessName" name="businessName" autocomplete="organization" required placeholder="Your business"></div>
             <div class="field"><label for="contactName">Your name</label><input id="contactName" name="contactName" autocomplete="name" placeholder="Your name"></div>
@@ -186,7 +186,7 @@
     if(!businessName||!email){$('errorBox').textContent='Please enter your business name and email.';$('errorBox').classList.add('show');(!businessName?$('businessName'):$('email')).focus();return}
     if(!$('email').checkValidity()){$('errorBox').textContent='Please enter a valid email address.';$('errorBox').classList.add('show');$('email').focus();return}
     const submit=$('submitBtn');submit.disabled=true;submit.textContent='Sending your request…';
-    const payload={businessName,contactName:$('contactName').value.trim(),email,phone:$('phone').value.trim(),website:$('website').value.trim(),goal:$('goal').value,contactMethod:$('contactMethod').value,contactTime:$('contactTime').value.trim(),serviceIds:[...selected],message:$('message').value.trim(),source:'public-get-started',...tracking()};
+    const payload={companyWebsite:($('companyWebsite')||{}).value||'',intakeToken:await window.__vmsGetIntakeToken(),businessName,contactName:$('contactName').value.trim(),email,phone:$('phone').value.trim(),website:$('website').value.trim(),goal:$('goal').value,contactMethod:$('contactMethod').value,contactTime:$('contactTime').value.trim(),serviceIds:[...selected],message:$('message').value.trim(),source:'public-get-started',...tracking()};
     try{const r=await fetch('/api/intake',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(payload)});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||'Your request could not be submitted.');$('formWrap').style.display='none';$('successState').classList.add('show');window.scrollTo({top:0,behavior:'smooth'})}
     catch(err){$('errorBox').textContent=err.message||'Your request could not be submitted. Please try again or email info@visionmakestudio.com.';$('errorBox').classList.add('show');submit.disabled=false;submit.textContent='Send my VMS request'}
   });
@@ -194,5 +194,5 @@
 })();
 </script>
 <script id="vms-phase11-get-started-url" src="assets/vms-get-started-url.js" defer></script>
-</body>
+<script>(function(){var t='',t0=0;window.__vmsGetIntakeToken=async function(){if(t&&Date.now()-t0<3*3600e3)return t;try{var r=await fetch('/api/intake',{headers:{Accept:'application/json'},cache:'no-store'});var j=await r.json();t=j.token||'';t0=Date.now()}catch(e){}return t};window.__vmsGetIntakeToken()})();</script></body>
 </html>

@@ -981,8 +981,8 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
 </div>
 <div class="status-strip">
 <div class="stat green"><span>ACTIVE SERVICES</span><strong id="homeActiveServiceCount">0</strong><small id="homeActiveServiceNames">Connected to your account</small></div>
-<div class="stat"><span>PROJECT PROGRESS</span><strong>62%</strong><small>Website revamp</small></div>
-<div class="stat"><span>QR SCANS</span><strong id="homeQrScans">184</strong><small>This month</small></div>
+<div class="stat"><span>MONTHLY PLAN</span><strong id="homeMonthlyPlan">$0.00</strong><small id="homeMonthlyPlanNote">Active subscriptions</small></div>
+<div class="stat"><span>QR SCANS</span><strong id="homeQrScans">0</strong><small>This month</small></div>
 <div class="stat orange"><span>VMS NEEDS FROM YOU</span><strong id="homeNeedsCount">0</strong><small id="homeNeedsLabel">No missing files</small></div>
 </div>
 <div class="grid">
@@ -1010,11 +1010,11 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
 <h3>Your Consultation</h3>
 <p>Personal follow-up with Vision Make Studio</p>
 </div>
-<span class="badge green">Scheduled</span>
+<span class="badge green" id="homeConsultBadge">Scheduled</span>
 </div>
 <div class="kv">
-<div class="kv-item"><span>DATE</span><strong id="homeConsultDate">Aug 18, 2026</strong></div>
-<div class="kv-item"><span>TIME</span><strong id="homeConsultTime">6:00 PM</strong></div>
+<div class="kv-item"><span>DATE</span><strong id="homeConsultDate">Not scheduled</strong></div>
+<div class="kv-item"><span>TIME</span><strong id="homeConsultTime">—</strong></div>
 <div class="kv-item"><span>METHOD</span><strong id="homeConsultMethod">Phone Call</strong></div>
 <div class="kv-item"><span>WITH</span><strong>Vision Make Studio</strong></div>
 </div>
@@ -1071,35 +1071,14 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
 </section>
 <section class="section" id="section-qrs">
 <div class="intro">
-<p>Manage the Smart QR codes included with your account. You can update your own name, destination, call-to-action, and colors, while VMS keeps subscription, suspension, and permanent-delete controls protected in Admin.</p>
+<p>Create and manage your QR codes. A <strong>static</strong> QR always goes to the same place. A <strong>tracked</strong> QR counts scans and lets you change where it goes without reprinting.</p>
 <div class="intro-actions">
 <button class="btn" id="requestQrHelpBtn" type="button">Ask VMS for Help</button>
-<button class="btn primary" id="editQrBtn" type="button">Edit QR</button>
+<button class="btn primary" id="createQrBtn" type="button">+ Create QR</button>
 </div>
 </div>
-<div class="card">
-<div class="qr-card">
-<div class="qr-preview"><canvas height="144" id="qrCanvas" width="144"></canvas></div>
-<div>
-<div class="card-title-row"><strong id="qrNameText" style="font-size:11px;color:var(--navy)">Main Business QR</strong><span class="badge green" id="qrStatusBadge">Active</span></div>
-<span id="qrDestinationText" style="display:block;font-size:8px;color:var(--muted);margin-top:5px">Destination: https://example.com</span>
-<div class="metric-row">
-<div class="metric"><span>TOTAL SCANS</span><strong id="qrTotalScans">1,284</strong></div>
-<div class="metric"><span>THIS MONTH</span><strong id="qrMonthScans">184</strong></div>
-<div class="metric"><span>LAST SCAN</span><strong id="qrLastScan">Today</strong></div>
-</div>
-</div>
-<div class="list-actions">
-<button class="btn small" id="viewQrReportBtn" type="button">View Activity</button>
-<button class="btn small" id="downloadQrBtn" type="button">Download QR</button>
-</div>
-</div>
-<div class="qr-settings">
-<div class="qr-setting"><span>TYPE</span><strong id="qrTypeText">Dynamic Smart QR</strong></div>
-<div class="qr-setting"><span>CALL TO ACTION</span><strong id="qrCtaText">Scan to connect</strong></div>
-<div class="qr-setting"><span>LAST UPDATED</span><strong id="qrUpdatedText">Aug 17, 2026</strong></div>
-</div>
-</div>
+<div class="qr-access" id="qrAccessNote"></div>
+<div class="qr-list" id="qrList"><div class="empty">Loading your QR codes…</div></div>
 </section>
 <section class="section" id="section-linkhub">
 <div class="intro client-linkhub-head">
@@ -1412,13 +1391,14 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
 <button class="btn primary" id="scheduleFromContactBtn" type="button">Choose a Time</button>
 </div>
 <div class="card">
-<div class="card-head"><div><h3>Current Follow-up</h3><p>Your scheduled VMS contact</p></div><span class="badge green">Scheduled</span></div>
+<div class="card-head"><div><h3>Current Follow-up</h3><p>Your scheduled VMS contact</p></div><span class="badge green" id="contactStatusBadge">Scheduled</span></div>
 <div class="kv">
-<div class="kv-item"><span>DATE</span><strong id="contactDate">Aug 18, 2026</strong></div>
+<div class="kv-item"><span>DATE</span><strong id="contactDate">Not scheduled</strong></div>
 <div class="kv-item"><span>TIME</span><strong id="contactTime">6:00 PM</strong></div>
 <div class="kv-item"><span>METHOD</span><strong id="contactMethod">Phone Call</strong></div>
-<div class="kv-item"><span>PURPOSE</span><strong>Website review</strong></div>
+<div class="kv-item"><span>PURPOSE</span><strong id="contactPurpose">Website review</strong></div>
 </div>
+<div class="followup-actions" id="followupActions"><button class="btn small primary" id="rescheduleFollowupBtn" type="button">Reschedule</button><button class="btn small red" id="cancelFollowupBtn" type="button">Cancel follow-up</button></div>
 </div>
 </div>
 </section>
@@ -1426,19 +1406,26 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
 </main>
 </div>
 <!-- QR EDITOR MODAL -->
+<div class="modal-backdrop" id="qrDeleteModal">
+<div class="modal">
+<div class="modal-head"><h3>Delete this QR?</h3><button class="close" data-close="qrDeleteModal" type="button">×</button></div>
+<div class="modal-body"><p id="qrDeleteCopy" style="margin:0 0 10px;color:var(--navy);font-size:13px;line-height:1.5"></p><div class="note" id="qrDeleteNote"></div></div>
+<div class="modal-foot"><button class="btn" data-close="qrDeleteModal" type="button">Cancel</button><button class="btn" id="qrArchiveBtn" type="button">Archive instead</button><button class="btn red" id="qrDeleteConfirmBtn" type="button">Delete permanently</button></div>
+</div>
+</div>
 <div class="modal-backdrop" id="qrEditorModal">
 <div class="modal">
-<div class="modal-head"><h3>Edit My Smart QR</h3><button class="close" data-close="qrEditorModal" type="button">×</button></div>
+<div class="modal-head"><h3 id="qrEditorTitle">Create QR</h3><button class="close" data-close="qrEditorModal" type="button">×</button></div>
 <div class="modal-body">
 <div class="form-grid">
-<div class="field"><label>QR NAME</label><input id="qrEditName" placeholder="Main Business QR"/></div>
-<div class="field"><label>QR TYPE</label><select id="qrEditType"><option>Dynamic Smart QR</option><option>Static QR</option></select></div>
+<div class="field"><label>QR NAME</label><input id="qrEditName" placeholder="e.g. Menu, Reviews, Front window"/></div>
+<div class="field"><label>QR MODE</label><select id="qrEditType"></select></div>
 <div class="field full"><label>DESTINATION URL</label><input id="qrEditDestination" inputmode="url" placeholder="https://..."/></div>
 <div class="field full"><label>CALL TO ACTION</label><input id="qrEditCta" placeholder="Scan to connect"/></div>
 <div class="field"><label>QR COLOR</label><input id="qrEditForeground" type="color" value="#003049"/></div>
 <div class="field"><label>BACKGROUND COLOR</label><input id="qrEditBackground" type="color" value="#FFFFFF"/></div>
 </div>
-<div class="note" style="margin-top:10px">Saving a Dynamic Smart QR destination updates where the live QR sends visitors. Subscription status, suspension, archive, and permanent deletion remain protected VMS Admin controls.</div>
+<div class="note" style="margin-top:10px" id="qrEditorNote">A tracked QR keeps the same printed code even if you change where it goes later.</div>
 </div>
 <div class="modal-foot"><button class="btn" data-close="qrEditorModal" type="button">Cancel</button><button class="btn primary" id="saveQrChangesBtn" type="button">Save QR Changes</button></div>
 </div>
@@ -1613,19 +1600,8 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
 <!-- QR ACTIVITY MODAL -->
 <div class="modal-backdrop" id="qrReportModal">
 <div class="modal">
-<div class="modal-head"><h3>Smart QR Activity</h3><button class="close" data-close="qrReportModal" type="button">×</button></div>
-<div class="modal-body">
-<div class="status-strip" style="grid-template-columns:repeat(3,1fr)">
-<div class="stat"><span>TOTAL SCANS</span><strong>1,284</strong><small>All time</small></div>
-<div class="stat green"><span>THIS MONTH</span><strong>184</strong><small>August</small></div>
-<div class="stat"><span>LAST SCAN</span><strong style="font-size:15px">Today</strong><small>7:42 PM</small></div>
-</div>
-<div class="timeline">
-<div class="timeline-item"><div class="dot">QR</div><div><strong>Scan recorded</strong><span>Today · 7:42 PM · New York, NY</span></div></div>
-<div class="timeline-item"><div class="dot">QR</div><div><strong>Scan recorded</strong><span>Today · 5:18 PM · New York, NY</span></div></div>
-<div class="timeline-item"><div class="dot">QR</div><div><strong>Scan recorded</strong><span>Yesterday · 9:06 PM · New Jersey</span></div></div>
-</div>
-</div>
+<div class="modal-head"><h3 id="qrReportTitle">QR Activity</h3><button class="close" data-close="qrReportModal" type="button">×</button></div>
+<div class="modal-body" id="qrReportBody"></div>
 <div class="modal-foot"><button class="btn primary" data-close="qrReportModal" type="button">Done</button></div>
 </div>
 </div>
@@ -1640,6 +1616,7 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
 <div class="floating-menu" id="linkHubActionMenu"></div>
 <div class="floating-menu" id="notificationActionMenu"></div>
 <div class="toast" id="toast"></div>
+<script src="../assets/vms-qrcode.js"></script>
 <script>
 (function(){
   const STORAGE='vms_client_portal_v3';
@@ -1685,35 +1662,14 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
   }
 
   const defaultState={
-    services:[
-      {id:'website-revamp',name:'Website Revamp',icon:'WEB',description:'Your current website project, progress, approvals, and items VMS needs from you.',billing:'One-time project',status:'In Progress',badge:'blue',section:'projects'},
-      {id:'smart-qr',name:'VMS Smart QR',icon:'QR',description:'Edit your QR destination and design, download the QR, and review scan activity.',billing:'Setup + monthly',status:'Active',badge:'green',section:'qrs'},
-      {id:'linkhub',name:'VMS LinkHub',icon:'LH',description:'Your editable Smart Business Card with profile details, links, colors, and analytics.',billing:'Recurring service',status:'Active',badge:'green',section:'linkhub'},
-      {id:'vms-audit',name:'VMS Business & Website Audit',icon:'AUD',description:'View your scores, findings, recommendations, and downloadable client report.',billing:'One-time service',status:'Ready',badge:'green',section:'audits'}
-    ],
-    catalog:[
-      {id:'website-care',name:'Monthly Website Care',icon:'WEB',description:'Ongoing updates, content changes, and support for a VMS-managed website.',mode:'Request First',price:'Custom plan'},
-      {id:'local-presence',name:'Local Presence',icon:'LOCAL',description:'Improve and maintain business information across Google, Yelp, Apple Maps, Bing, and other listings.',mode:'Request First',price:'Request pricing'},
-      {id:'review-growth',name:'Review Growth',icon:'REV',description:'A focused service for building a stronger, more consistent customer review system.',mode:'Request First',price:'Request pricing'},
-      {id:'print-package',name:'QR Print & Display Package',icon:'PRINT',description:'Branded stickers, countertop displays, signs, and print-ready QR artwork.',mode:'Request First',price:'Request pricing'},
-      {id:'additional-smart-qr',name:'Additional VMS Smart QR',icon:'QR+',description:'Add another managed Dynamic QR campaign with tracking and client reporting.',mode:'Buy Now',price:'$99 setup + $19/month'},
-      {id:'website-service',name:'New Website Service',icon:'SITE',description:'Request a new website, redesign, landing page, booking page, or custom website work.',mode:'Request First',price:'Custom quote'}
-    ],
+    services:[],
+    catalog:[],
     requests:[],
     files:[],
-    requestedFiles:[
-      {id:'rf-home-photos',title:'Homepage photos',project:'Website Revamp',instructions:'Upload the photos you want VMS to consider for the next homepage design pass.',due:'Aug 20, 2026',status:'Requested'}
-    ],
-    notifications:[
-      {id:'n-file',category:'Action Needed',icon:'FILE',title:'VMS needs your homepage photos',detail:'Upload the images for the next Website Revamp design pass.',at:'Today · 4:32 PM',unread:true,section:'files'},
-      {id:'n-message',category:'Messages',icon:'MSG',title:'New message from Vision Make Studio',detail:'Your next design pass is ready once the requested photos arrive.',at:'Today · 4:30 PM',unread:true,section:'requests'},
-      {id:'n-qr',category:'Activity',icon:'QR',title:'Your Smart QR reached 184 scans this month',detail:'Open QR Codes to review total scans and recent activity.',at:'Today · 12:05 PM',unread:true,section:'qrs'},
-      {id:'n-audit',category:'Activity',icon:'AUD',title:'Your business audit is ready',detail:'View the completed findings and recommendations in Audits.',at:'Aug 14 · 10:15 AM',unread:false,section:'audits'},
-      {id:'n-project',category:'Activity',icon:'WEB',title:'Website project updated',detail:'Your Website Revamp is now in Design & Content.',at:'Aug 14 · 9:48 AM',unread:false,section:'projects'},
-      {id:'n-payment',category:'Activity',icon:'PAY',title:'Payment confirmed',detail:'Your latest VMS payment was added to Billing & Subscription.',at:'Aug 13 · 8:13 PM',unread:false,section:'billing'}
-    ],
+    requestedFiles:[],
+    notifications:[],
     activity:[],
-    qr:{name:'Main Business QR',type:'Dynamic Smart QR',destination:'https://example.com',cta:'Scan to connect',foreground:'#003049',background:'#FFFFFF',status:'Active',totalScans:1284,monthScans:184,lastScan:'Today',updated:'Aug 17, 2026'},
+    qr:{},
     linkHub:{
       status:'Active',businessName:'Your Business',title:'Your Business',bio:'Everything your customers need, all in one place.',phone:'(000) 000-0000',email:'hello@business.com',website:'https://example.com',address:'New York, NY',mapUrl:'https://maps.google.com',photoData:'',views:0,clicks:0,
       theme:'navy',style:{...THEME_PRESETS.navy},
@@ -1728,11 +1684,23 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
       restaurant:{enabled:false,name:'Your Business',cuisine:'',description:'',phone:'',website:'',address:'',mapsUrl:'',hours:'',reservationUrl:'',orderUrl:'',showPrices:true,showPhotos:true,sections:[]},
       visit:{enabled:false,coverPhotoData:'',name:'',category:'',bio:'',phone:'',email:'',address:'',mapsUrl:'',hours:defaultVisitHours()}
     },
-    schedule:{date:'2026-08-18',time:'18:00',method:'Phone Call',purpose:'Website review'},
-    subscription:{status:'Active',cancelAtPeriodEnd:false,paused:false}
+    schedule:null,
+    subscription:{status:'Active',cancelAtPeriodEnd:false,paused:false},
+    monthlyPlan:{amount:0,count:0}
   };
 
-  let state=load();
+  const DEMO_NOTIFICATION_IDS=new Set(['n-file','n-message','n-qr','n-audit','n-project','n-payment']);
+  function stripDemo(st){
+    try{
+      st.notifications=(st.notifications||[]).filter(n=>!DEMO_NOTIFICATION_IDS.has(n.id));
+      st.requestedFiles=(st.requestedFiles||[]).filter(f=>f.id!=='rf-home-photos');
+      const sc=st.schedule;if(sc&&sc.date==='2026-08-18'&&sc.time==='18:00'&&sc.purpose==='Website review')st.schedule=null;
+      if(st.qr&&(st.qr.totalScans===1284||st.qr.name==='Main Business QR'))st.qr={};
+      if(!st.monthlyPlan)st.monthlyPlan={amount:0,count:0};
+    }catch(e){}
+    return st;
+  }
+  let state=stripDemo(load());
   const sessionFiles=new Map();
 
   function load(){
@@ -1929,16 +1897,22 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
   }
 
   function renderSchedule(){
-    const s=state.schedule;
-    ['homeConsultDate','contactDate'].forEach(id=>$(id).textContent=prettyDate(s.date));
-    ['homeConsultTime','contactTime'].forEach(id=>$(id).textContent=prettyTime(s.time));
-    $('homeConsultMethod').textContent=s.method;
-    $('contactMethod').textContent=s.method;
-    $('scheduleDate').value=s.date;
-    $('scheduleTime').value=s.time;
-    $('scheduleMethod').value=s.method;
-    $('schedulePurpose').value=s.purpose;
-    document.querySelectorAll('.choice').forEach(c=>c.classList.toggle('selected',c.dataset.method===s.method));
+    const s=state.schedule,has=!!(s&&s.date);
+    ['homeConsultDate','contactDate'].forEach(id=>$(id).textContent=has?prettyDate(s.date):'Not scheduled');
+    ['homeConsultTime','contactTime'].forEach(id=>$(id).textContent=has?prettyTime(s.time):'—');
+    $('homeConsultMethod').textContent=has?s.method:'—';
+    $('contactMethod').textContent=has?s.method:'—';
+    $('contactPurpose').textContent=has?(s.purpose||'Follow-up'):'—';
+    const tomorrow=new Date(Date.now()+86400000).toISOString().slice(0,10);
+    $('scheduleDate').value=has?s.date:tomorrow;
+    $('scheduleTime').value=has?s.time:'10:00';
+    $('scheduleMethod').value=has?s.method:'Phone Call';
+    $('schedulePurpose').value=has?s.purpose:'General follow-up';
+    document.querySelectorAll('.choice').forEach(c=>c.classList.toggle('selected',has&&c.dataset.method===s.method));
+    [['contactStatusBadge'],['homeConsultBadge']].forEach(([id])=>{const b=$(id);if(b){b.textContent=has?'Scheduled':'None';b.className='badge '+(has?'green':'gray')}});
+    const acts=$('followupActions');if(acts)acts.style.display=has?'flex':'none';
+    const rs=$('rescheduleBtn');if(rs)rs.textContent=has?'Reschedule':'Schedule a follow-up';
+    const cb=$('scheduleFromContactBtn');if(cb)cb.textContent=has?'Change Time':'Choose a Time';
   }
 
   function renderActivity(){
@@ -1977,7 +1951,7 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
         <div class="catalog-meta"><span class="badge">${esc(s.price)}</span></div>
         <button class="btn primary" data-service-action="${esc(s.id)}" type="button">${s.mode==='Buy Now'?'Start Purchase':'Request Service'}</button>
       </article>
-    `).join('')||'<div class="empty" style="grid-column:1/-1">No additional services are published to the Client Portal right now.</div>';
+    `).join('')||'<div class="empty" style="grid-column:1/-1">'+(state.services.length?'You already have every service VMS currently offers.':'No additional services are published to the Client Portal right now.')+'</div>';
   }
 
   function renderRequests(){
@@ -2082,20 +2056,7 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
     if(action==='delete'){state.notifications=state.notifications.filter(n=>n.id!==item.id);save();renderNotifications();renderActivity();toast('Notification deleted')}
   }
 
-  function renderQr(){
-    const q=state.qr;
-    $('qrNameText').textContent=q.name;
-    $('qrDestinationText').textContent=`Destination: ${q.destination}`;
-    $('qrStatusBadge').textContent=q.status;
-    $('qrTotalScans').textContent=Number(q.totalScans||0).toLocaleString();
-    $('qrMonthScans').textContent=Number(q.monthScans||0).toLocaleString();
-    $('homeQrScans').textContent=Number(q.monthScans||0).toLocaleString();
-    $('qrLastScan').textContent=q.lastScan;
-    $('qrTypeText').textContent=q.type;
-    $('qrCtaText').textContent=q.cta;
-    $('qrUpdatedText').textContent=q.updated;
-    drawQr();
-  }
+  function renderQr(){renderQrList()}
 
   function initials(value){
     const parts=String(value||'Your Business').trim().split(/\s+/).filter(Boolean);
@@ -2278,20 +2239,169 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
     let label='Active';
     if(sub.cancelAtPeriodEnd)label='Canceling Sep 13';
     if(sub.paused)label='Pause Scheduled';
-    $('billingStatusText').textContent=label;
+    const bs=$('billingStatusText');if(bs)bs.textContent=label;
   }
 
+
+  /* ===================== Live data + QR manager ===================== */
+  let qrRows=[],qrScans=[],qrAccess={static:false,tracked:false,client:false,ready:false},qrEditingId=null,qrDeleteId=null;
+  const LV_ACTIVE=new Set(['active','completed']);
+  const LV_BAD_BILLING=new Set(['pending','unpaid','past_due','past due','paused','suspended','canceled','cancelled','awaiting_payment','incomplete']);
+  const lvLow=v=>String(v??'').trim().toLowerCase();
+  const lvMoney=n=>'$'+Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  function lvIsRecurring(row,cat){const m=lvLow(cat&&cat.pricing_model);if(m)return m==='recurring';return /^(month|year|annual|week|quarter)/.test(lvLow(row&&row.billing_cadence))}
+  function lvSection(c){const fam=c.metadata&&c.metadata.family;if(fam==='qr')return 'qrs';if(fam==='linkhub')return 'linkhub';if(/audit/i.test(String(c.id||'')+' '+String(c.name||'')))return 'audits';if(['Websites','Packages'].includes(c.category)||/website/i.test(c.name||''))return 'projects';return 'requests'}
+  function lvIcon(c){const fam=c.metadata&&c.metadata.family;if(fam==='qr')return 'QR';if(fam==='linkhub')return 'LH';if(/audit/i.test(c.name||''))return 'AUD';if(c.category==='Websites')return 'WEB';if(c.category==='Reputation')return 'REV';if(c.category==='Local Growth')return 'LOCAL';if(c.kind==='package')return 'PKG';if(c.kind==='subscription')return 'SUB';return 'VMS'}
+  function lvPrice(c){const model=lvLow(c.pricing_model);if(model==='free')return 'Free';const rec=model==='recurring',n=Number(rec?c.recurring_price:c.one_time_price);if(!Number.isFinite(n)||n<=0)return 'Request pricing';return (c.starting_at?'From ':'')+lvMoney(n)+(rec?'/'+(/^(y|a)/i.test(c.cadence||'')?'yr':'mo'):'')}
+  async function portalSession(){
+    try{const sb=await window.VMSAuth.client();if(!sb)return null;const r=await sb.auth.getSession();const session=r&&r.data&&r.data.session;return session?{sb,session}:null}catch(e){return null}
+  }
+  async function qrApi(method,body){
+    const ps=await portalSession();if(!ps)throw new Error('Please sign in again.');
+    const res=await fetch('/api/qr',{method,headers:{Authorization:'Bearer '+ps.session.access_token,...(body?{'Content-Type':'application/json'}:{})},body:body?JSON.stringify(body):undefined});
+    const data=await res.json().catch(()=>({}));if(!res.ok)throw new Error(data.error||'Could not complete that QR request.');return data;
+  }
+  async function loadQrs(paint=true){
+    try{const d=await qrApi('GET');qrRows=(d.qrs||[]).filter(q=>q);qrScans=d.scans||[]}catch(e){console.warn('VMS QR load',e)}
+    if(paint)renderQrList();
+  }
+  async function loadLive(){
+    try{
+      const ps=await portalSession();if(!ps)return;
+      const {sb,session}=ps;
+      const cr=await sb.from('clients').select('id,business_name,owner_email').ilike('owner_email',session.user.email).maybeSingle();
+      const client=cr&&cr.data;
+      if(!client){qrAccess={static:false,tracked:false,client:false,ready:true};state.services=[];state.catalog=[];renderAll();return}
+      const [sr,cat]=await Promise.all([sb.from('client_services').select('*').eq('client_id',client.id),sb.from('service_catalog').select('*').eq('status','Published')]);
+      const rows=(sr&&sr.data)||[],catalog=(cat&&cat.data)||[],byId=new Map(catalog.map(c=>[String(c.id),c]));
+      const active=rows.filter(r=>LV_ACTIVE.has(lvLow(r.service_status))&&!LV_BAD_BILLING.has(lvLow(r.billing_status)));
+      const visible=active.filter(r=>{const c=byId.get(String(r.service_key));return !c||(c.kind!=='internal'&&c.sales_mode!=='Internal')});
+      const owned=new Set(active.map(r=>String(r.service_key)));
+      state.services=visible.map(r=>{
+        const c=byId.get(String(r.service_key))||{},rec=lvIsRecurring(r,c),n=r.agreed_price!=null?Number(r.agreed_price):Number(rec?c.recurring_price:c.one_time_price);
+        const price=Number.isFinite(n)&&n>0?lvMoney(n):'';
+        return {id:r.service_key,name:r.service_name||c.name||r.service_key,icon:lvIcon(c),description:c.description||'',billing:rec?(price?price+'/'+(/^(y|a)/i.test(r.billing_cadence||c.cadence||'')?'yr':'mo'):'Subscription'):(price?'One-time · '+price:'One-time service'),status:'Active',badge:'green',section:lvSection(Object.assign({id:r.service_key},c))};
+      });
+      state.catalog=catalog.filter(c=>c.portal_visible&&c.kind!=='internal'&&c.sales_mode!=='Internal'&&!owned.has(String(c.id))).sort((a,b)=>(a.display_order||0)-(b.display_order||0)).map(c=>({id:c.id,name:c.name,icon:lvIcon(c),description:c.description||'',mode:c.sales_mode==='Buy Now'?'Buy Now':'Request First',price:lvPrice(c)}));
+      let monthly=0,subs=0;
+      active.forEach(r=>{const c=byId.get(String(r.service_key));if(c&&(c.kind==='internal'||c.sales_mode==='Internal'))return;if(!lvIsRecurring(r,c))return;const n=r.agreed_price!=null?Number(r.agreed_price):Number((c&&c.recurring_price)||0);if(Number.isFinite(n)){monthly+=n;subs++}});
+      state.monthlyPlan={amount:Math.round(monthly*100)/100,count:subs};
+      let st=false,tr=false;
+      active.forEach(r=>{const c=byId.get(String(r.service_key));if(!c)return;const inc=(Array.isArray(c.included)?c.included:[]).map(String);if((c.metadata&&c.metadata.family)==='qr'||inc.some(x=>/smart qr/i.test(x)))st=true;if((c.metadata&&c.metadata.analyticsIncluded)===true||inc.some(x=>/smart scan activity|linkhub pro/i.test(x)))tr=true});
+      qrAccess={static:st||tr,tracked:tr,client:true,ready:true,business:client.business_name};
+      await loadQrs(false);
+      save();renderAll();
+    }catch(e){console.warn('VMS portal live data',e)}
+  }
+
+  const qrTarget=q=>q.mode==='dynamic'&&q.code?location.origin+'/q/'+q.code:q.destination;
+  function qrDrawTo(canvas,text,size,fg,bg,margin=0){
+    const host=document.createElement('div');host.style.cssText='position:fixed;left:-9999px;top:0';document.body.appendChild(host);
+    try{
+      const inner=size-margin*2;
+      new QRCode(host,{text,width:inner,height:inner,colorDark:fg||'#003049',colorLight:bg||'#FFFFFF',correctLevel:QRCode.CorrectLevel.Q});
+      const src=host.querySelector('canvas');canvas.width=size;canvas.height=size;
+      const ctx=canvas.getContext('2d');ctx.fillStyle=bg||'#FFFFFF';ctx.fillRect(0,0,size,size);ctx.drawImage(src,margin,margin,inner,inner);
+    }catch(e){console.warn('VMS QR draw',e)}finally{host.remove()}
+  }
+  function qrStats(q){
+    const mine=qrScans.filter(e=>String(e.qr_id)===String(q.id)&&lvLow(e.device_type)!=='bot');
+    const start=new Date(new Date().getFullYear(),new Date().getMonth(),1).getTime();
+    const month=mine.filter(e=>new Date(e.scanned_at).getTime()>=start).length;
+    const times=mine.map(e=>new Date(e.scanned_at).getTime()).filter(Number.isFinite);
+    return {total:Math.max(Number(q.scan_count||0),mine.length),month,last:times.length?new Date(Math.max(...times)):null,events:mine};
+  }
+  const qrWhen=d=>d?d.toLocaleString([],{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'No scans yet';
+  function renderQrList(){
+    const box=$('qrList'),note=$('qrAccessNote');if(!box)return;
+    const live=qrRows.filter(q=>q.mode==='dynamic'&&q.status!=='archived');
+    $('homeQrScans').textContent=live.reduce((n,q)=>n+qrStats(q).month,0).toLocaleString();
+    const create=$('createQrBtn');if(create)create.disabled=!(qrAccess.ready&&qrAccess.static);
+    if(!qrAccess.ready){note.innerHTML='';}
+    else if(!qrAccess.client){note.innerHTML='<div class="note">Your VMS client account is not fully set up yet. Contact VMS and we will finish it.</div>';}
+    else if(qrAccess.tracked){note.innerHTML='<div class="note"><strong>Tracked QR codes are on.</strong> Scans are counted and you can change where a tracked QR goes without reprinting it.</div>';}
+    else if(qrAccess.static){note.innerHTML='<div class="note"><strong>Static QR codes are included.</strong> They never change and scans are not counted. Tracked QR codes (scan counts and an editable destination) come with LinkHub Pro. <button class="btn small" data-section-jump="services" type="button" style="margin-left:6px">See services</button></div>';}
+    else{note.innerHTML='<div class="note">QR codes are part of VMS Smart QR, which is not on your account yet. <button class="btn small primary" data-section-jump="services" type="button" style="margin-left:6px">Add VMS Smart QR</button></div>';}
+    if(!qrRows.length){box.innerHTML='<div class="empty">'+(qrAccess.ready&&qrAccess.static?'You have no QR codes yet. Tap “+ Create QR” to make your first one.':(qrAccess.ready?'No QR codes on your account.':'Loading your QR codes…'))+'</div>';return}
+    box.innerHTML=qrRows.map(q=>{
+      const tracked=q.mode==='dynamic',st=qrStats(q),archived=q.status==='archived';
+      return `<article class="card qr-item" data-qr="${esc(q.id)}"><div class="qr-card">
+        <div class="qr-preview"><canvas width="144" height="144" data-qr-canvas="${esc(q.id)}" aria-label="QR code for ${esc(q.name)}"></canvas></div>
+        <div>
+          <div class="card-title-row"><strong style="font-size:13px;color:var(--navy)">${esc(q.name)}</strong><span class="badge ${archived?'gray':'green'}">${archived?'Archived':'Active'}</span><span class="badge ${tracked?'blue':''}">${tracked?'Tracked':'Static'}</span></div>
+          <span style="display:block;font-size:11px;color:var(--muted);margin-top:5px;word-break:break-all">Goes to: ${esc(q.destination)}</span>
+          ${tracked?`<div class="metric-row"><div class="metric"><span>TOTAL SCANS</span><strong>${st.total.toLocaleString()}</strong></div><div class="metric"><span>THIS MONTH</span><strong>${st.month.toLocaleString()}</strong></div><div class="metric"><span>LAST SCAN</span><strong>${esc(qrWhen(st.last))}</strong></div></div>`:'<div class="note" style="margin-top:8px">Static QR: it always opens the same address, so scans are not counted.</div>'}
+        </div>
+        <div class="list-actions">
+          <button class="btn small primary" data-qr-act="edit" data-id="${esc(q.id)}" type="button">Edit</button>
+          <button class="btn small" data-qr-act="download" data-id="${esc(q.id)}" type="button">Download</button>
+          ${tracked?`<button class="btn small" data-qr-act="activity" data-id="${esc(q.id)}" type="button">Activity</button>`:''}
+          <button class="btn small red" data-qr-act="delete" data-id="${esc(q.id)}" type="button">Delete</button>
+        </div></div></article>`;
+    }).join('');
+    box.querySelectorAll('canvas[data-qr-canvas]').forEach(c=>{const q=qrRows.find(r=>String(r.id)===c.dataset.qrCanvas);if(q)qrDrawTo(c,qrTarget(q),144,q.qr_color,q.bg_color,12)});
+  }
+  function openQrEditor(id){
+    if(!qrAccess.ready||!qrAccess.static){toast('QR codes are part of VMS Smart QR. Add it under My Services.');return}
+    const q=id?qrRows.find(r=>String(r.id)===String(id)):null;qrEditingId=q?q.id:null;
+    $('qrEditorTitle').textContent=q?'Edit QR':'Create QR';
+    $('qrEditName').value=q?q.name:'';
+    const sel=$('qrEditType');
+    sel.innerHTML='<option value="static">Static QR — always goes to the same place</option><option value="dynamic">Tracked QR — counts scans, destination can change</option>';
+    const dyn=sel.querySelector('option[value="dynamic"]'),isTracked=!!(q&&q.mode==='dynamic');
+    dyn.disabled=!qrAccess.tracked&&!isTracked;if(dyn.disabled)dyn.textContent='Tracked QR — needs LinkHub Pro';
+    sel.value=q?(isTracked?'dynamic':'static'):(qrAccess.tracked?'dynamic':'static');
+    sel.disabled=isTracked;
+    $('qrEditDestination').value=q?q.destination:'';
+    $('qrEditCta').value=q?(q.cta||''):'Scan to connect';
+    $('qrEditForeground').value=(q&&q.qr_color)||'#003049';
+    $('qrEditBackground').value=(q&&q.bg_color)||'#FFFFFF';
+    $('saveQrChangesBtn').textContent=q?'Save Changes':'Create QR';
+    $('qrEditorNote').textContent=isTracked?'This is a tracked QR. The printed code stays the same when you change where it goes.':'A static QR contains its web address directly, so changing the address later means printing a new code. Choose Tracked if you may want to change it.';
+    openModal('qrEditorModal');
+  }
+  async function saveQrChanges(){
+    const name=$('qrEditName').value.trim(),destination=normalizeUrl($('qrEditDestination').value);
+    if(!name){toast('Give this QR a name');$('qrEditName').focus();return}
+    if(!destination){toast('Enter where this QR should go');$('qrEditDestination').focus();return}
+    const btn=$('saveQrChangesBtn');btn.disabled=true;
+    try{
+      await qrApi('POST',{action:qrEditingId?'update':'create',...(qrEditingId?{id:qrEditingId}:{}),name,destination,mode:$('qrEditType').value,cta:$('qrEditCta').value.trim()||'Scan to connect',qr_color:$('qrEditForeground').value,bg_color:$('qrEditBackground').value,qr_type:'website'});
+      await loadQrs();closeModal('qrEditorModal');
+      state.activity.unshift({title:qrEditingId?'QR updated':'QR created',detail:name,at:nowLabel()});save();renderActivity();
+      toast(qrEditingId?'QR saved':'QR created');
+    }catch(e){toast(e.message||'Could not save the QR')}finally{btn.disabled=false}
+  }
+  function downloadQr(id){
+    const q=qrRows.find(r=>String(r.id)===String(id));if(!q)return;
+    const c=document.createElement('canvas');qrDrawTo(c,qrTarget(q),1100,q.qr_color,q.bg_color,80);
+    const a=document.createElement('a');a.download=(q.name||'qr').replace(/[^\w-]+/g,'-').replace(/^-+|-+$/g,'')+'.png';a.href=c.toDataURL('image/png');a.click();toast('QR image downloaded');
+  }
+  function openQrActivity(id){
+    const q=qrRows.find(r=>String(r.id)===String(id));if(!q)return;const st=qrStats(q);
+    $('qrReportTitle').textContent=q.name+' — Activity';
+    const rows=st.events.slice(0,12).map(e=>`<div class="timeline-item"><div class="dot">QR</div><div><strong>Scan recorded</strong><span>${esc(qrWhen(new Date(e.scanned_at)))}${e.device_type?' · '+esc(e.device_type):''}</span></div></div>`).join('');
+    $('qrReportBody').innerHTML=`<div class="status-strip" style="grid-template-columns:repeat(3,1fr)"><div class="stat"><span>TOTAL SCANS</span><strong>${st.total.toLocaleString()}</strong><small>All time</small></div><div class="stat green"><span>THIS MONTH</span><strong>${st.month.toLocaleString()}</strong><small>${new Date().toLocaleString([],{month:'long'})}</small></div><div class="stat"><span>LAST SCAN</span><strong style="font-size:15px">${esc(st.last?st.last.toLocaleDateString([],{month:'short',day:'numeric'}):'None yet')}</strong><small>${st.last?st.last.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}):'Waiting for the first scan'}</small></div></div><div class="timeline">${rows||'<div class="empty">No scans yet. Scans appear here as soon as someone opens this QR.</div>'}</div>`;
+    openModal('qrReportModal');
+  }
+  function askDeleteQr(id){
+    const q=qrRows.find(r=>String(r.id)===String(id));if(!q)return;qrDeleteId=q.id;
+    const tracked=q.mode==='dynamic';
+    $('qrDeleteCopy').textContent=`Delete “${q.name}”?`;
+    $('qrDeleteNote').textContent=tracked?'This is a tracked QR. Any printed copies will stop working and its scan history will be deleted. Archive keeps the history and lets you bring it back later.':'Printed copies of a static QR keep working because the address is inside the code. Deleting only removes it from your portal.';
+    $('qrArchiveBtn').style.display=q.status==='archived'?'none':'';
+    openModal('qrDeleteModal');
+  }
+  async function finishDeleteQr(kind){
+    if(!qrDeleteId)return;const id=qrDeleteId,btns=[$('qrArchiveBtn'),$('qrDeleteConfirmBtn')];btns.forEach(b=>b.disabled=true);
+    try{await qrApi('POST',{action:kind,id});qrDeleteId=null;closeModal('qrDeleteModal');await loadQrs();toast(kind==='delete'?'QR deleted':'QR archived')}
+    catch(e){toast(e.message||'Could not update the QR')}finally{btns.forEach(b=>b.disabled=false)}
+  }
+
+  function renderMonthlyPlan(){const mp=state.monthlyPlan||{amount:0,count:0};const el=$('homeMonthlyPlan');if(el){el.textContent=lvMoney(mp.amount)+'/mo';$('homeMonthlyPlanNote').textContent=mp.count?mp.count+' active subscription'+(mp.count===1?'':'s'):'No subscriptions yet'}}
+
   function renderAll(){
-    renderSchedule();
-    renderServices();
-    renderActivity();
-    renderRequests();
-    renderFiles();
-    renderRequestedFiles();
-    renderNotifications();
-    renderQr();
-    renderLinkHub();
-    renderBilling();
+    [renderSchedule,renderServices,renderActivity,renderRequests,renderFiles,renderRequestedFiles,renderNotifications,renderQr,renderLinkHub,renderBilling,renderMonthlyPlan].forEach(fn=>{try{fn()}catch(e){console.warn('VMS portal render',fn.name,e)}});
   }
 
   function openRequest(prefillType='',prefillTitle='',prefillDetails=''){
@@ -2325,12 +2435,25 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
     showSection('requests');
   }
 
+  let cancelArmed=false,cancelTimer=null;
+  function cancelFollowup(){
+    const btn=$('cancelFollowupBtn');
+    if(!cancelArmed){cancelArmed=true;btn.textContent='Tap again to confirm';clearTimeout(cancelTimer);cancelTimer=setTimeout(()=>{cancelArmed=false;btn.textContent='Cancel follow-up'},4000);return}
+    cancelArmed=false;clearTimeout(cancelTimer);btn.textContent='Cancel follow-up';
+    const old=state.schedule;if(!old)return;
+    state.schedule=null;
+    state.activity.unshift({title:'VMS follow-up canceled',detail:`${prettyDate(old.date)} at ${prettyTime(old.time)} was canceled`,at:'Just now'});
+    addNotification({category:'Activity',icon:'CALL',title:'Follow-up canceled',detail:`Your ${prettyDate(old.date)} follow-up was canceled.`,section:'contact',unread:false});
+    save();bridgeEvent('followup_canceled',{...old});renderAll();toast('Follow-up canceled and VMS was notified');
+  }
   function openSchedule(){
     renderSchedule();
     openModal('scheduleModal');
   }
 
   function saveSchedule(){
+    const wasScheduled=!!(state.schedule&&state.schedule.date);
+    if(!$('scheduleDate').value||!$('scheduleTime').value){toast('Pick a date and time first');return}
     state.schedule={
       date:$('scheduleDate').value,
       time:$('scheduleTime').value,
@@ -2338,16 +2461,16 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
       purpose:$('schedulePurpose').value
     };
     state.activity.unshift({
-      title:'VMS follow-up scheduled',
+      title:wasScheduled?'VMS follow-up rescheduled':'VMS follow-up scheduled',
       detail:`${prettyDate(state.schedule.date)} at ${prettyTime(state.schedule.time)} · ${state.schedule.method}`,
       at:'Just now'
     });
-    addNotification({category:'Activity',icon:'CALL',title:'Follow-up scheduled',detail:`${prettyDate(state.schedule.date)} at ${prettyTime(state.schedule.time)} · ${state.schedule.method}`,section:'contact',unread:false});
+    addNotification({category:'Activity',icon:'CALL',title:wasScheduled?'Follow-up rescheduled':'Follow-up scheduled',detail:`${prettyDate(state.schedule.date)} at ${prettyTime(state.schedule.time)} · ${state.schedule.method}`,section:'contact',unread:false});
     save();
-    bridgeEvent('followup_scheduled',{...state.schedule,note:$('scheduleNote').value.trim()});
+    bridgeEvent(wasScheduled?'followup_rescheduled':'followup_scheduled',{...state.schedule,note:$('scheduleNote').value.trim()});
     renderAll();
     closeModal('scheduleModal');
-    toast('Follow-up saved and sent to VMS');
+    toast(wasScheduled?'Follow-up rescheduled':'Follow-up saved and sent to VMS');
   }
 
   function openServiceAction(serviceId){
@@ -2371,28 +2494,6 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
         openRequest('New Service',`Add ${service.name}`,`I am interested in adding ${service.name} to my VMS account.`);
       }
     };
-  }
-
-  function openQrEditor(){
-    const q=state.qr;
-    $('qrEditName').value=q.name;
-    $('qrEditType').value=q.type;
-    $('qrEditDestination').value=q.destination;
-    $('qrEditCta').value=q.cta;
-    $('qrEditForeground').value=q.foreground;
-    $('qrEditBackground').value=q.background;
-    openModal('qrEditorModal');
-  }
-
-  function saveQrChanges(){
-    const name=$('qrEditName').value.trim();
-    const destination=normalizeUrl($('qrEditDestination').value);
-    if(!name){toast('Add a name for this QR');$('qrEditName').focus();return}
-    if(!destination){toast('Add the destination URL');$('qrEditDestination').focus();return}
-    state.qr={...state.qr,name,type:$('qrEditType').value,destination,cta:$('qrEditCta').value.trim()||'Scan to connect',foreground:$('qrEditForeground').value,background:$('qrEditBackground').value,updated:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})};
-    state.activity.unshift({title:'Smart QR updated by client',detail:`${name} now points to ${destination}`,at:nowLabel()});
-    addNotification({category:'Activity',icon:'QR',title:'Smart QR changes saved',detail:`${name} was updated from your Client Portal.`,section:'qrs',unread:false});
-    save();bridgeEvent('client_qr_updated',{...state.qr});renderAll();closeModal('qrEditorModal');toast('Your Smart QR changes were saved');
   }
 
   function syncLinkHubFromForm(){
@@ -2582,30 +2683,6 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
     }
   }
 
-  function drawQr(){
-    const c=$('qrCanvas'),ctx=c.getContext('2d'),n=29,cell=c.width/n;
-    const foreground=state.qr?.foreground||'#003049',background=state.qr?.background||'#FFFFFF';
-    ctx.fillStyle=background;ctx.fillRect(0,0,c.width,c.height);
-    function finder(x,y){
-      ctx.fillStyle=foreground;ctx.fillRect(x*cell,y*cell,7*cell,7*cell);
-      ctx.fillStyle=background;ctx.fillRect((x+1)*cell,(y+1)*cell,5*cell,5*cell);
-      ctx.fillStyle=foreground;ctx.fillRect((x+2)*cell,(y+2)*cell,3*cell,3*cell);
-    }
-    finder(1,1);finder(21,1);finder(1,21);
-    let seed=1873;
-    for(let y=0;y<n;y++)for(let x=0;x<n;x++){
-      const inFinder=(x>=1&&x<=7&&y>=1&&y<=7)||(x>=21&&x<=27&&y>=1&&y<=7)||(x>=1&&x<=7&&y>=21&&y<=27);
-      if(inFinder)continue;
-      seed=(seed*9301+49297)%233280;
-      if(seed/233280>.53){ctx.fillStyle=foreground;ctx.fillRect(Math.floor(x*cell),Math.floor(y*cell),Math.ceil(cell),Math.ceil(cell))}
-    }
-  }
-
-  function downloadCanvas(){
-    const a=document.createElement('a');a.download='VMS-Main-Business-QR.png';a.href=$('qrCanvas').toDataURL('image/png');a.click();
-    toast('QR image prepared');
-  }
-
   function fakeFileDownload(name,content){
     const blob=new Blob([content],{type:'text/plain'});
     const url=URL.createObjectURL(blob);
@@ -2752,10 +2829,13 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
   $('downloadAuditBtn').onclick=()=>window.print();
 
   // QR
-  $('editQrBtn').onclick=openQrEditor;
+  $('createQrBtn').onclick=()=>openQrEditor();
   $('saveQrChangesBtn').onclick=saveQrChanges;
-  $('viewQrReportBtn').onclick=()=>openModal('qrReportModal');
-  $('downloadQrBtn').onclick=downloadCanvas;
+  $('qrList').addEventListener('click',e=>{const b=e.target.closest('[data-qr-act]');if(!b)return;const id=b.dataset.id,act=b.dataset.qrAct;if(act==='edit')openQrEditor(id);else if(act==='download')downloadQr(id);else if(act==='activity')openQrActivity(id);else if(act==='delete')askDeleteQr(id)});
+  $('qrArchiveBtn').onclick=()=>finishDeleteQr('archive');
+  $('qrDeleteConfirmBtn').onclick=()=>finishDeleteQr('delete');
+  $('rescheduleFollowupBtn').onclick=openSchedule;
+  $('cancelFollowupBtn').onclick=cancelFollowup;
 
   // LinkHub
   $('saveLinkHubBtn').onclick=saveLinkHub;
@@ -2851,6 +2931,9 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
   document.querySelectorAll('.modal-backdrop').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('show')}));
 
   renderAll();
+  loadLive();
+  window.addEventListener('focus',()=>{loadLive()});
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')loadLive()});
 })();
 </script>
 <script id="vms-phase3-portal-shell-js" src="../assets/vms-portal-shell.js"></script></body>

@@ -5,7 +5,7 @@ export default async () => {
     Netlify.env.get("SUPABASE_URL") &&
     (Netlify.env.get("SUPABASE_SECRET_KEY") || Netlify.env.get("SUPABASE_SERVICE_ROLE_KEY"))
   );
-  const ai = !!Netlify.env.get("OPENAI_API_KEY");
+  const ai = !!Netlify.env.get("ANTHROPIC_API_KEY") || !!Netlify.env.get("OPENAI_API_KEY");
 
   return Response.json(
     { ok: true, database, ai },

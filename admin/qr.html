@@ -1499,6 +1499,7 @@ a{color:inherit}
   border-radius:8px;box-shadow:0 0 0 1px #dce4e8;margin-bottom:15px;overflow:hidden
 }
 .real-qr canvas{display:block!important;width:168px!important;height:168px!important}
+#previewCanvas .real-qr{height:auto!important;min-height:0!important;overflow:visible!important}
 .real-qr img{display:none!important}
 .preview-title{font-size:18px;font-weight:950;color:var(--navy);margin-top:18px}
 .preview-sub{font-size:8px;color:#82929b;margin-top:6px;max-width:230px;line-height:1.4}
@@ -1985,7 +1986,7 @@ html.vms-page-qr #view-saved .vms-phase2-menu-wrap.open{z-index:2147482001!impor
 
                 <div class="field">
                   <label for="businessInput">Business name <span>Saved with QR</span></label>
-                  <input id="businessInput" value="Client Business">
+                  <input id="businessInput" value="" placeholder="Client business name">
                 </div>
               </div>
 
@@ -2104,7 +2105,7 @@ html.vms-page-qr #view-saved .vms-phase2-menu-wrap.open{z-index:2147482001!impor
             <div class="preview-wrap">
               <div class="preview-canvas" id="previewCanvas">
                 <div class="preview-logo" id="previewLogo"></div>
-                <div class="preview-business" id="previewBusiness">Client Business</div>
+                <div class="preview-business" id="previewBusiness"></div>
                 <div class="real-qr" id="realQr"></div>
                 <div class="preview-title" id="previewTitle">Visit Our Website</div>
                 <div class="preview-sub" id="previewSub">Scan with your phone camera.</div>
@@ -2908,10 +2909,10 @@ html.vms-page-qr #view-saved .vms-phase2-menu-wrap.open{z-index:2147482001!impor
   }
 
   function syncPreview(){
-    const business=businessInput.value.trim()||'Client Business';
+    const business=businessInput.value.trim();
 
     previewBusiness.textContent=business;
-    previewBusiness.style.display=showBusinessName?'block':'none';
+    previewBusiness.style.display=(showBusinessName&&business)?'block':'none';
 
     previewTitle.textContent=ctaInput.value.trim()||labels[selectedType];
     previewSub.textContent='Scan with your phone camera.';

@@ -100,6 +100,8 @@
     // Keep dense data-table rows clean without changing page-level action bars.
     $$('.row-actions,.action-cell').forEach(group=>{
       if(group.dataset.vmsPhase2Menu==='1')return;
+      // A row that already has its own "..." menu must not get a second one.
+      if(group.querySelector('.action-dots,.vms-kebab'))return;
       const originals=$$('button',group).filter(b=>!b.classList.contains('action-dots')&&!b.classList.contains('vms-kebab')&&!b.hidden);
       if(originals.length<3)return;
       const labels=originals.map(b=>clean(b.textContent));

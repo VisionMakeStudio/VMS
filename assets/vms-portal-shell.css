@@ -88,3 +88,53 @@ body [data-vms-fs]{font-size:11px!important}
 body [data-vms-cf][data-vms-cf]{color:var(--vms-cf)}
 #vmsCanonicalPortalSidebar .vms-portal-nav button{font-size:12px!important}
 #vmsCanonicalPortalTopbar small{font-size:11px!important;color:#5b7480!important}
+
+/* ============================================================
+   Client Portal polish (menu spacing, LinkHub in-page, QR manager)
+   ============================================================ */
+
+/* Side menu: items keep their natural height instead of stretching to fill the sidebar */
+#vmsCanonicalPortalSidebar .vms-portal-nav{align-content:start;gap:4px}
+#vmsCanonicalPortalSidebar .vms-portal-nav button{min-height:40px}
+
+/* LinkHub opens inside the page like every other section (no pop-up, no jump) */
+html body #section-linkhub.active{
+  position:static!important;inset:auto!important;transform:none!important;z-index:auto!important;
+  width:100%!important;max-width:none!important;height:auto!important;min-height:0!important;margin:0!important;
+  background:transparent!important;border-radius:0!important;box-shadow:none!important;overflow:visible!important;display:block!important;
+}
+html body #section-linkhub.active .client-linkhub-head{position:static!important;background:transparent!important;border-bottom:0!important;padding:0 0 14px!important}
+html body #section-linkhub .client-linkhub-close{display:none!important}
+html body #section-linkhub.active .client-linkhub-workspace{overflow:visible!important;padding:0!important;background:transparent!important;height:auto!important;min-height:0!important}
+html body #section-linkhub.active .client-linkhub-workspace .linkhub-layout{height:auto!important;grid-template-columns:minmax(0,1fr) 380px!important;gap:24px!important;align-items:start!important}
+html body #section-linkhub.active .client-linkhub-workspace .linkhub-editor{height:auto!important;overflow:visible!important;padding:0!important}
+html body #section-linkhub.active .client-linkhub-workspace .linkhub-preview-wrap{height:auto!important;max-height:none!important;min-width:0!important;width:380px!important;position:sticky!important;top:84px!important;align-self:start!important;overflow:visible!important}
+@media(max-width:1100px){
+  html body #section-linkhub.active .client-linkhub-workspace .linkhub-layout{grid-template-columns:1fr!important}
+  html body #section-linkhub.active .client-linkhub-workspace .linkhub-preview-wrap{position:static!important;width:100%!important}
+}
+
+/* QR manager */
+#section-qrs #vmsP4PortalQrEnt{display:none!important}
+.qr-access{margin:0 0 14px}
+.qr-access .note{font-size:12.5px;line-height:1.5}
+.qr-list{display:grid;gap:14px}
+.qr-item .qr-card{display:grid;grid-template-columns:160px minmax(0,1fr) auto;gap:18px;align-items:center}
+.qr-item .qr-preview{display:grid;place-items:center;background:#fff;border:1px solid #e1e9ec;border-radius:12px;padding:8px}
+.qr-item .qr-preview canvas{width:144px;height:144px;display:block}
+.qr-item .list-actions{display:flex;flex-direction:column;gap:8px;min-width:120px}
+.qr-item .list-actions .btn{width:100%}
+@media(max-width:820px){
+  .qr-item .qr-card{grid-template-columns:1fr;justify-items:start}
+  .qr-item .list-actions{flex-direction:row;flex-wrap:wrap;width:100%}
+  .qr-item .list-actions .btn{width:auto;flex:1 1 90px}
+}
+
+/* Follow-up actions */
+.followup-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+
+/* QR list: never squeeze or clip the code (config.js sizes .qr-preview to 104px for the old single QR) */
+html body .qr-item .qr-preview{width:172px!important;height:172px!important;padding:8px!important;border-radius:12px!important;overflow:visible!important;display:grid;place-items:center}
+html body .qr-item .qr-preview canvas{width:154px!important;height:154px!important;max-width:none!important;image-rendering:auto}
+html body .qr-item .qr-card{display:grid!important;grid-template-columns:172px minmax(0,1fr) auto!important;gap:20px!important;align-items:center!important}
+@media(max-width:820px){html body .qr-item .qr-card{grid-template-columns:1fr!important;justify-items:start}}
