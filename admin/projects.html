@@ -25,7 +25,7 @@
 @media(max-width:900px){.shell{grid-template-columns:1fr}.side{display:none}.mobile-menu{display:grid;place-items:center}.topbar{padding:10px 13px}.content{padding:15px 13px 35px}.intro{align-items:flex-start;flex-direction:column}.toolbar{grid-template-columns:1fr 1fr}.toolbar input{grid-column:1/-1}.calendar{grid-template-columns:repeat(7,170px)}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.toolbar input,.toolbar select,.field input,.field select,.field textarea{font-size:16px}}
 @media(max-width:540px){.stats{display:flex;overflow:auto}.stat{flex:0 0 150px}.toolbar{grid-template-columns:1fr}.toolbar input{grid-column:auto}.req{grid-template-columns:1fr}.req-actions{justify-content:flex-start}.modal-foot{flex-direction:column}.modal-foot .btn{width:100%}}
 </style>
-<link rel="stylesheet" href="vms-admin-shell.css">
+<link rel="stylesheet" href="/assets/vms-admin-shell.css">
 </head>
 <body>
 <div class="shell">
@@ -136,7 +136,7 @@
 <div class="toast" id="toast"></div>
 <script src="../assets/config.js"></script>
 <script src="../assets/vms-core.js"></script>
-<script src="../assets/vms-admin-shell.js"></script>
+<script src="/assets/vms-admin-shell.js"></script>
 <script>
 (()=>{'use strict';
 const g=x=>document.getElementById(x),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

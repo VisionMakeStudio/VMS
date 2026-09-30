@@ -79,7 +79,7 @@
         dst.classList.toggle('active',!!src?.classList.contains('active'));
         dst.setAttribute('aria-current',src?.classList.contains('active')?'page':'false');
         const pill=src?.querySelector('.pill');const host=dst.querySelector('.vms-portal-badge-host');
-        if(host)host.innerHTML=pill?pill.outerHTML:'';
+        if(host){host.textContent='';if(pill){const copy=pill.cloneNode(true);copy.removeAttribute('id');host.appendChild(copy)}}
       });
     }
     sync();

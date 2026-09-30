@@ -950,7 +950,7 @@ html,body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sa
 .btn{border-radius:9px}
 @media(max-width:900px){.shell,.app{grid-template-columns:1fr}.mobile-menu{display:inline-flex}.sidebar.open{transform:translateX(0)}}
 </style>
-<link rel="stylesheet" href="../assets/vms-suite.css"><script src="../assets/config.js"></script><script src="../assets/vms-core.js"></script><script src="../assets/vms-catalog.js"></script><script src="../assets/vms-state.js"></script>  <link rel="stylesheet" href="vms-admin-shell.css">
+<link rel="stylesheet" href="../assets/vms-suite.css"><script src="../assets/config.js"></script><script src="../assets/vms-core.js"></script><script src="../assets/vms-catalog.js"></script><script src="../assets/vms-state.js"></script>  <link rel="stylesheet" href="/assets/vms-admin-shell.css">
 </head>
 <body>
 <div class="shell">
@@ -3471,6 +3471,6 @@ html,body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sa
   (async()=>{try{if(window.VMSCatalog){cloudCatalog=(await VMSCatalog.load()).filter(s=>s.kind!=='internal'&&s.pricingModel!=='Free'&&s.status==='Published');render();}}catch(err){console.warn('Billing catalog sync failed',err)}})();
 })();
 </script>
-<script>(async()=>{if(location.protocol!=='file:'){const user=await VMSAuth.requireSession('admin');if(!user)return;const state=await VMSState.start({scope:'admin',user});if(state?.reloading)return}})();</script>  <script src="../assets/vms-admin-shell.js"></script>
+<script>(async()=>{if(location.protocol!=='file:'){const user=await VMSAuth.requireSession('admin');if(!user)return;const state=await VMSState.start({scope:'admin',user});if(state?.reloading)return}})();</script>  <script src="/assets/vms-admin-shell.js"></script>
 </body>
 </html>

@@ -575,7 +575,7 @@ html,body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sa
 .btn{border-radius:9px}
 @media(max-width:900px){.shell,.app{grid-template-columns:1fr}.mobile-menu{display:inline-flex}.sidebar.open{transform:translateX(0)}}
 </style>
-<link rel="stylesheet" href="../assets/vms-suite.css"><script src="../assets/config.js"></script>  <link rel="stylesheet" href="vms-admin-shell.css">
+<link rel="stylesheet" href="../assets/vms-suite.css"><script src="../assets/config.js"></script>  <link rel="stylesheet" href="/assets/vms-admin-shell.css">
 </head>
 <body>
 <div class="shell">
@@ -1428,6 +1428,6 @@ html,body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sa
   render();
 })();
 </script>
-<script src="../assets/vms-core.js"></script><script src="../assets/vms-state.js"></script><script>(async()=>{if(location.protocol!=='file:'){const user=await VMSAuth.requireSession('admin');if(!user)return;const state=await VMSState.start({scope:'admin',user});if(state?.reloading)return;try{const sb=await VMSAuth.client();const {data,error}=await sb.from('activity_events').select('id,event_type,title,detail,needs_action,resolved,created_at,clients(business_name)').order('created_at',{ascending:false}).limit(200);if(error)throw error;if(window.VMS_ACTIVITY_IMPORT_CLOUD)VMS_ACTIVITY_IMPORT_CLOUD(data||[])}catch(e){console.warn('VMS activity cloud feed failed',e)}}})();</script>  <script src="../assets/vms-admin-shell.js"></script>
+<script src="../assets/vms-core.js"></script><script src="../assets/vms-state.js"></script><script>(async()=>{if(location.protocol!=='file:'){const user=await VMSAuth.requireSession('admin');if(!user)return;const state=await VMSState.start({scope:'admin',user});if(state?.reloading)return;try{const sb=await VMSAuth.client();const {data,error}=await sb.from('activity_events').select('id,event_type,title,detail,needs_action,resolved,created_at,clients(business_name)').order('created_at',{ascending:false}).limit(200);if(error)throw error;if(window.VMS_ACTIVITY_IMPORT_CLOUD)VMS_ACTIVITY_IMPORT_CLOUD(data||[])}catch(e){console.warn('VMS activity cloud feed failed',e)}}})();</script>  <script src="/assets/vms-admin-shell.js"></script>
 </body>
 </html>

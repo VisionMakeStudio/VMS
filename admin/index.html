@@ -192,7 +192,7 @@
       .stat small{font-size:7.5px}
     }
   </style>
-<link rel="stylesheet" href="../assets/vms-suite.css"><script src="../assets/config.js"></script>  <link rel="stylesheet" href="vms-admin-shell.css">
+<link rel="stylesheet" href="../assets/vms-suite.css"><script src="../assets/config.js"></script>  <link rel="stylesheet" href="/assets/vms-admin-shell.css">
 </head>
 <body>
   <div class="app">
@@ -534,6 +534,6 @@
     render();
   })();
   </script>
-<script src="../assets/vms-core.js"></script><script src="../assets/vms-state.js"></script><script>(async()=>{if(location.protocol!=='file:'){const user=await VMSAuth.requireSession('admin');if(!user)return;const state=await VMSState.start({scope:'admin',user});if(state?.reloading)return}})();</script>  <script src="../assets/vms-admin-shell.js"></script>
+<script src="../assets/vms-core.js"></script><script src="../assets/vms-state.js"></script><script>(async()=>{if(location.protocol!=='file:'){const user=await VMSAuth.requireSession('admin');if(!user)return;const state=await VMSState.start({scope:'admin',user});if(state?.reloading)return}})();</script>  <script src="/assets/vms-admin-shell.js"></script>
 </body>
 </html>

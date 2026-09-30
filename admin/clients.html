@@ -1283,7 +1283,7 @@ html,body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sa
 .btn{border-radius:9px}
 @media(max-width:900px){.shell,.app{grid-template-columns:1fr}.mobile-menu{display:inline-flex}.sidebar.open{transform:translateX(0)}}
 </style>
-<link rel="stylesheet" href="../assets/vms-suite.css"><script src="../assets/config.js"></script>  <link rel="stylesheet" href="vms-admin-shell.css">
+<link rel="stylesheet" href="../assets/vms-suite.css"><script src="../assets/config.js"></script>  <link rel="stylesheet" href="/assets/vms-admin-shell.css">
 </head>
 <body>
 
@@ -2779,8 +2779,6 @@ html,body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sa
 
   const mobileMenuBtn=document.getElementById('mobileMenuBtn');
   const mobileDrawer=document.getElementById('mobileDrawer');
-  const desktopClientsNav=document.getElementById('desktopClientsNav');
-  const mobileClientsNav=document.getElementById('mobileClientsNav');
 
   let clients=[];
   let editingId=null;
@@ -5191,8 +5189,11 @@ html,body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sa
     }
   }
 
-  desktopClientsNav.addEventListener('click',returnToClientDirectory);
-  mobileClientsNav.addEventListener('click',returnToClientDirectory);
+  // The sidebar is built by vms-admin-shell.js, so listen at the document level
+  // instead of expecting elements that may not exist yet.
+  document.addEventListener('click',e=>{
+    if(e.target.closest('#vmsCanonicalAdminSidebar a[href$="clients.html"], #mobileClientsNav'))returnToClientDirectory(e);
+  });
 
   mobileMenuBtn.addEventListener('click',e=>{
     e.stopPropagation();
@@ -5241,6 +5242,6 @@ html,body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sa
     try{const result=await adminPost('invite',client);invite.textContent=result.alreadyUser?'Portal Ready':'Invite Sent';setTimeout(()=>{invite.disabled=false;invite.textContent='Invite to Portal'},2200)}catch(e){invite.disabled=false;invite.textContent='Invite to Portal';alert(e.message)}
   });
 })();
-</script><script src="../assets/vms-admin-shell.js"></script>
+</script><script src="/assets/vms-admin-shell.js"></script>
 </body>
 </html>

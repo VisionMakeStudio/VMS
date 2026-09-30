@@ -13,7 +13,7 @@
 @media(max-width:900px){.shell{grid-template-columns:1fr}.side{display:none}.mobile-menu{display:inline-grid;place-items:center}.topbar{padding:10px 13px;min-height:66px}.title-copy strong{font-size:18px}.content{padding:15px 13px 35px}.intro{align-items:flex-start;flex-direction:column}.stats{display:flex;overflow-x:auto;scrollbar-width:none}.stat{flex:0 0 155px}.toolbar{grid-template-columns:1fr 1fr}.toolbar input{grid-column:1/-1}.contact-actions{justify-content:flex-start}.lead-header{flex-direction:column}.detail-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.context-grid{grid-template-columns:1fr 1fr}.service-grid{grid-template-columns:1fr}.field input,.field select,.field textarea,.toolbar input,.toolbar select,.note-compose textarea{font-size:16px}}
 @media(max-width:540px){.toolbar{grid-template-columns:1fr}.toolbar input{grid-column:auto}.context-grid{grid-template-columns:1fr}.note-compose{grid-template-columns:1fr}.save-row,.convert-box,.portal-row{align-items:stretch;flex-direction:column}.save-row .btn,.convert-box .btn,.portal-row .btn{width:100%}}
 </style>
-<link rel="stylesheet" href="vms-admin-shell.css">
+<link rel="stylesheet" href="/assets/vms-admin-shell.css">
 </head>
 <body>
 <div class="shell">
@@ -103,6 +103,6 @@ byId('taskList').addEventListener('change',e=>{const c=e.target.closest('[data-t
 document.addEventListener('DOMContentLoaded',async()=>{try{await VMSAuth.requireSession('admin');document.documentElement.classList.remove('vms-auth-pending');await load(false)}catch(e){console.error(e)}});
 })();
 </script>
-<script src="../assets/vms-admin-shell.js"></script>
+<script src="/assets/vms-admin-shell.js"></script>
 </body>
 </html>

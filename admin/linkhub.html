@@ -106,7 +106,7 @@ a{color:inherit}
 @media(max-width:700px){.feature-pricing{grid-template-columns:1fr 1fr}.feature-options,.feature-fields{grid-template-columns:1fr}}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/vms-suite.css"><script src="../assets/config.js"></script>  <link rel="stylesheet" href="vms-admin-shell.css">
+<link rel="stylesheet" href="../assets/vms-suite.css"><script src="../assets/config.js"></script>  <link rel="stylesheet" href="/assets/vms-admin-shell.css">
 <style>
 /* LinkHub Manager — shared desktop frame from the approved Figma reference. */
 @media (min-width:761px){
@@ -258,13 +258,13 @@ a{color:inherit}
               <div class="section-head"><strong>LinkHub Features & Plan</strong><span>Restaurant Menu and Wi-Fi are LinkHub features — not separate QR products.</span></div>
               <div class="section-body">
                 <div class="feature-pricing">
-                  <div class="feature-price"><span>CORE</span><strong>$19.99 one time</strong><small>Profile, links, socials, themes, Visit Us and LinkHub QR.</small></div>
+                  <div class="feature-price"><span>CORE</span><strong>$5.99/month</strong><small>Profile, links, socials, themes, Visit Us and LinkHub QR.</small></div>
                   <div class="feature-price"><span>WI-FI ADD-ON</span><strong>$6.99 one time</strong><small>Included automatically with LinkHub Pro.</small></div>
                   <div class="feature-price"><span>MENU ADD-ON</span><strong>$49.99 one time</strong><small>Restaurant profile + branded digital menu. Included with Pro.</small></div>
-                  <div class="feature-price"><span>LINKHUB PRO</span><strong>$14.99/month</strong><small>All features + Smart Scan Activity + ongoing management.</small></div>
+                  <div class="feature-price"><span>LINKHUB PRO</span><strong>$19.99/month</strong><small>All features + Smart Scan Activity + ongoing management.</small></div>
                 </div>
                 <div class="form-grid">
-                  <div class="field"><label>LINKHUB PLAN</label><select id="hubPlan"><option value="Core">Core · One-Time</option><option value="Pro">Pro · $14.99/month</option></select></div>
+                  <div class="field"><label>LINKHUB PLAN</label><select id="hubPlan"><option value="Core">Core · $5.99/month</option><option value="Pro">Pro · $19.99/month</option></select></div>
                   <div class="field"><label>SMART SCAN ACTIVITY</label><select id="hubSmartScan"><option value="off">Not Included</option><option value="on">Included / Active</option></select></div>
                 </div>
                 <div class="feature-options" style="margin-top:9px">
@@ -291,7 +291,7 @@ a{color:inherit}
                   <div class="field"><label>BILLING STATUS</label><select id="hubBilling"><option>Paid</option><option>Gifted</option><option>Past Due</option><option>Canceled</option></select></div>
                   <div class="field"><label>PAST DUE SINCE</label><input id="hubPastDueSince" type="date"></div>
                   <div class="field"><label>GRACE PERIOD</label><select id="hubGraceDays"><option value="0">No grace — suspend immediately</option><option value="3">3 days</option><option value="5">5 days</option><option value="7">7 days</option><option value="14">14 days</option></select></div>
-                  <div class="field"><label>RECURRING PRICE</label><input id="hubPrice" type="number" min="0" step="0.01"><small style="display:block;color:#8a9ca5;font-size:7px;margin-top:4px">Pro defaults to $14.99/month. Core has no recurring charge.</small></div>
+                  <div class="field"><label>RECURRING PRICE</label><input id="hubPrice" type="number" min="0" step="0.01"><small style="display:block;color:#8a9ca5;font-size:7px;margin-top:4px">Pro defaults to $19.99/month. Core defaults to $5.99/month.</small></div>
                   <div class="field full">
                     <label class="check-line">
                       <input id="hubAutoSuspend" type="checkbox">
@@ -660,8 +660,8 @@ a{color:inherit}
   }
   function applyPlanRules(showToast=false){
     const pro=$('hubPlan').value==='Pro';
-    if(pro){$('hubSmartScan').value='on';$('hubClientManage').checked=true;$('hubPrice').value='14.99';if(showToast)toast('Pro includes access — choose which optional features appear publicly')}
-    else{if(Number($('hubPrice').value)===14.99||Number($('hubPrice').value)===0)$('hubPrice').value='19.99';$('hubSmartScan').value='off'}
+    if(pro){$('hubSmartScan').value='on';$('hubClientManage').checked=true;$('hubPrice').value='19.99';if(showToast)toast('Pro includes access — choose which optional features appear publicly')}
+    else{if([19.99,14.99,0].includes(Number($('hubPrice').value)))$('hubPrice').value='5.99';$('hubSmartScan').value='off'}
     ['hubWifiEnabled','hubMenuEnabled'].forEach(id=>$(id).disabled=false);
     ['hubSmartScan','hubClientManage'].forEach(id=>$(id).disabled=pro);
   }
@@ -750,7 +750,7 @@ a{color:inherit}
     hubs.push({
       id,client,title:client,bio:'',phone:c.phone||'',email:c.email||'',website:'',address:'',slug:slugify(client),
       theme:'navy',published:false,manualDisabled:false,archived:false,createdAt:todayISO(),updatedAt:todayISO(),
-      billing:{status:'Paid',pastDueSince:'',graceDays:7,autoSuspend:true,price:14.99,giftPromo:null},
+      billing:{status:'Paid',pastDueSince:'',graceDays:7,autoSuspend:true,price:19.99,giftPromo:null},
       plan:'Pro',wifi:{enabled:true,ssid:'',security:'WPA2',password:''},restaurant:{enabled:true,name:client,cuisine:'',phone:c.phone||'',website:'',hours:'',sections:[]},visit:{enabled:true},socials:[],features:{wifi:{enabled:true,ssid:'',security:'WPA2',password:''},restaurant:{enabled:true,name:client,cuisine:'',phone:c.phone||'',website:'',hours:'',sections:[]},visit:{enabled:true},smartScan:true,clientManage:true},
       permissions:{profile:true,contact:true,links:true,order:true,theme:true},links:[],analytics:{views:0,clicks:0,qr:0}
     });
@@ -916,6 +916,6 @@ a{color:inherit}
 })();
 </script>
 <script src="../assets/vms-qrcode.js"></script>
-<script src="../assets/vms-core.js"></script><script src="../assets/vms-state.js"></script><script>(async()=>{if(location.protocol!=='file:'){const user=await VMSAuth.requireSession('admin');if(!user)return;const state=await VMSState.start({scope:'admin',user});if(state?.reloading)return}})();</script>  <script src="../assets/vms-admin-shell.js"></script>
+<script src="../assets/vms-core.js"></script><script src="../assets/vms-state.js"></script><script>(async()=>{if(location.protocol!=='file:'){const user=await VMSAuth.requireSession('admin');if(!user)return;const state=await VMSState.start({scope:'admin',user});if(state?.reloading)return}})();</script>  <script src="/assets/vms-admin-shell.js"></script>
 </body>
 </html>

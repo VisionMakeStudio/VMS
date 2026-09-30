@@ -12,7 +12,7 @@
 @media(max-width:900px){.shell{grid-template-columns:1fr}.side{display:none}.mobile-menu{display:grid;place-items:center}.topbar{padding:10px 13px}.content{padding:15px 13px 35px}.intro{align-items:flex-start;flex-direction:column}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.field input,.field select,.field textarea{font-size:16px}.switches{grid-template-columns:1fr 1fr 1fr}}
 @media(max-width:540px){.stats{display:flex;overflow:auto}.stat{flex:0 0 150px}.switches{grid-template-columns:1fr}.intro-actions{display:grid;grid-template-columns:1fr 1fr;width:100%}.intro-actions .btn{width:100%}}
 </style>
-<link rel="stylesheet" href="vms-admin-shell.css">
+<link rel="stylesheet" href="/assets/vms-admin-shell.css">
 </head>
 <body>
 <div class="shell">
@@ -34,7 +34,7 @@
 <section class="view" id="view-runs"><div class="card"><div class="card-head"><div><h2>Automation Runs</h2><p>Each hourly or manual evaluation cycle.</p></div><span class="badge">@hourly</span></div><div class="table-wrap"><div class="run-head"><div>STARTED</div><div>SOURCE</div><div>STATUS</div><div>SCANNED</div><div>CREATED</div><div>SENT</div><div>SKIPPED</div><div>FAILED</div><div>DETAIL</div></div><div id="runsList"></div></div></div></section>
 <section class="view" id="view-manual"><div class="card"><div class="card-head"><div><h2>Send Client Update</h2><p>Use an event automation for files-ready, project updates, or onboarding messages. It uses the same delivery history and dedupe protection.</p></div><span class="badge orange">Admin initiated</span></div><form class="form" id="manualForm"><div class="form-grid"><div class="field"><label>CLIENT</label><select id="manualClient" required><option value="">Choose a client</option></select></div><div class="field"><label>AUTOMATION</label><select id="manualRule" required><option value="">Choose an event</option></select></div><div class="field full"><label>SUBJECT</label><input id="manualSubject" required maxlength="300" placeholder="Example: Your property photos are ready"></div><div class="field full"><label>MESSAGE</label><textarea id="manualMessage" required maxlength="5000" placeholder="Write the update the client should receive."></textarea></div><div class="field full"><label class="check-line"><input id="manualAction" type="checkbox">Mark this as needing client action</label></div></div><div class="form-actions"><button class="btn primary" type="submit">Send Update</button></div></form></div></section>
 </div></main></div><div class="toast" id="toast"></div>
-<script src="../assets/config.js"></script><script src="../assets/vms-core.js"></script><script src="../assets/vms-admin-shell.js"></script>
+<script src="../assets/config.js"></script><script src="../assets/vms-core.js"></script><script src="/assets/vms-admin-shell.js"></script>
 <script>
 (()=>{'use strict';
 const g=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));let data={rules:[],deliveries:[],runs:[],clients:[],capabilities:{}};

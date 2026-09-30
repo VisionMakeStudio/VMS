@@ -29,10 +29,10 @@ New catalog prices apply to new sales. Existing client-specific agreed prices st
 
 ## Current LinkHub pricing logic
 
-- VMS LinkHub Core — $19.99 one time
+- VMS LinkHub Core — $5.99/month
 - LinkHub Wi-Fi Feature — $6.99 one time
 - LinkHub Restaurant Menu — $49.99 one time
-- VMS LinkHub Pro — $14.99/month
+- VMS LinkHub Pro — $19.99/month
   - Core included
   - Wi-Fi included
   - Restaurant Menu included
