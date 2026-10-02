@@ -1,95 +1,66 @@
-/* VMS Client Portal — redesigned shell, Oct 2026. Functional IDs are untouched. */
-:root{
-  --vms-portal-sidebar-w:220px;--vms-portal-topbar-h:60px;--vms-portal-gap:22px;
-  --bg:#F3F7FA;--surface:#FFFFFF;--surface2:#EFF4F7;--tint:#E3EDF2;--ink:#003049;--muted:#5a7280;
-  --line:rgba(0,48,73,.10);--line2:rgba(0,48,73,.18);--blue:#2b6a91;--red:#C1121F;
-  --ok:#1c7a3e;--okbg:#e8f5ee;--warn:#b45309;--warnbg:#fff3e0;
-  --shadow:0 4px 18px rgba(0,48,73,.08);--shadow-lg:0 12px 40px rgba(0,48,73,.12);
-  --body:"Inter",system-ui,-apple-system,sans-serif;--display:"Unbounded","Inter",system-ui,sans-serif;
-}
-html[data-theme="dark"],body[data-theme="dark"]{
-  --bg:#001a29;--surface:#00263a;--surface2:#002d44;--tint:#003555;--ink:#FDF0D5;
-  --muted:rgba(253,240,213,.72);--line:rgba(253,240,213,.12);--line2:rgba(253,240,213,.24);
-  --blue:#669BBC;--shadow:0 4px 18px rgba(0,0,0,.28);--shadow-lg:0 12px 40px rgba(0,0,0,.40);color-scheme:dark
-}
+/* VMS Portal Shell CSS — Oct 2026 redesign */
+:root{--vms-portal-sidebar-w:220px;--vms-portal-topbar-h:60px;--vms-portal-gap:22px}
 *,*::before,*::after{box-sizing:border-box}
 body.vms-portal-canonical{
   margin:0!important;min-height:100vh!important;overflow-x:hidden!important;
   padding:calc(var(--vms-portal-topbar-h) + 20px) 24px 48px calc(var(--vms-portal-sidebar-w) + var(--vms-portal-gap))!important;
-  background:var(--bg)!important;color:var(--ink)!important;font:400 15px/1.55 var(--body)!important;-webkit-font-smoothing:antialiased;
+  font-family:"Inter",system-ui,-apple-system,sans-serif!important;-webkit-font-smoothing:antialiased;
 }
 body.vms-portal-canonical>.shell,body.vms-portal-canonical>.app{display:block!important;min-height:0!important;width:100%!important}
 body.vms-portal-canonical :where(.main,.page,.app>.main,.shell>.main){margin-left:0!important;width:100%!important;max-width:none!important;min-width:0!important}
-body.vms-portal-canonical :where(.main,.page){min-width:0!important}
 body.vms-portal-canonical .vms-retired-portal-shell{display:none!important}
 /* topbar */
 #vmsCanonicalPortalTopbar{
   position:fixed;top:0;left:0;right:0;z-index:2147482002;
   height:var(--vms-portal-topbar-h);display:flex;align-items:center;justify-content:space-between;gap:12px;
   padding:0 20px 0 calc(var(--vms-portal-sidebar-w) + 24px);
-  background:rgba(243,247,250,.92);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
-  border-bottom:1px solid var(--line);
 }
-html[data-theme="dark"] #vmsCanonicalPortalTopbar,body[data-theme="dark"] #vmsCanonicalPortalTopbar{background:rgba(0,26,41,.92)}
-#vmsCanonicalPortalTopbar .vp-top-left{display:flex;align-items:center;gap:10px;min-width:0}
-#vmsCanonicalPortalTopbar .vp-title small{display:block;font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--muted);line-height:1}
-#vmsCanonicalPortalTopbar .vp-title strong{display:block;font-size:17px;font-weight:700;line-height:1.2;color:var(--ink);letter-spacing:-.02em}
-#vmsCanonicalPortalTopbar .vp-top-actions{display:flex;align-items:center;gap:8px}
-.vp-menu-btn{display:none;width:40px;height:40px;border-radius:12px;border:1px solid var(--line2);background:transparent;color:var(--ink);font-size:18px;cursor:pointer;align-items:center;justify-content:center}
+.vp-top-left{display:flex;align-items:center;gap:10px;min-width:0}
+.vp-title small{display:block;font-size:10px;font-weight:700;letter-spacing:.12em;line-height:1;text-transform:uppercase}
+.vp-title strong{display:block;font-size:17px;font-weight:700;line-height:1.2;letter-spacing:-.02em}
+.vp-top-actions{display:flex;align-items:center;gap:8px}
+.vp-menu-btn{display:none;width:40px;height:40px;border-radius:12px;border:1px solid var(--line2,rgba(0,48,73,.18));background:transparent;cursor:pointer;align-items:center;justify-content:center}
 /* sidebar */
 #vmsCanonicalPortalSidebar{
   position:fixed;inset:0 auto 0 0;width:var(--vms-portal-sidebar-w);z-index:2147482001;
-  display:flex;flex-direction:column;padding:0 0 14px;overflow:hidden;
-  background:var(--surface);border-right:1px solid var(--line);box-shadow:var(--shadow);
+  display:flex;flex-direction:column;padding:0 0 14px;overflow:hidden;scrollbar-width:none;
 }
-.vp-brand{flex:0 0 auto;display:flex;align-items:center;gap:10px;min-height:60px;padding:0 16px;border-bottom:1px solid var(--line)}
+#vmsCanonicalPortalSidebar::-webkit-scrollbar{display:none}
+.vp-brand{flex:0 0 auto;display:flex;align-items:center;gap:10px;min-height:60px;padding:0 16px}
 .vp-brand img{display:block;width:auto;height:32px;flex:0 0 auto;object-fit:contain;object-position:left center}
-.vp-brand strong{display:block;color:var(--ink);font-size:13px;font-weight:700;line-height:1.2}
-.vp-brand span{display:block;margin-top:2px;color:var(--muted);font-size:9px;font-weight:700;letter-spacing:.1em}
+.vp-brand strong{display:block;font-size:13px;font-weight:700;line-height:1.2}
+.vp-brand span{display:block;margin-top:2px;font-size:9px;font-weight:700;letter-spacing:.1em}
 .vms-portal-nav{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;padding:14px 10px 4px;display:flex;flex-direction:column;gap:2px}
 .vms-portal-nav::-webkit-scrollbar{display:none}
 .vms-portal-nav button{
   display:flex;align-items:center;gap:9px;min-height:40px;padding:8px 10px;
-  border:0;border-radius:12px;color:var(--ink);background:transparent;font-size:13.5px;font-weight:600;line-height:1.2;
+  border:0;border-radius:12px;background:transparent;font-size:13.5px;font-weight:600;line-height:1.2;
   text-align:left;cursor:pointer;transition:background .15s,color .15s;width:100%;
 }
-.vms-portal-nav button:hover{background:var(--tint)}
-.vms-portal-nav button.active,.vms-portal-nav button[data-section][aria-current="page"]{background:color-mix(in srgb,var(--blue) 14%,transparent);color:var(--blue);font-weight:700}
-.vms-portal-nav .vp-nav-icon{width:18px;flex:0 0 18px;display:grid;place-items:center;color:var(--muted)}
-.vms-portal-nav .vp-nav-icon svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
-.vms-portal-nav button.active .vp-nav-icon,.vms-portal-nav button[aria-current="page"] .vp-nav-icon{color:var(--blue)}
+.vms-portal-nav button svg{flex:0 0 16px;width:16px;height:16px}
 .vms-portal-badge-host{margin-left:auto}
-.vms-portal-badge{min-width:20px;height:20px;padding:0 5px;border-radius:99px;background:var(--red);color:#fff;font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
-.vp-account{flex:0 0 auto;padding:12px 14px 4px;border-top:1px solid var(--line)}
-.vp-account-inner{display:flex;align-items:center;gap:10px}
-.vp-av{width:38px;height:38px;border-radius:50%;background:var(--tint);color:var(--blue);display:grid;place-items:center;font-weight:700;font-size:14px;flex:0 0 38px}
-.vp-account strong{display:block;font-size:13.5px;font-weight:700;color:var(--ink);line-height:1.3}
-.vp-account span{display:block;font-size:11.5px;color:var(--muted)}
-.vp-theme-btn{width:36px;height:36px;border-radius:10px;border:1px solid var(--line2);background:transparent;color:var(--ink);display:grid;place-items:center;cursor:pointer;flex:none;margin-left:auto}
-.vp-theme-btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
-/* mobile bottom tab bar */
+.vms-portal-badge{min-width:20px;height:20px;padding:0 5px;border-radius:99px;background:#C1121F;color:#fff;font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
+.vp-foot{flex:0 0 auto;padding:10px 14px 4px;display:flex;align-items:center;gap:8px}
+.vp-theme-btn{width:36px;height:36px;border-radius:10px;border:1px solid var(--line2,rgba(0,48,73,.18));background:transparent;display:grid;place-items:center;cursor:pointer;flex:none;margin-left:auto}
+.vp-theme-btn svg{width:18px;height:18px}
+/* phone bottom tab bar */
 #vmsPortalTabBar{
   display:none;position:fixed;bottom:0;left:0;right:0;z-index:2147482001;
   height:64px;padding-bottom:env(safe-area-inset-bottom,0px);
-  background:rgba(243,247,250,.95);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
-  border-top:1px solid var(--line);
   flex-direction:row;align-items:stretch;
 }
-html[data-theme="dark"] #vmsPortalTabBar,body[data-theme="dark"] #vmsPortalTabBar{background:rgba(0,26,41,.95)}
-#vmsPortalTabBar button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:0;background:transparent;color:var(--muted);font-size:10.5px;font-weight:600;padding:4px 2px;cursor:pointer;position:relative}
-#vmsPortalTabBar button.active{color:var(--blue)}
-#vmsPortalTabBar button svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
-#vmsPortalTabBar .tb-badge{position:absolute;top:4px;right:calc(50% - 14px);min-width:16px;height:16px;padding:0 4px;border-radius:99px;background:var(--red);color:#fff;font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
+#vmsPortalTabBar button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:0;background:transparent;font-size:10.5px;font-weight:600;padding:4px 2px;cursor:pointer}
+#vmsPortalTabBar button svg{width:22px;height:22px}
 #vmsCanonicalPortalBackdrop{display:none;position:fixed;inset:0;z-index:2147482000;background:rgba(0,26,41,.4)}
 #vmsCanonicalPortalBackdrop.show{display:block}
 @media (max-width:800px){
   body.vms-portal-canonical{padding:calc(var(--vms-portal-topbar-h) + 16px) 16px 80px 16px!important}
   #vmsCanonicalPortalTopbar{padding-left:16px}
   .vp-menu-btn{display:inline-flex}
-  #vmsCanonicalPortalSidebar{transform:translateX(calc(0px - var(--vms-portal-sidebar-w)));transition:transform .25s cubic-bezier(.4,0,.2,1);box-shadow:none}
-  #vmsCanonicalPortalSidebar.open{transform:none;box-shadow:var(--shadow-lg)}
+  #vmsCanonicalPortalSidebar{transform:translateX(calc(0px - var(--vms-portal-sidebar-w)));transition:transform .25s cubic-bezier(.4,0,.2,1)}
+  #vmsCanonicalPortalSidebar.open{transform:none}
   #vmsPortalTabBar{display:flex}
 }
-/* linkhub phone preview inside portal */
-#vmsCanonicalPortalSidebar .lhp,#vmsPortalPhonePreview .lhp{margin:0 auto}
-[data-vms-fs="1"]{font-size:11px!important}[data-vms-cf="1"]{color:var(--vms-cf)!important}:root{--vms-cf:inherit}
+[data-vms-fs="1"]{font-size:11px!important}
+[data-vms-cf="1"]{color:var(--vms-cf,inherit)!important}
+:root{--vms-cf:inherit}

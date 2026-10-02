@@ -1,4 +1,3 @@
-/* canonical menu labels: Home, VMS Audit, QR Tools, Clients, Service Catalog, Billing / Subscriptions, Promotions, Projects & Requests, Files & Assets, Notifications & Activity, VMS LinkHub, Analytics, CRM / Leads, Sales Content, Automations, Security & Access */
 /* Vision Make Studio — Phase 2 canonical Admin shell
    One shared sidebar, one shared mobile drawer, one shared topbar. */
 (()=>{
@@ -9,28 +8,46 @@
   const path=(location.pathname||'/').toLowerCase();
   if(!/(^|\/)admin\//.test(path)||/\/admin\/login(?:\.html)?\/?$/.test(path))return;
 
+  /* canonical menu labels: Home, VMS Audit, QR Tools, Clients, Service Catalog, Billing / Subscriptions, Promotions, Projects & Requests, Files & Assets, Notifications & Activity, VMS LinkHub, Analytics, CRM / Leads, Sales Content, Automations, Security & Access */
   const NAV=[
-    // [href, label, iconId, group]
     ['/admin/','Home','home','Workspace'],
-    ['/admin/leads.html','Leads','people','Workspace'],
+    ['/admin/leads.html','CRM / Leads','people','Workspace'],
     ['/admin/clients.html','Clients','star','Workspace'],
-    ['/admin/audit.html','Audits','check','Workspace'],
-    ['/admin/qr.html','QR and LinkHub','qr','Products'],
+    ['/admin/audit.html','VMS Audit','check','Workspace'],
+    ['/admin/qr.html','QR Tools','qr','Products'],
     ['/admin/service-catalog.html','Service Catalog','file','Products'],
     ['/admin/promotions.html','Promotions','spark','Products'],
-    ['/admin/billing.html','Billing','card','Money and system'],
+    ['/admin/billing.html','Billing / Subscriptions','card','Money and system'],
     ['/admin/automations.html','Automations','bolt','Money and system'],
-    ['/admin/security.html','Security','lock','Money and system'],
+    ['/admin/security.html','Security & Access','lock','Money and system'],
     ['/admin/analytics.html','Analytics','chart','Money and system'],
-    ['/admin/activity.html','Activity','bell','Money and system'],
-    ['/admin/projects.html','Projects','cal','Money and system'],
-    ['/admin/files.html','Files','file','Money and system'],
+    ['/admin/activity.html','Notifications & Activity','bell','Money and system'],
+    ['/admin/projects.html','Projects & Requests','cal','Money and system'],
+    ['/admin/files.html','Files & Assets','file2','Money and system'],
     ['/admin/marketing.html','Sales Content','spark','Money and system'],
-    ['/admin/linkhub.html','LinkHub Manager','link','Money and system'],
+    ['/admin/linkhub.html','VMS LinkHub','link','Money and system'],
   ];
   const NAV_GROUPS=['Workspace','Products','Money and system'];
-  const ICONS={home:'<path d="M3 12L12 4l9 8M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/>',people:'<circle cx="9" cy="7" r="3.5"/><path d="M1 21c0-4 3.6-7 8-7s8 3 8 7"/><path d="M16 3.5a3.5 3.5 0 110 7M22 21c0-3.5-2.6-6.4-6-7"/>',star:'<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',check:'<path d="M22 11.08V12a10 10 0 11-5.93-9.14M22 4 12 14.01l-3-3"/>',qr:'<rect x="3" y="3" width="7" height="7" rx="1.2"/><rect x="14" y="3" width="7" height="7" rx="1.2"/><rect x="3" y="14" width="7" height="7" rx="1.2"/><rect x="14" y="14" width="4" height="4" rx=".8"/><path d="M21 18v3M18 21h3"/>',file:'<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>',spark:'<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>',card:'<rect x="1" y="4" width="22" height="16" rx="2.5"/><line x1="1" y1="10" x2="23" y2="10"/>',bolt:'<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>',lock:'<rect x="3" y="11" width="18" height="11" rx="2.5"/><path d="M7 11V7a5 5 0 0110 0v4"/>',chart:'<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>',bell:'<path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/>',cal:'<rect x="3" y="4" width="18" height="18" rx="2.5"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',link:'<path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>',sun:'<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>',moon:'<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>'};
-  const ico=id=>'<svg viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" fill="none" d="'+ICONS[id]+'"/></svg>';
+  const SVGI={
+    home:'M3 12L12 4l9 8M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9',
+    people:'M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75',
+    star:'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z',
+    check:'M22 11.08V12a10 10 0 11-5.93-9.14M22 4L12 14.01l-3-3',
+    qr:'M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 17h4v4M18 14v3M14 14h.01',
+    file:'M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8',
+    file2:'M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z',
+    spark:'M13 2L3 14h9l-1 8 10-12h-9z',
+    card:'M1 4h22v16H1zM1 10h22',
+    bolt:'M13 2L3 14h9l-1 8 10-12h-9z',
+    lock:'M19 11H5a2 2 0 00-2 2v7a2 2 0 002 2h14a2 2 0 002-2v-7a2 2 0 00-2-2zM7 11V7a5 5 0 0110 0v4',
+    chart:'M18 20V10M12 20V4M6 20v-6',
+    bell:'M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0',
+    cal:'M3 4h18v18H3zM16 2v4M8 2v4M3 10h18',
+    link:'M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71',
+    sun:'M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42M12 5a7 7 0 000 14 7 7 0 000-14z',
+    moon:'M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z'
+  };
+  function svgIco(id){const d=SVGI[id]||SVGI.file;return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+d+'"/></svg>'}
 
   const normalize=value=>{
     const s=String(value||'').split('?')[0].split('#')[0];
@@ -121,33 +138,13 @@
     const aside=document.createElement('aside');
     aside.id='vmsCanonicalAdminSidebar';
     aside.setAttribute('aria-label','VMS Admin tools');
-    aside.innerHTML=`
-      <div class="vms-admin-brand">
-        <img src="/assets/vms-logo-navy.png" alt="Vision Make Studio" onerror="this.src='/assets/vms-logo.png'">
-        <div class="vms-admin-brand-copy"><strong>Vision Make Studio</strong><span>ADMIN</span></div>
-      </div>
-      <nav class="vms-admin-nav" aria-label="Admin navigation">
-        ${NAV_GROUPS.map(g=>{
-          const links=NAV.filter(n=>n[3]===g);
-          return '<div class="vms-admin-nav-label">'+g+'</div>'+
-            links.map(([href,label,iconId])=>'<a href="'+href+'"'+(normalize(href)===current?' class="active" aria-current="page"':'')+
-              '><span class="vms-nav-icon">'+ico(iconId)+'</span><span class="vms-nav-label">'+label+'</span></a>').join('');
-        }).join('')}
-      </nav>
-      <div class="vms-admin-foot">
-        <div class="vms-admin-external"><a href="/portal/">Client Portal</a><a href="/">Website</a></div>
-        <small>VMS Admin · Private workspace</small>
-      </div>`;
+    aside.innerHTML='<div class="vms-admin-brand"><img src="/assets/vms-logo-navy.png" alt="Vision Make Studio" onerror="this.src=\'/assets/vms-logo.png\'"><div class="vms-admin-brand-copy"><strong>Vision Make Studio</strong><span>ADMIN</span></div></div><nav class="vms-admin-nav" aria-label="Admin navigation">'+
+    NAV_GROUPS.map(g=>'<div class="vms-admin-nav-label">'+g+'</div>'+
+      NAV.filter(n=>n[3]===g).map(([href,label,icon])=>'<a href="'+href+'"'+(normalize(href)===current?' class="active" aria-current="page"':'')+'>'+svgIco(icon)+'<span>'+label+'</span></a>').join('')).join('')+
+    '</nav><div class="vms-admin-foot"><div class="vms-admin-external"><a href="/portal/">Client Portal</a><a href="/">Website</a></div><small>VMS Admin</small></div>';
   const top=document.createElement('header');
     top.id='vmsCanonicalAdminTopbar';
-    top.innerHTML=`
-      <div class="vms-admin-top-left">
-        <button class="vms-admin-menu-btn" type="button" aria-label="Open Admin menu" aria-expanded="false">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="17" x2="21" y2="17"/></svg>
-        </button>
-        <div class="vms-admin-page-title"><small>VMS ADMIN</small><strong role="heading" aria-level="1">${title}</strong></div>
-      </div>
-      <div class="vms-admin-top-actions"></div>`;
+    top.innerHTML='<div class="vms-admin-top-left"><button class="vms-admin-menu-btn" id="mobileMenuBtn" type="button" aria-label="Open Admin menu" aria-expanded="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="17" x2="21" y2="17"/></svg></button><div class="vms-admin-page-title"><small>VMS ADMIN</small><strong role="heading" aria-level="1" id="vmsAdminPageTitle">'+title+'</strong></div></div><div class="vms-admin-top-actions" id="vmsAdminTopActions"></div>';
   const actionHost=top.querySelector('.vms-admin-top-actions');
     if(actionNode){
       actionNode.classList.remove('vms-retired-admin-shell');
@@ -178,12 +175,16 @@
       document.body.classList.add('vms-admin-drawer-open');
     };
 
-    // theme toggle
+    // theme toggle button
     const themeBtn=document.createElement('button');themeBtn.className='vms-admin-theme-btn';themeBtn.type='button';
     const effD=()=>{const t=document.documentElement.dataset.theme;return t?t==='dark':matchMedia('(prefers-color-scheme:dark)').matches};
-    const paintT=()=>{themeBtn.innerHTML=effD()?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#sun"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>';themeBtn.setAttribute('aria-label',effD()?'Switch to light mode':'Switch to dark mode')};
+    const paintT=()=>{
+      const d=effD();
+      themeBtn.innerHTML=d?svgIco('sun'):svgIco('moon');
+      themeBtn.setAttribute('aria-label',d?'Switch to light mode':'Switch to dark mode');
+    };
     themeBtn.addEventListener('click',()=>{const n=effD()?'light':'dark';document.documentElement.dataset.theme=n;try{localStorage.setItem('vms-theme',n)}catch(e){}paintT()});
-    const topActs=top.querySelector('.vms-admin-top-actions');if(topActs)topActs.appendChild(themeBtn);paintT();
+    const topActions=document.getElementById('vmsAdminTopActions');if(topActions)topActions.appendChild(themeBtn);paintT();
     btn.addEventListener('click',()=>aside.classList.contains('open')?close():open());
     shade.addEventListener('click',close);
     aside.querySelectorAll('a').forEach(a=>a.addEventListener('click',close));

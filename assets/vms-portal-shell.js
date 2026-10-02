@@ -1,19 +1,38 @@
-/* canonical menu labels: Home, My Services, QR Codes, My LinkHub, Audits, Projects, Files, Notifications, Requests, Billing, Contact / Schedule; canonical root: /assets/vms-portal-shell.css */
 /* VMS Phase 3 — canonical Client Portal shell. Mirrors the existing Portal controls instead of moving them. */
 (()=>{
   'use strict';
-  try{const t=localStorage.getItem('vms-theme');if(t)document.documentElement.dataset.theme=t}catch(e){}
   if(window.__VMS_PORTAL_SHELL_V3__)return;
   window.__VMS_PORTAL_SHELL_V3__=true;
+  /* canonical menu labels: Home, My Services, QR Codes, My LinkHub, Audits, Projects, Files, Notifications, Requests, Billing, Contact / Schedule; canonical root: /assets/vms-portal-shell.css */
   const ITEMS=[
-    ['home','Home','home',true],['services','Services','star',true],['qrs','QR and LinkHub','qr',true],
-    ['billing','Billing','card',true],['contact','Schedule','cal',true],
-    ['linkhub','My LinkHub','link',false],['audits','Audits','check',false],
-    ['projects','Projects','cal',false],['files','Files','file',false],
-    ['notifications','Notifications','bell',false],['requests','Requests','bolt',false],
+    ['home','Home','home',true],
+    ['services','My Services','star',true],
+    ['qrs','QR Codes','qr',true],
+    ['billing','Billing','card',true],
+    ['contact','Contact / Schedule','cal',true],
+    ['linkhub','My LinkHub','link',false],
+    ['audits','Audits','check',false],
+    ['projects','Projects','cal2',false],
+    ['files','Files','file',false],
+    ['notifications','Notifications','bell',false],
+    ['requests','Requests','bolt',false],
   ];
-  const VP_ICONS={home:'<path d="M3 12L12 4l9 8M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/>',star:'<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',qr:'<rect x="3" y="3" width="7" height="7" rx="1.2"/><rect x="14" y="3" width="7" height="7" rx="1.2"/><rect x="3" y="14" width="7" height="7" rx="1.2"/><rect x="14" y="14" width="4" height="4" rx=".8"/><path d="M21 18v3M18 21h3"/>',card:'<rect x="1" y="4" width="22" height="16" rx="2.5"/><line x1="1" y1="10" x2="23" y2="10"/>',cal:'<rect x="3" y="4" width="18" height="18" rx="2.5"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',link:'<path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>',check:'<path d="M22 11.08V12a10 10 0 11-5.93-9.14M22 4 12 14.01l-3-3"/>',file:'<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/>',bell:'<path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/>',bolt:'<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>',moon:'<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>',sun:'<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>'}; 
-  const vpIco=id=>'<svg viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" fill="none" d="'+VP_ICONS[id]+'"/></svg>';
+  const PSVG={
+    home:'M3 12L12 4l9 8M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9',
+    star:'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z',
+    qr:'M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 17h4v4M18 14v3M14 14h.01',
+    card:'M1 4h22v16H1zM1 10h22',
+    cal:'M3 4h18v18H3zM16 2v4M8 2v4M3 10h18',
+    cal2:'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01',
+    link:'M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71',
+    check:'M22 11.08V12a10 10 0 11-5.93-9.14M22 4L12 14.01l-3-3',
+    file:'M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z',
+    bell:'M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0',
+    bolt:'M13 2L3 14h9l-1 8 10-12h-9z',
+    moon:'M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z',
+    sun:'M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42M12 5a7 7 0 000 14 7 7 0 000-14z'
+  };
+  function pIco(id){const d=PSVG[id]||PSVG.file;return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+d+'"/></svg>'}
   const VALID=new Set(ITEMS.map(([section])=>section));
   const $=(sel,root=document)=>root.querySelector(sel);
   const $$=(sel,root=document)=>Array.from(root.querySelectorAll(sel));
@@ -53,6 +72,7 @@
     return false;
   }
   function install(){
+    try{const t=localStorage.getItem('vms-theme');if(t)document.documentElement.dataset.theme=t}catch(e){}
   ensureStylesheet();
     if($('#vmsCanonicalPortalSidebar'))return;
     document.body.classList.add('vms-portal-canonical');
@@ -65,35 +85,37 @@
     aside.id='vmsCanonicalPortalSidebar';aside.setAttribute('aria-label','VMS Client Portal');
     const sourceLogo=side?.querySelector('.brand img');
     const logo=sourceLogo?sourceLogo.cloneNode(true):null;
-    aside.innerHTML='<div class="vp-brand"><img src="/assets/vms-logo-navy.png" alt="Vision Make Studio" onerror="this.src=\'/assets/vms-logo.png\'"><div><strong>Vision Make Studio</strong><span>CLIENT PORTAL</span></div></div><nav class="vms-portal-nav" aria-label="Client Portal sections"></nav><div class="vp-account"><div class="vp-account-inner"></div></div>';
+    aside.innerHTML='<div class="vp-brand"><img src="/assets/vms-logo-navy.png" alt="Vision Make Studio" onerror="this.src=\'/assets/vms-logo.png\'"><div><strong>Vision Make Studio</strong><span>CLIENT PORTAL</span></div></div><nav class="vms-portal-nav" aria-label="Client Portal sections"></nav><div class="vp-foot"></div>';
     const nav=aside.querySelector('.vms-portal-nav');
     ITEMS.forEach(([section,label,iconId,_])=>{
       const b=document.createElement('button');b.type='button';b.dataset.section=section;
-      b.innerHTML='<span class="vp-nav-icon">'+vpIco(iconId)+'</span><span>'+label+'</span><span class="vms-portal-badge-host" data-badge-section="'+section+'"></span>';
+      b.innerHTML=pIco(iconId)+'<span>'+label+'</span><span class="vms-portal-badge-host" data-badge-section="'+section+'"></span>';
       b.addEventListener('click',()=>activate(section));
       nav.appendChild(b);
     });
-    const acct=aside.querySelector('.vp-account-inner');
+    const foot=aside.querySelector('.vp-foot');
     const existing=document.querySelector('.side-foot,.side-client');
-    if(existing&&acct)acct.appendChild(existing.cloneNode(true));
+    if(existing&&foot)foot.appendChild(existing.cloneNode(true));
+    // theme toggle
     const tBtn=document.createElement('button');tBtn.className='vp-theme-btn';tBtn.type='button';
     const effD2=()=>{const t=document.documentElement.dataset.theme;return t?t==='dark':matchMedia('(prefers-color-scheme:dark)').matches};
-    const pT2=()=>{tBtn.innerHTML=vpIco(effD2()?'sun':'moon');tBtn.setAttribute('aria-label',effD2()?'Switch to light mode':'Switch to dark mode')};
+    const pT2=()=>{tBtn.innerHTML=pIco(effD2()?'sun':'moon');tBtn.setAttribute('aria-label',effD2()?'Switch to light mode':'Switch to dark mode')};
     tBtn.addEventListener('click',()=>{const n=effD2()?'light':'dark';document.documentElement.dataset.theme=n;try{localStorage.setItem('vms-theme',n)}catch(e){}pT2()});
-    if(acct)acct.appendChild(tBtn);pT2();
-    let tabBar=document.getElementById('vmsPortalTabBar');
-    if(!tabBar){tabBar=document.createElement('nav');tabBar.id='vmsPortalTabBar';tabBar.setAttribute('aria-label','Quick navigation');
+    if(foot)foot.appendChild(tBtn);pT2();
+    // phone bottom tab bar
+    if(!document.getElementById('vmsPortalTabBar')){
+      const tabBar=document.createElement('nav');tabBar.id='vmsPortalTabBar';tabBar.setAttribute('aria-label','Quick navigation');
       ITEMS.filter(x=>x[3]).forEach(([section,label,iconId])=>{
         const b=document.createElement('button');b.type='button';b.dataset.section=section;
-        b.innerHTML=vpIco(iconId)+'<span>'+label+'</span><span class="tb-badge" data-tbbadge="'+section+'" hidden></span>';
+        b.innerHTML=pIco(iconId)+'<span>'+label+'</span>';
+        b.addEventListener('click',()=>activate(section));
         tabBar.appendChild(b);
       });
-      ITEMS.filter(x=>x[3]).forEach(([section])=>{const b=tabBar.querySelector('[data-section="'+section+'"]');if(b)b.addEventListener('click',()=>activate(section))});
       document.body.appendChild(tabBar);
     }
 
     const top=document.createElement('header');top.id='vmsCanonicalPortalTopbar';
-    top.innerHTML='<div class="vp-top-left"><button class="vp-menu-btn" type="button" aria-label="Open portal menu" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="17" x2="21" y2="17"/></svg></button><div class="vp-title"><small>CLIENT PORTAL</small><strong id="vmsCanonicalPortalTitle" role="heading" aria-level="1">'+(titleSource?.textContent?.trim()||'My VMS Workspace')+'</strong></div></div><div class="vp-top-actions"></div>';
+    top.innerHTML='<div class="vp-top-left"><button class="vp-menu-btn" type="button" aria-label="Open portal menu" aria-expanded="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="17" x2="21" y2="17"/></svg></button><div class="vp-title"><small>CLIENT PORTAL</small><strong id="vmsCanonicalPortalTitle" role="heading" aria-level="1">'+(titleSource?.textContent?.trim()||'My VMS Workspace')+'</strong></div></div><div class="vp-top-actions"></div>';
     const sourceActions=topSource?.querySelector('.topbar-actions,.top-actions,.actions');
     /* Move the real action group rather than cloning it so existing click handlers and IDs stay alive. */
     if(sourceActions)top.querySelector('.vms-portal-top-actions').appendChild(sourceActions);
