@@ -14,18 +14,11 @@ for(const item of ['index.html','services.html','get-started.html','audit-report
   fs.cpSync(src,dst,{recursive:true});
 }
 
-/* Phase 9: connect the existing homepage to the public sales flow without
-   changing the source homepage layout or visual design. */
+/* Homepage (Oct 2026 redesign): the Services section, service sheet, pricing and request form
+   now live on the homepage itself and read the live VMS catalog, so the old build-time
+   rewrite of the Services links and the service CTA hook is no longer needed. */
 const homepage=path.join(dist,'index.html');
-if(fs.existsSync(homepage)){
-  let html=fs.readFileSync(homepage,'utf8');
-  html=html.replaceAll('href="#services"','href="services.html"');
-  const oldServiceHook="const btn=document.getElementById('serviceRequestBtn');btn.textContent=s.salesMode==='Buy Now'?'Get Started':'Request This Service';serviceModal.classList.add('show')";
-  const newServiceHook="const btn=document.getElementById('serviceRequestBtn');btn.textContent=s.salesMode==='Buy Now'?'Get Started':'Request This Service';btn.href='get-started.html?service='+encodeURIComponent(s.id);serviceModal.classList.add('show')";
-  if(!html.includes(oldServiceHook))throw new Error('Phase 9 homepage service CTA hook was not found.');
-  html=html.replace(oldServiceHook,newServiceHook);
-  fs.writeFileSync(homepage,html);
-}
+if(!fs.existsSync(homepage))throw new Error('Publish output is missing index.html');
 
 /* Phase 4 production privacy hardening.
    Protected content remains hidden until VMSAuth verifies the session, role and MFA,

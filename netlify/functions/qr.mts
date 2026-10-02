@@ -5,7 +5,7 @@ import {cleanUrl,code,err,json,requireIdentity,write} from './_shared/qr.mts';
 /* ---------------- Client self-service QR rules ----------------
    A signed-in client can create, edit, archive and delete ONLY their own QR codes,
    and only what their active services include:
-     - static QR: VMS Smart QR (or any package that includes it) or anything with scan tracking
+     - static QR: VMS Smart QR, any LinkHub plan (Core or Pro), or any package that includes them
      - tracked (dynamic) QR: LinkHub Pro, or any bundle/package that includes LinkHub Pro
    client_id is always forced to the caller's own client. Admin behavior is unchanged. */
 const ACTIVE_SERVICE=new Set(['active','published','enabled']);
@@ -23,7 +23,7 @@ async function qrEntitlement(clientId:string){
   for(const key of keys){
     const c=byId.get(key);if(!c)continue;
     const inc=(Array.isArray(c.included)?c.included:[]).map((x:any)=>String(x));
-    if(c.metadata?.family==='qr'||inc.some(x=>/smart qr/i.test(x)))staticQr=true;
+    if(c.metadata?.family==='qr'||c.metadata?.family==='linkhub'||inc.some(x=>/smart qr|linkhub/i.test(x)))staticQr=true;
     if(c.metadata?.analyticsIncluded===true||inc.some(x=>/smart scan activity|linkhub pro/i.test(x)))tracked=true;
   }
   return {static:staticQr||tracked,tracked};

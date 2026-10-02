@@ -51,9 +51,14 @@
       features:['Branded QR artwork','Website, reviews, booking, social, and custom destinations','Print-ready export','No monthly fee for the standard version'],included:[],metadata:{family:'qr',analyticsIncluded:false}
     },
     {
+      id:'tap-scan-stand',name:'VMS Tap and Scan Stand',kind:'addon',category:'QR & Growth',icon:'QR',status:'Published',featured:false,displayOrder:45,
+      description:'A countertop stand with a QR code and an NFC tap tag. VMS sets it up to open the link you choose, such as your LinkHub, reviews or menu.',pricingModel:'One-Time',oneTimePrice:29.99,recurringPrice:null,cadence:null,startingAt:false,salesMode:'Request First',websiteVisible:true,portalVisible:true,promoEligible:false,
+      features:['Tap with a phone or scan the QR code','Set to any link you choose, and changeable later with a tracked code','Counter or desk stand','Free shipping in the U.S.'],included:[],metadata:{family:'stand',physical:true,freeShipping:true}
+    },
+    {
       id:'linkhub-core',name:'VMS LinkHub Core',kind:'subscription',category:'LinkHub',icon:'LH',status:'Published',featured:true,displayOrder:50,
       description:'A polished digital business card with your profile, contact actions, links, social icons, colors, and Visit Us page.',pricingModel:'Recurring',oneTimePrice:null,recurringPrice:5.99,cadence:'Monthly',startingAt:false,salesMode:'Buy Now',websiteVisible:true,portalVisible:true,promoEligible:true,
-      features:['Business profile and contact actions','Custom links and social icons','Theme and brand colors','Visit Us / Directions page','QR code to your LinkHub'],included:[],metadata:{family:'linkhub',plan:'core'}
+      features:['Business profile and contact actions','Custom links and social icons','Theme and brand colors','Visit Us / Directions page','Unlimited static QR codes'],included:[],metadata:{family:'linkhub',plan:'core'}
     },
     {
       id:'linkhub-wifi',name:'LinkHub Wi‑Fi Feature',kind:'addon',category:'LinkHub',icon:'WIFI',status:'Published',featured:false,displayOrder:51,
@@ -68,7 +73,7 @@
     {
       id:'linkhub-pro',name:'VMS LinkHub Pro',kind:'subscription',category:'LinkHub',icon:'LH+',status:'Published',featured:true,displayOrder:53,
       description:'The complete managed LinkHub membership with premium features, analytics, and ongoing control from the Client Portal.',pricingModel:'Recurring',oneTimePrice:null,recurringPrice:19.99,cadence:'Monthly',startingAt:false,salesMode:'Buy Now',websiteVisible:true,portalVisible:true,promoEligible:true,
-      features:['Everything in LinkHub Core','Restaurant Menu included','Wi‑Fi feature included','Smart Scan Activity','LinkHub views and click analytics','Dynamic management and ongoing updates','Client Portal management'],included:['VMS LinkHub Core','LinkHub Wi‑Fi Feature','LinkHub Restaurant Menu','Smart Scan Activity'],metadata:{family:'linkhub',plan:'pro',analyticsIncluded:true}
+      features:['Everything in LinkHub Core','Tracked (dynamic) QR codes with scan counts','Restaurant Menu included','Wi‑Fi feature included','Smart Scan Activity','LinkHub views and click analytics','Dynamic management and ongoing updates','Client Portal management'],included:['VMS LinkHub Core','LinkHub Wi‑Fi Feature','LinkHub Restaurant Menu','Smart Scan Activity'],metadata:{family:'linkhub',plan:'pro',analyticsIncluded:true}
     },
     {
       id:'linkhub-done-for-you',name:'LinkHub Done-for-You Build',kind:'addon',category:'LinkHub',icon:'DFY',status:'Published',featured:false,displayOrder:54,
