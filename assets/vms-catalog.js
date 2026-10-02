@@ -56,6 +56,101 @@
       features:['Tap with a phone or scan the QR code','Set to any link you choose, and changeable later with a tracked code','Counter or desk stand','Free shipping in the U.S.'],included:[],metadata:{family:'stand',physical:true,freeShipping:true}
     },
     {
+      id:"re-essentials",name:"Listing Essentials",kind:"package",category:"Real Estate Media",icon:'Media',status:'Published',featured:false,displayOrder:60,
+      description:"The core media for a listing: photos, a floor plan and a feature walkthrough video.",pricingModel:"One-Time",oneTimePrice:299,recurringPrice:null,cadence:null,startingAt:false,salesMode:'Request First',websiteVisible:true,portalVisible:true,promoEligible:false,
+      features:["About 25 edited photos", "Measured floor plan", "Feature highlight walkthrough video", "Delivered as one download link"],included:["Listing Photography", "Floor Plan", "Feature Highlight Tour"],metadata:{"family": "media", "vertical": "real-estate", "tier": "package"}
+    },
+    {
+      id:"re-agent-pro",name:"Agent Listing Pro",kind:"package",category:"Real Estate Media",icon:'Media',status:'Published',featured:false,displayOrder:61,
+      description:"Everything in Essentials, plus an on-camera agent tour and short reels for social.",pricingModel:"One-Time",oneTimePrice:549,recurringPrice:null,cadence:null,startingAt:false,salesMode:'Request First',websiteVisible:true,portalVisible:true,promoEligible:false,
+      features:["Everything in Listing Essentials", "Agent on-camera lifestyle tour", "2 short vertical reels", "Delivered as one download link"],included:["Listing Photography", "Floor Plan", "Feature Highlight Tour", "Agent On-Camera Tour", "Listing Reels"],metadata:{"family": "media", "vertical": "real-estate", "tier": "package"}
+    },
+    {
+      id:"re-agent-monthly",name:"Agent Monthly",kind:"subscription",category:"Real Estate Media",icon:'Media',status:'Published',featured:false,displayOrder:62,
+      description:"Two listing shoots every month for busy agents.",pricingModel:"Recurring",oneTimePrice:null,recurringPrice:499,cadence:"Monthly",startingAt:false,salesMode:'Request First',websiteVisible:true,portalVisible:true,promoEligible:false,
+      features:["2 listing shoots each month", "Photos, floor plan or walkthrough per shoot", "Priority scheduling", "Cancel any time"],included:[],metadata:{"family": "media", "vertical": "real-estate", "tier": "monthly"}
+    },
+    {
+      id:"re-brokerage",name:"Brokerage Plan",kind:"subscription",category:"Real Estate Media",icon:'Media',status:'Published',featured:false,displayOrder:63,
+      description:"A shared pool of shoots for a brokerage, used by any agent on the team.",pricingModel:"Recurring",oneTimePrice:null,recurringPrice:2200,cadence:"Monthly",startingAt:true,salesMode:'Request First',websiteVisible:true,portalVisible:true,promoEligible:false,
+      features:["10 shoots each month, shared by your agents", "One invoice for the brokerage", "Agents book from one place", "Custom plans for larger teams"],included:[],metadata:{"family": "media", "vertical": "real-estate", "tier": "monthly"}
+    },
+    {
+      id:"re-listing-photos",name:"Listing Photography",kind:"service",category:"Real Estate Media",icon:'Media',status:'Published',featured:false,displayOrder:64,
+      description:"Edited photos of the property, ready for the MLS, Zillow and social.",pricingModel:"One-Time",oneTimePrice:175,recurringPrice:null,cadence:null,startingAt:false,salesMode:'Request First',websiteVisible:true,portalVisible:true,promoEligible:false,
+      features:["About 25 edited photos", "Interior and exterior", "Bright, natural color editing", "Delivered as a download link"],included:[],metadata:{"family": "media", "vertical": "real-estate", "tier": "single"}
+    },
+    {
+      id:"re-floor-plan",name:"Floor Plan",kind:"service",category:"Real Estate Media",icon:'Media',status:'Published',featured:false,displayOrder:65,
+      description:"A measured 2D floor plan buyers can understand at a glance.",pricingModel:"One-Time",oneTimePrice:129,recurringPrice:null,cadence:null,startingAt:false,salesMode:'Request First',websiteVisible:true,portalVisible:true,promoEligible:false,
+      features:["Measured 2D floor plan", "Great for listings and brochures", "Add it to any photo package for $79"],included:[],metadata:{"family": "media", "vertical": "real-estate", "tier": "single", "addOnPrice": 79}
+    },
+    {
+      id:"re-feature-tour",name:"Feature Highlight Tour",kind:"service",category:"Real Estate Media",icon:'Media',status:'Published',featured:false,displayOrder:66,
+      description:"A quick walkthrough-style video that moves through the home and shows off its best features.",pricingModel:"One-Time",oneTimePrice:149,recurringPrice:null,cadence:null,startingAt:false,salesMode:'Request First',websiteVisible:true,portalVisible:true,promoEligible:false,
+      features:["Walkthrough-style video", "Smooth movement through the home", "Cut for listings and social"],included:[],metadata:{"family": "media", "vertical": "real-estate", "tier": "single"}
+    },
+    {
+      id:"re-agent-tour",name:"Agent On-Camera Tour",kind:"service",category:"Real Estate Media",icon:'Media',status:'Published',featured:false,displayOrder:67,
+      description:"The agent walks through the home on camera and explains every detail.",pricingModel:"One-Time",oneTimePrice:299,recurringPrice:null,cadence:null,startingAt:false,salesMode:'Request First',websiteVisible:true,portalVisible:true,promoEligible:false,
+      features:["Agent on camera, room by room", "Edited and ready to post", "Great for introductions and open houses"],included:[],metadata:{"family": "media", "vertical": "real-estate", "tier": "single"}
+    },
+    {
+      id:"re-reels",name:"Listing Reels",kind:"service",category:"Real Estate Media",icon:'Media',status:'Published',featured:false,displayOrder:68,
+      description:"Three short vertical clips for Instagram, TikTok and Facebook.",pricingModel:"One-Time",oneTimePrice:149,recurringPrice:null,cadence:null,startingAt:false,salesMode:'Request First',websiteVisible:true,portalVisible:true,promoEligible:false,
+      features:["3 short vertical clips", "Cut for social feeds", "Includes feature highlights"],included:[],metadata:{"family": "media", "vertical": "real-estate", "tier": "single"}
+    },
+    {
+      id:"re-360-tour",name:"360 Virtual Tour",kind:"service",category:"Real Estate Media",icon:'Media',status:'Published',featured:false,displayOrder:69,
+      description:"An interactive 360 tour buyers can explore online.",pricingModel:"One-Time",oneTimePrice:249,recurringPrice:null,cadence:null,startingAt:false,salesMode:'Request First',websiteVisible:true,portalVisible:true,promoEligible:false,
+      features:["Interactive 360 tour", "A link to share or embed", "Hosting terms confirmed when you book"],included:[],metadata:{"family": "media", "vertical": "real-estate", "tier": "single"}
+    },
+    {
+      id:"re-drone-photos",name:"Drone Photos",kind:"service",category:"Real Estate Media",icon:'Media',status:'Published',featured:false,displayOrder:70,
+      description:"Aerial photos that show the property and its surroundings.",pricingModel:"One-Time",oneTimePrice:125,recurringPrice:null,cadence:null,startingAt:false,salesMode:'Request First',websiteVisible:false,portalVisible:false,promoEligible:false,
+      features:["Aerial photos", "Edited and ready for listings"],included:[],metadata:{"family": "media", "vertical": "real-estate", "tier": "single", "drone": true}
+    },
+    {
+      id:"re-drone-video",name:"Drone Video",kind:"service",category:"Real Estate Media",icon:'Media',status:'Published',featured:false,displayOrder:71,
+      description:"A short aerial video of the property and its surroundings.",pricingModel:"One-Time",oneTimePrice:175,recurringPrice:null,cadence:null,startingAt:false,salesMode:'Request First',websiteVisible:false,portalVisible:false,promoEligible:false,
+      features:["Aerial video", "Edited and ready for listings"],included:[],metadata:{"family": "media", "vertical": "real-estate", "tier": "single", "drone": true}
+    },
+    {
+      id:"re-drone-bundle",name:"Drone Bundle",kind:"service",category:"Real Estate Media",icon:'Media',status:'Published',featured:false,displayOrder:72,
+      description:"Aerial photos and video together.",pricingModel:"One-Time",oneTimePrice:249,recurringPrice:null,cadence:null,startingAt:false,salesMode:'Request First',websiteVisible:false,portalVisible:false,promoEligible:false,
+      features:["Aerial photos", "Aerial video", "Edited and ready for listings"],included:[],metadata:{"family": "media", "vertical": "real-estate", "tier": "single", "drone": true}
+    },
+    {
+      id:"rest-photo-refresh",name:"Restaurant Photo Refresh",kind:"package",category:"Restaurant Media",icon:'Media',status:'Published',featured:false,displayOrder:80,
+      description:"Food, drink and interior photos for your menu, website and Google profile.",pricingModel:"One-Time",oneTimePrice:249,recurringPrice:null,cadence:null,startingAt:false,salesMode:'Request First',websiteVisible:true,portalVisible:true,promoEligible:false,
+      features:["About 20 edited photos", "Food, drinks and interior", "Sized for web, Google and social"],included:[],metadata:{"family": "media", "vertical": "restaurant", "tier": "package"}
+    },
+    {
+      id:"rest-social-content",name:"Restaurant Social Content",kind:"package",category:"Restaurant Media",icon:'Media',status:'Published',featured:false,displayOrder:81,
+      description:"Photos plus short vertical clips made for social media.",pricingModel:"One-Time",oneTimePrice:449,recurringPrice:null,cadence:null,startingAt:false,salesMode:'Request First',websiteVisible:true,portalVisible:true,promoEligible:false,
+      features:["About 20 edited photos", "4 short vertical clips", "Food, drinks and interior", "Sized for web, Google and social"],included:[],metadata:{"family": "media", "vertical": "restaurant", "tier": "package"}
+    },
+    {
+      id:"rest-full-presence",name:"Full Restaurant Presence",kind:"package",category:"Restaurant Media",icon:'Media',status:'Published',featured:false,displayOrder:82,
+      description:"A complete content set: photos, clips, a walkthrough and a 360 tour of the space.",pricingModel:"One-Time",oneTimePrice:749,recurringPrice:null,cadence:null,startingAt:false,salesMode:'Request First',websiteVisible:true,portalVisible:true,promoEligible:false,
+      features:["About 30 edited photos", "6 short vertical clips", "Interior walkthrough video", "360 tour of the space"],included:[],metadata:{"family": "media", "vertical": "restaurant", "tier": "package"}
+    },
+    {
+      id:"rest-monthly-content",name:"Monthly Content Day",kind:"subscription",category:"Restaurant Media",icon:'Media',status:'Published',featured:false,displayOrder:83,
+      description:"One shoot each month so your content always feels fresh.",pricingModel:"Recurring",oneTimePrice:null,recurringPrice:399,cadence:"Monthly",startingAt:false,salesMode:'Request First',websiteVisible:true,portalVisible:true,promoEligible:false,
+      features:["One shoot each month", "Photos and short clips", "Ready for social and Google", "Cancel any time"],included:[],metadata:{"family": "media", "vertical": "restaurant", "tier": "monthly"}
+    },
+    {
+      id:"auto-inventory-day",name:"Inventory Photo Day",kind:"service",category:"Automotive Media",icon:'Media',status:'Published',featured:false,displayOrder:90,
+      description:"A shoot day to photograph the vehicles on your lot.",pricingModel:"One-Time",oneTimePrice:399,recurringPrice:null,cadence:null,startingAt:true,salesMode:'Request First',websiteVisible:false,portalVisible:false,promoEligible:false,
+      features:["Photos of your inventory", "Consistent angles and editing", "Ready for your listings"],included:[],metadata:{"family": "media", "vertical": "automotive", "tier": "single"}
+    },
+    {
+      id:"auto-walkaround-reels",name:"Walkaround Reels",kind:"service",category:"Automotive Media",icon:'Media',status:'Published',featured:false,displayOrder:91,
+      description:"Short vertical walkaround videos of featured vehicles.",pricingModel:"One-Time",oneTimePrice:249,recurringPrice:null,cadence:null,startingAt:true,salesMode:'Request First',websiteVisible:false,portalVisible:false,promoEligible:false,
+      features:["Short vertical walkarounds", "Cut for social and listings"],included:[],metadata:{"family": "media", "vertical": "automotive", "tier": "single"}
+    },
+    {
       id:'linkhub-core',name:'VMS LinkHub Core',kind:'subscription',category:'LinkHub',icon:'LH',status:'Published',featured:true,displayOrder:50,
       description:'A polished digital business card with your profile, contact actions, links, social icons, colors, and Visit Us page.',pricingModel:'Recurring',oneTimePrice:null,recurringPrice:5.99,cadence:'Monthly',startingAt:false,salesMode:'Buy Now',websiteVisible:true,portalVisible:true,promoEligible:true,
       features:['Business profile and contact actions','Custom links and social icons','Theme and brand colors','Visit Us / Directions page','Unlimited static QR codes'],included:[],metadata:{family:'linkhub',plan:'core'}
