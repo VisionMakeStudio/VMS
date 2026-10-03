@@ -10,7 +10,7 @@
   const path=(location.pathname||'/').toLowerCase();
   if(!/(^|\/)admin\//.test(path)||/\/admin\/login(?:\.html)?\/?$/.test(path))return;
 
-  const CSS_VERSION='20261002-preview-v5';
+  const CSS_VERSION='20261003-preview-v6';
   /* canonical menu labels (validator): Home, VMS Audit, QR Tools, Clients, Service Catalog, Billing / Subscriptions, Promotions, Projects & Requests, Files & Assets, Notifications & Activity, VMS LinkHub, Analytics, CRM / Leads, Sales Content, Automations, Security & Access.
      Shown with the shorter labels from the approved preview. */
   /* href, label, icon, group, mobile tab */
@@ -119,29 +119,61 @@
   }
 
 
+
+  /* ===== Stylesheet pinning: keep our CSS last without ever unloading it (no unstyled flash) ===== */
+  let pinCount=0,pinTimer=0;
+  function pinCss(list){
+    const head=document.head;
+    if(pinCount>=4)return; /* other page scripts also re-append styles; never ping-pong with them */
+    const kids=Array.from(head.children);
+    const foreignIdx=kids.reduce((m,e,i)=>((e.matches('link[rel~="stylesheet"],style')&&!e.dataset.vmsPin)?i:m),-1);
+    const ok=list.every(([id])=>{const mine=kids.filter(e=>e.dataset&&e.dataset.vmsPin===id);return mine.length&&kids.indexOf(mine[mine.length-1])>foreignIdx});
+    if(ok)return;
+    pinCount++;
+    list.forEach(([id,href])=>{
+      const l=document.createElement('link');l.rel='stylesheet';l.href=href;l.dataset.vmsPin=id;
+      l.addEventListener('load',()=>{Array.from(head.querySelectorAll('link[data-vms-pin="'+id+'"]')).forEach(o=>{if(o!==l)o.remove()})},{once:true});
+      head.appendChild(l);
+    });
+  }
+  /* ===== Dark mode: legacy pages hardcode white cards; turn them into dark surfaces so text stays readable ===== */
+  const ISLAND_SKIP=/qr-?(code|img|image|canvas|box|frame|card|wrap|preview|render|output|stage|art)|phone|preview|logo|swatch|colou?r-|avatar|cover|thumb|donut|ring|chart|canvas|toggle|switch(?!-card|-copy)|knob|dot|progress|track|vms-|vp-|lp-av/i;
+  function isDark(){const t=document.documentElement.dataset.theme;return t?t==='dark':matchMedia('(prefers-color-scheme: dark)').matches}
+  function islands(root){
+    const dark=isDark();
+    document.querySelectorAll('[data-vms-island]').forEach(e=>{if(!dark){e.removeAttribute('data-vms-island');e.style.removeProperty('background-color');e.style.removeProperty('background-image')}});
+    if(!dark)return;
+    const scope=root&&root.querySelectorAll?root:document.body;
+    scope.querySelectorAll('div,section,article,aside,li,header,footer,form,fieldset,details,table,tr,td,th').forEach(e=>{
+      if(e.matches('.btn,.button,.badge,.chip,.pill,.tab,[role="tab"],[class*="btn"]'))return;
+      if(e.hasAttribute('data-vms-island'))return;
+      if(e.closest('#vmsCanonicalAdminSidebar,#vmsCanonicalAdminTopbar,#vmsAdminTabbar,#vmsAdminMore,#vmsPal,#vmsCanonicalPortalTopbar,#vmsPortalTabBar,#vpMoreSheet,[data-vms-keep]'))return;
+      const cls=(typeof e.className==='string'?e.className:'')+' '+(e.id||'');
+      if(ISLAND_SKIP.test(cls))return;
+      if(e.closest('[class*="phone"],[class*="preview"],[class*="qr-card"],[class*="qr-canvas"],[class*="qr-frame"],[class*="qr-box"],[class*="qr-output"],[class*="qr-stage"]'))return;
+      const cs=getComputedStyle(e);const m=cs.backgroundColor.match(/rgba?\(([^)]+)\)/);if(!m)return;
+      const p=m[1].split(',').map(parseFloat);if((p.length>3?p[3]:1)<.75)return;
+      const L=(0.2126*p[0]+0.7152*p[1]+0.0722*p[2])/255;if(L<.82)return;
+      if(e.querySelector(':scope>canvas,:scope>img:only-child'))return;
+      e.setAttribute('data-vms-island','');e.style.setProperty('background-color','var(--surface)','important');e.style.setProperty('background-image','none','important');
+    });
+    if(window.__vmsRescan)window.__vmsRescan();
+  }
+
   function ensureAssets(){
     const head=document.head;
+    /* The older vms-suite.css restyle layer is fully replaced by vms-app-skin.css and fights it (light top bar in dark mode). */
+    document.querySelectorAll('link[rel~="stylesheet"][href*="vms-suite.css"]').forEach(l=>{l.disabled=true;l.media='not all'});
     if(!document.getElementById('vmsAdminFonts')){
-      const pc=document.createElement('link');pc.rel='preconnect';pc.href='https://fonts.gstatic.com';pc.crossOrigin='';head.appendChild(pc);
       const f=document.createElement('link');f.id='vmsAdminFonts';f.rel='stylesheet';
       f.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Unbounded:wght@500;700&display=swap';
       head.appendChild(f);
     }
-    /* The shell stylesheet must load after every page style so the approved design wins the cascade. */
-    let skin=document.getElementById('vmsAppSkinCss');
-    if(!skin){skin=document.createElement('link');skin.rel='stylesheet';skin.id='vmsAppSkinCss';skin.href='/assets/vms-app-skin.css?v='+CSS_VERSION}
-    head.appendChild(skin);
-    let link=Array.from(document.querySelectorAll('link[rel~="stylesheet"]')).find(l=>/vms-admin-shell\.css/.test(l.getAttribute('href')||''));
-    if(!link){link=document.createElement('link');link.rel='stylesheet'}
-    link.id='vmsCanonicalAdminShellCss';
-    link.href='/assets/vms-admin-shell.css?v='+CSS_VERSION;
-    head.appendChild(link);
+    moveShellCssLast();
   }
   function moveShellCssLast(){
-    const skin=document.getElementById('vmsAppSkinCss'),link=document.getElementById('vmsCanonicalAdminShellCss');
-    if(link&&link!==document.head.lastElementChild){if(skin)document.head.appendChild(skin);document.head.appendChild(link)}
+    pinCss([['skin','/assets/vms-app-skin.css?v='+CSS_VERSION],['admin','/assets/vms-admin-shell.css?v='+CSS_VERSION]]);
   }
-
   const ACRONYMS=new Set(['VMS','QR','QRS','PDF','PNG','SVG','MRR','SEO','URL','ID','NFC','AI','CRM','SMS','FAQ','LLC','USD','API','CSV','MFA','2FA','RLS','UI','UX','NJ','NY','POS','KPI','TOS','OK','CTA','IP','HTTPS','DNS','SSL','GBP','SKU','ROI','LTV','ARR','ETA','AM','PM','N/A']);
   function sentence(txt){
     let first=true;
@@ -170,7 +202,7 @@
   }
 
   function effDark(){const t=document.documentElement.dataset.theme;return t?t==='dark':matchMedia('(prefers-color-scheme: dark)').matches}
-  function toggleTheme(){const n=effDark()?'light':'dark';document.documentElement.dataset.theme=n;try{localStorage.setItem('vms-theme',n)}catch(e){}paintTheme()}
+  function toggleTheme(){const n=effDark()?'light':'dark';document.documentElement.dataset.theme=n;try{localStorage.setItem('vms-theme',n)}catch(e){}paintTheme();setTimeout(()=>islands(),30)}
   function paintTheme(){document.querySelectorAll('[data-vms-theme]').forEach(b=>{const d=effDark();b.innerHTML=ico(d?'sun':'moon')+(b.dataset.vmsTheme==='label'?'<span>'+(d?'Light mode':'Dark mode')+'</span>':'');b.setAttribute('aria-label',d?'Switch to light mode':'Switch to dark mode')})}
 
   function ownerName(){
@@ -275,14 +307,15 @@
     window.VMSShell={toast:shellToast,openSearch:openPal};
 
     calmLabels(document.body);
-    setTimeout(moveShellCssLast,0);
+    setTimeout(()=>islands(),120);setTimeout(()=>islands(),1200);
+    matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',()=>islands());
     let timer;
     const observer=new MutationObserver(muts=>{
       clearTimeout(timer);
-      timer=setTimeout(()=>{retireLegacyChrome();moveShellCssLast();muts.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1)calmLabels(n);else if(n.nodeType===3&&n.parentElement)calmLabels(n.parentElement)}))},60);
+      timer=setTimeout(()=>{retireLegacyChrome();islands();muts.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1)calmLabels(n);else if(n.nodeType===3&&n.parentElement)calmLabels(n.parentElement)}))},60);
     });
     observer.observe(document.body,{childList:true,subtree:true});
-    observer.observe(document.head,{childList:true});
+    new MutationObserver(()=>{clearTimeout(pinTimer);pinTimer=setTimeout(moveShellCssLast,250)}).observe(document.head,{childList:true});
   }
 
   ensureAssets();
@@ -299,7 +332,7 @@
 (function(){
   if(window.__vmsReadability)return;window.__vmsReadability=true;
   const MIN=13, SKIP='script,style,noscript,svg,canvas,textarea,[data-vms-keep]';
-  const done=new WeakSet();
+  let done=new WeakSet();
   const parse=c=>{const m=c&&c.match(/rgba?\(([^)]+)\)/);if(!m)return null;const p=m[1].split(',').map(parseFloat);return {r:p[0],g:p[1],b:p[2],a:p.length>3?p[3]:1}};
   const lin=v=>{v/=255;return v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4)};
   const lum=c=>0.2126*lin(c.r)+0.7152*lin(c.g)+0.0722*lin(c.b);
@@ -351,6 +384,7 @@
   }
   let timer=null;
   function later(){if(timer)return;timer=setTimeout(()=>{timer=null;scan()},250)}
+  window.__vmsRescan=()=>{document.querySelectorAll('[data-vms-cf]').forEach(e=>{e.removeAttribute('data-vms-cf');e.style.removeProperty('--vms-cf')});done=new WeakSet();later()};
   function start(){
     scan();
     new MutationObserver(later).observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['class','hidden']});

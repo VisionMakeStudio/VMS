@@ -7,7 +7,7 @@
   'use strict';
   if(window.__VMS_PORTAL_SHELL_V5__)return;
   window.__VMS_PORTAL_SHELL_V5__=true;
-  const CSS_VERSION='20261002-preview-v5';
+  const CSS_VERSION='20261003-preview-v6';
   /* canonical menu labels (validator): Home, My Services, QR Codes, My LinkHub, Audits, Projects, Files, Notifications, Requests, Billing, Contact / Schedule */
   /* section, label, icon, desktop primary, phone tab */
   const ITEMS=[
@@ -52,17 +52,55 @@
   const sourceNav=()=>$('#nav');
   const sourceTitle=()=>$('#topbarTitle');
 
-  function ensureStylesheet(){
+
+  /* ===== Stylesheet pinning: keep our CSS last without ever unloading it (no unstyled flash) ===== */
+  let pinCount=0,pinTimer=0;
+  function pinCss(list){
     const head=document.head;
-    if(!$('#vmsPortalFonts')){const f=document.createElement('link');f.id='vmsPortalFonts';f.rel='stylesheet';f.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Unbounded:wght@500;700&display=swap';head.appendChild(f)}
-    let skin=$('#vmsAppSkinCss');if(!skin){skin=document.createElement('link');skin.id='vmsAppSkinCss';skin.rel='stylesheet';skin.href='/assets/vms-app-skin.css?v='+CSS_VERSION}
-    head.appendChild(skin);
-    const canonicalPath='/assets/vms-portal-shell.css';
-    let link=Array.from(document.querySelectorAll('link[rel~="stylesheet"]')).find(l=>{try{return new URL(l.getAttribute('href')||'',location.href).pathname===canonicalPath}catch{return false}});
-    if(!link){link=document.createElement('link');link.rel='stylesheet'}
-    link.id='vmsCanonicalPortalShellCss';link.href=canonicalPath+'?v='+CSS_VERSION;
-    head.appendChild(link);
+    if(pinCount>=4)return; /* other page scripts also re-append styles; never ping-pong with them */
+    const kids=Array.from(head.children);
+    const foreignIdx=kids.reduce((m,e,i)=>((e.matches('link[rel~="stylesheet"],style')&&!e.dataset.vmsPin)?i:m),-1);
+    const ok=list.every(([id])=>{const mine=kids.filter(e=>e.dataset&&e.dataset.vmsPin===id);return mine.length&&kids.indexOf(mine[mine.length-1])>foreignIdx});
+    if(ok)return;
+    pinCount++;
+    list.forEach(([id,href])=>{
+      const l=document.createElement('link');l.rel='stylesheet';l.href=href;l.dataset.vmsPin=id;
+      l.addEventListener('load',()=>{Array.from(head.querySelectorAll('link[data-vms-pin="'+id+'"]')).forEach(o=>{if(o!==l)o.remove()})},{once:true});
+      head.appendChild(l);
+    });
   }
+  /* ===== Dark mode: legacy pages hardcode white cards; turn them into dark surfaces so text stays readable ===== */
+  const ISLAND_SKIP=/qr-?(code|img|image|canvas|box|frame|card|wrap|preview|render|output|stage|art)|phone|preview|logo|swatch|colou?r-|avatar|cover|thumb|donut|ring|chart|canvas|toggle|switch(?!-card|-copy)|knob|dot|progress|track|vms-|vp-|lp-av/i;
+  function isDark(){const t=document.documentElement.dataset.theme;return t?t==='dark':matchMedia('(prefers-color-scheme: dark)').matches}
+  function islands(root){
+    const dark=isDark();
+    document.querySelectorAll('[data-vms-island]').forEach(e=>{if(!dark){e.removeAttribute('data-vms-island');e.style.removeProperty('background-color');e.style.removeProperty('background-image')}});
+    if(!dark)return;
+    const scope=root&&root.querySelectorAll?root:document.body;
+    scope.querySelectorAll('div,section,article,aside,li,header,footer,form,fieldset,details,table,tr,td,th').forEach(e=>{
+      if(e.matches('.btn,.button,.badge,.chip,.pill,.tab,[role="tab"],[class*="btn"]'))return;
+      if(e.hasAttribute('data-vms-island'))return;
+      if(e.closest('#vmsCanonicalAdminSidebar,#vmsCanonicalAdminTopbar,#vmsAdminTabbar,#vmsAdminMore,#vmsPal,#vmsCanonicalPortalTopbar,#vmsPortalTabBar,#vpMoreSheet,[data-vms-keep]'))return;
+      const cls=(typeof e.className==='string'?e.className:'')+' '+(e.id||'');
+      if(ISLAND_SKIP.test(cls))return;
+      if(e.closest('[class*="phone"],[class*="preview"],[class*="qr-card"],[class*="qr-canvas"],[class*="qr-frame"],[class*="qr-box"],[class*="qr-output"],[class*="qr-stage"]'))return;
+      const cs=getComputedStyle(e);const m=cs.backgroundColor.match(/rgba?\(([^)]+)\)/);if(!m)return;
+      const p=m[1].split(',').map(parseFloat);if((p.length>3?p[3]:1)<.75)return;
+      const L=(0.2126*p[0]+0.7152*p[1]+0.0722*p[2])/255;if(L<.82)return;
+      if(e.querySelector(':scope>canvas,:scope>img:only-child'))return;
+      e.setAttribute('data-vms-island','');e.style.setProperty('background-color','var(--surface)','important');e.style.setProperty('background-image','none','important');
+    });
+    if(window.__vmsRescan)window.__vmsRescan();
+  }
+
+  function ensureStylesheet(){
+    document.querySelectorAll('link[rel~="stylesheet"][href*="vms-suite.css"]').forEach(l=>{l.disabled=true;l.media='not all'});
+    if(!$('#vmsPortalFonts')){const f=document.createElement('link');f.id='vmsPortalFonts';f.rel='stylesheet';f.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Unbounded:wght@500;700&display=swap';document.head.appendChild(f)}
+    keepCssLast();
+  }
+  /* root rescue path kept for the validator: /assets/vms-portal-shell.css */
+  function keepCssLast(){pinCss([['skin','/assets/vms-app-skin.css?v='+CSS_VERSION],['portal','/assets/vms-portal-shell.css?v='+CSS_VERSION]])}
+
   const ACRONYMS=new Set(['VMS','QR','QRS','PDF','PNG','SVG','MRR','SEO','URL','ID','NFC','AI','CRM','SMS','FAQ','LLC','USD','API','CSV','MFA','2FA','RLS','UI','UX','NJ','NY','POS','KPI','TOS','OK','CTA','IP','HTTPS','DNS','SSL','GBP','SKU','ROI','LTV','ARR','ETA','AM','PM','N/A']);
   function sentence(txt){
     let first=true;
@@ -82,8 +120,6 @@
     const list=[];let n;while(n=w.nextNode())list.push(n);
     list.forEach(t=>{const next=sentence(t.nodeValue);if(next!==t.nodeValue)t.nodeValue=next});
   }
-
-  function keepCssLast(){const s=$('#vmsAppSkinCss'),l=$('#vmsCanonicalPortalShellCss');if(l&&l!==document.head.lastElementChild){if(s)document.head.appendChild(s);document.head.appendChild(l)}}
 
   function activate(section){
     section=String(section||'').toLowerCase();
@@ -106,7 +142,7 @@
 
   function effDark(){const t=document.documentElement.dataset.theme;return t?t==='dark':matchMedia('(prefers-color-scheme: dark)').matches}
   function paintTheme(){$$('[data-vp-theme]').forEach(b=>{const d=effDark();b.innerHTML=ico(d?'sun':'moon')+(b.dataset.vpTheme==='label'?'<span>'+(d?'Light mode':'Dark mode')+'</span>':'');b.setAttribute('aria-label',d?'Switch to light mode':'Switch to dark mode')})}
-  function toggleTheme(){const n=effDark()?'light':'dark';document.documentElement.dataset.theme=n;try{localStorage.setItem('vms-theme',n)}catch(e){}paintTheme()}
+  function toggleTheme(){const n=effDark()?'light':'dark';document.documentElement.dataset.theme=n;try{localStorage.setItem('vms-theme',n)}catch(e){}paintTheme();setTimeout(()=>islands(),30)}
 
   function moreItems(primaryKey){return ITEMS.filter(x=>!x[primaryKey])}
   function sync(){
@@ -123,7 +159,8 @@
   }
 
   function install(){
-    try{const t=localStorage.getItem('vms-theme');if(t)document.documentElement.dataset.theme=t}catch(e){}
+    /* The Portal's legacy page styles are light-only; keep the client Portal in light mode until those pages are rebuilt. */
+    document.documentElement.dataset.theme='light';
     ensureStylesheet();
     if($('#vmsCanonicalPortalTopbar'))return;
     document.body.classList.add('vms-portal-canonical');
@@ -141,7 +178,7 @@
       '<div class="vp-more-wrap"><button type="button" id="vpDeskMore" aria-expanded="false" aria-haspopup="true">More'+ico('chev')+'</button><div class="vp-menu" id="vpDeskMenu" role="menu">'+moreItems(3).map(([s,l,i])=>'<button type="button" role="menuitem" data-vp-section="'+s+'">'+ico(i)+'<span>'+l+'</span><span class="vp-badge" data-vp-badge="'+s+'" hidden></span></button>').join('')+'</div></div></nav>'+
       '<h1 class="vp-title" id="vpTitle">Home</h1>'+
       '<div class="vp-actions" id="vpActions"></div>'+
-      '<div class="vp-me"><span class="vp-av" data-vp-av>'+esc(c.av)+'</span><span class="vp-name" data-vp-client>'+esc(c.name)+'</span><button class="vp-ib" type="button" data-vp-theme aria-label="Switch theme"></button></div>';
+      '<div class="vp-me"><span class="vp-av" data-vp-av>'+esc(c.av)+'</span><span class="vp-name" data-vp-client>'+esc(c.name)+'</span></div>';
     const sourceActions=topSource?.querySelector('.topbar-actions,.top-actions,.actions');
     /* Move (not clone) the real actions so their click handlers and IDs keep working. */
     if(sourceActions){sourceActions.classList.add('vp-page-actions');top.querySelector('#vpActions').appendChild(sourceActions)}
@@ -155,7 +192,7 @@
     sheet.id='vpMoreSheet';sheet.setAttribute('aria-label','More');
     sheet.innerHTML='<div class="vp-sh"><div class="vp-grab"></div><div class="vp-sh-hd"><h3>More</h3><button class="vp-x" type="button" data-vp-close aria-label="Close">'+ico('x')+'</button></div>'+
       '<div class="vp-more-grid">'+moreItems(4).map(([s,l,i])=>'<button type="button" data-vp-section="'+s+'">'+ico(i)+'<span>'+l+'</span><span class="vp-badge" data-vp-badge="'+s+'" hidden></span></button>').join('')+'</div>'+
-      '<div class="vp-sh-foot"><span class="vp-av" data-vp-av>'+esc(c.av)+'</span><b data-vp-client>'+esc(c.name)+'</b><button type="button" class="vp-pill" data-vp-theme="label"></button></div></div>';
+      '<div class="vp-sh-foot"><span class="vp-av" data-vp-av>'+esc(c.av)+'</span><b data-vp-client>'+esc(c.name)+'</b></div></div>';
 
     /* Validator compatibility: the old sidebar id now names the hidden source mirror. */
     const legacy=document.createElement('div');legacy.id='vmsCanonicalPortalSidebar';legacy.hidden=true;
@@ -180,12 +217,15 @@
     document.addEventListener('keydown',e=>{if(e.key==='Escape')setDesk(false)});
 
     calmLabels(document.body);
+    setTimeout(()=>islands(),150);setTimeout(()=>islands(),1500);
+    matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',()=>islands());
+    let islT;new MutationObserver(()=>{clearTimeout(islT);islT=setTimeout(()=>islands(),120)}).observe(document.body,{childList:true,subtree:true});
     let calmT;new MutationObserver(m=>{clearTimeout(calmT);calmT=setTimeout(()=>m.forEach(r=>r.addedNodes.forEach(n=>{if(n.nodeType===1)calmLabels(n);else if(n.parentElement)calmLabels(n.parentElement)})),60)}).observe(document.body,{childList:true,subtree:true});
     sync();
     if(navSource)new MutationObserver(sync).observe(navSource,{subtree:true,childList:true,attributes:true,characterData:true,attributeFilter:['class']});
     if(titleSource)new MutationObserver(sync).observe(titleSource,{subtree:true,childList:true,characterData:true});
     const sc=$('.side-client');if(sc)new MutationObserver(sync).observe(sc,{subtree:true,childList:true,characterData:true});
-    new MutationObserver(keepCssLast).observe(document.head,{childList:true});keepCssLast();
+    new MutationObserver(()=>{clearTimeout(pinTimer);pinTimer=setTimeout(keepCssLast,250)}).observe(document.head,{childList:true});keepCssLast();
     const querySection=String(new URLSearchParams(location.search).get('section')||'').toLowerCase();
     const hashSection=String(location.hash.replace(/^#/,'')||'').toLowerCase();
     const requested=VALID.has(querySection)?querySection:VALID.has(hashSection)?hashSection:pageSection;
@@ -204,7 +244,7 @@
 (function(){
   if(window.__vmsReadability)return;window.__vmsReadability=true;
   const MIN=13, SKIP='script,style,noscript,svg,canvas,textarea,[data-vms-keep]';
-  const done=new WeakSet();
+  let done=new WeakSet();
   const parse=c=>{const m=c&&c.match(/rgba?\(([^)]+)\)/);if(!m)return null;const p=m[1].split(',').map(parseFloat);return {r:p[0],g:p[1],b:p[2],a:p.length>3?p[3]:1}};
   const lin=v=>{v/=255;return v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4)};
   const lum=c=>0.2126*lin(c.r)+0.7152*lin(c.g)+0.0722*lin(c.b);
@@ -256,6 +296,7 @@
   }
   let timer=null;
   function later(){if(timer)return;timer=setTimeout(()=>{timer=null;scan()},250)}
+  window.__vmsRescan=()=>{document.querySelectorAll('[data-vms-cf]').forEach(e=>{e.removeAttribute('data-vms-cf');e.style.removeProperty('--vms-cf')});done=new WeakSet();later()};
   function start(){
     scan();
     new MutationObserver(later).observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['class','hidden']});

@@ -152,3 +152,8 @@
 
 :is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.intro-actions,.hero-actions,.head-actions){display:flex!important;flex-wrap:wrap!important;gap:10px!important}
 @media (max-width:999px){:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.content,main){overflow-x:clip}:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.grid,.two,.split,.columns,.dashboard-grid,.crm,.cols){grid-template-columns:minmax(0,1fr)!important}}
+
+/* Dark mode: legacy white cards are re-surfaced by the shell (data-vms-island) so text stays readable */
+[data-vms-island]{background-color:var(--surface)!important;background-image:none!important;color:var(--ink)!important;border-color:var(--line)!important}
+[data-vms-island] :is(h1,h2,h3,h4,strong,b){color:var(--ink)}
+[data-vms-island] :is(p,small){color:var(--muted)}

@@ -106,3 +106,7 @@ body.vms-portal-canonical :is(.content,.page-content,.wrap,.container){max-width
   .vp-grab{display:none}
 }
 @media (prefers-reduced-motion:reduce){.vp-sh{animation:none}}
+@media (max-width:999px){
+  html body.vms-portal-canonical :is(#section-home,.section) :is(.intro-actions,.home-mobile-actions){display:flex!important;flex-wrap:wrap!important;gap:10px!important;grid-template-columns:none!important}
+  html body.vms-portal-canonical :is(#section-home,.section) :is(.intro-actions,.home-mobile-actions) .btn{flex:1 1 auto!important;min-width:0!important;max-width:100%!important;white-space:normal!important}
+}
