@@ -4798,6 +4798,80 @@ body.client-mode .content{
 }
 </style>
 <link rel="stylesheet" href="../assets/vms-suite.css"><script src="../assets/config.js"></script>  <link rel="stylesheet" href="/assets/vms-admin-shell.css">
+<style id="vms-audit-preview">
+/* Audit overview — approved preview layout: score ring, category bars, Claude draft panel */
+body.vms-admin-canonical #view-overview .summary-row{display:grid!important;grid-template-columns:1fr!important;gap:14px!important;margin:0 0 14px!important;background:none!important;border:0!important;box-shadow:none!important;padding:0!important}
+body.vms-admin-canonical #view-overview .summary-overall{display:grid!important;grid-template-columns:auto 1fr;gap:18px;align-items:center;padding:18px!important;border-radius:20px!important;background:var(--surface)!important;border:1px solid var(--line)!important;box-shadow:var(--shadow)!important;color:var(--ink)!important}
+body.vms-admin-canonical #view-overview .summary-overall .summary-big{display:none!important}
+.au-ring{position:relative;width:132px;height:132px;grid-row:span 2}
+.au-ring svg{width:132px;height:132px;transform:rotate(-90deg)}
+.au-ring circle{fill:none;stroke-width:10}
+.au-ring .bg{stroke:var(--tint)}
+.au-ring .fg{stroke:var(--blue);stroke-linecap:round;stroke-dasharray:339.3;stroke-dashoffset:339.3;transition:stroke-dashoffset 1s cubic-bezier(.2,.8,.2,1),stroke .4s}
+.au-ring .num{position:absolute;inset:0;display:grid;place-items:center;align-content:center;text-align:center}
+.au-ring .num b{font-family:var(--display);font-weight:700;font-size:2.1rem;letter-spacing:-.04em;line-height:1;color:var(--ink)}
+.au-ring .num small{font-size:12.5px;color:var(--muted)}
+body.vms-admin-canonical #view-overview .summary-overall .eyebrow{display:block!important;font:600 13px/1.3 var(--body)!important;color:var(--muted)!important;letter-spacing:0!important;text-transform:none!important;margin:0!important;align-self:end}
+body.vms-admin-canonical #view-overview #grade{align-self:start;font-family:var(--display)!important;font-weight:700!important;font-size:1.2rem!important;letter-spacing:-.02em!important;color:var(--ink)!important;background:none!important;padding:0!important;border:0!important}
+.au-cats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+body.vms-admin-canonical #view-overview .summary-card{display:grid!important;gap:6px!important;padding:14px!important;border-radius:18px!important;background:var(--surface)!important;border:1px solid var(--line)!important;box-shadow:var(--shadow)!important;min-width:0}
+body.vms-admin-canonical #view-overview .summary-card>span{font-size:13px!important;color:var(--muted)!important;font-weight:500!important;letter-spacing:0!important;text-transform:none!important}
+body.vms-admin-canonical #view-overview .summary-number b{font-family:var(--display)!important;font-weight:700!important;font-size:1.5rem!important;letter-spacing:-.04em!important;color:var(--ink)!important}
+body.vms-admin-canonical #view-overview .summary-number small{font-size:13px;color:var(--muted)}
+body.vms-admin-canonical #view-overview .track{height:8px!important;border-radius:99px!important;background:var(--tint)!important;overflow:hidden;border:0!important}
+body.vms-admin-canonical #view-overview .track>span{display:block;height:100%;border-radius:99px!important;background:var(--blue)!important;transition:width .8s cubic-bezier(.2,.8,.2,1)}
+body.vms-admin-canonical #view-overview .track>span.au-low{background:var(--red)!important}
+body.vms-admin-canonical #view-overview .track>span.au-mid{background:var(--orange)!important}
+body.vms-admin-canonical #view-overview .track>span.au-high{background:var(--ok)!important}
+body.vms-admin-canonical #view-overview .summary-card em{font-style:normal;font-size:13px;color:var(--muted)}
+body.vms-admin-canonical #view-overview .overview-main-grid{display:grid!important;grid-template-columns:1fr!important;gap:14px!important}
+body.vms-admin-canonical #view-overview .business-card h1{font-family:var(--display)!important;font-size:.98rem!important;letter-spacing:-.02em!important;margin:0 0 4px!important}
+body.vms-admin-canonical #view-overview .business-card>p{font-size:14px!important;color:var(--muted)!important;margin:0 0 12px!important}
+body.vms-admin-canonical #view-overview .business-card>.eyebrow{display:none!important}
+body.vms-admin-canonical #view-overview .overview-assistant{padding:18px!important;border-radius:20px!important;background:linear-gradient(150deg,#003049,#0b4a6e)!important;color:#fff!important;border:0!important;box-shadow:var(--shadow-lg)!important}
+body.vms-admin-canonical #view-overview .overview-assistant *{color:inherit}
+body.vms-admin-canonical #view-overview .overview-assistant h2{font-family:var(--display)!important;font-size:1.1rem!important;letter-spacing:-.02em!important;color:#fff!important;margin:8px 0 6px!important}
+body.vms-admin-canonical #view-overview .overview-assistant p{color:rgba(255,255,255,.82)!important;font-size:14px!important}
+body.vms-admin-canonical #view-overview .overview-steps{display:none!important}
+body.vms-admin-canonical #view-overview #runAiAudit{width:100%;margin:12px 0!important;background:#FDF0D5!important;border-color:#FDF0D5!important;color:#003049!important}
+body.vms-admin-canonical #view-overview .assistant-status{font-size:13.5px!important;color:rgba(255,255,255,.8)!important;background:rgba(255,255,255,.1)!important;border:0!important;border-radius:12px!important;padding:10px 12px!important}
+body.vms-admin-canonical #view-overview .assistant-mini-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;margin-top:10px}
+body.vms-admin-canonical #view-overview .assistant-mini-grid>div{padding:10px!important;border-radius:12px!important;background:rgba(255,255,255,.1)!important;border:0!important}
+body.vms-admin-canonical #view-overview .assistant-mini-grid span{font-size:12.5px!important;color:rgba(255,255,255,.75)!important;text-transform:none!important;letter-spacing:0!important}
+body.vms-admin-canonical #view-overview .assistant-mini-grid strong{font-family:var(--display)!important;font-size:1.05rem!important;color:#fff!important}
+body.vms-admin-canonical #view-overview .reset-audit-row button{background:none!important;border:0!important;color:rgba(255,255,255,.8)!important;text-decoration:underline;font-size:13.5px!important;padding:8px 0!important;min-height:0!important}
+body.vms-admin-canonical #view-overview .assistant-inline-title{font-size:13px!important;color:#FDF0D5!important;font-weight:600!important}
+@media (min-width:700px){.au-cats{grid-template-columns:repeat(4,1fr)}}
+@media (min-width:1000px){body.vms-admin-canonical #view-overview .summary-row{grid-template-columns:minmax(300px,.8fr) 2fr!important;align-items:stretch}.au-cats{grid-template-columns:1fr 1fr}body.vms-admin-canonical #view-overview .overview-main-grid{grid-template-columns:1.35fr 1fr!important;align-items:start}}
+body.vms-admin-canonical #vmsMobileShell>.vms-mobile-head,body.vms-admin-canonical .vms-mobile-head{display:none!important}
+body.vms-admin-canonical #view-overview .summary-card{text-align:left!important;justify-items:stretch!important;justify-content:stretch!important;align-content:start!important;place-items:stretch!important}
+body.vms-admin-canonical #view-overview .summary-card>*{width:100%!important;max-width:none!important;margin-left:0!important;margin-right:0!important;justify-self:stretch!important}
+body.vms-admin-canonical #view-overview .summary-number{justify-content:flex-start!important;text-align:left!important}
+body.vms-admin-canonical #view-overview .track{width:100%!important;max-width:none!important;margin:2px 0 0!important}
+</style>
+<script id="vms-audit-preview-js">
+document.addEventListener('DOMContentLoaded',()=>{
+  const row=document.querySelector('#view-overview .summary-row');const ov=document.querySelector('#view-overview .summary-overall');const overall=document.getElementById('overall');
+  if(!row||!ov||!overall)return;
+  const ring=document.createElement('div');ring.className='au-ring';ring.setAttribute('role','img');
+  ring.innerHTML='<svg viewBox="0 0 120 120" aria-hidden="true"><circle class="bg" cx="60" cy="60" r="54"/><circle class="fg" cx="60" cy="60" r="54"/></svg><div class="num"><b id="auRingNum">0</b><small>of 100</small></div>';
+  ov.prepend(ring);
+  const cats=document.createElement('div');cats.className='au-cats';row.querySelectorAll(':scope>.summary-card').forEach(c=>cats.appendChild(c));row.appendChild(cats);
+  const fg=ring.querySelector('.fg');
+  const band=v=>v>=75?'au-high':v>=50?'au-mid':'au-low';
+  function paint(){
+    const v=Math.max(0,Math.min(100,parseFloat(overall.textContent)||0));
+    document.getElementById('auRingNum').textContent=Math.round(v);
+    fg.style.strokeDashoffset=String(339.3*(1-v/100));
+    fg.style.stroke=v>=75?'var(--ok)':v>=50?'var(--orange)':v>0?'var(--red)':'var(--blue)';
+    ring.setAttribute('aria-label','Overall score '+Math.round(v)+' out of 100');
+    ['Website','Google','Reviews','Systems'].forEach(k=>{const t=document.getElementById('track'+k),m=document.getElementById('metric'+k);if(!t||!m)return;const n=parseFloat(m.textContent)||0;t.classList.remove('au-low','au-mid','au-high');if(n>0)t.classList.add(band(n))});
+  }
+  paint();
+  new MutationObserver(paint).observe(overall,{childList:true,characterData:true,subtree:true});
+  ['Website','Google','Reviews','Systems'].forEach(k=>{const m=document.getElementById('metric'+k);if(m)new MutationObserver(paint).observe(m,{childList:true,characterData:true,subtree:true})});
+});
+</script>
 </head>
 <body>
 
@@ -5052,7 +5126,7 @@ body.client-mode .content{
       <div class="eyebrow">Overall VMS Score</div>
       <div class="summary-big"><span id="overall">0</span><small>/100</small></div>
       <div class="grade" id="grade">Not scored yet</div>
-      <p>Average of Website, Local Presence, Reviews, and Systems.</p>
+      
     </div>
 
     <div class="summary-card">
@@ -5084,8 +5158,8 @@ body.client-mode .content{
   <div class="overview-main-grid">
     <div class="card business-card">
       <div class="eyebrow">Business Information</div>
-      <h1>Start a VMS audit.</h1>
-      <p>Enter the business details, then run the audit or score each category manually.</p>
+      <h1>Business details</h1>
+      <p>Add the links, then generate a draft or score each category yourself.</p>
       <div class="fields">
         <div class="field"><label>Business Name</label><input id="businessName" placeholder="Example Salon"></div>
         <div class="field"><label>Industry</label><input id="industry" placeholder="Salon, restaurant, optometry..."></div>
@@ -5097,9 +5171,9 @@ body.client-mode .content{
 
     <aside class="overview-assistant">
       <div class="assistant-inline-title"><span class="assistant-icon">✦</span><span>Audit Assistant</span></div>
-      <h2>Let the assistant do the first pass.</h2>
-      <p>Paste the business links, then run a preliminary audit. Review the suggested assessment before applying anything.</p>
-      <button class="btn phase2-run" id="runAiAudit" type="button">✦ Run Audit</button>
+      <h2>Generate a draft with Claude</h2>
+      <p>Claude checks the website, Google listing and reviews, then suggests scores with evidence. You review before anything is applied.</p>
+      <button class="btn phase2-run" id="runAiAudit" type="button">✦ Generate draft</button>
       <div class="overview-steps">
         <div><b>01</b><span>Enter business links</span></div>
         <div><b>02</b><span>Run the audit</span></div>

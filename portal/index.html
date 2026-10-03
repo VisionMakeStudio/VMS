@@ -992,6 +992,32 @@ html body.vms-portal-canonical #section-linkhub .linkhub-panel-head h3{margin:0!
 html body.vms-portal-canonical #section-linkhub .linkhub-panel-head p{display:none!important}
 @media (min-width:1000px){html body.vms-portal-canonical #section-linkhub .linkhub-layout{grid-template-columns:minmax(0,1fr) 340px!important}html body.vms-portal-canonical #section-linkhub .linkhub-layout>:last-child{position:sticky!important;top:96px}}
 </style>
+<style id="vms-portal-services-preview">
+html body.vms-portal-canonical #section-services>.intro{display:flex!important;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin:6px 0 16px!important}
+html body.vms-portal-canonical :is(#activeServiceGrid,#catalogServiceGrid){display:grid!important;grid-template-columns:1fr!important;gap:10px!important}
+@media (min-width:1000px){html body.vms-portal-canonical :is(#activeServiceGrid,#catalogServiceGrid){grid-template-columns:1fr 1fr!important}}
+html body.vms-portal-canonical :is(.service-card,.catalog-card){display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:4px 14px!important;align-items:center;padding:14px!important;border-radius:18px!important;background:var(--surface)!important;border:1px solid var(--line)!important;box-shadow:none!important;min-height:0!important;margin:0!important}
+html body.vms-portal-canonical :is(.service-card,.catalog-card) .service-row{display:flex!important;align-items:center;gap:12px;min-width:0}
+html body.vms-portal-canonical :is(.service-card,.catalog-card) .service-icon{width:40px!important;height:40px!important;min-width:40px;border-radius:12px!important;display:grid!important;place-items:center;background:var(--tint)!important;color:var(--ink)!important;font-size:18px!important;border:0!important}
+html body.vms-portal-canonical :is(.service-card,.catalog-card) :is(h4,.service-copy strong){display:block;margin:0!important;font:600 15px/1.3 var(--body)!important;color:var(--ink)!important}
+html body.vms-portal-canonical .service-card .service-copy span{display:block;font-size:13.5px!important;color:var(--muted)!important;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+html body.vms-portal-canonical .service-card .service-card-top{display:contents!important}
+html body.vms-portal-canonical .service-card .service-card-top>.badge{grid-column:2;grid-row:1;justify-self:end}
+html body.vms-portal-canonical .service-card .catalog-meta{grid-column:1;display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0 0 52px!important}
+html body.vms-portal-canonical .service-card .tool-access{display:none!important}
+html body.vms-portal-canonical .service-card .service-card-actions{grid-column:2;grid-row:2;justify-self:end;margin:0!important}
+html body.vms-portal-canonical .catalog-card .service-row .badge{display:none!important}
+html body.vms-portal-canonical .catalog-card>p{grid-column:1;margin:2px 0 0 52px!important;font-size:13.5px!important;color:var(--muted)!important;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+html body.vms-portal-canonical .catalog-card .catalog-meta{grid-column:1;margin:6px 0 0 52px!important}
+html body.vms-portal-canonical .catalog-card .catalog-meta .badge{background:transparent!important;padding:0!important;font-weight:600!important;color:var(--ink)!important}
+html body.vms-portal-canonical .catalog-card>button{grid-column:2;grid-row:1/span 3;align-self:center;min-height:38px!important;padding:0 14px!important;font-size:14px!important;border-radius:10px!important;background:var(--surface)!important;border:1px solid var(--line2)!important;color:var(--ink)!important;width:auto!important}
+html body.vms-portal-canonical .catalog-card>button:hover{border-color:var(--ink)!important}
+html body.vms-portal-canonical #availableServices{margin-top:26px!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important}
+html body.vms-portal-canonical #availableServices .catalog-head h3{margin:0!important;font-family:var(--display)!important;font-weight:700!important;font-size:.98rem!important;letter-spacing:-.02em!important;color:var(--ink)!important}
+html body.vms-portal-canonical #availableServices .catalog-head p{margin:2px 0 12px!important;font-size:14px!important;color:var(--muted)!important}
+html body.vms-portal-canonical #availableServices>.note{padding:12px 14px!important;border-radius:14px!important;background:var(--tint)!important;border:0!important;font-size:14px!important;color:var(--ink)!important}
+@media (max-width:600px){html body.vms-portal-canonical .catalog-card>p,html body.vms-portal-canonical :is(.service-card,.catalog-card) .catalog-meta{margin-left:0!important}}
+</style>
 </head>
 <body>
 <div class="shell">
@@ -1126,17 +1152,16 @@ html body.vms-portal-canonical #section-linkhub .linkhub-panel-head p{display:no
 </section>
 <section class="section" id="section-services">
 <div class="intro">
-<p>These are the services currently assigned to your VMS client account. Open a service to use its client tools, see progress, or manage what your plan allows.</p>
+<div class="ph-greet"><h2>Your services</h2><p>Everything VMS is running for you.</p></div>
 <div class="intro-actions"><button class="btn primary" id="browseServicesBtn" type="button">+ Add a Service</button></div>
 </div>
 <div class="service-grid" id="activeServiceGrid"></div>
 <div class="catalog-wrap" id="availableServices">
 <div class="catalog-head">
 <div>
-<h3>Add More Services</h3>
-<p>This area will stay connected to the VMS Admin Service Catalog. Services marked Request First go to VMS for review and an invoice; eligible fixed-price services can continue to secure checkout.</p>
+<h3>Add more services</h3>
+<p>Only things you don’t already have.</p>
 </div>
-<span class="badge blue">Service Catalog Sync</span>
 </div>
 <div class="catalog-grid" id="catalogServiceGrid"></div>
 <div class="note" style="margin-top:10px">Requesting or starting a purchase does not activate the service by itself. VMS Admin confirms the order, payment activates it, and the new tool then appears under <strong>My Services</strong>.</div>
