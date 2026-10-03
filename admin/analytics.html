@@ -14,6 +14,71 @@
 @media(max-width:560px){.kpis{display:flex;overflow:auto}.kpi{flex:0 0 178px}.top-actions select{max-width:118px}.chart{height:180px;gap:3px}.chart-labels{gap:3px}.chart-labels span{font-size:5.5px}.metric-pair,.engagement{grid-template-columns:1fr 1fr}}
 </style>
 <link rel="stylesheet" href="/assets/vms-admin-shell.css">
+<style id="vms-analytics-fix">
+/* Analytics: change pills, kpi mini-rings, chart labels all need readable colors */
+body.vms-admin-canonical .kpi-top>.change,
+body.vms-admin-canonical .change.flat,
+body.vms-admin-canonical .change{
+  color:var(--muted)!important;
+  background:var(--surface2)!important;
+  border-radius:99px!important;
+  padding:3px 8px!important;
+  font-size:12.5px!important;
+  border:1px solid var(--line)!important;
+}
+body.vms-admin-canonical .change.up{color:var(--ok)!important;background:var(--okbg)!important;border-color:transparent!important}
+body.vms-admin-canonical .change.down{color:var(--badfg)!important;background:var(--badbg)!important;border-color:transparent!important}
+body.vms-admin-canonical .mini-ring b,
+body.vms-admin-canonical .donut-hole,
+body.vms-admin-canonical .donut-hole *{
+  color:var(--ink)!important;
+  background:var(--surface)!important;
+}
+body.vms-admin-canonical .green-ring b{color:var(--ok)!important}
+body.vms-admin-canonical .red-ring b{color:var(--badfg)!important}
+body.vms-admin-canonical .orange-ring b{color:var(--warmfg)!important}
+body.vms-admin-canonical .chart-label,
+body.vms-admin-canonical .axis-label,
+body.vms-admin-canonical .legend-item,
+body.vms-admin-canonical .legend-label{
+  color:var(--muted)!important;
+}
+body.vms-admin-canonical .analytics-note,
+body.vms-admin-canonical .chart-note{
+  color:var(--muted)!important;
+  font-size:13px!important;
+}
+body.vms-admin-canonical .analytics-head h1,
+body.vms-admin-canonical .analytics-head h2{
+  color:var(--ink)!important;
+}
+body.vms-admin-canonical .analytics-head p,
+body.vms-admin-canonical .analytics-head small{
+  color:var(--muted)!important;
+}
+/* Revenue mix donut center */
+body.vms-admin-canonical .donut-hole{
+  background:var(--surface)!important;
+  border-radius:50%!important;
+}
+body.vms-admin-canonical .donut-hole span{color:var(--muted)!important;font-size:12px!important}
+body.vms-admin-canonical .donut-hole strong{color:var(--ink)!important}
+/* Owner Intelligence header */
+body.vms-admin-canonical .owner-intel-head h1,
+body.vms-admin-canonical .owner-intel h1{color:var(--ink)!important}
+body.vms-admin-canonical .owner-intel-head p,
+body.vms-admin-canonical .owner-intel p{color:var(--muted)!important}
+/* Live status chip */
+body.vms-admin-canonical .live-chip,
+body.vms-admin-canonical .live-status{
+  background:var(--okbg)!important;
+  color:var(--ok)!important;
+  border-radius:99px!important;
+  padding:4px 12px!important;
+  font-size:13px!important;
+  border:0!important;
+}
+</style>
 </head>
 <body>
 <div class="shell">

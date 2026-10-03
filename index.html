@@ -226,6 +226,17 @@ body{margin:0;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 #vmsSite .stars.lit svg:nth-child(3){transition-delay:.24s}
 #vmsSite .stars.lit svg:nth-child(4){transition-delay:.36s}
 #vmsSite .stars.lit svg:nth-child(5){transition-delay:.48s}
+#vmsSite .stars.lit svg{animation:starFloat 1.4s cubic-bezier(.2,.8,.2,1) both}
+#vmsSite .stars.lit svg:nth-child(2){animation-delay:.1s}
+#vmsSite .stars.lit svg:nth-child(3){animation-delay:.2s}
+#vmsSite .stars.lit svg:nth-child(4){animation-delay:.3s}
+#vmsSite .stars.lit svg:nth-child(5){animation-delay:.4s}
+@keyframes starFloat{0%{transform:translateY(18px) scale(.6);opacity:0}60%{transform:translateY(-6px) scale(1.12)}80%{transform:translateY(3px) scale(.96)}100%{transform:translateY(0) scale(1);opacity:1}}
+#vmsSite .stars.lit svg{animation:starFloat .7s cubic-bezier(.2,.8,.2,1) both}
+#vmsSite .stars-count{font-family:var(--display);font-weight:700;font-size:1.4rem;letter-spacing:-.03em;color:var(--navy);opacity:0;transform:translateY(10px);transition:opacity .5s .6s,transform .5s .6s}
+#vmsSite .stars.lit~.stars-count{opacity:1;transform:none}
+#vmsSite .review-line{font-size:13px;color:var(--muted);opacity:0;transition:opacity .4s .9s}
+#vmsSite .stars.lit~.review-line{opacity:1}
 #vmsSite dialog.sheet{border:0;padding:0;background:transparent;color:var(--ink);max-width:none;max-height:none;width:100%;height:100%;margin:0;overflow:hidden}
 #vmsSite dialog.sheet::backdrop{background:rgba(0,30,46,.45);backdrop-filter:blur(4px)}
 #vmsSite .sheet-card{position:absolute;left:0;right:0;bottom:0;max-height:88%;overflow:auto;background:var(--card);border:1px solid var(--line);border-bottom:0;border-radius:28px 28px 0 0;padding:14px 22px calc(26px + env(safe-area-inset-bottom,0px));box-shadow:0 -20px 60px rgba(0,48,73,.25);animation:st-sheetIn .34s cubic-bezier(.2,.9,.2,1) both}
@@ -710,6 +721,73 @@ html:not([data-theme="light"]) #vmsSite .seg,html:not([data-theme="light"]) #vms
 <script>window.__LOGO={n:"assets/vms-logo-navy.png",c:"assets/vms-logo-cream.png"};(function(){var t='',t0=0;window.__vmsGetIntakeToken=async function(){if(t&&Date.now()-t0<3*3600e3)return t;try{var r=await fetch('/api/intake',{headers:{Accept:'application/json'},cache:'no-store'});var j=await r.json();t=j.token||'';t0=Date.now()}catch(e){}return t};window.__vmsGetIntakeToken()})();</script>
 <link rel="stylesheet" href="/assets/vms-media-showcase.css?v=20261003">
 <script src="/assets/vms-media-showcase.js?v=20261003" defer></script>
+<style id="vms-review-tap-css">
+.review-tap-showcase{width:100%}
+.rt-wrap{display:grid;gap:20px}
+.rt-stage{height:340px;border-radius:24px;overflow:hidden;border:1px solid var(--line,rgba(0,48,73,.12));background:radial-gradient(120% 90% at 50% 0%,#e8f1f6,#f4ede0 60%,#eef3f5);position:relative;perspective:900px;perspective-origin:50% 35%}
+.rt-switch{display:flex;gap:6px;padding:4px;border-radius:14px;background:#edf2f4;margin-bottom:12px}
+.rt-btn{flex:1;min-height:44px;padding:0 12px;border:0;border-radius:10px;background:transparent;font:600 14.5px/1 "Inter",sans-serif;color:#526a77;cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center;gap:8px}
+.rt-btn span{font-size:13px;opacity:.7}
+.rt-btn.active{background:#fff;color:#003049;box-shadow:0 2px 8px rgba(0,48,73,.12)}
+.rt-btn.active span{opacity:1;font-weight:700}
+.rt-side h3{margin:0 0 6px;font-size:1.2rem;font-weight:700;letter-spacing:-.02em;color:var(--navy,#003049)}
+.rt-side p{margin:0 0 14px;font-size:14.5px;color:var(--muted,#526a77);line-height:1.5}
+.rt-side .amt{font-size:2rem;font-weight:700;letter-spacing:-.04em;color:var(--navy,#003049);margin:12px 0}
+/* 3D stand */
+.rt-stand{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:180px;transform-style:preserve-3d;animation:rtTurn 18s linear infinite}
+.rt-stand-body{width:180px;height:240px;background:#fff;border-radius:20px;box-shadow:0 20px 50px rgba(0,0,0,.18),inset 0 0 0 1px rgba(0,0,0,.1);padding:20px;display:flex;flex-direction:column;align-items:center;gap:10px;position:relative}
+.rt-stand-body.black{background:#111;color:#fff}
+.rt-stand-foot{width:130px;height:22px;background:#e8e8e8;border-radius:0 0 14px 14px;margin-top:-4px;box-shadow:0 8px 16px rgba(0,0,0,.12)}
+.rt-stand-body.black+.rt-stand-foot{background:#222}
+.rt-stand-title{font-size:10px;font-weight:700;text-align:center;letter-spacing:-.01em;margin-top:4px}
+.rt-stand-body.black .rt-stand-title{color:#fff}
+.rt-stars{display:flex;gap:2px;font-size:18px;line-height:1}
+.rt-badge{width:54px;height:54px;border-radius:14px;background:linear-gradient(135deg,#4285F4,#EA4335,#FBBC05,#34A853);padding:3px;display:grid;place-items:center;font-size:22px}
+.rt-badge-inner{width:100%;height:100%;border-radius:12px;background:#fff;display:grid;place-items:center;font-size:18px;font-weight:900;color:#003049}
+.rt-stand-body.black .rt-badge-inner{background:#111;color:#fff}
+.rt-qr-box{width:64px;height:64px;background:#fff;border-radius:8px;padding:4px;border:2px solid rgba(0,0,0,.12)}
+.rt-qr-svg{width:100%;height:100%}
+.rt-tap{display:flex;align-items:center;justify-content:center;gap:6px;font-size:9px;font-weight:600;color:#526a77;margin-top:auto}
+.rt-stand-body.black .rt-tap{color:rgba(255,255,255,.7)}
+.rt-stripe{height:5px;background:linear-gradient(90deg,#4285F4 25%,#EA4335 25% 50%,#34A853 50% 75%,#FBBC05 75%);border-radius:0 0 2px 2px;width:100%;position:absolute;bottom:0;left:0}
+/* 3D card */
+.rt-card{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:140px;height:210px;background:#fff;border-radius:18px;box-shadow:0 20px 50px rgba(0,0,0,.2),inset 0 0 0 1px rgba(0,0,0,.1);padding:16px;display:flex;flex-direction:column;align-items:center;gap:8px;animation:rtTurn 18s linear infinite}
+.rt-phone{position:absolute;width:56px;height:98px;border-radius:12px;border:3px solid #1a1a2e;background:#0a0a1a;box-shadow:0 10px 30px rgba(0,0,0,.4);transform:rotate(12deg) translateZ(20px);transition:transform .5s cubic-bezier(.2,.8,.2,1),opacity .3s;opacity:0}
+.rt-phone.tapping{transform:rotate(0deg) translateZ(20px) translate(-80px,30px);opacity:1}
+.rt-phone-screen{position:absolute;inset:6px;border-radius:8px;background:linear-gradient(180deg,#003049,#0a4a6e);overflow:hidden;display:flex;flex-direction:column;align-items:center;padding:8px 4px}
+.rt-phone-url{font-size:5px;color:rgba(255,255,255,.6);background:rgba(255,255,255,.08);border-radius:4px;padding:2px 4px;width:100%;text-align:center;margin-bottom:4px}
+.rt-phone-stars{font-size:10px;margin:auto 0 4px}
+.rt-phone-cta{font-size:5.5px;font-weight:700;color:#fff;background:#4285F4;border-radius:4px;padding:3px 6px}
+@keyframes rtTurn{from{transform:translate(-50%,-50%) rotateY(-20deg)}50%{transform:translate(-50%,-50%) rotateY(20deg)}to{transform:translate(-50%,-50%) rotateY(-20deg)}}
+@media (min-width:900px){.rt-wrap{grid-template-columns:1.4fr 1fr;align-items:center}.rt-stage{height:400px}}
+@media (prefers-reduced-motion:reduce){.rt-stand,.rt-card{animation:none}}
+</style><script src="/assets/vms-review-tap.js?v=20261003" defer></script>
+
+/* Services viz animations */
+#vmsSite .qrbox{position:relative;overflow:hidden}
+#vmsSite .qrbox::after{content:'';position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--blue),transparent);top:10%;animation:qrScan 2.2s ease-in-out infinite;pointer-events:none;opacity:.8}
+@keyframes qrScan{0%{top:8%;opacity:0}10%{opacity:.9}90%{opacity:.9}100%{top:90%;opacity:0}}
+
+#vmsSite .mock .cta{position:relative}
+#vmsSite .mock .cta::after{content:'';position:absolute;right:-2px;top:50%;height:70%;width:2px;transform:translateY(-50%);background:var(--navy);animation:cursor 1s step-end infinite}
+@keyframes cursor{0%,100%{opacity:1}50%{opacity:0}}
+
+#vmsSite .bar i{transition:width .8s cubic-bezier(.2,.8,.2,1)}
+#vmsSite .svc[data-svc="web"]:hover .bar i:nth-child(1){width:85%!important}
+#vmsSite .svc[data-svc="web"]:hover .bar i:nth-child(2){width:65%!important}
+#vmsSite .svc[data-svc="web"]:hover .bar i:nth-child(3){width:78%!important}
+
+/* Hub/phone - line buttons animate in */
+#vmsSite .phone-mini i{transform:scaleX(.3);transition:transform .4s cubic-bezier(.2,.8,.2,1),opacity .3s}
+#vmsSite .phone-mini i:nth-child(2){transition-delay:.08s}
+#vmsSite .phone-mini i:nth-child(3){transition-delay:.16s}
+#vmsSite .phone-mini i:nth-child(4){transition-delay:.24s}
+#vmsSite .svc[data-svc="hub"]:hover .phone-mini i{transform:scaleX(1)}
+
+/* Local/pin - pulse ring */
+#vmsSite .pinviz svg{animation:pinPop 2s cubic-bezier(.2,.8,.2,1) infinite;transform-origin:50% 100%}
+@keyframes pinPop{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-10px)}}
+</style>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
@@ -852,7 +930,7 @@ html:not([data-theme="light"]) #vmsSite .seg,html:not([data-theme="light"]) #vms
           <div class="svc-body"><h3>VMS LinkHub</h3><p>Your business card, links and menu in one tap.</p><div class="svc-foot"><span class="price-tag">From $5.99/mo</span><button class="more" type="button" data-open="hub">Details</button></div></div></article>
         <article class="svc" data-svc="local"><div class="viz"><div class="pinviz"><svg><use href="#i-pin"/></svg></div></div>
           <div class="svc-body"><h3>Local Presence</h3><p>Show up correctly where nearby customers look.</p><div class="svc-foot"><span class="price-tag">Setup $149</span><button class="more" type="button" data-open="local">Details</button></div></div></article>
-        <article class="svc" data-svc="reviews"><div class="viz"><div class="stars" id="starsViz"><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg></div></div>
+        <article class="svc" data-svc="reviews"><div class="viz"><div class="stars" id="starsViz"><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg></div><div class="stars-count">4.9</div><div class="review-line">47 new reviews this month</div></div>
           <div class="svc-body"><h3>Review Growth</h3><p>Make it easy for happy customers to say so.</p><div class="svc-foot"><span class="price-tag">$39.99/mo</span><button class="more" type="button" data-open="reviews">Details</button></div></div></article>
       </div>
       <div class="dots" id="railDots" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i><i></i></div>
@@ -986,10 +1064,33 @@ html:not([data-theme="light"]) #vmsSite .seg,html:not([data-theme="light"]) #vms
       </div>
       
       <div class="plans p1" id="pn-ad" role="tabpanel" aria-labelledby="tab-ad" hidden>
-        <article class="plan"><div class="standviz" aria-hidden="true"><svg viewBox="0 0 120 110"><rect x="20" y="8" width="80" height="84" rx="12" fill="#fff" stroke="#003049" stroke-opacity=".25"/><rect x="34" y="22" width="26" height="26" rx="4" fill="#003049"/><rect x="40" y="28" width="14" height="14" rx="2" fill="#fff"/><rect x="66" y="22" width="20" height="8" rx="3" fill="#669BBC"/><rect x="66" y="36" width="14" height="8" rx="3" fill="#669BBC" opacity=".6"/><path d="M60 66c6-8 18-8 24 0M65 72c4-5 11-5 15 0" stroke="#C1121F" stroke-width="3.5" fill="none" stroke-linecap="round"/><circle cx="72" cy="78" r="2.6" fill="#C1121F"/><rect x="46" y="92" width="28" height="9" rx="3" fill="#003049"/></svg></div>
-          <h3>VMS Tap and Scan Stand</h3><p class="muted">A counter stand customers can tap with a phone or scan. VMS sets it up to open the link you choose, such as your LinkHub, reviews or menu.</p><div class="amt">$29.99</div>
-          <ul class="feat"><li><svg><use href="#i-check"/></svg>Tap with a phone or scan the QR code</li><li><svg><use href="#i-check"/></svg>Set to any link you choose</li><li><svg><use href="#i-check"/></svg>Counter or desk stand</li><li><svg><use href="#i-check"/></svg>Free shipping in the U.S.</li></ul>
-          <button class="btn btn-red" type="button" data-pick="tap-scan-stand">Order a stand</button></article>
+        <div class="review-tap-showcase" id="reviewTapShow">
+          <!-- Rendered by vms-review-tap.js -->
+          <div class="rt-wrap">
+            <div class="rt-stage" id="rtStage" aria-label="Interactive product preview"></div>
+            <div class="rt-side">
+              <div class="rt-switch" role="group" aria-label="Product type">
+                <button type="button" class="rt-btn active" data-rt-type="stand">Stand <span>$30</span></button>
+                <button type="button" class="rt-btn" data-rt-type="card">Card <span>$15</span></button>
+              </div>
+              <div id="rtColorRow" class="rt-switch" role="group" aria-label="Color" style="display:none">
+                <button type="button" class="rt-btn active" data-rt-color="white">White</button>
+                <button type="button" class="rt-btn" data-rt-color="black">Black</button>
+              </div>
+              <h3 id="rtTitle">VMS Review Stand</h3>
+              <p id="rtDesc">A counter stand your customers can tap with a phone or scan. Opens your Google review page instantly. Set it up once and keep the link forever.</p>
+              <ul class="feat" id="rtFeatures">
+                <li><svg><use href="#i-check"/></svg>Tap with NFC or scan the QR</li>
+                <li><svg><use href="#i-check"/></svg>Opens your Google review page</li>
+                <li><svg><use href="#i-check"/></svg>White or black, you choose</li>
+                <li><svg><use href="#i-check"/></svg>VMS handles the link setup</li>
+                <li><svg><use href="#i-check"/></svg>Free U.S. shipping</li>
+              </ul>
+              <div class="amt" id="rtPrice">$30</div>
+              <button class="btn btn-red" type="button" data-pick="tap-scan-stand" id="rtOrderBtn">Order a stand</button>
+            </div>
+          </div>
+        </div>
       </div>
 <p class="fine">Packages and monthly bundles waive the one-time $4.99 VMS Activation Fee.</p>
     </div>

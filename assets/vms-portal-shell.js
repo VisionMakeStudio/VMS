@@ -70,7 +70,7 @@
     });
   }
   /* ===== Dark mode: legacy pages hardcode white cards; turn them into dark surfaces so text stays readable ===== */
-  const ISLAND_SKIP=/qr-?(code|img|image|canvas|box|frame|card|wrap|preview|render|output|stage|art)|phone|preview|logo|swatch|colou?r-|avatar|cover|thumb|donut|ring|chart|canvas|toggle|switch(?!-card|-copy)|knob|dot|progress|track|vms-|vp-|lp-av/i;
+  const ISLAND_SKIP=/qr-?(code|img|image|canvas|box|frame|card|wrap|preview|render|output|stage|art)|phone|preview|logo|swatch|colou?r-|avatar|cover|thumb|donut|ring|chart|canvas|toggle|switch(?!-card|-copy)|knob|dot|progress|track|vms-|vp-|lp-av|badge|chip|pill|status-dot/i;
   function isDark(){const t=document.documentElement.dataset.theme;return t?t==='dark':matchMedia('(prefers-color-scheme: dark)').matches}
   function islands(root){
     const dark=isDark();

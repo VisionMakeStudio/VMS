@@ -22,8 +22,8 @@
     const walls=WALLS.map(([x,y,len,dir])=>'<i class="ms-wall '+dir+'" style="left:'+x+'px;top:'+y+'px;width:'+len+'px"></i>').join('');
     const door='<i class="ms-door" style="left:40px;top:'+D+'px"></i>';
     return '<div class="ms-world" id="msWorld" style="width:'+W+'px;height:'+D+'px">'+
-      '<div class="ms-lawn"></div><div class="ms-floor"></div>'+rooms+walls+door+
-      '<i class="ms-gable" style="left:0"></i><i class="ms-gable" style="left:'+W+'px"></i><div class="ms-roof a" style="width:'+W+'px"></div><div class="ms-roof b" style="width:'+W+'px"></div>'+
+      '<div class="ms-lawn"></div><div class="ms-driveway"></div><div class="ms-floor"></div>'+rooms+walls+door+
+      '<i class="ms-gable" style="left:0"></i><i class="ms-gable" style="left:'+W+'px"></i><div class="ms-roof a" style="width:'+W+'px"></div><div class="ms-roof b" style="width:'+W+'px"></div><i class="ms-chimney"></i><i class="ms-window" style="left:30px;top:30px"></i><i class="ms-window" style="left:90px;top:30px"></i><i class="ms-window" style="left:'+Math.round(W*0.55)+'px;top:30px"></i><i class="ms-door-ext" style="left:'+Math.round(W*0.42)+'px;top:'+Math.round(D*0.55)+'px"></i>'+
       '<i class="ms-cam" id="msCam" aria-hidden="true"></i></div>';
   }
   /* ---------- Restaurant: table ---------- */

@@ -85,3 +85,18 @@
 @media (min-width:900px){#vmsSite .ms-wrap{grid-template-columns:1.5fr 1fr;gap:22px;align-items:center}#vmsSite .ms-stage{height:400px}}
 @media (max-width:420px){#vmsSite .ms-world{transform:rotateX(58deg) rotateZ(var(--rz)) scale(.82)}#vmsSite .ms-table{transform-origin:50% 50%}}
 @media (prefers-reduced-motion:reduce){#vmsSite .ms-spot i{animation:none}#vmsSite .ms-world *,#vmsSite .ms-table{transition-duration:.01ms!important}}
+
+/* Enhanced house details */
+#vmsSite .ms-chimney{position:absolute;left:70px;top:-36px;width:22px;height:40px;background:repeating-linear-gradient(90deg,#7a3020 0 6px,#963828 6px 12px);border:1px solid rgba(0,0,0,.2);transform:translateZ(64px);pointer-events:none;transition:opacity .5s}
+#vmsSite .ms-stage:not([data-mode="ext"]) .ms-chimney{opacity:0}
+#vmsSite .ms-window{position:absolute;width:28px;height:26px;background:linear-gradient(135deg,#c8e8f5,#a0d0eb);border:3px solid #efe0c0;border-radius:3px;transform:translateZ(2px)}
+#vmsSite .ms-stage:not([data-mode="plan"]):not([data-mode="ext"]) .ms-window{background:linear-gradient(135deg,#fffae8,#fdf0d5)!important}
+#vmsSite .ms-window::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.6) 40%,transparent 40%) top left,linear-gradient(225deg,rgba(255,255,255,.4) 40%,transparent 40%) top right;background-size:50% 50%;background-repeat:no-repeat}
+#vmsSite .ms-door-ext{position:absolute;width:30px;height:42px;background:linear-gradient(180deg,#a07040,#7a5228);border:2px solid #5a3c1a;border-radius:4px 4px 0 0;transform:translateZ(2px)}
+#vmsSite .ms-door-ext::before{content:'';position:absolute;right:5px;top:50%;width:4px;height:4px;border-radius:50%;background:#d4a960;transform:translateY(-50%)}
+/* Better lawn */
+#vmsSite .ms-lawn{background:radial-gradient(circle at 50% 60%,rgba(91,154,67,.45),rgba(91,154,67,.18) 65%,transparent 70%)!important}
+/* Driveway */
+#vmsSite .ms-driveway{position:absolute;left:110px;bottom:-30px;width:60px;height:50px;background:linear-gradient(180deg,#c0c8cc,#9aa4a8);transform:translateZ(-1px);clip-path:polygon(5% 0,95% 0,100% 100%,0% 100%)}
+/* Ridge line on roof */
+#vmsSite .ms-roof.a::after,#vmsSite .ms-roof.b::after{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:rgba(60,10,5,.35)}

@@ -605,6 +605,51 @@
   </style>
 <link rel="stylesheet" href="/assets/vms-admin-shell.css">
 <link rel="stylesheet" href="../assets/vms-final-polish.css?v=20260822-phase2">
+<style id="vms-security-fields-fix">
+/* Security page: kv rows, glass sections, mini-notes all need readable text */
+body.vms-admin-canonical .glass-section,
+body.vms-admin-canonical .glass-section .kv-item,
+body.vms-admin-canonical .glass-section .info-item{
+  background:var(--surface)!important;
+  border:1px solid var(--line)!important;
+  border-radius:16px!important;
+  color:var(--ink)!important;
+}
+body.vms-admin-canonical .glass-section .kv-item span,
+body.vms-admin-canonical .glass-section .mini-note,
+body.vms-admin-canonical .glass-section p{
+  color:var(--muted)!important;
+}
+body.vms-admin-canonical .glass-section .kv-item strong,
+body.vms-admin-canonical .glass-section b{
+  color:var(--ink)!important;
+}
+body.vms-admin-canonical .warning{
+  background:var(--warmbg)!important;
+  border-radius:14px!important;
+  padding:12px 14px!important;
+  color:var(--warmfg)!important;
+  border:0!important;
+}
+body.vms-admin-canonical .warning strong,
+body.vms-admin-canonical .warning b{
+  color:var(--warmfg)!important;
+}
+body.vms-admin-canonical .success-note{
+  background:var(--okbg)!important;
+  border-radius:14px!important;
+  padding:12px 14px!important;
+  color:var(--ok)!important;
+  border:0!important;
+}
+body.vms-admin-canonical .mini-note{
+  background:var(--surface2)!important;
+  border-radius:12px!important;
+  padding:10px 12px!important;
+  color:var(--muted)!important;
+  border:1px solid var(--line)!important;
+}
+</style>
 </head>
 <body>
 <main class="page">

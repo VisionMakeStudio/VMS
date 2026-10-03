@@ -820,7 +820,100 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
 .catalog-live-status[data-state="error"]{color:#a82932;border-color:#efd2d5;background:#fff7f8}.catalog-live-status[data-state="error"] .catalog-live-dot{background:#c1121f;box-shadow:0 0 0 3px rgba(193,18,31,.12)}
 .catalog-live-status[data-state="saving"] .catalog-live-dot{animation:vmsCatalogPulse 1s infinite alternate}
 @keyframes vmsCatalogPulse{from{opacity:.35}to{opacity:1}}
-</style><link rel="stylesheet" href="/assets/vms-admin-shell.css"><script src="/assets/vms-catalog.js?v=20260824-live-catalog-v1"></script></head>
+</style><link rel="stylesheet" href="/assets/vms-admin-shell.css"><script src="/assets/vms-catalog.js?v=20260824-live-catalog-v1"></script><style id="vms-catalog-sections">
+body.vms-admin-canonical .sc-jump-nav{
+  display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px 0 14px;flex-wrap:wrap;
+}
+body.vms-admin-canonical .sc-jump-nav::-webkit-scrollbar{display:none}
+body.vms-admin-canonical .sc-jump-btn{
+  display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 16px;border-radius:99px;
+  background:var(--surface);border:1px solid var(--line2);color:var(--ink);
+  font:600 14px/1 var(--body);white-space:nowrap;cursor:pointer;transition:all .18s;
+}
+body.vms-admin-canonical .sc-jump-btn:hover{border-color:var(--ink)}
+body.vms-admin-canonical .sc-jump-btn.active{background:var(--pri);color:var(--prifg);border-color:var(--pri)}
+body.vms-admin-canonical .sc-section-head{
+  display:flex;align-items:center;gap:12px;margin:20px 0 10px;
+}
+body.vms-admin-canonical .sc-section-head h3{
+  margin:0;font-family:var(--display);font-weight:700;font-size:.98rem;letter-spacing:-.02em;color:var(--ink);
+}
+body.vms-admin-canonical .sc-section-head .sc-count{
+  font-size:13px;color:var(--muted);font-weight:500;
+}
+/* Service icon tiles - fix text overflow */
+body.vms-admin-canonical .service-icon,.service-icon{
+  width:44px!important;height:44px!important;min-width:44px;border-radius:12px!important;
+  display:grid!important;place-items:center;overflow:hidden!important;
+  font-size:11px!important;font-weight:700!important;letter-spacing:-.02em!important;
+  text-transform:uppercase!important;padding:0 3px!important;text-overflow:ellipsis!important;
+  white-space:nowrap!important;background:var(--tint)!important;color:var(--navy)!important;
+}
+</style>
+<script id="vms-catalog-sections-js">
+(()=>{
+  document.addEventListener('DOMContentLoaded',()=>{
+    const list=document.getElementById('catalogList');if(!list)return;
+    
+    /* Add jump nav before the catalog */
+    const nav=document.createElement('div');nav.className='sc-jump-nav';nav.id='scJumpNav';
+    list.parentNode.insertBefore(nav,list);
+    
+    let lastCats='';
+    function buildSections(){
+      const rows=Array.from(list.children);if(!rows.length)return;
+      
+      /* Group by category */
+      const groups={};
+      rows.forEach(r=>{
+        const cat=(r.dataset.category)||r.querySelector('[data-category]')?.dataset.category
+          ||(r.className.includes('service-row')?r.dataset.category||'Other':'Other');
+        if(!groups[cat])groups[cat]=[];
+        groups[cat].push(r);
+      });
+      
+      const cats=Object.keys(groups);
+      const catsKey=cats.join(',');
+      if(catsKey===lastCats)return;lastCats=catsKey;
+      
+      /* Rebuild nav */
+      nav.innerHTML='<button class="sc-jump-btn active" data-target="all">All <em style="font-style:normal;opacity:.7;font-size:13px">'+rows.length+'</em></button>'+
+        cats.map(c=>'<button class="sc-jump-btn" data-target="'+c.replace(/"/g,'&quot;')+'">'+c+' <em style="font-style:normal;opacity:.7;font-size:13px">'+groups[c].length+'</em></button>').join('');
+      
+      /* Add section headers */
+      list.querySelectorAll('.sc-section-head').forEach(h=>h.remove());
+      cats.forEach(cat=>{
+        const first=groups[cat][0];
+        const head=document.createElement('div');head.className='sc-section-head';
+        head.id='scat-'+cat.replace(/[^a-zA-Z0-9]/g,'-').toLowerCase();
+        head.innerHTML='<h3>'+cat+'</h3><span class="sc-count">'+groups[cat].length+' service'+(groups[cat].length!==1?'s':'')+'</span>';
+        list.insertBefore(head,first);
+      });
+      
+      /* Nav click */
+      nav.onclick=e=>{
+        const btn=e.target.closest('[data-target]');if(!btn)return;
+        nav.querySelectorAll('.sc-jump-btn').forEach(b=>b.classList.toggle('active',b===btn));
+        const t=btn.dataset.target;
+        if(t==='all'){rows.forEach(r=>r.style.display='');list.querySelectorAll('.sc-section-head').forEach(h=>h.style.display='')}
+        else{
+          rows.forEach(r=>r.style.display=(r.dataset.category===t)?'':'none');
+          list.querySelectorAll('.sc-section-head').forEach(h=>{
+            h.style.display=(h.id==='scat-'+t.replace(/[^a-zA-Z0-9]/g,'-').toLowerCase())?'':'none';
+          });
+          const sec=document.getElementById('scat-'+t.replace(/[^a-zA-Z0-9]/g,'-').toLowerCase());
+          if(sec)sec.scrollIntoView({behavior:'smooth',block:'start'});
+        }
+      };
+    }
+    
+    /* Watch for catalog to be populated and for each row's data-category attribute */
+    new MutationObserver(()=>setTimeout(buildSections,100)).observe(list,{childList:true,subtree:true,attributes:true,attributeFilter:['data-category']});
+    buildSections();
+  });
+})();
+</script>
+</head>
 <body>
 <div class="shell">
   <aside class="sidebar" id="sidebar">

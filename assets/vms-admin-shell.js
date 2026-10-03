@@ -137,7 +137,7 @@
     });
   }
   /* ===== Dark mode: legacy pages hardcode white cards; turn them into dark surfaces so text stays readable ===== */
-  const ISLAND_SKIP=/qr-?(code|img|image|canvas|box|frame|card|wrap|preview|render|output|stage|art)|phone|preview|logo|swatch|colou?r-|avatar|cover|thumb|donut|ring|chart|canvas|toggle|switch(?!-card|-copy)|knob|dot|progress|track|vms-|vp-|lp-av/i;
+  const ISLAND_SKIP=/qr-?(code|img|image|canvas|box|frame|card|wrap|preview|render|output|stage|art)|phone|preview|logo|swatch|colou?r-|avatar|cover|thumb|donut|ring|chart|canvas|toggle|switch(?!-card|-copy)|knob|dot|progress|track|vms-|vp-|lp-av|badge|chip|pill|status-dot/i;
   function isDark(){const t=document.documentElement.dataset.theme;return t?t==='dark':matchMedia('(prefers-color-scheme: dark)').matches}
   function islands(root){
     const dark=isDark();
@@ -305,6 +305,10 @@
     });
     document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();openPal()}});
     window.VMSShell={toast:shellToast,openSearch:openPal};
+    /* Fast-nav: mark current page as visited so the gate can skip its loading state instantly */
+    try{const leaf=(location.pathname||'/').replace(/\/index(?:\.html)?$/i,'/').replace(/\.html$/i,'').replace(/\/+$/,'')||'/';sessionStorage.setItem('vms_admin_fast_nav',JSON.stringify({to:leaf,until:Date.now()+8000}))}catch(e){}
+    /* Pre-warm next navigations: intercept same-origin admin links */
+    document.addEventListener('click',e=>{const a=e.target.closest('a[href]');if(!a||e.ctrlKey||e.metaKey||e.shiftKey||e.altKey)return;try{const u=new URL(a.href,location.href);if(u.origin!==location.origin||!u.pathname.includes('/admin/'))return;const leaf=u.pathname.replace(/\/index(?:\.html)?$/i,'/').replace(/\.html$/i,'').replace(/\/+$/,'')||'/';sessionStorage.setItem('vms_admin_fast_nav',JSON.stringify({to:leaf,until:Date.now()+6000}))}catch(e){}},true);
 
     calmLabels(document.body);
     setTimeout(()=>islands(),120);setTimeout(()=>islands(),1200);

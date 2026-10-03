@@ -2035,6 +2035,15 @@ html.vms-page-qr #view-saved .vms-phase2-menu-wrap.open{z-index:2147482001!impor
                 </div>
 
                 <div class="control">
+                  <label>QR style <span>Dot pattern</span></label>
+                  <div class="frame-options" id="qrStyleOptions">
+                    <button class="frame-btn active" data-qrstyle="classic" type="button">Classic</button>
+                    <button class="frame-btn" data-qrstyle="soft" type="button">Soft</button>
+                    <button class="frame-btn" data-qrstyle="dots" type="button">Dots</button>
+                    <button class="frame-btn" data-qrstyle="gradient" type="button">Gradient</button>
+                  </div>
+                </div>
+                <div class="control">
                   <label>Frame style <span>Preview card</span></label>
                   <div class="frame-options" id="frameOptions">
                     <button class="frame-btn active" data-frame="rounded" type="button">Rounded</button>
@@ -2869,10 +2878,17 @@ html.vms-page-qr #view-saved .vms-phase2-menu-wrap.open{z-index:2147482001!impor
     }
   }
 
+  let _qrStyle='classic';
   function generateQr(container,payload,size,colorDark,colorLight){
     container.innerHTML='';
     if(!payload)return;
-
+    if(window.VMSQRStyle&&_qrStyle!=='classic'){
+      const st=VMSQRStyle.styles[_qrStyle]||VMSQRStyle.styles.classic;
+      const canvas=document.createElement('canvas');
+      VMSQRStyle.draw(canvas,payload,Object.assign({size:size||320,fg:colorDark||'#112D3D',fg2:'#2b6a91',bg:colorLight||'#FFFFFF'},st));
+      container.appendChild(canvas);
+      return;
+    }
     new QRCode(container,{
       text:payload,
       width:size,
@@ -2881,7 +2897,6 @@ html.vms-page-qr #view-saved .vms-phase2-menu-wrap.open{z-index:2147482001!impor
       colorLight:colorLight||'#FFFFFF',
       correctLevel:QRCode.CorrectLevel.H
     });
-
     requestAnimationFrame(()=>{
       container.querySelectorAll('img').forEach(img=>img.remove());
     });
@@ -3002,6 +3017,12 @@ html.vms-page-qr #view-saved .vms-phase2-menu-wrap.open{z-index:2147482001!impor
   });
 
   frameOptions.addEventListener('click',e=>{
+    const styleBtn=e.target.closest('[data-qrstyle]');
+    if(styleBtn){
+      _qrStyle=styleBtn.dataset.qrstyle;
+      document.querySelectorAll('[data-qrstyle]').forEach(b=>b.classList.toggle('active',b===styleBtn));
+      syncPreview();return;
+    }
     const btn=e.target.closest('.frame-btn');
     if(!btn)return;
 

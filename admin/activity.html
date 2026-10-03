@@ -576,6 +576,53 @@ html,body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sa
 @media(max-width:900px){.shell,.app{grid-template-columns:1fr}.mobile-menu{display:inline-flex}.sidebar.open{transform:translateX(0)}}
 </style>
 <link rel="stylesheet" href="../assets/vms-suite.css"><script src="../assets/config.js"></script>  <link rel="stylesheet" href="/assets/vms-admin-shell.css">
+<style id="vms-activity-fix">
+
+body.vms-admin-canonical .when-stack{display:flex!important;flex-direction:column!important;gap:1px!important}
+body.vms-admin-canonical .when-stack b{font-weight:600!important;color:var(--ink)!important;font-size:13.5px!important}
+body.vms-admin-canonical .when-stack small{color:var(--muted)!important;font-size:12.5px!important}
+
+/* Activity table: compact rows with action menu instead of 4 stacked buttons */
+body.vms-admin-canonical .activity-table .row-actions{
+  display:flex!important;
+  flex-direction:row!important;
+  flex-wrap:nowrap!important;
+  gap:6px!important;
+  align-items:center!important;
+}
+body.vms-admin-canonical .activity-table .row-actions>.btn:not(.btn.small):not(.view-btn):not(.mark-btn){
+  display:none!important;
+}
+body.vms-admin-canonical .activity-table thead th{
+  color:var(--muted)!important;
+  font-size:13px!important;
+  font-weight:600!important;
+  text-transform:none!important;
+  letter-spacing:0!important;
+  border-bottom:1px solid var(--line)!important;
+  background:transparent!important;
+}
+/* The repeated column headers inside each row */
+body.vms-admin-canonical .activity-table .cell-label{
+  display:none!important;
+}
+/* Row height */
+body.vms-admin-canonical .activity-table .activity-row,
+body.vms-admin-canonical .activity-table tr{
+  border-bottom:1px solid var(--line)!important;
+}
+body.vms-admin-canonical .activity-table td{
+  padding:12px 8px!important;
+  vertical-align:middle!important;
+}
+/* Bulk delete button */
+body.vms-admin-canonical #bulkDeleteBtn{
+  display:none;
+}
+body.vms-admin-canonical #bulkDeleteBtn.visible{
+  display:inline-flex!important;
+}
+</style>
 </head>
 <body>
 <div class="shell">

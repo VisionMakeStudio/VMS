@@ -1034,9 +1034,9 @@ html body.vms-portal-canonical #availableServices>.note{padding:12px 14px!import
 <button data-section="services">My Services</button>
 <button data-section="qrs">QR Codes <span class="pill">1</span></button>
 <button data-section="linkhub">My LinkHub <span class="pill">1</span></button>
-<button data-section="audits">Audits <span class="pill">1</span></button>
-<button data-section="projects">Projects <span class="pill">1</span></button>
-<button data-section="files">Files <span class="pill" id="fileCountPill">3</span></button>
+<button data-section="audits">Audits</button>
+<button data-section="projects">Projects</button>
+<button data-section="files">Files <span class="pill" id="fileCountPill" style="display:none">0</span></button>
 <button data-section="notifications">Notifications <span class="pill" id="notificationCountPill">0</span></button>
 <button data-section="requests">Requests <span class="pill" id="requestCountPill">1</span></button>
 <button data-section="billing">Billing</button>
@@ -1436,7 +1436,7 @@ html body.vms-portal-canonical #availableServices>.note{padding:12px 14px!import
 <button class="chip" data-notification-filter="Messages" type="button">Messages</button>
 <button class="chip" data-notification-filter="Activity" type="button">Activity</button>
 </div>
-<button class="btn small" id="markAllNotificationsBtn" type="button">Mark All Read</button>
+<button class="btn small" id="markAllNotificationsBtn" type="button">Mark all read</button><button class="btn small" id="deleteAllNotificationsBtn" type="button" style="margin-left:8px;color:var(--badfg,#C1121F);border-color:rgba(193,18,31,.35)">Delete all</button>
 </div>
 <div class="notification-list" id="notificationList"></div>
 </section>
@@ -1522,6 +1522,13 @@ html body.vms-portal-canonical #availableServices>.note{padding:12px 14px!import
 <div class="field full"><label>CALL TO ACTION</label><input id="qrEditCta" placeholder="Scan to connect"/></div>
 <div class="field"><label>QR COLOR</label><input id="qrEditForeground" type="color" value="#003049"/></div>
 <div class="field"><label>BACKGROUND COLOR</label><input id="qrEditBackground" type="color" value="#FFFFFF"/></div>
+<div class="field full"><label>QR STYLE</label>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px" id="qrStylePicker">
+  <button type="button" class="btn small active" data-portal-qrstyle="classic">Classic</button>
+  <button type="button" class="btn small" data-portal-qrstyle="soft">Soft</button>
+  <button type="button" class="btn small" data-portal-qrstyle="dots">Dots</button>
+  <button type="button" class="btn small" data-portal-qrstyle="gradient">Gradient</button>
+</div></div>
 </div>
 <div class="note" style="margin-top:10px" id="qrEditorNote">A tracked QR keeps the same printed code even if you change where it goes later.</div>
 </div>
@@ -2077,7 +2084,9 @@ html body.vms-portal-canonical #availableServices>.note{padding:12px 14px!import
   }
 
   function renderFiles(){
-    $('fileCountPill').textContent=state.files.length;
+    const neededFiles=(state.files||[]).filter(f=>f.status&&/needed|requested|missing|waiting/i.test(f.status)).length;
+    $('fileCountPill').textContent=neededFiles;
+    $('fileCountPill').style.display=neededFiles?'grid':'none';
     $('fileList').innerHTML=state.files.map(f=>`
       <div class="list-item">
         <div style="display:flex;align-items:center;gap:10px">
@@ -2393,7 +2402,60 @@ html body.vms-portal-canonical #availableServices>.note{padding:12px 14px!import
   }
 
   const qrTarget=q=>q.mode==='dynamic'&&q.code?location.origin+'/q/'+q.code:q.destination;
+  /* VMS QR style engine */
+  (function(){
+    function rr(ctx,x,y,w,h,r){r=Math.min(r,w/2,h/2);ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+    function vmsDraw(canvas,text,o){
+      o=Object.assign({size:320,fg:'#003049',fg2:'#2b6a91',bg:'#FFFFFF',shape:'square',eye:'square',grad:false},o||{});
+      const size=o.size;canvas.width=size;canvas.height=size;
+      const ctx=canvas.getContext('2d');ctx.fillStyle=o.bg;ctx.fillRect(0,0,size,size);
+      const div=document.createElement('div');div.style.cssText='position:fixed;left:-9999px';document.body.appendChild(div);
+      try{
+        new QRCode(div,{text,width:size,height:size,colorDark:o.fg,colorLight:o.bg,correctLevel:QRCode.CorrectLevel.H});
+        const src=div.querySelector('canvas');if(!src)return;
+        if(o.shape==='square'&&!o.grad){ctx.drawImage(src,0,0,size,size);return}
+        const tmp=document.createElement('canvas');tmp.width=size;tmp.height=size;
+        const tc=tmp.getContext('2d');tc.drawImage(src,0,0,size,size);
+        const d=tc.getImageData(0,0,size,size);
+        const n=Math.round(Math.sqrt(d.data.length/4));const cell=size/n;
+        const isBlack=(r,c)=>{if(r<0||c<0||r>=n||c>=n)return false;const i=(r*n+c)*4;return d.data[i]<128};
+        const eyeAt=(r,c)=>(r<7&&c<7)||(r<7&&c>=n-7)||(r>=n-7&&c<7);
+        let fill=o.fg;
+        if(o.grad){const g=ctx.createLinearGradient(0,0,size,size);g.addColorStop(0,o.fg);g.addColorStop(1,o.fg2);fill=g}
+        ctx.fillStyle=fill;
+        for(let r=0;r<n;r++){for(let c=0;c<n;c++){
+          if(!isBlack(r,c)||eyeAt(r,c))continue;
+          const x=c*cell,y=r*cell;
+          if(o.shape==='dots'){ctx.beginPath();ctx.arc(x+cell/2,y+cell/2,cell*.44,0,7);ctx.fill()}
+          else if(o.shape==='rounded'){rr(ctx,x+.5,y+.5,cell-1,cell-1,cell*.38);ctx.fill()}
+          else ctx.fillRect(x,y,cell,cell);
+        }}
+        const drawEye=(r0,c0)=>{
+          const x=c0*cell,y=r0*cell,s=7*cell;ctx.fillStyle=fill;
+          if(o.eye==='circle'){ctx.beginPath();ctx.arc(x+s/2,y+s/2,s/2,0,7);ctx.fill();ctx.fillStyle=o.bg;ctx.beginPath();ctx.arc(x+s/2,y+s/2,s/2-cell,0,7);ctx.fill();ctx.fillStyle=fill;ctx.beginPath();ctx.arc(x+s/2,y+s/2,s*.22,0,7);ctx.fill()}
+          else if(o.eye==='rounded'){rr(ctx,x,y,s,s,cell*2);ctx.fill();ctx.fillStyle=o.bg;rr(ctx,x+cell,y+cell,s-cell*2,s-cell*2,cell*1.5);ctx.fill();ctx.fillStyle=fill;rr(ctx,x+cell*2,y+cell*2,cell*3,cell*3,cell);ctx.fill()}
+          else{ctx.fillRect(x,y,s,s);ctx.fillStyle=o.bg;ctx.fillRect(x+cell,y+cell,s-cell*2,s-cell*2);ctx.fillStyle=fill;ctx.fillRect(x+cell*2,y+cell*2,cell*3,cell*3)}
+          ctx.fillStyle=fill;
+        };
+        drawEye(0,0);drawEye(0,n-7);drawEye(n-7,0);
+      }catch(e){console.error(e)}finally{div.remove()}
+    }
+    const VSTYLES={classic:{shape:'square',eye:'square',grad:false},soft:{shape:'rounded',eye:'rounded',grad:false},dots:{shape:'dots',eye:'circle',grad:false},gradient:{shape:'rounded',eye:'circle',grad:true}};
+    window._portalQrStyle='classic';
+    document.addEventListener('click',ev=>{
+      const b=ev.target.closest('[data-portal-qrstyle]');if(!b)return;
+      window._portalQrStyle=b.dataset.portalQrstyle;
+      document.querySelectorAll('[data-portal-qrstyle]').forEach(x=>x.classList.toggle('active',x===b));
+    });
+    window._vmsDrawQR=function(canvas,text,size,fg,bg){
+      const st=VSTYLES[window._portalQrStyle]||VSTYLES.classic;
+      vmsDraw(canvas,text,Object.assign({size:size||320,fg:fg||'#003049',fg2:'#2b6a91',bg:bg||'#FFFFFF'},st));
+    };
+  })();
   function qrDrawTo(canvas,text,size,fg,bg,margin=0){
+    if(window._vmsDrawQR&&window._portalQrStyle!=='classic'){
+      window._vmsDrawQR(canvas,text,size,fg,bg);return;
+    }
     const host=document.createElement('div');host.style.cssText='position:fixed;left:-9999px;top:0';document.body.appendChild(host);
     try{
       const inner=size-margin*2;
@@ -2841,6 +2903,11 @@ html body.vms-portal-canonical #availableServices>.note{padding:12px 14px!import
   };
   $('markAllNotificationsBtn').onclick=()=>{
     state.notifications.forEach(n=>n.unread=false);save();renderNotifications();toast('All notifications marked read');
+  };
+  $('deleteAllNotificationsBtn').onclick=()=>{
+    if(!state.notifications.length)return;
+    if(!confirm('Delete all '+state.notifications.length+' notifications? This cannot be undone.'))return;
+    state.notifications=[];save();renderNotifications();toast('All notifications deleted');
   };
   $('notificationList').onclick=e=>{
     const menuButton=e.target.closest('[data-notification-menu]');
