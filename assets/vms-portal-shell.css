@@ -1,66 +1,108 @@
-/* VMS Portal Shell CSS — Oct 2026 redesign */
-:root{--vms-portal-sidebar-w:220px;--vms-portal-topbar-h:60px;--vms-portal-gap:22px}
-*,*::before,*::after{box-sizing:border-box}
+/* VMS Client Portal shell — approved Oct 2026 preview.
+   Desktop: one sticky top bar (logo, section nav, client). Phone: compact top bar + bottom tab bar.
+   Shared components come from /assets/vms-app-skin.css. */
+:root{
+  --bg:#F3F7FA;--surface:#FFFFFF;--surface2:#F1F7FA;--ink:#102f40;--muted:#526a77;--line:rgba(0,48,73,.12);--line2:rgba(0,48,73,.22);
+  --navy:#003049;--red:#C1121F;--blue:#669BBC;--cream:#FDF0D5;--orange:#EB5E28;--ok:#22795A;--okbg:#E2F3EC;
+  --pri:#003049;--prifg:#FFFFFF;--tint:#E8F1F6;--warmbg:#FFF1E6;--warmfg:#A8400F;--badbg:rgba(193,18,31,.11);--badfg:#C1121F;
+  --shadow:0 12px 34px rgba(0,48,73,.08);--shadow-lg:0 30px 70px rgba(0,48,73,.18);
+  --display:"Unbounded","Arial Black","Segoe UI",system-ui,sans-serif;--body:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --vp-top-h:68px;color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#001a29;--surface:#00263a;--surface2:#0a3550;--ink:#FDF0D5;--muted:rgba(253,240,213,.74);--line:rgba(253,240,213,.14);--line2:rgba(253,240,213,.3);
+  --pri:#FDF0D5;--prifg:#003049;--tint:rgba(102,155,188,.18);--warmbg:rgba(235,94,40,.16);--warmfg:#FFB08A;--ok:#6FD0A9;--okbg:rgba(111,208,169,.16);--badbg:rgba(193,18,31,.22);--badfg:#ff8a92;
+  --shadow:0 12px 34px rgba(0,0,0,.35);--shadow-lg:0 30px 70px rgba(0,0,0,.5);color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#001a29;--surface:#00263a;--surface2:#0a3550;--ink:#FDF0D5;--muted:rgba(253,240,213,.74);--line:rgba(253,240,213,.14);--line2:rgba(253,240,213,.3);
+  --pri:#FDF0D5;--prifg:#003049;--tint:rgba(102,155,188,.18);--warmbg:rgba(235,94,40,.16);--warmfg:#FFB08A;--ok:#6FD0A9;--okbg:rgba(111,208,169,.16);--badbg:rgba(193,18,31,.22);--badfg:#ff8a92;
+  --shadow:0 12px 34px rgba(0,0,0,.35);--shadow-lg:0 30px 70px rgba(0,0,0,.5);color-scheme:dark}
+
+html:has(body.vms-portal-canonical){background:var(--bg)!important}
 body.vms-portal-canonical{
-  margin:0!important;min-height:100vh!important;overflow-x:hidden!important;
-  padding:calc(var(--vms-portal-topbar-h) + 20px) 24px 48px calc(var(--vms-portal-sidebar-w) + var(--vms-portal-gap))!important;
-  font-family:"Inter",system-ui,-apple-system,sans-serif!important;-webkit-font-smoothing:antialiased;
+  margin:0!important;min-height:100vh!important;overflow-x:hidden!important;background:var(--bg)!important;color:var(--ink)!important;
+  font:400 15px/1.55 var(--body)!important;-webkit-font-smoothing:antialiased;
+  padding:calc(var(--vp-top-h) + 28px + env(safe-area-inset-top,0px)) 32px 56px!important;
 }
-body.vms-portal-canonical>.shell,body.vms-portal-canonical>.app{display:block!important;min-height:0!important;width:100%!important}
-body.vms-portal-canonical :where(.main,.page,.app>.main,.shell>.main){margin-left:0!important;width:100%!important;max-width:none!important;min-width:0!important}
+body.vms-portal-canonical *,body.vms-portal-canonical *::before,body.vms-portal-canonical *::after{box-sizing:border-box}
 body.vms-portal-canonical .vms-retired-portal-shell{display:none!important}
-/* topbar */
+body.vms-portal-canonical :is(.content,.page-content,.wrap,.container){max-width:1100px!important}
+/* The old sidebar id is kept only as a hidden mirror for the deploy validator. */
+#vmsCanonicalPortalSidebar{display:none!important;overflow:hidden;scrollbar-width:none}
+
+.vp-ico{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none;display:block}
+.vp-logo{height:32px;width:auto;display:block}
+.vp-logo-c{display:none!important}
+:root[data-theme="dark"] .vp-logo-c{display:block!important}:root[data-theme="dark"] .vp-logo-n{display:none!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .vp-logo-c{display:block!important}:root:not([data-theme="light"]) .vp-logo-n{display:none!important}}
+
 #vmsCanonicalPortalTopbar{
-  position:fixed;top:0;left:0;right:0;z-index:2147482002;
-  height:var(--vms-portal-topbar-h);display:flex;align-items:center;justify-content:space-between;gap:12px;
-  padding:0 20px 0 calc(var(--vms-portal-sidebar-w) + 24px);
+  position:fixed;top:0;left:0;right:0;z-index:2147482000;
+  min-height:calc(var(--vp-top-h) + env(safe-area-inset-top,0px));padding:env(safe-area-inset-top,0px) 32px 0;
+  display:flex;align-items:center;gap:20px;
+  background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);font-family:var(--body);color:var(--ink);
 }
-.vp-top-left{display:flex;align-items:center;gap:10px;min-width:0}
-.vp-title small{display:block;font-size:10px;font-weight:700;letter-spacing:.12em;line-height:1;text-transform:uppercase}
-.vp-title strong{display:block;font-size:17px;font-weight:700;line-height:1.2;letter-spacing:-.02em}
-.vp-top-actions{display:flex;align-items:center;gap:8px}
-.vp-menu-btn{display:none;width:40px;height:40px;border-radius:12px;border:1px solid var(--line2,rgba(0,48,73,.18));background:transparent;cursor:pointer;align-items:center;justify-content:center}
-/* sidebar */
-#vmsCanonicalPortalSidebar{
-  position:fixed;inset:0 auto 0 0;width:var(--vms-portal-sidebar-w);z-index:2147482001;
-  display:flex;flex-direction:column;padding:0 0 14px;overflow:hidden;scrollbar-width:none;
+.vp-brand{display:flex;align-items:center;flex:none}
+.vp-nav{display:flex;align-items:center;gap:4px;margin-left:8px;min-width:0}
+#vmsCanonicalPortalTopbar .vp-nav>button,#vmsCanonicalPortalTopbar .vp-more-wrap>button{box-shadow:none!important;display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 16px;border-radius:12px;border:0;background:transparent;color:var(--muted);font:600 14.5px/1 var(--body);cursor:pointer;white-space:nowrap}
+#vmsCanonicalPortalTopbar .vp-nav>button:hover,#vmsCanonicalPortalTopbar .vp-more-wrap>button:hover{color:var(--ink)}
+#vmsCanonicalPortalTopbar .vp-nav>button[aria-current="page"],#vmsCanonicalPortalTopbar .vp-more-wrap>button[aria-current="page"]{background:var(--pri);color:var(--prifg)}
+.vp-more-wrap{position:relative}
+.vp-more-wrap>button .vp-ico{width:16px;height:16px}
+.vp-menu{position:absolute;top:calc(100% + 8px);left:0;min-width:230px;padding:8px;border-radius:18px;background:var(--surface);border:1px solid var(--line2);box-shadow:var(--shadow-lg);display:none;z-index:5}
+.vp-menu.open{display:grid}
+.vp-menu button,#vmsCanonicalPortalTopbar .vp-menu button{box-shadow:none!important;display:flex;align-items:center;gap:12px;min-height:46px;padding:0 12px;border-radius:12px;border:0;background:transparent;color:var(--ink);font:600 14.5px/1 var(--body);text-align:left;cursor:pointer}
+.vp-menu button:hover,.vp-menu button[aria-current="page"]{background:var(--tint)}
+.vp-badge{min-width:20px;height:20px;padding:0 6px;border-radius:99px;background:var(--red);color:#fff;font:700 11.5px/20px var(--body);text-align:center;margin-left:auto}
+.vp-nav>button .vp-badge{margin-left:2px}
+.vp-title{display:none;margin:0;font-family:var(--display);font-weight:700;font-size:1.05rem;letter-spacing:-.02em;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
+.vp-actions{margin-left:auto;display:flex;align-items:center;gap:8px}
+.vp-actions .vp-page-actions{display:flex!important;align-items:center;gap:8px;margin:0!important;padding:0!important;background:none!important;border:0!important}
+.vp-actions :is(.portal-sync,.status-chip,.sync-chip){display:none!important}
+.vp-actions .vp-page-actions>:not(.primary){display:none!important}
+.vp-nav{flex:1 1 auto;overflow:visible}
+.vp-me{display:flex;align-items:center;gap:10px;font-weight:600;font-size:14.5px;flex:none}
+.vp-name{max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vp-av{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(140deg,var(--navy),var(--blue));color:#fff!important;font:700 13px/1 var(--body);flex:none}
+.vp-ib{width:40px;height:40px;border-radius:12px;border:1px solid transparent;background:transparent;color:var(--ink);display:grid;place-items:center;cursor:pointer}
+.vp-ib:hover{border-color:var(--line2)}
+#vmsCanonicalPortalTopbar button:focus-visible,#vmsPortalTabBar button:focus-visible,#vpMoreSheet button:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+
+#vmsPortalTabBar{display:none}
+#vpMoreSheet{border:0;padding:0;background:transparent;color:var(--ink);max-width:none;max-height:none;width:100%;height:100%;margin:0;overflow:hidden;font-family:var(--body)}
+#vpMoreSheet::backdrop{background:rgba(0,26,41,.5);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.vp-sh{position:absolute;left:0;right:0;bottom:0;max-height:90%;overflow:auto;background:var(--surface);border-radius:26px 26px 0 0;padding:12px 20px calc(24px + env(safe-area-inset-bottom,0px));box-shadow:0 -20px 60px rgba(0,0,0,.35);border:1px solid var(--line);border-bottom:0;animation:vpShIn .32s cubic-bezier(.2,.9,.2,1) both}
+@keyframes vpShIn{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+.vp-grab{width:44px;height:5px;border-radius:9px;background:var(--line2);margin:0 auto 14px}
+.vp-sh-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.vp-sh-hd h3{margin:0;font-family:var(--display);font-size:1.2rem;letter-spacing:-.02em}
+.vp-x{width:44px;height:44px;border-radius:50%;background:var(--surface2);border:1px solid var(--line);display:grid;place-items:center;color:var(--ink);cursor:pointer}
+.vp-more-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.vp-more-grid button,#vpMoreSheet .vp-more-grid button{box-shadow:none!important;display:flex;align-items:center;gap:12px;padding:14px;min-height:60px;border-radius:16px;background:var(--surface2);border:1px solid var(--line);font:600 14.5px/1.2 var(--body);color:var(--ink);text-align:left;cursor:pointer}
+.vp-more-grid button[aria-current="page"]{background:var(--pri);color:var(--prifg);border-color:var(--pri)}
+.vp-sh-foot{display:flex;align-items:center;gap:12px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+.vp-sh-foot b{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vp-pill{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border-radius:12px;border:1px solid var(--line2);background:var(--surface);color:var(--ink);font:600 14px/1 var(--body);cursor:pointer}
+
+@media (max-width:1180px) and (min-width:1000px){.vp-name{display:none}#vmsCanonicalPortalTopbar .vp-nav>button,#vmsCanonicalPortalTopbar .vp-more-wrap>button{box-shadow:none!important;padding:0 12px}}
+@media (max-width:999px){
+  body.vms-portal-canonical{padding:calc(64px + 16px + env(safe-area-inset-top,0px)) 16px calc(100px + env(safe-area-inset-bottom,0px))!important}
+  #vmsCanonicalPortalTopbar{min-height:calc(64px + env(safe-area-inset-top,0px));padding:env(safe-area-inset-top,0px) 16px 0;gap:10px}
+  .vp-nav,.vp-name,.vp-me .vp-ib{display:none}
+  .vp-title{display:block}
+  .vp-logo{height:30px}
+  .vp-actions .vp-page-actions>:not(.primary){display:none!important}
+  .vp-actions .vp-page-actions .btn{min-height:40px!important;padding:0 12px!important;font-size:13.5px!important}
+  #vmsPortalTabBar{position:fixed;left:0;right:0;bottom:0;z-index:2147482000;display:grid;grid-template-columns:repeat(5,1fr);padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--line);font-family:var(--body)}
+  #vmsPortalTabBar button,body.vms-portal-canonical #vmsPortalTabBar button{box-shadow:none!important;position:relative;display:grid;justify-items:center;align-content:center;gap:3px;min-height:56px;padding:6px 2px;border:0;background:transparent;border-radius:12px;color:var(--muted);font:600 12.5px/1.2 var(--body);cursor:pointer}
+  #vmsPortalTabBar [aria-current="page"]{color:var(--ink)}
+  #vmsPortalTabBar [aria-current="page"] .vp-ico{stroke-width:2.3}
+  #vmsPortalTabBar [aria-current="page"]::before{content:"";position:absolute;top:2px;width:26px;height:3px;border-radius:9px;background:var(--pri)}
 }
-#vmsCanonicalPortalSidebar::-webkit-scrollbar{display:none}
-.vp-brand{flex:0 0 auto;display:flex;align-items:center;gap:10px;min-height:60px;padding:0 16px}
-.vp-brand img{display:block;width:auto;height:32px;flex:0 0 auto;object-fit:contain;object-position:left center}
-.vp-brand strong{display:block;font-size:13px;font-weight:700;line-height:1.2}
-.vp-brand span{display:block;margin-top:2px;font-size:9px;font-weight:700;letter-spacing:.1em}
-.vms-portal-nav{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;padding:14px 10px 4px;display:flex;flex-direction:column;gap:2px}
-.vms-portal-nav::-webkit-scrollbar{display:none}
-.vms-portal-nav button{
-  display:flex;align-items:center;gap:9px;min-height:40px;padding:8px 10px;
-  border:0;border-radius:12px;background:transparent;font-size:13.5px;font-weight:600;line-height:1.2;
-  text-align:left;cursor:pointer;transition:background .15s,color .15s;width:100%;
+@media (max-width:420px){.vp-actions{display:none}}
+@media (min-width:1000px){
+  .vp-sh{left:50%;right:auto;bottom:auto;top:50%;transform:translate(-50%,-50%);width:min(560px,94vw);border-radius:26px;border-bottom:1px solid var(--line);animation:none}
+  .vp-grab{display:none}
 }
-.vms-portal-nav button svg{flex:0 0 16px;width:16px;height:16px}
-.vms-portal-badge-host{margin-left:auto}
-.vms-portal-badge{min-width:20px;height:20px;padding:0 5px;border-radius:99px;background:#C1121F;color:#fff;font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
-.vp-foot{flex:0 0 auto;padding:10px 14px 4px;display:flex;align-items:center;gap:8px}
-.vp-theme-btn{width:36px;height:36px;border-radius:10px;border:1px solid var(--line2,rgba(0,48,73,.18));background:transparent;display:grid;place-items:center;cursor:pointer;flex:none;margin-left:auto}
-.vp-theme-btn svg{width:18px;height:18px}
-/* phone bottom tab bar */
-#vmsPortalTabBar{
-  display:none;position:fixed;bottom:0;left:0;right:0;z-index:2147482001;
-  height:64px;padding-bottom:env(safe-area-inset-bottom,0px);
-  flex-direction:row;align-items:stretch;
-}
-#vmsPortalTabBar button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:0;background:transparent;font-size:10.5px;font-weight:600;padding:4px 2px;cursor:pointer}
-#vmsPortalTabBar button svg{width:22px;height:22px}
-#vmsCanonicalPortalBackdrop{display:none;position:fixed;inset:0;z-index:2147482000;background:rgba(0,26,41,.4)}
-#vmsCanonicalPortalBackdrop.show{display:block}
-@media (max-width:800px){
-  body.vms-portal-canonical{padding:calc(var(--vms-portal-topbar-h) + 16px) 16px 80px 16px!important}
-  #vmsCanonicalPortalTopbar{padding-left:16px}
-  .vp-menu-btn{display:inline-flex}
-  #vmsCanonicalPortalSidebar{transform:translateX(calc(0px - var(--vms-portal-sidebar-w)));transition:transform .25s cubic-bezier(.4,0,.2,1)}
-  #vmsCanonicalPortalSidebar.open{transform:none}
-  #vmsPortalTabBar{display:flex}
-}
-[data-vms-fs="1"]{font-size:11px!important}
-[data-vms-cf="1"]{color:var(--vms-cf,inherit)!important}
-:root{--vms-cf:inherit}
+@media (prefers-reduced-motion:reduce){.vp-sh{animation:none}}

@@ -14,6 +14,118 @@
 @media(max-width:540px){.toolbar{grid-template-columns:1fr}.toolbar input{grid-column:auto}.context-grid{grid-template-columns:1fr}.note-compose{grid-template-columns:1fr}.save-row,.convert-box,.portal-row{align-items:stretch;flex-direction:column}.save-row .btn,.convert-box .btn,.portal-row .btn{width:100%}}
 </style>
 <link rel="stylesheet" href="/assets/vms-admin-shell.css">
+<style id="vms-leads-preview">
+/* Leads — approved preview layout */
+.sr-only,.lp-hidden{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);border:0;white-space:nowrap}
+.lp-ico{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.lp-tools{display:grid;gap:10px;margin:0 0 14px}
+.lp-search{display:flex;align-items:center;gap:10px;min-height:46px;padding:0 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line2);color:var(--muted)}
+.lp-search:focus-within{border-color:var(--ink);box-shadow:0 0 0 4px rgba(102,155,188,.3)}
+body.vms-admin-canonical .lp-search #searchInput{border:0!important;box-shadow:none!important;padding:0!important;min-height:44px!important;background:transparent!important}
+.lp-pills{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px 0}.lp-pills::-webkit-scrollbar{display:none}
+.lp-pill{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:99px;background:var(--surface);border:1px solid var(--line2);color:var(--ink);font:600 14.5px/1 var(--body);white-space:nowrap;cursor:pointer;transition:all .18s}
+.lp-pill em{font-style:normal;font-size:13px;opacity:.7}
+.lp-pill[aria-pressed="true"]{background:var(--pri);color:var(--prifg);border-color:var(--pri)}
+.lp-pill.due[aria-pressed="false"] em{color:var(--badfg);opacity:1}
+body.vms-admin-canonical .crm{display:grid!important;gap:14px;grid-template-columns:1fr!important;align-items:start}
+.lp-meta{margin:0 0 8px;font-size:13px;color:var(--muted)}
+body.vms-admin-canonical .lead-list{display:grid;gap:10px;background:transparent!important;border:0!important}
+body.vms-admin-canonical .lead-row{display:grid!important;grid-template-columns:auto minmax(0,1fr) auto!important;gap:12px!important;align-items:center;width:100%;text-align:left;padding:14px!important;border-radius:18px!important;background:var(--surface)!important;border:1px solid var(--line)!important;box-shadow:none!important;cursor:pointer;transition:border-color .18s,transform .15s,box-shadow .18s}
+body.vms-admin-canonical .lead-row:hover{border-color:var(--line2)!important}
+body.vms-admin-canonical .lead-row.active{border-color:var(--ink)!important;box-shadow:0 0 0 1px var(--ink)!important;background:var(--surface)!important}
+body.vms-admin-canonical .lead-row .lp-av{color:#fff!important;font-size:15px!important}
+.lp-av{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(140deg,var(--navy),var(--blue));color:#fff;font:700 15px/1 var(--body)}
+body.vms-admin-canonical .lead-main{min-width:0}
+body.vms-admin-canonical .lead-main>strong{display:block;font:600 15px/1.3 var(--body)!important;color:var(--ink)!important}
+body.vms-admin-canonical .lead-main>span{display:block;color:var(--muted)!important;font-size:13.5px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body.vms-admin-canonical .lead-meta{display:none!important}
+body.vms-admin-canonical .lead-side{display:grid;justify-items:end;gap:4px;font-size:13px;color:var(--muted)}
+body.vms-admin-canonical .lead-side>strong{display:none}
+body.vms-admin-canonical .lead-side>span{font-size:13px!important;color:var(--muted)!important}
+.lp-detail{position:relative;padding:18px!important}
+.lp-close{display:none}
+body.vms-admin-canonical .lead-header{display:grid;gap:12px;margin-bottom:14px}
+body.vms-admin-canonical .lead-identity h2{font-family:var(--display)!important;font-size:1.1rem!important;letter-spacing:-.02em!important;margin:0!important;color:var(--ink)!important}
+body.vms-admin-canonical .lead-identity p{margin:4px 0 0!important;color:var(--muted)!important;font-size:13.5px!important}
+body.vms-admin-canonical .contact-actions{justify-content:flex-start!important;display:flex;gap:8px;flex-wrap:wrap}
+body.vms-admin-canonical .contact-actions a{display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border-radius:10px;border:1px solid var(--line2);background:var(--surface);color:var(--ink)!important;font:600 14px/1 var(--body);text-decoration:none}
+body.vms-admin-canonical .contact-actions a:hover{border-color:var(--ink)}
+body.vms-admin-canonical .context-grid{display:grid;grid-template-columns:1fr;gap:0;margin-bottom:16px}
+body.vms-admin-canonical .context-grid .context{display:flex!important;justify-content:space-between;gap:12px;padding:11px 0!important;background:transparent!important;border:0!important;border-bottom:1px solid var(--line)!important;border-radius:0!important}
+body.vms-admin-canonical .context span{color:var(--muted);font-size:14.5px}
+body.vms-admin-canonical .context strong{font-weight:600;font-size:14.5px;text-align:right}
+body.vms-admin-canonical .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+body.vms-admin-canonical .detail-grid .full{grid-column:1/-1}
+body.vms-admin-canonical .save-row{margin:14px 0 4px}
+body.vms-admin-canonical .sections{display:grid;gap:14px;margin-top:14px}
+body.vms-admin-canonical .subhead strong{font-family:var(--display);font-size:.98rem;letter-spacing:-.02em}
+body.vms-admin-canonical .subhead span{display:block;font-size:13.5px;color:var(--muted);margin-top:2px}
+body.vms-admin-canonical .convert-box{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:16px;border-radius:16px;background:var(--tint);border:0}
+body.vms-admin-canonical .convert-box strong{display:block;font-weight:600}
+body.vms-admin-canonical .convert-box span{display:block;font-size:13.5px;color:var(--muted)}
+body.vms-admin-canonical .note-compose{display:grid;gap:10px}
+@media (min-width:1000px){
+  body.vms-admin-canonical .crm{grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr)!important;gap:18px}
+  .lp-detail{position:sticky!important;top:calc(68px + 24px);max-height:calc(100vh - 116px);overflow:auto!important}
+  body.vms-admin-canonical .lead-row:hover{transform:translateY(-1px);box-shadow:var(--shadow)!important}
+}
+@media (max-width:999px){
+  .lp-detail{position:fixed!important;left:0;right:0;bottom:0;top:auto;z-index:2147482600;max-height:90vh;overflow:auto!important;border-radius:26px 26px 0 0!important;padding:24px 20px calc(24px + env(safe-area-inset-bottom,0px))!important;box-shadow:0 -20px 60px rgba(0,0,0,.35)!important;transform:translateY(100vh);visibility:hidden;transition:transform .32s cubic-bezier(.2,.9,.2,1),visibility 0s linear .32s}
+  body.lp-open .lp-detail{transform:none;visibility:visible;transition:transform .32s cubic-bezier(.2,.9,.2,1)}
+  body.lp-open::after{content:"";position:fixed;inset:0;z-index:2147482550;background:rgba(0,26,41,.5)}
+  .lp-close{display:grid;place-items:center;position:absolute;top:14px;right:14px;width:44px;height:44px;border-radius:50%;background:var(--surface2);border:1px solid var(--line);color:var(--ink);cursor:pointer;z-index:2}
+  body.vms-admin-canonical .lead-header{padding-right:52px}
+  body.vms-admin-canonical .detail-grid{grid-template-columns:1fr}
+  body.vms-admin-canonical #detailEmpty{display:none!important}
+}
+</style>
+<script id="vms-leads-preview-js">
+(()=>{
+  const byId=id=>document.getElementById(id);
+  const STAGES=[['all','All'],['new','New'],['contacted','Contacted'],['qualified','Qualified'],['won','Won'],['lost','Lost']];
+  const ini=n=>String(n||'?').split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+  const isPhone=()=>matchMedia('(max-width:999px)').matches;
+  function counts(){
+    const rows=[...document.querySelectorAll('#leadList .lead-row')];
+    const total=Number((byId('listMeta').textContent.match(/of (\d+)/)||[])[1]);
+    return {total:isNaN(total)?rows.length:total};
+  }
+  function pills(){
+    const sf=byId('stageFilter').value,af=byId('attentionFilter').value;
+    const n={new:+byId('statNew').textContent||0,qualified:+byId('statQualified').textContent||0,won:+byId('statWon').textContent||0,due:+byId('statAttention').textContent||0};
+    const c=counts();
+    byId('stagePills').innerHTML=STAGES.map(([v,l])=>'<button class="lp-pill" type="button" data-stage="'+v+'" aria-pressed="'+(af==='all'&&sf===v)+'">'+l+(v==='all'?' <em>'+c.total+'</em>':n[v]!=null?' <em>'+n[v]+'</em>':'')+'</button>').join('')+
+      '<button class="lp-pill due" type="button" data-due aria-pressed="'+(af==='attention')+'">Follow-up due <em>'+n.due+'</em></button>';
+  }
+  function decorate(){
+    document.querySelectorAll('#leadList .lead-row').forEach(r=>{
+      if(r.querySelector('.lp-av'))return;
+      const name=r.querySelector('.lead-main>strong')?.textContent||'';
+      const av=document.createElement('span');av.className='lp-av';av.setAttribute('aria-hidden','true');av.textContent=ini(name);r.prepend(av);
+      const side=r.querySelector('.lead-side');const badge=r.querySelector('.lead-meta .badge');
+      if(side&&badge){const b=badge.cloneNode(true);side.prepend(b)}
+    });
+    pills();
+  }
+  function setFilter(stage,due){
+    byId('stageFilter').value=stage;byId('attentionFilter').value=due?'attention':'all';
+    byId('stageFilter').dispatchEvent(new Event('change'));byId('attentionFilter').dispatchEvent(new Event('change'));pills();
+  }
+  function closeSheet(){document.body.classList.remove('lp-open')}
+  document.addEventListener('DOMContentLoaded',()=>{
+    const q=new URLSearchParams(location.search);const st=q.get('stage');
+    if(st&&STAGES.some(([v])=>v===st))byId('stageFilter').value=st;
+    byId('stagePills').addEventListener('click',e=>{const b=e.target.closest('.lp-pill');if(!b)return;if(b.hasAttribute('data-due'))setFilter('all',byId('attentionFilter').value!=='attention');else setFilter(b.dataset.stage,false)});
+    byId('leadList').addEventListener('click',e=>{if(e.target.closest('[data-lead]')&&isPhone())setTimeout(()=>{document.body.classList.add('lp-open');byId('leadDetail').scrollTop=0},0)});
+    byId('leadDetailClose').addEventListener('click',closeSheet);
+    document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet()});
+    document.addEventListener('click',e=>{if(document.body.classList.contains('lp-open')&&!e.target.closest('#leadDetail')&&!e.target.closest('[data-lead]'))closeSheet()});
+    const want=q.get('lead');
+    new MutationObserver(()=>{decorate();if(want&&!decorate.done){const b=document.querySelector('[data-lead="'+CSS.escape(want)+'"]');if(b){decorate.done=true;b.click()}}}).observe(byId('leadList'),{childList:true});
+    pills();
+  });
+})();
+</script>
 </head>
 <body>
 <div class="shell">
@@ -27,16 +139,19 @@
 <main class="main">
 <header class="topbar">
   <div class="topbar-title"><button class="btn mobile-menu" id="mobileMenuBtn" type="button" aria-label="Open admin menu" aria-expanded="false">☰</button><div class="title-copy"><small>VMS ADMIN · PHASE 5</small><strong>CRM / Leads</strong></div></div>
-  <div class="top-actions"><button class="btn" id="refreshBtn">Refresh</button><a class="btn primary" href="clients.html">Client Directory</a></div>
+  <div class="top-actions"><button class="btn" id="refreshBtn">Refresh</button><a class="btn primary" href="clients.html">Clients</a></div>
 </header>
 <section class="content">
-  <div class="intro"><div><div class="eyebrow">LEAD → CLIENT → ONBOARDING</div><h1>Turn inquiries into active clients.</h1><p>Website inquiries flow into one CRM. Track follow-ups, qualify leads, select services, convert without duplicate client records, and complete onboarding from the same workspace.</p></div></div>
-  <div class="stats"><div class="stat"><span>New Leads</span><strong id="statNew">0</strong><small>Not contacted yet</small></div><div class="stat attn"><span>Needs Attention</span><strong id="statAttention">0</strong><small>Overdue follow-ups</small></div><div class="stat"><span>Qualified</span><strong id="statQualified">0</strong><small>Ready for next step</small></div><div class="stat"><span>Converted</span><strong id="statWon">0</strong><small>Won / client created</small></div></div>
-  <div class="toolbar"><input id="searchInput" type="search" placeholder="Search business, contact, email, phone…"><select id="stageFilter"><option value="all">All stages</option><option value="new">New</option><option value="contacted">Contacted</option><option value="qualified">Qualified</option><option value="won">Won</option><option value="lost">Lost</option></select><select id="attentionFilter"><option value="all">All follow-ups</option><option value="attention">Needs Attention</option><option value="upcoming">Upcoming follow-up</option><option value="none">No follow-up set</option></select><button class="btn" id="clearFilterBtn">Clear</button></div>
+  <div class="lp-tools">
+    <label class="lp-search"><span class="sr-only">Search leads</span><svg class="lp-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16zM21 21l-4.3-4.3"/></svg><input id="searchInput" type="search" placeholder="Search leads"></label>
+    <div class="lp-pills" role="group" aria-label="Filter by stage" id="stagePills"></div>
+    <div class="lp-hidden" aria-hidden="true"><select id="stageFilter" tabindex="-1"><option value="all">All stages</option><option value="new">New</option><option value="contacted">Contacted</option><option value="qualified">Qualified</option><option value="won">Won</option><option value="lost">Lost</option></select><select id="attentionFilter" tabindex="-1"><option value="all">All follow-ups</option><option value="attention">Needs Attention</option><option value="upcoming">Upcoming follow-up</option><option value="none">No follow-up set</option></select><button id="clearFilterBtn" type="button" tabindex="-1">Clear</button><span id="statNew">0</span><span id="statAttention">0</span><span id="statQualified">0</span><span id="statWon">0</span></div>
+  </div>
   <div class="crm">
-    <section class="card"><div class="card-head"><div><h2>Lead Pipeline</h2><p id="listMeta">Loading inquiries…</p></div></div><div id="leadList" class="lead-list"></div></section>
-    <section class="card">
-      <div id="detailEmpty" class="detail-empty"><div class="empty"><strong>Select a lead</strong>Choose an inquiry from the pipeline to manage follow-up, services, notes, conversion, and onboarding.</div></div>
+    <section class="lp-list" aria-label="Leads"><p id="listMeta" class="lp-meta">Loading leads…</p><div id="leadList" class="lead-list"></div></section>
+    <section class="card lp-detail" id="leadDetail" aria-label="Lead details">
+      <button class="lp-close" id="leadDetailClose" type="button" aria-label="Close lead"><svg class="lp-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      <div id="detailEmpty" class="detail-empty"><div class="empty"><strong>Pick a lead</strong>Its details, notes and next step show here.</div></div>
       <div id="detailWrap" class="detail-wrap"><div class="card-body">
         <div class="lead-header"><div class="lead-identity"><h2 id="leadBusiness">—</h2><p id="leadContact">—</p></div><div class="contact-actions"><a id="emailLink" href="#">Email</a><a id="phoneLink" href="#">Call</a><a id="websiteLink" href="#" target="_blank" rel="noopener">Website</a></div></div>
         <div class="context-grid"><div class="context"><span>Source</span><strong id="leadSource">—</strong></div><div class="context"><span>Submitted</span><strong id="leadCreated">—</strong></div><div class="context"><span>Goal</span><strong id="leadGoal">—</strong></div></div>
@@ -50,12 +165,12 @@
           <div class="field full"><label for="internalSummary">Internal summary</label><textarea id="internalSummary" maxlength="4000" placeholder="What matters about this opportunity, decision-maker, budget, priorities, next step…"></textarea></div>
           <div class="field full"><label>Original inquiry</label><textarea id="originalMessage" readonly></textarea></div>
         </div>
-        <div class="save-row"><button class="btn primary" id="saveLeadBtn">Save Lead</button></div>
+        <div class="save-row"><button class="btn primary" id="saveLeadBtn">Save changes</button></div>
         <div class="sections">
-          <div class="subcard"><div class="subhead"><div><strong>Services / Packages</strong><span>Choose what this lead is interested in before conversion.</span></div></div><div class="subbody"><div id="serviceGrid" class="service-grid"></div></div></div>
-          <div class="subcard"><div class="subhead"><div><strong>Internal Notes & Activity</strong><span>Private VMS history for this opportunity.</span></div></div><div class="subbody"><div class="note-compose"><textarea id="noteInput" maxlength="5000" placeholder="Add a private note…"></textarea><button class="btn" id="addNoteBtn">Add Note</button></div><div id="timeline" class="timeline"></div></div></div>
-          <div id="convertSection" class="convert-box"><div><strong>Ready to become a client?</strong><span>Conversion reuses a client with the same email, carries over selected services, and creates the onboarding checklist.</span></div><button class="btn green" id="convertBtn">Convert to Client</button></div>
-          <div id="onboardingSection" class="subcard onboarding"><div class="subhead"><div><strong>Client Onboarding</strong><span id="onboardingMeta">In progress</span></div><a class="btn small" id="openClientBtn" href="clients.html">Open Client</a></div><div class="subbody"><div class="progress"><span id="onboardingProgress"></span></div><div id="taskList" class="task-list"></div><div class="portal-row"><div><strong>Portal welcome / invitation</strong><span id="inviteStatus">Not sent yet.</span></div><button class="btn primary" id="inviteBtn">Send Portal Invite</button></div></div></div>
+          <div class="subcard"><div class="subhead"><div><strong>Interested in</strong></div></div><div class="subbody"><div id="serviceGrid" class="service-grid"></div></div></div>
+          <div class="subcard"><div class="subhead"><div><strong>Notes</strong></div></div><div class="subbody"><div class="note-compose"><textarea id="noteInput" maxlength="5000" placeholder="Add a private note…"></textarea><button class="btn" id="addNoteBtn">Add note</button></div><div id="timeline" class="timeline"></div></div></div>
+          <div id="convertSection" class="convert-box"><div><strong>Ready to become a client?</strong><span>Their selected services and contact details carry over.</span></div><button class="btn green" id="convertBtn">Mark as won</button></div>
+          <div id="onboardingSection" class="subcard onboarding"><div class="subhead"><div><strong>Onboarding</strong><span id="onboardingMeta">In progress</span></div><a class="btn small" id="openClientBtn" href="clients.html">Open client</a></div><div class="subbody"><div class="progress"><span id="onboardingProgress"></span></div><div id="taskList" class="task-list"></div><div class="portal-row"><div><strong>Portal welcome / invitation</strong><span id="inviteStatus">Not sent yet.</span></div><button class="btn primary" id="inviteBtn">Send portal invite</button></div></div></div>
         </div>
       </div></div>
     </section>

@@ -1,0 +1,154 @@
+/* VMS shared component skin — approved Oct 2026 preview.
+   Used by both Admin (vms-admin-shell.js) and Client Portal (vms-portal-shell.js); loaded last so it wins over legacy page styles. */
+/* ===== 3. Shared components on every tool page =====
+   Legacy pages use their own class names. These rules restyle them into the approved preview language. */
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :where(button,input,select,textarea){font-family:var(--body)}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.app,.shell,.layout,.page-shell){display:block!important;min-height:0!important;width:100%!important;grid-template-columns:none!important;background:transparent!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.main,.page,.app>.main,.shell>.main,main){margin:0!important;width:100%!important;max-width:none!important;min-width:0!important;min-height:0!important;background:transparent!important;padding-left:0!important;padding-right:0!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.content,.page-content,.wrap,.container,.workspace){max-width:1240px!important;width:100%!important;margin:0 auto!important;padding:0!important;background:transparent!important}
+@keyframes vmsViewIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.drawer-backdrop,.sidebar-backdrop,.mobile-menu,#mobileMenuBtn,.mobile-head,.mobile-nav){display:none!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+
+/* Page intros: one calm headline, no eyebrow labels */
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.eyebrow,.kicker,.overline,.tool-kicker,.overview-copy>small,.intro small.eyebrow,.page-head .eyebrow,.section-kicker,.hero-kicker){display:none!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.intro,.overview,.page-head,.hero,.page-hero,.head,.welcome){background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;margin:6px 0 18px!important;border-radius:0!important;color:var(--ink)!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.intro,.overview,.page-head,.page-hero,.welcome) :is(h1,h2){margin:0!important;font-family:var(--display)!important;font-weight:700!important;font-size:clamp(1.35rem,3.2vw,2rem)!important;letter-spacing:-.03em!important;line-height:1.12!important;color:var(--ink)!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.intro,.overview,.page-head,.page-hero,.welcome) p{margin:4px 0 0!important;max-width:62ch;color:var(--muted)!important;font-size:15px!important;line-height:1.55!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) .overview-meta{display:none!important}
+
+/* Headings inside content */
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.content,main) :is(h1,h2,h3){color:var(--ink);letter-spacing:-.02em}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.card,.panel,.section-card,.glass-section,.detail-card,.subcard,.box,.surface,.tile) :is(h2,h3){font-family:var(--display)!important;font-weight:700!important;font-size:.98rem!important;line-height:1.3!important;letter-spacing:-.02em!important;color:var(--ink)!important;margin:0!important}
+
+/* Cards */
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.card,.panel,.section-card,.glass-section,.detail-card,.box,.surface,.client-detail,.billing-detail,.toolbar,.filters,.filter-bar){
+  background:var(--surface)!important;border:1px solid var(--line)!important;border-radius:20px!important;box-shadow:var(--shadow)!important;color:var(--ink)!important;overflow:visible}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.card,.panel,.section-card,.glass-section){overflow:hidden}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.subcard,.inner-card,.mini-card,.context,.info-item,.kv-item,.meta-row,.money-card,.price-box){background:var(--surface2)!important;border:1px solid var(--line)!important;border-radius:14px!important;box-shadow:none!important;color:var(--ink)!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) .money-card *{color:inherit!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.card-head,.panel-head,.section-head,.subhead){display:flex;align-items:center;justify-content:space-between;gap:10px;padding:18px 18px 10px!important;border:0!important;background:transparent!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.card-body,.panel-body,.section-body,.subbody){padding:8px 18px 18px!important;background:transparent!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.panel-title,.card-head,.section-head)>:is(div,span)>:is(small,p),
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.panel-title,.card-title) :is(small,p),
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.card-head,.panel-head,.section-head)>div>p{display:none!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) .panel-title strong{display:block;font-family:var(--display)!important;font-weight:700!important;font-size:.98rem!important;letter-spacing:-.02em!important;color:var(--ink)!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.panel-link,.card-link,.see-all,a.link){font-size:14px!important;font-weight:600!important;color:var(--ink)!important;text-decoration:underline!important;text-underline-offset:3px;background:none!important;border:0!important;padding:8px 0!important;letter-spacing:0!important}
+
+/* KPI tiles */
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.stats,.kpis,.stat-grid,.summary-grid,.metrics,.status-strip){display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:14px!important;margin:0 0 18px!important;background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.stat,.kpi,.work-stat,.integration-stat,.client-stat,.metric,.summary-card){
+  background:var(--surface)!important;border:1px solid var(--line)!important;border-top:1px solid var(--line)!important;border-left:1px solid var(--line)!important;border-radius:18px!important;padding:14px!important;
+  display:grid!important;gap:6px!important;align-content:start;box-shadow:var(--shadow)!important;min-width:0;color:var(--ink)!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.stat,.kpi,.work-stat,.integration-stat,.client-stat,.metric,.summary-card)>:is(span,label,.stat-label,.label,.l):first-child,
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.stat-label,.kpi-label,.kpi-top>span){font-size:13px!important;font-weight:500!important;color:var(--muted)!important;letter-spacing:0!important;text-transform:none!important;margin:0!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.stat,.kpi,.work-stat,.integration-stat,.client-stat,.metric,.summary-card) :is(strong,.stat-value,.kpi-value,.value,.v,b.n){display:block;font-family:var(--display)!important;font-weight:700!important;font-size:clamp(1.25rem,2.4vw,1.75rem)!important;letter-spacing:-.04em!important;line-height:1.1!important;color:var(--ink)!important;margin:0!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.stat,.kpi,.work-stat,.integration-stat,.client-stat,.metric,.summary-card) :is(small,.change,.sub,.d){font-size:13px!important;color:var(--muted)!important;margin:0!important;min-height:0!important;line-height:1.4!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) .stat.attn strong,:is(body.vms-admin-canonical,body.vms-portal-canonical) .stat.red strong{color:var(--red)!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.pulse,.mini-stats){display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;background:transparent!important;border:0!important;box-shadow:none!important;margin:0 0 18px!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.pulse-item,.mini-stat){background:var(--surface2)!important;border:1px solid var(--line)!important;border-radius:14px!important;padding:12px 14px!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.pulse-item,.mini-stat) span{font-size:13px!important;color:var(--muted)!important;font-weight:500!important;letter-spacing:0!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.pulse-item,.mini-stat) strong{font-family:var(--display)!important;font-size:1.05rem!important;letter-spacing:-.03em!important;color:var(--ink)!important}
+
+/* Buttons */
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.btn,.button,.vms-button,button.primary,button.secondary,.btn-primary,.btn-secondary,.action-btn,.ghost-btn){
+  display:inline-flex!important;align-items:center;justify-content:center;gap:8px;min-height:44px!important;padding:0 18px!important;border-radius:12px!important;
+  border:1px solid var(--line2)!important;background:var(--surface)!important;color:var(--ink)!important;
+  font:600 14.5px/1 var(--body)!important;letter-spacing:0!important;text-transform:none!important;white-space:nowrap;text-decoration:none!important;box-shadow:none!important;
+  transition:transform .15s,background .18s,border-color .18s,box-shadow .18s!important;cursor:pointer}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.btn,.button,.vms-button):hover{border-color:var(--ink)!important;transform:none!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.btn,.button,.vms-button):active{transform:scale(.97)!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.btn.primary,.btn.green,.btn.blue,.btn.navy,.button.primary,.btn-primary,button.primary,.vms-button.primary,.btn.dark,.btn.solid){background:var(--pri)!important;border-color:var(--pri)!important;color:var(--prifg)!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.btn.primary,.btn-primary,button.primary):hover{box-shadow:0 8px 20px rgba(0,48,73,.25)!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.btn.red,.btn.danger,.btn.danger-outline,.btn.delete,.btn-danger){background:transparent!important;border-color:rgba(193,18,31,.4)!important;color:var(--badfg)!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.btn.red,.btn.danger,.btn.danger-outline,.btn.delete,.btn-danger):hover{background:var(--red)!important;color:#fff!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.btn.small,.btn.sm,.btn.mini,.btn.tiny,.btn.compact){min-height:38px!important;padding:0 14px!important;font-size:14px!important;border-radius:10px!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.btn.subtle,.btn.ghost,.btn.light,.btn.secondary,.btn.outline){background:var(--surface)!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.btn,.button)[disabled]{opacity:.45!important;pointer-events:none}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.row-actions,.btn-row,.actions,.modal-foot-right,.form-actions){gap:10px!important;flex-wrap:wrap}
+
+/* Fields */
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.field,.form-field,.control,.fld){display:grid;gap:6px}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.field,.form-field,.control,.fld)>:is(label,span:first-child,.field-label,.label),
+:is(body.vms-admin-canonical,body.vms-portal-canonical) .field-label{font-size:13.5px!important;font-weight:600!important;color:var(--ink)!important;letter-spacing:0!important;text-transform:none!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.content,main,.modal,dialog) :is(input[type="text"],input[type="email"],input[type="search"],input[type="tel"],input[type="url"],input[type="number"],input[type="date"],input[type="time"],input[type="password"],input:not([type]),select,textarea){
+  width:100%;min-height:46px!important;padding:0 14px!important;border-radius:12px!important;background:var(--surface)!important;border:1px solid var(--line2)!important;
+  color:var(--ink)!important;font:400 15px/1.4 var(--body)!important;box-shadow:none!important;transition:border-color .2s,box-shadow .2s}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.content,main,.modal,dialog) textarea{padding:12px 14px!important;min-height:110px!important;line-height:1.5!important;resize:vertical}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.content,main,.modal,dialog) :is(input,select,textarea):focus{outline:none!important;border-color:var(--ink)!important;box-shadow:0 0 0 4px rgba(102,155,188,.3)!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.field-help,.help,.hint){font-size:13px!important;color:var(--muted)!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.form-grid,.fields){gap:14px!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) input[type="checkbox"],:is(body.vms-admin-canonical,body.vms-portal-canonical) input[type="radio"]{accent-color:var(--navy);width:18px;height:18px}
+
+/* Chips */
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.badge,.status-chip,.chip,.service-badge,.status-badge,.tag,.pill-badge,.state){
+  display:inline-flex!important;align-items:center;gap:6px;padding:4px 10px!important;border-radius:99px!important;border:0!important;
+  font:600 13px/1.3 var(--body)!important;letter-spacing:0!important;text-transform:none!important;white-space:nowrap;min-height:0!important;background:var(--tint)!important;color:var(--ink)!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.badge,.chip,.status-chip,.status-badge,.tag,.state):is(.green,.ok,.success,.active,.paid,.live,.published,.won){background:var(--okbg)!important;color:var(--ok)!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.badge,.chip,.status-chip,.status-badge,.tag,.state):is(.red,.bad,.danger,.failed,.overdue,.urgent,.error,.suspended){background:var(--badbg)!important;color:var(--badfg)!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.badge,.chip,.status-chip,.status-badge,.tag,.state):is(.orange,.amber,.warning,.warn,.pending,.grace,.due,.yellow){background:var(--warmbg)!important;color:var(--warmfg)!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.badge,.chip,.status-chip,.status-badge,.tag,.state):is(.gray,.grey,.muted,.archived,.draft,.inactive){background:transparent!important;box-shadow:inset 0 0 0 1px var(--line2)!important;color:var(--muted)!important}
+
+/* Filter pills and tabs */
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.pills,.filters-row,.chips,.segmented,.filter-pills){display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px 0}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.pill,.filter-pill,.seg){display:inline-flex!important;align-items:center;gap:8px;min-height:44px!important;padding:0 16px!important;border-radius:99px!important;background:var(--surface)!important;border:1px solid var(--line2)!important;color:var(--ink)!important;font:600 14.5px/1 var(--body)!important;white-space:nowrap;letter-spacing:0!important;text-transform:none!important;cursor:pointer}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.pill,.filter-pill,.seg):is(.active,[aria-pressed="true"],[aria-selected="true"]){background:var(--pri)!important;color:var(--prifg)!important;border-color:var(--pri)!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.tabs,.tab-bar,.tablist,.manage-tabs,[role="tablist"]){display:flex!important;gap:6px!important;padding:4px!important;border-radius:14px!important;background:var(--surface2)!important;border:0!important;box-shadow:none!important;overflow-x:auto;scrollbar-width:none;margin-bottom:14px}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.tab,.manage-tab,[role="tab"]){flex:1 0 auto;min-height:40px!important;padding:0 14px!important;border:0!important;border-radius:10px!important;background:transparent!important;font:600 14px/1 var(--body)!important;color:var(--muted)!important;letter-spacing:0!important;text-transform:none!important;box-shadow:none!important;cursor:pointer;white-space:nowrap}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.tab,.manage-tab,[role="tab"]):is(.active,[aria-selected="true"]){background:var(--surface)!important;color:var(--ink)!important;box-shadow:0 2px 8px rgba(0,48,73,.12)!important}
+
+/* Lists, rows and feeds */
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.feed-row,.list-row,.lead-row,.client-row,.row-item,.lead-item,.client-item,.item-row){
+  display:grid;align-items:center;gap:12px;padding:14px!important;border-radius:18px!important;background:var(--surface)!important;border:1px solid var(--line)!important;color:var(--ink)!important;text-decoration:none;box-shadow:none!important;transition:border-color .18s,box-shadow .18s,transform .15s}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.feed-row,.list-row,.lead-row,.client-row,.row-item,.lead-item,.client-item,.item-row):hover{border-color:var(--line2)!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.feed-row,.list-row,.lead-row,.client-row,.lead-item,.client-item):is(.active,.selected,[aria-current="true"]){border-color:var(--ink)!important;box-shadow:0 0 0 1px var(--ink)!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.feed-row,.list-row,.lead-row,.client-row,.lead-item,.client-item) :is(strong,b,h3,h4){font-weight:600!important;color:var(--ink)!important;font-size:15px!important;font-family:var(--body)!important;letter-spacing:0!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.feed-row,.list-row,.lead-row,.client-row,.lead-item,.client-item) :is(small,span,p){color:var(--muted);font-size:13.5px}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.empty,.empty-state,.detail-empty>.empty){padding:34px 16px!important;text-align:center;color:var(--muted)!important;background:transparent!important;border:0!important;border-radius:0!important;font-size:14.5px!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.empty,.empty-state) strong{display:block;color:var(--ink)!important;font-weight:600!important;font-size:15px!important;margin-bottom:4px}
+
+/* Tables */
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.table-wrap,.table-scroll){overflow-x:auto;border:0!important;background:transparent!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.content,main) table{width:100%;border-collapse:collapse;font-size:14.5px;color:var(--ink);background:transparent}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.content,main) th{text-align:left;font:600 13px/1.4 var(--body)!important;color:var(--muted)!important;letter-spacing:0!important;text-transform:none!important;padding:10px 12px!important;border-bottom:1px solid var(--line)!important;background:transparent!important;white-space:nowrap}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.content,main) td{padding:13px 12px!important;border-bottom:1px solid var(--line)!important;background:transparent!important;vertical-align:middle;font-size:14.5px}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.content,main) tr:last-child td{border-bottom:0!important}
+
+/* Key/value rows */
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.kv,.meta,.details){display:grid;gap:0}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.kv-item,.meta-row,.info-item) :is(span:first-child,.meta-label,label){font-size:13px!important;color:var(--muted)!important;font-weight:500!important;letter-spacing:0!important;text-transform:none!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.kv-item,.meta-row,.info-item) :is(strong,.meta-value,b){font-weight:600!important;color:var(--ink)!important;font-size:14.5px!important}
+
+/* Modals become centered sheets (bottom sheets on phones) */
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.modal-backdrop,.modal-overlay,.overlay,.sheet-backdrop){background:rgba(0,26,41,.5)!important;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.modal,.dialog,.sheet,dialog.vms-dialog)>:is(.modal-card,.dialog-card),
+:is(body.vms-admin-canonical,body.vms-portal-canonical) .modal-backdrop>.modal,:is(body.vms-admin-canonical,body.vms-portal-canonical) .modal{background:var(--surface)!important;border:1px solid var(--line)!important;border-radius:26px!important;box-shadow:var(--shadow-lg)!important;color:var(--ink)!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.modal-head,.dialog-head,.sheet-head){display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:20px 20px 12px!important;border:0!important;background:transparent!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.modal-head,.dialog-head,.sheet-head) :is(h2,h3,strong){font-family:var(--display)!important;font-weight:700!important;font-size:1.2rem!important;letter-spacing:-.02em!important;line-height:1.2!important;color:var(--ink)!important;margin:0!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.modal-head,.dialog-head) :is(p,small){font-size:14px!important;color:var(--muted)!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.modal-body,.dialog-body,.sheet-body){padding:6px 20px 16px!important;background:transparent!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.modal-foot,.dialog-foot,.sheet-foot){padding:14px 20px 20px!important;border-top:1px solid var(--line)!important;background:transparent!important;display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.modal .close,.modal-head .close,.dialog .close,.modal-close,.close-btn){width:44px!important;height:44px!important;min-height:44px!important;padding:0!important;border-radius:50%!important;background:var(--surface2)!important;border:1px solid var(--line)!important;color:var(--ink)!important;display:grid!important;place-items:center;font-size:20px!important;line-height:1!important}
+
+/* Toggles */
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.switch-card,.toggle-row,.check-line,.permission){border-radius:14px!important;border:1px solid var(--line)!important;background:var(--surface2)!important;padding:12px 14px!important;color:var(--ink)!important}
+
+/* Legacy toasts */
+:is(body.vms-admin-canonical,body.vms-portal-canonical) .toast:not(#vmsShellToast){background:#003049!important;color:#FDF0D5!important;border-radius:14px!important;font:600 14.5px/1.4 var(--body)!important;box-shadow:var(--shadow-lg)!important;border:0!important}
+
+/* Muted text and links */
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.muted,.subtle,.secondary-text,.text-muted){color:var(--muted)!important}
+:is(body.vms-admin-canonical,body.vms-portal-canonical) .content a:not(.btn):not(.feed-row):not(.tool-card):not(.shortcut){color:var(--ink)}
+
+/* Readability floor (set by the shell script) */
+[data-vms-fs="1"]{font-size:13px!important;line-height:1.4}
+[data-vms-cf="1"]{color:var(--vms-cf,inherit)!important}
+
+@media (max-width:999px){
+  :is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.stats,.kpis,.stat-grid,.summary-grid,.metrics,.status-strip,.pulse,.mini-stats){grid-template-columns:1fr 1fr!important;gap:10px!important}
+  :is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.modal-backdrop>.modal,.modal){border-radius:26px 26px 0 0!important}
+}
+@media (prefers-reduced-motion:reduce){:is(body.vms-admin-canonical,body.vms-portal-canonical) *,:is(body.vms-admin-canonical,body.vms-portal-canonical) *::before,:is(body.vms-admin-canonical,body.vms-portal-canonical) *::after,#vmsCanonicalAdminSidebar,#vmsAdminMore *,#vmsPal *{animation-duration:.001ms!important;transition-duration:.001ms!important}}
+
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.intro-actions,.hero-actions,.head-actions){display:flex!important;flex-wrap:wrap!important;gap:10px!important}
+@media (max-width:999px){:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.content,main){overflow-x:clip}:is(body.vms-admin-canonical,body.vms-portal-canonical) :is(.grid,.two,.split,.columns,.dashboard-grid,.crm,.cols){grid-template-columns:minmax(0,1fr)!important}}
