@@ -951,7 +951,92 @@ html,body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sa
 @media(max-width:900px){.shell,.app{grid-template-columns:1fr}.mobile-menu{display:inline-flex}.sidebar.open{transform:translateX(0)}}
 </style>
 <link rel="stylesheet" href="../assets/vms-suite.css"><script src="../assets/config.js"></script><script src="../assets/vms-core.js"></script><script src="../assets/vms-catalog.js"></script><script src="../assets/vms-state.js"></script>  <link rel="stylesheet" href="/assets/vms-admin-shell.css">
-<style>html:not(.vms-b11-ready) .content{visibility:hidden}</style><script>setTimeout(function(){document.documentElement.classList.add('vms-b11-ready')},4000)</script></head>
+<style>html:not(.vms-b11-ready) .content{visibility:hidden}</style><script>setTimeout(function(){document.documentElement.classList.add('vms-b11-ready')},4000)</script><style id="vms-billing-preview">
+/* Billing — approved preview overview */
+body.vms-admin-canonical .content>.intro,body.vms-admin-canonical .content>section.stats,body.vms-admin-canonical .content>.revenue-strip,body.vms-admin-canonical .content>.accounting-note,body.vms-admin-canonical .content>#attentionStrip{display:none!important}
+.bp-kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bp-kpi{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px;display:grid;gap:6px;box-shadow:var(--shadow);min-width:0}
+.bp-kpi .l{font-size:13px;color:var(--muted);font-weight:500}
+.bp-kpi .v{font-family:var(--display);font-weight:700;font-size:clamp(1.25rem,5.6vw,1.75rem);letter-spacing:-.04em;line-height:1.1;color:var(--ink)}
+.bp-kpi .v.bad{color:var(--badfg)}
+.bp-kpi .d{font-size:13px;color:var(--muted)}.bp-kpi .d b{color:var(--ok);font-weight:600}
+.bp-grid{display:grid;gap:14px;margin-top:14px}
+.bp-col{display:grid;gap:14px;align-content:start}
+.bp-card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:var(--shadow);min-width:0}
+.bp-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.bp-h h3{margin:0;font-family:var(--display);font-weight:700;font-size:.98rem;letter-spacing:-.02em;color:var(--ink)}
+.bp-note{font-size:13px;color:var(--muted)}
+.bp-link{background:none;border:0;padding:8px 0;font:600 14px/1 var(--body);color:var(--ink);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.bp-bars{display:flex;align-items:flex-end;gap:10px;height:150px;padding-top:8px}
+.bp-bars .b{flex:1;display:grid;justify-items:center;gap:6px;align-content:end;height:100%;min-width:0}
+.bp-bars .b i{display:block;width:100%;max-width:46px;border-radius:10px 10px 4px 4px;background:var(--blue);height:var(--h,2px);min-height:4px;transition:height .7s cubic-bezier(.2,.8,.2,1)}
+.bp-bars .b:last-child i{background:var(--pri)}
+.bp-bars .b span{font-size:12.5px;color:var(--muted)}
+.bp-bars .b em{font-style:normal;font-size:12px;font-weight:600;color:var(--ink);white-space:nowrap}
+.bp-inv .r{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.bp-inv .r:last-child{border:0;padding-bottom:0}.bp-inv .r:first-child{padding-top:0}
+.bp-inv b{font-weight:600;display:block;color:var(--ink)}.bp-inv .s{display:block;font-size:13.5px;color:var(--muted)}
+.bp-inv .end{text-align:right;display:grid;justify-items:end;gap:4px}
+.bp-chip{display:inline-flex;align-items:center;padding:4px 10px;border-radius:99px;font:600 13px/1.3 var(--body);background:var(--tint);color:var(--ink);white-space:nowrap}
+.bp-chip.ok{background:var(--okbg);color:var(--ok)}.bp-chip.bad{background:var(--badbg);color:var(--badfg)}.bp-chip.warn{background:var(--warmbg);color:var(--warmfg)}
+.bp-att .row{display:grid;grid-template-columns:auto 1fr;gap:12px;padding:14px 0;border-bottom:1px solid var(--line)}
+.bp-att .row:last-child{border:0;padding-bottom:0}.bp-att .row:first-child{padding-top:0}
+.bp-att .dt{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--badbg);color:var(--badfg)}
+.bp-att .dt.w{background:var(--warmbg);color:var(--warmfg)}
+.bp-att b{display:block;font-weight:600;color:var(--ink)}.bp-att .s{display:block;font-size:13.5px;color:var(--muted)}
+.bp-att .acts{margin-top:10px}
+.bp-btn{display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border-radius:10px;border:1px solid var(--pri);background:var(--pri);color:var(--prifg);font:600 14px/1 var(--body);cursor:pointer}
+.bp-empty{padding:22px 8px;text-align:center;color:var(--muted)}
+.bp-ico{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.bp-honest{margin:14px 0 0;padding:12px 14px;border-radius:14px;background:var(--tint);font-size:14px;color:var(--ink)}
+.bp-manage{margin:28px 0 12px;font-family:var(--display);font-weight:700;font-size:1.05rem;letter-spacing:-.02em;color:var(--ink)}
+@media (max-width:600px){.bp-bars .b em{visibility:hidden}.bp-bars .b:last-child em{visibility:visible}}
+@media (min-width:700px){.bp-kpis{grid-template-columns:repeat(4,1fr);gap:14px}}
+@media (min-width:1000px){.bp-grid{grid-template-columns:1.35fr 1fr;gap:18px;align-items:start}}
+</style>
+<script id="vms-billing-preview-js">
+(()=>{
+  const $=id=>document.getElementById(id);
+  const money=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(Number(n)||0);
+  const lower=v=>String(v??'').trim().toLowerCase();
+  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const ICO={card:'M3 6h18v12H3zM3 10h18M7 15h4',x:'M18 6L6 18M6 6l12 12'};
+  const ic=n=>'<svg class="bp-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="'+ICO[n]+'"/></svg>';
+  function read(){try{return JSON.parse(localStorage.getItem('vms_billing_subscriptions_v3')||'{}')||{}}catch(e){return {}}}
+  const monthly=s=>{const p=Number(s.price??s.recurringPrice??s.amount)||0;const c=lower(s.cycle||'monthly');return c.includes('year')?p/12:c.includes('week')?p*4.33:p};
+  const ACTIVE=['active','grace','past due','suspended','canceling'];
+  const ISSUE=['past due','grace','suspended','failed','payment failed'];
+  const d=v=>{const x=new Date(v);return Number.isNaN(x.getTime())?null:x};
+  const nice=v=>{const x=d(v);return x?x.toLocaleDateString('en-US',{month:'short',day:'numeric'}):''};
+  function render(){
+    const b=read();const now=new Date();
+    const subs=(Array.isArray(b.subscriptions)?b.subscriptions:[]).filter(s=>s&&!s.archived);
+    const active=subs.filter(s=>ACTIVE.includes(lower(s.status)));
+    const issues=subs.filter(s=>ISSUE.includes(lower(s.status)));
+    const mrr=active.reduce((n,s)=>n+monthly(s),0);
+    const pays=[...subs.flatMap(s=>Array.isArray(s.payments)?s.payments:[]),...(Array.isArray(b.oneTimePayments)?b.oneTimePayments:[]),...(Array.isArray(b.payments)?b.payments:[])];
+    const oneTime=(Array.isArray(b.oneTimePayments)?b.oneTimePayments:[]).filter(p=>lower(p.status||'paid')==='paid'&&(x=>x&&x.getMonth()===now.getMonth()&&x.getFullYear()===now.getFullYear())(d(p.date||p.paidAt||p.createdAt)));
+    const oneTotal=oneTime.reduce((n,p)=>n+(Number(p.amount)||0),0);
+    const next=active.map(s=>d(s.nextRenewal)).filter(x=>x&&x>=new Date(now.toDateString())).sort((a,c)=>a-c)[0];
+    $('bpKpis').innerHTML=[
+      ['Monthly recurring',money(mrr),'<b>'+active.length+(active.length===1?' plan':' plans')+'</b> active',''],
+      ['One-time this month',money(oneTotal),oneTime.length+(oneTime.length===1?' payment':' payments'),''],
+      ['Needs attention',String(issues.length),issues.length?'Payment or account issue':'All clear',issues.length?'bad':''],
+      ['Next renewal',next?nice(next):'None','Earliest active plan','']
+    ].map(k=>'<div class="bp-kpi"><span class="l">'+k[0]+'</span><span class="v '+k[3]+'">'+k[1]+'</span><span class="d">'+k[2]+'</span></div>').join('');
+    /* MRR at the end of each of the last six months, from each plan's start and end dates */
+    const months=[];for(let i=5;i>=0;i--){const m=new Date(now.getFullYear(),now.getMonth()-i+1,0,23,59,59);months.push(m)}
+    const vals=months.map((end,i)=>i===5?mrr:subs.reduce((n,s)=>{const st=d(s.startDate||s.createdAt||s.created_at);const stop=d(s.cancelEffectiveDate||s.canceledAt);if(!st||st>end)return n;if(stop&&stop<=end)return n;if(['canceled','cancelled'].includes(lower(s.status))&&!stop)return n;return n+monthly(s)},0));
+    const max=Math.max(...vals,1);
+    $('bpBars').innerHTML=months.map((m,i)=>'<div class="b"><em>'+(vals[i]?money(vals[i]).replace('.00',''):'')+'</em><i style="--h:'+Math.max(4,Math.round(vals[i]/max*110))+'px"></i><span>'+m.toLocaleDateString('en-US',{month:'short'})+'</span></div>').join('');
+    $('bpSubs').innerHTML=active.length?active.slice(0,6).map(s=>{const st=lower(s.status);const chip=ISSUE.includes(st)?'<span class="bp-chip bad">'+esc(s.status)+'</span>':st==='canceling'?'<span class="bp-chip warn">Canceling</span>':'<span class="bp-chip ok">Active</span>';return '<div class="r"><div><b>'+esc(s.client||'Client')+'</b><span class="s">'+esc(s.service||'Subscription')+(s.nextRenewal?' · renews '+esc(nice(s.nextRenewal)):'')+'</span></div><div class="end"><b>'+money(monthly(s))+'/mo</b>'+chip+'</div></div>'}).join('')+(active.length>6?'<div class="r"><span class="s">+'+(active.length-6)+' more in Manage billing</span></div>':''):'<div class="bp-empty">No active subscriptions yet.</div>';
+    $('bpAtt').innerHTML=issues.length?issues.slice(0,5).map(s=>'<div class="row"><div class="dt">'+ic('card')+'</div><div><b>'+esc(s.client||'A client')+' · '+esc(s.status)+'</b><span class="s">'+esc(s.service||'')+', '+money(monthly(s))+'/mo</span><div class="acts"><button class="bp-btn" type="button" data-bp-tab="attention">Review</button></div></div></div>').join(''):'<div class="bp-empty">All clear. No failed or past-due payments.</div>';
+  }
+  document.addEventListener('click',e=>{const t=e.target.closest('[data-bp-tab]');if(!t)return;const tab=document.querySelector('.tabs .tab[data-tab="'+t.dataset.bpTab+'"]');if(tab){tab.click();document.getElementById('bpManage')?.scrollIntoView({behavior:'smooth',block:'start'})}});
+  document.addEventListener('DOMContentLoaded',()=>{render();const m=$('statMrr');if(m)new MutationObserver(render).observe(m,{childList:true,characterData:true,subtree:true});window.addEventListener('storage',render)});
+})();
+</script>
+</head>
 <body>
 <div class="shell">
   <aside class="sidebar vms-admin-sidebar" id="sidebar">
@@ -1000,6 +1085,18 @@ html,body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sa
     </header>
 
     <div class="content">
+      <div class="bp" id="bpOverview" aria-live="polite">
+        <div class="bp-kpis" id="bpKpis"></div>
+        <div class="bp-grid">
+          <div class="bp-col">
+            <section class="bp-card"><div class="bp-h"><h3>Recurring revenue</h3><span class="bp-note">Last 6 months</span></div><div class="bp-bars" id="bpBars" role="img" aria-label="Monthly recurring revenue, last six months"></div></section>
+            <section class="bp-card"><div class="bp-h"><h3>Subscriptions</h3><button class="bp-link" type="button" data-bp-tab="subscriptions">Manage</button></div><div class="bp-inv" id="bpSubs"></div></section>
+          </div>
+          <section class="bp-card"><div class="bp-h"><h3>Needs attention</h3><button class="bp-link" type="button" data-bp-tab="attention">See all</button></div><div class="bp-att" id="bpAtt"></div></section>
+        </div>
+        <p class="bp-honest">Monthly recurring only counts active plans. One-time payments are tracked separately.</p>
+        <h3 class="bp-manage" id="bpManage">Manage billing</h3>
+      </div>
       <div class="intro">
         <p>Company-wide billing control for Vision Make Studio. See recurring revenue, upcoming renewals, failed payments, cancellation requests, and service status without opening every client one by one.</p>
       </div>

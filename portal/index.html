@@ -920,7 +920,27 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
   .client-linkhub-workspace .linkhub-panel{width:100%;min-width:0;border-color:#e7e7e7;border-radius:14px;box-shadow:none}.client-linkhub-workspace .linkhub-panel .panel-head{background:#fff}.client-linkhub-workspace .linkhub-phone{width:auto!important;height:calc(100% - 22px)!important;min-height:0!important;max-width:360px!important;aspect-ratio:9/19.5!important;border-radius:34px!important}.client-linkhub-workspace .linkhub-phone > .linkhub-phone-view{height:100%!important;min-height:0!important;padding-left:24px!important;padding-right:24px!important}#section-linkhub.active .client-linkhub-workspace .linkhub-phone h3{font-size:19px!important;white-space:nowrap!important}#section-linkhub.active .client-linkhub-workspace .linkhub-powered{font-size:6.5px!important;white-space:nowrap!important}.client-linkhub-workspace .preview-label{font-size:9px;color:#669bbc;margin-top:8px}
   [data-client-linkhub-pane="publish"] #linkHubPublishPanelHost,[data-client-linkhub-pane="publish"] .vms-linkhub-share{width:100%;min-width:0}[data-client-linkhub-pane="publish"] .vms-linkhub-share-grid{grid-template-columns:minmax(0,1fr) 150px}
 }
-</style><link href="../assets/vms-portal-shell.css" id="vms-phase3-portal-shell-css" rel="stylesheet"/></head>
+</style><link href="../assets/vms-portal-shell.css" id="vms-phase3-portal-shell-css" rel="stylesheet"/><style id="vms-portal-home-preview">
+body.vms-portal-canonical #section-home>.intro{display:flex!important;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin:6px 0 16px!important}
+.ph-greet h2{margin:0;font-family:var(--display);font-weight:700;font-size:clamp(1.35rem,5.5vw,2rem);letter-spacing:-.03em;line-height:1.12;color:var(--ink)}
+.ph-greet p{margin:4px 0 0!important;color:var(--muted)!important;font-size:15px!important}
+.ph-quick{margin:14px 0}
+.ph-quick h3{margin:0 0 10px;font-family:var(--display);font-weight:700;font-size:.98rem;letter-spacing:-.02em;color:var(--ink)}
+.ph-q{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+html body.vms-portal-canonical .ph-q button{display:grid;justify-items:start;gap:10px;min-height:88px;padding:14px;border-radius:16px;background:var(--surface);border:1px solid var(--line);box-shadow:none;font:600 14.5px/1.3 var(--body);color:var(--ink);text-align:left;cursor:pointer;transition:border-color .18s,transform .15s}
+html body.vms-portal-canonical .ph-q button:hover{border-color:var(--ink)}
+html body.vms-portal-canonical .ph-q button:active{transform:scale(.98)}
+.ph-ico{width:24px;height:24px;fill:none;stroke:var(--blue);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+@media (min-width:700px){.ph-q{grid-template-columns:repeat(4,1fr)}}
+</style>
+<script id="vms-portal-home-preview-js">
+document.addEventListener('DOMContentLoaded',()=>{
+  const g=document.getElementById('phGreet');const src=document.querySelector('.side-client strong');
+  const set=()=>{const n=(src?.textContent||'').trim();const h=new Date().getHours();const part=h<12?'Good morning':h<18?'Good afternoon':'Good evening';g.textContent=n&&!/^your business$/i.test(n)?part+', '+n:part};
+  set();if(src)new MutationObserver(set).observe(src,{childList:true,characterData:true,subtree:true});
+});
+</script>
+</head>
 <body>
 <div class="shell">
 <aside class="sidebar" id="sidebar">
@@ -973,7 +993,7 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
 <div class="content">
 <section class="section active" id="section-home">
 <div class="intro">
-<p>Welcome back. This is your private Vision Make Studio workspace. Only the services connected to your client account appear here, and you can manage the parts VMS has enabled for you.</p>
+<div class="ph-greet"><h2 id="phGreet">Welcome back</h2><p>Everything VMS is running for you, in one place.</p></div>
 <div class="intro-actions home-mobile-actions">
 <button class="btn" id="homeScheduleBtn" type="button">Schedule a Call</button>
 <button class="btn primary" id="homeRequestBtn" type="button">Send VMS a Request</button>
@@ -985,6 +1005,7 @@ html.vms-admin-surface #previewCanvas.vms-layout-counter .preview-title{font-siz
 <div class="stat"><span>QR SCANS</span><strong id="homeQrScans">0</strong><small>This month</small></div>
 <div class="stat orange"><span>VMS NEEDS FROM YOU</span><strong id="homeNeedsCount">0</strong><small id="homeNeedsLabel">No missing files</small></div>
 </div>
+<section class="ph-quick" aria-label="Quick actions"><h3>Quick actions</h3><div class="ph-q"><button type="button" data-vp-section="qrs"><svg class="ph-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 3.5h6.5v6.5H3.5zM14 3.5h6.5v6.5H14zM3.5 14h6.5v6.5H3.5zM14 14h3v3h-3z"/></svg>Create a QR code</button><button type="button" data-vp-section="linkhub"><svg class="ph-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>Edit my LinkHub</button><button type="button" data-vp-section="files"><svg class="ph-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v14H6zM14 3v4h4"/></svg>Upload files</button><button type="button" onclick="document.getElementById('homeRequestBtn').click()"><svg class="ph-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H8l-4 4z"/></svg>Ask VMS</button></div></section>
 <div class="grid">
 <div class="card">
 <div class="card-head">

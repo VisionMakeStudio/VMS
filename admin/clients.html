@@ -1284,7 +1284,82 @@ html,body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sa
 @media(max-width:900px){.shell,.app{grid-template-columns:1fr}.mobile-menu{display:inline-flex}.sidebar.open{transform:translateX(0)}}
 </style>
 <link rel="stylesheet" href="../assets/vms-suite.css"><script src="../assets/config.js"></script>  <link rel="stylesheet" href="/assets/vms-admin-shell.css">
-<style>html:not(.vms-clients-ready) .content{visibility:hidden}</style><script>setTimeout(function(){document.documentElement.classList.add('vms-clients-ready')},4000)</script></head>
+<style>html:not(.vms-clients-ready) .content{visibility:hidden}</style><script>setTimeout(function(){document.documentElement.classList.add('vms-clients-ready')},4000)</script><style id="vms-clients-preview">
+/* Clients directory — approved preview layout */
+body.vms-admin-canonical .compact-directory-head{display:flex!important;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 14px!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important}
+body.vms-admin-canonical #pageDescription{margin:0!important;color:var(--muted)!important;font-size:15px!important}
+body.vms-admin-canonical .compact-directory-head .page-actions{display:flex;gap:8px}
+body.vms-admin-canonical #directoryView>.stats,body.vms-admin-canonical .view-toggle,body.vms-admin-canonical #industryFilter,body.vms-admin-canonical .client-table-head{display:none!important}
+body.vms-admin-canonical #directoryView>.toolbar{display:grid!important;grid-template-columns:1fr;gap:10px;padding:0!important;background:none!important;border:0!important;box-shadow:none!important;margin:0 0 14px!important}
+body.vms-admin-canonical #statusFilter{position:absolute!important;width:1px;height:1px;opacity:0;pointer-events:none}
+.cp-pills{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px 0}.cp-pills::-webkit-scrollbar{display:none}
+.cp-pill{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:99px;background:var(--surface);border:1px solid var(--line2);color:var(--ink);font:600 14.5px/1 var(--body);white-space:nowrap;cursor:pointer}
+.cp-pill em{font-style:normal;font-size:13px;opacity:.7}
+.cp-pill[aria-pressed="true"]{background:var(--pri);color:var(--prifg);border-color:var(--pri)}
+body.vms-admin-canonical .client-shell{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;overflow:visible!important}
+body.vms-admin-canonical #clientRows{display:grid;gap:10px}
+body.vms-admin-canonical .client-row{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;align-items:center;gap:12px;padding:14px!important;border-radius:18px!important;background:var(--surface)!important;border:1px solid var(--line)!important;box-shadow:none!important;cursor:pointer;transition:border-color .18s,transform .15s,box-shadow .18s;min-height:0!important}
+body.vms-admin-canonical .client-row:hover{border-color:var(--line2)!important}
+@media (min-width:1000px){body.vms-admin-canonical .client-row:hover{transform:translateY(-1px);box-shadow:var(--shadow)!important}}
+body.vms-admin-canonical .client-row .client-main{display:flex!important;align-items:center;gap:12px;min-width:0}
+body.vms-admin-canonical .client-row .client-logo{width:44px!important;height:44px!important;min-width:44px;border-radius:14px!important;overflow:hidden;display:grid;place-items:center;background:linear-gradient(140deg,var(--navy),var(--blue))!important;color:#fff!important;font:700 15px/1 var(--body)!important;border:0!important}
+body.vms-admin-canonical .client-row .client-logo *{color:#fff!important}
+body.vms-admin-canonical .client-row .client-logo img{width:100%;height:100%;object-fit:cover;background:#fff}
+body.vms-admin-canonical .client-row .client-name{min-width:0}
+body.vms-admin-canonical .client-row .client-name strong{display:block;font:600 15px/1.3 var(--body)!important;color:var(--ink)!important}
+body.vms-admin-canonical .client-row .client-name span{display:block;color:var(--muted)!important;font-size:13.5px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body.vms-admin-canonical .client-row>.cell{display:none!important}
+body.vms-admin-canonical .client-row>.cell.cp-end{display:grid!important;justify-items:end;gap:4px;font-size:13px;color:var(--muted)}
+body.vms-admin-canonical .client-row>.actions{display:none!important}
+body.vms-admin-canonical #listEmpty{padding:40px 16px!important}
+html body.vms-admin-canonical #directoryView #clientShell{display:block!important}
+html body.vms-admin-canonical #directoryView .search-wrap input{padding-left:40px!important}
+html body.vms-admin-canonical #directoryView :is(#cardGrid,#cardEmpty){display:none!important}
+html body.vms-admin-canonical #compactDirectoryHead .page-actions{display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;gap:8px!important;width:auto!important}
+html body.vms-admin-canonical #compactDirectoryHead .page-actions .btn{width:auto!important;flex:0 0 auto!important}
+@media (max-width:760px){
+  html body.vms-admin-canonical #compactDirectoryHead{display:grid!important;grid-template-columns:1fr;gap:10px!important}
+  html body.vms-admin-canonical #compactDirectoryHead .page-actions .btn{flex:1 1 0!important}
+  html body.vms-admin-canonical #clientRows .client-row{padding:12px!important;gap:10px!important}
+}
+</style>
+<script id="vms-clients-preview-js">
+(()=>{
+  const byId=id=>document.getElementById(id);
+  const STAT=[['all','All'],['Active','Active'],['Lead','Leads'],['Needs Attention','Needs attention'],['Paused','Paused']];
+  function pills(){
+    const sf=byId('statusFilter');if(!sf)return;
+    const n={all:byId('statTotal')?.textContent,Active:byId('statActive')?.textContent,Lead:byId('statLeads')?.textContent,'Needs Attention':byId('statAttention')?.textContent};
+    byId('cpPills').innerHTML=STAT.map(([v,l])=>'<button class="cp-pill" type="button" data-v="'+v+'" aria-pressed="'+(sf.value===v)+'">'+l+(n[v]!=null&&n[v]!==''?' <em>'+n[v]+'</em>':'')+'</button>').join('');
+  }
+  function decorate(){
+    document.querySelectorAll('#clientRows .client-row').forEach(r=>{
+      if(r.querySelector('.cp-end'))return;
+      const cells=r.querySelectorAll(':scope>.cell');
+      const badge=cells[0]?.querySelector('.badge');const contact=(cells[2]?.childNodes[0]?.textContent||'').trim();const since=(cells[3]?.textContent||'').trim();
+      const sub=r.querySelector('.client-name span');
+      if(sub){const bits=[contact&&contact!=='—'?contact:'',since&&since!=='—'?'since '+since:''].filter(Boolean);if(bits.length)sub.textContent=bits.join(' · ')}
+      const end=document.createElement('div');end.className='cell cp-end';if(badge)end.appendChild(badge.cloneNode(true));r.appendChild(end);
+      r.setAttribute('role','button');r.tabIndex=0;
+      const open=r.querySelector('.open-client');if(open)r.setAttribute('aria-label','Open '+(r.querySelector('.client-name strong')?.textContent||'client'));
+    });
+    pills();
+  }
+  document.addEventListener('DOMContentLoaded',()=>{
+    const tb=document.querySelector('#directoryView>.toolbar');if(!tb)return;
+    const wrap=document.createElement('div');wrap.className='cp-pills';wrap.id='cpPills';wrap.setAttribute('role','group');wrap.setAttribute('aria-label','Filter clients');tb.appendChild(wrap);
+    const si=byId('searchInput');if(si)si.placeholder='Search clients';
+    wrap.addEventListener('click',e=>{const b=e.target.closest('.cp-pill');if(!b)return;const sf=byId('statusFilter');sf.value=b.dataset.v;sf.dispatchEvent(new Event('change',{bubbles:true}));sf.dispatchEvent(new Event('input',{bubbles:true}));pills()});
+    const rows=byId('clientRows');
+    rows.addEventListener('click',e=>{if(e.target.closest('button,a'))return;const r=e.target.closest('.client-row');r?.querySelector('.open-client')?.click()});
+    rows.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.classList.contains('client-row')){e.preventDefault();e.target.querySelector('.open-client')?.click()}});
+    new MutationObserver(decorate).observe(rows,{childList:true});
+    ['statTotal','statActive','statLeads','statAttention'].forEach(id=>{const el=byId(id);if(el)new MutationObserver(pills).observe(el,{childList:true,characterData:true,subtree:true})});
+    decorate();
+  });
+})();
+</script>
+</head>
 <body>
 
 <div class="app">
@@ -1343,7 +1418,7 @@ html,body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sa
 
     <div class="content">
       <div class="compact-directory-head" id="compactDirectoryHead">
-        <p id="pageDescription">Manage every VMS client in one place. Open a business to view its profile, services, audits, QR codes, projects, requests, billing, products, notes, and activity.</p>
+        <p id="pageDescription">Every client and what they pay you.</p>
         <div class="page-actions">
           <button class="btn" id="archivedClientsBtn" type="button">Archived <span class="archive-count" id="archiveCount">0</span></button>
           <button class="btn primary" id="addClientBtn" type="button">+ Add Client</button>
