@@ -157,3 +157,6 @@
 [data-vms-island]{background-color:var(--surface)!important;background-image:none!important;color:var(--ink)!important;border-color:var(--line)!important}
 [data-vms-island] :is(h1,h2,h3,h4,strong,b){color:var(--ink)}
 [data-vms-island] :is(p,small){color:var(--muted)}
+
+/* Phone and LinkHub previews keep their own colors (they show the client's real theme) */
+:is(body.vms-admin-canonical,body.vms-portal-canonical) :is([class*="phone-screen"],[class*="phone-view"],.linkhub-phone) :is(h1,h2,h3,h4,strong,p){color:inherit!important}

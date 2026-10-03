@@ -940,6 +940,58 @@ document.addEventListener('DOMContentLoaded',()=>{
   set();if(src)new MutationObserver(set).observe(src,{childList:true,characterData:true,subtree:true});
 });
 </script>
+<style id="vms-portal-preview-batch5">
+/* QR codes: one honest note (the older entitlement card disagreed with it and re-rendered in a loop) */
+html body.vms-portal-canonical #vmsP4PortalQrEnt{display:none!important}
+html body.vms-portal-canonical #qrAccessNote .note{padding:12px 14px!important;border-radius:14px!important;background:var(--tint)!important;border:0!important;color:var(--ink)!important;font-size:14px!important;margin:0 0 14px!important}
+html body.vms-portal-canonical #qrList{display:grid!important;gap:12px!important}
+@media (min-width:1000px){html body.vms-portal-canonical #qrList{grid-template-columns:1fr 1fr!important}}
+html body.vms-portal-canonical .qr-item{padding:16px!important;border-radius:20px!important;background:var(--surface)!important;border:1px solid var(--line)!important;box-shadow:var(--shadow)!important;margin:0!important}
+html body.vms-portal-canonical .qr-item .qr-card{display:grid!important;grid-template-columns:auto minmax(0,1fr)!important;gap:14px!important;align-items:center}
+html body.vms-portal-canonical .qr-item .qr-preview{background:#fff!important;border-radius:14px!important;padding:8px!important;border:1px solid var(--line)!important;width:auto!important;height:auto!important;box-shadow:none!important}
+html body.vms-portal-canonical .qr-item .qr-preview canvas{width:104px!important;height:104px!important;display:block}
+html body.vms-portal-canonical .qr-item .card-title-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+html body.vms-portal-canonical .qr-item .card-title-row strong{font:600 16px/1.3 var(--body)!important;color:var(--ink)!important}
+html body.vms-portal-canonical .qr-item .card-title-row+span{font-size:13.5px!important;margin-top:4px!important;color:var(--muted)!important}
+html body.vms-portal-canonical .qr-item .metric-row{grid-column:1/-1;display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;margin-top:12px!important}
+html body.vms-portal-canonical .qr-item .metric{padding:10px!important;border-radius:12px!important;background:var(--surface2)!important;border:0!important;box-shadow:none!important;text-align:center;min-width:0}
+html body.vms-portal-canonical .qr-item .metric span{display:block;font:500 12.5px/1.3 var(--body)!important;color:var(--muted)!important;letter-spacing:0!important;text-transform:none!important}
+html body.vms-portal-canonical .qr-item .metric strong{display:block;font-family:var(--display)!important;font-weight:700!important;font-size:1.05rem!important;letter-spacing:-.03em!important;line-height:1.25!important;color:var(--ink)!important;margin-top:2px}
+html body.vms-portal-canonical .qr-item .metric:last-child strong{font-size:.8rem!important}
+html body.vms-portal-canonical .qr-item .list-actions{grid-column:1/-1;display:flex!important;flex-wrap:wrap;gap:8px!important;justify-content:flex-start!important;margin:0!important}
+html body.vms-portal-canonical .qr-item .qr-card>div:nth-child(2){display:contents!important}
+html body.vms-portal-canonical .qr-item .qr-preview{grid-row:1/span 2}
+html body.vms-portal-canonical .qr-item .card-title-row{grid-column:2;align-self:end}
+html body.vms-portal-canonical .qr-item .card-title-row+span{grid-column:2;align-self:start;margin-top:0!important}
+html body.vms-portal-canonical .qr-item .qr-card>div:nth-child(2)>.note{grid-column:1/-1;margin:0!important;padding:10px 12px!important;border-radius:12px!important;background:var(--surface2)!important;border:0!important;color:var(--muted)!important;font-size:13.5px!important}
+html body.vms-portal-canonical .qr-item .metric-row{margin-top:0!important}
+html body.vms-portal-canonical .qr-item .list-actions .btn{width:auto!important;flex:0 0 auto!important;min-height:38px!important;padding:0 14px!important;font-size:14px!important}
+@media (max-width:600px){html body.vms-portal-canonical .qr-item .qr-preview canvas{width:80px!important;height:80px!important}}
+/* Schedule and consultation */
+html body.vms-portal-canonical .kv{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;background:transparent!important;border:0!important}
+html body.vms-portal-canonical .kv-item{margin:0!important;padding:12px 14px!important;border-radius:14px!important;background:var(--surface2)!important;border:1px solid var(--line)!important}
+html body.vms-portal-canonical .kv-item span{display:block;font-size:13px!important;color:var(--muted)!important;margin-bottom:2px}
+html body.vms-portal-canonical .kv-item strong{font-weight:600!important;font-size:15px!important;color:var(--ink)!important}
+/* LinkHub: a normal page under the nav, like the preview (not a full-screen popup) */
+html body.vms-portal-canonical{overflow-y:auto!important}
+html body.vms-portal-canonical #section-linkhub.active{transform:none!important;animation:none!important;translate:none!important;position:static!important;inset:auto!important;z-index:auto!important;width:auto!important;max-width:none!important;margin:0!important;background:transparent!important;border-radius:0!important;box-shadow:none!important;overflow:visible!important;display:block!important;padding:0!important}
+html body.vms-portal-canonical #closeClientLinkHubWorkspace{display:none!important}
+html body.vms-portal-canonical #section-linkhub .client-linkhub-head{display:flex!important;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:0!important;margin:6px 0 16px!important;background:none!important;border:0!important;position:static!important}
+html body.vms-portal-canonical #section-linkhub .client-linkhub-head h2{margin:0!important;font-family:var(--display)!important;font-weight:700!important;font-size:clamp(1.35rem,5.5vw,2rem)!important;letter-spacing:-.03em!important;line-height:1.12!important;color:var(--ink)!important}
+html body.vms-portal-canonical #section-linkhub .client-linkhub-head p{margin:4px 0 0!important;color:var(--muted)!important;font-size:15px!important}
+html body.vms-portal-canonical #section-linkhub .client-linkhub-head .intro-actions{display:flex!important;flex-wrap:wrap;gap:8px!important;position:static!important}
+html body.vms-portal-canonical #section-linkhub .client-linkhub-tabs{display:flex!important;gap:6px!important;padding:4px!important;border-radius:14px!important;background:var(--surface2)!important;border:0!important;box-shadow:none!important;overflow-x:auto;scrollbar-width:none;margin:0 0 14px!important;position:static!important}
+html body.vms-portal-canonical #section-linkhub .client-linkhub-tab{flex:1 0 auto;min-height:44px!important;padding:0 16px!important;border:0!important;border-radius:10px!important;background:transparent!important;box-shadow:none!important;font:600 14.5px/1 var(--body)!important;color:var(--muted)!important;cursor:pointer;white-space:nowrap}
+html body.vms-portal-canonical #section-linkhub .client-linkhub-tab.active{background:var(--surface)!important;color:var(--ink)!important;box-shadow:0 2px 8px rgba(0,48,73,.12)!important}
+html body.vms-portal-canonical #section-linkhub .client-linkhub-workspace{height:auto!important;max-height:none!important;overflow:visible!important;padding:0!important;background:none!important}
+html body.vms-portal-canonical #section-linkhub .linkhub-editor{overflow:visible!important;height:auto!important;max-height:none!important}
+html body.vms-portal-canonical #section-linkhub .linkhub-layout{height:auto!important;display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:18px!important;align-items:start}
+html body.vms-portal-canonical #section-linkhub .linkhub-panel{background:var(--surface)!important;border:1px solid var(--line)!important;border-radius:20px!important;padding:18px!important;box-shadow:var(--shadow)!important}
+html body.vms-portal-canonical #section-linkhub .linkhub-panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:14px}
+html body.vms-portal-canonical #section-linkhub .linkhub-panel-head h3{margin:0!important;font-family:var(--display)!important;font-weight:700!important;font-size:.98rem!important;letter-spacing:-.02em!important;color:var(--ink)!important}
+html body.vms-portal-canonical #section-linkhub .linkhub-panel-head p{display:none!important}
+@media (min-width:1000px){html body.vms-portal-canonical #section-linkhub .linkhub-layout{grid-template-columns:minmax(0,1fr) 340px!important}html body.vms-portal-canonical #section-linkhub .linkhub-layout>:last-child{position:sticky!important;top:96px}}
+</style>
 </head>
 <body>
 <div class="shell">
@@ -1103,8 +1155,8 @@ document.addEventListener('DOMContentLoaded',()=>{
 </section>
 <section class="section" id="section-linkhub">
 <div class="intro client-linkhub-head">
-<div class="client-linkhub-head-copy"><h2>Manage Your LinkHub</h2>
-<p>Edit every client-safe part of your VMS LinkHub Smart Business Card. Your profile, buttons, social media, guest Wi-Fi, restaurant menu, Visit Us page, and colors all stay connected to the LinkHub VMS manages for you.</p>
+<div class="client-linkhub-head-copy"><h2>Your LinkHub</h2>
+<p>Your profile, buttons and colors. Changes show in the preview right away.</p>
 </div>
 <div class="intro-actions">
 <button class="btn" id="requestLinkHubHelpBtn" type="button">Ask VMS for Help</button>
