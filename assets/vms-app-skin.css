@@ -211,3 +211,12 @@ body.vms-admin-canonical .vms-p4-layout-label{text-align:center;font-size:13px!i
 body.vms-admin-canonical .control:has(>#qrStyleOptions),body.vms-admin-canonical .control:has(>#frameOptions){grid-column:1/-1!important}
 @media (max-width:999px){body.vms-admin-canonical #qrStyleOptions.frame-options{grid-template-columns:repeat(4,minmax(0,1fr))!important}}
 @media (max-width:420px){body.vms-admin-canonical #qrStyleOptions.frame-options{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+
+/* Service tiles: small line icons (never text), matching the approved preview */
+html body.vms-portal-canonical :is(.service-card,.catalog-card,.service-row) .service-icon{display:grid!important;place-items:center!important;width:40px!important;height:40px!important;min-width:40px!important;overflow:hidden;font-size:0!important;line-height:0}
+.service-icon .service-glyph{width:20px;height:20px;display:block}
+
+/* QR page: the switch card keeps its content at the top instead of pushing it to the bottom of a tall row */
+body.vms-admin-canonical .control:has(>.switch-row){align-content:start!important;grid-template-rows:auto auto!important}
+body.vms-admin-canonical .control>.switch-row{align-self:start!important;margin-top:4px!important}
+body.vms-admin-canonical .control:has(>.switch-row)>.switch-row .switch-copy small{display:block}

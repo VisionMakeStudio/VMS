@@ -117,6 +117,22 @@ a{color:inherit}
 }
 </style>
 <style id="vms-linkhub-page-fix">
+/* Admin LinkHub link and social rows: one clean ••• menu (the shared enhancer no longer doubles it) */
+body.vms-admin-canonical .link-row{grid-template-columns:24px minmax(0,1fr) auto!important;align-items:center!important;position:relative}
+body.vms-admin-canonical .link-row details.row-actions{position:relative;display:block;justify-self:end}
+body.vms-admin-canonical .link-row details.row-actions>summary.vms-dots-summary{list-style:none;display:grid;place-items:center;width:40px;height:40px;border:1px solid var(--line2);border-radius:12px;background:var(--surface);color:var(--ink);font-size:15px;letter-spacing:1px;cursor:pointer;user-select:none}
+body.vms-admin-canonical .link-row details.row-actions>summary.vms-dots-summary::-webkit-details-marker{display:none}
+body.vms-admin-canonical .link-row details.row-actions>summary.vms-dots-summary::after{content:none!important;display:none!important}
+body.vms-admin-canonical .link-row details.row-actions>summary.vms-dots-summary{padding:0!important;min-height:0!important;font-size:15px!important}
+body.vms-admin-canonical .link-row details.row-actions[open]>summary.vms-dots-summary{background:var(--surface2)}
+body.vms-admin-canonical .link-row details.row-actions>.row-actions-menu{position:absolute;right:0;top:46px;z-index:40;min-width:170px;display:grid;gap:2px;padding:6px;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 14px 40px rgba(0,48,73,.16)}
+body.vms-admin-canonical .link-row details.row-actions:not([open])>.row-actions-menu{display:none}
+body.vms-admin-canonical .link-row .row-actions-menu button{display:block;width:100%;text-align:left;min-height:42px;padding:0 12px;border:0;border-radius:10px;background:transparent;color:var(--ink);font:600 14.5px/1 var(--body);cursor:pointer}
+body.vms-admin-canonical .link-row .row-actions-menu button:hover:not(:disabled){background:var(--surface2)}
+body.vms-admin-canonical .link-row .row-actions-menu button:disabled{opacity:.4;cursor:default}
+body.vms-admin-canonical .link-row .row-actions-menu button.danger{color:var(--red,#C1121F)}
+body.vms-admin-canonical .link-copy strong{font-size:15px!important}
+body.vms-admin-canonical .link-copy span{font-size:13px!important}
 /* LinkHub editor: an inline page section (no popup, backdrop or close X). While it is open it replaces the list. */
 .lh-editor{display:none;margin:0}
 .lh-editor.show{display:block}
@@ -746,13 +762,13 @@ body.vms-admin-canonical .linkhub-item .item-actions{display:flex!important;gap:
     $('linkList').innerHTML=(h.links||[]).length?(h.links||[]).map((l,i)=>`<div class="link-row" data-id="${l.id}">
       <div class="link-drag">☷</div>
       <div class="link-copy"><strong>${esc(l.label)}</strong><span>${esc(l.type)} · ${esc(l.url)} ${l.visible?'':'· Hidden'}</span></div>
-      <details class="row-actions"><summary>Actions</summary><div class="row-actions-menu"><button data-link-action="up" type="button" ${i===0?'disabled':''}>Move up</button><button data-link-action="down" type="button" ${i===(h.links.length-1)?'disabled':''}>Move down</button><button data-link-action="toggle" type="button">${l.visible?'Hide':'Show'}</button><button data-link-action="edit" type="button">Edit</button><button class="danger" data-link-action="delete" type="button">Delete</button></div></details>
+      <details class="row-actions"><summary class="vms-dots-summary" aria-label="Actions" title="Actions">&#8226;&#8226;&#8226;</summary><div class="row-actions-menu"><button data-link-action="up" type="button" ${i===0?'disabled':''}>Move up</button><button data-link-action="down" type="button" ${i===(h.links.length-1)?'disabled':''}>Move down</button><button data-link-action="toggle" type="button">${l.visible?'Hide':'Show'}</button><button data-link-action="edit" type="button">Edit</button><button class="danger" data-link-action="delete" type="button">Delete</button></div></details>
     </div>`).join(''):'<div class="empty" style="display:block;padding:18px 6px">No links yet. Add the first button for this LinkHub.</div>';
     renderPreview();
   }
   function renderSocials(){
     const h=hubFor(editingId);if(!h)return;h.socials=Array.isArray(h.socials)?h.socials:[];
-    $('socialList').innerHTML=h.socials.length?h.socials.map((s,i)=>`<div class="link-row" data-id="${esc(s.id)}"><div class="link-drag">☷</div><div class="link-copy"><strong>${esc(s.platform||s.label||'Social')}</strong><span>${esc(s.url||'')} ${s.visible===false?'· Hidden':''}</span></div><details class="row-actions"><summary>Actions</summary><div class="row-actions-menu"><button data-social-action="up" type="button" ${i===0?'disabled':''}>Move up</button><button data-social-action="down" type="button" ${i===h.socials.length-1?'disabled':''}>Move down</button><button data-social-action="toggle" type="button">${s.visible===false?'Show':'Hide'}</button><button data-social-action="edit" type="button">Edit</button><button class="danger" data-social-action="delete" type="button">Delete</button></div></details></div>`).join(''):'<div class="empty" style="display:block;padding:18px 6px">No social icons yet.</div>';
+    $('socialList').innerHTML=h.socials.length?h.socials.map((s,i)=>`<div class="link-row" data-id="${esc(s.id)}"><div class="link-drag">☷</div><div class="link-copy"><strong>${esc(s.platform||s.label||'Social')}</strong><span>${esc(s.url||'')} ${s.visible===false?'· Hidden':''}</span></div><details class="row-actions"><summary class="vms-dots-summary" aria-label="Actions" title="Actions">&#8226;&#8226;&#8226;</summary><div class="row-actions-menu"><button data-social-action="up" type="button" ${i===0?'disabled':''}>Move up</button><button data-social-action="down" type="button" ${i===h.socials.length-1?'disabled':''}>Move down</button><button data-social-action="toggle" type="button">${s.visible===false?'Show':'Hide'}</button><button data-social-action="edit" type="button">Edit</button><button class="danger" data-social-action="delete" type="button">Delete</button></div></details></div>`).join(''):'<div class="empty" style="display:block;padding:18px 6px">No social icons yet.</div>';
     renderPreview();
   }
   function openManage(id){
@@ -934,7 +950,7 @@ body.vms-admin-canonical .linkhub-item .item-actions{display:flex!important;gap:
   ['hubTitle','hubBio','hubPhone','hubEmail','hubWebsite','hubAddress','hubSlug','hubPublished','hubManualDisabled','hubBilling','hubPastDueSince','hubGraceDays','hubAutoSuspend','hubPrice','hubPlan','hubWifiEnabled','hubWifiSsid','hubWifiSecurity','hubWifiPassword','hubMenuEnabled','hubRestaurantName','hubRestaurantCuisine','hubRestaurantDescription','hubRestaurantPhone','hubRestaurantWebsite','hubRestaurantAddress','hubRestaurantMapUrl','hubRestaurantReservationUrl','hubRestaurantOrderUrl','hubRestaurantHours','hubRestaurantShowPrices','hubRestaurantShowPhotos','hubVisitEnabled','hubVisitName','hubVisitCategory','hubVisitBio','hubVisitPhone','hubVisitEmail','hubVisitWebsite','hubVisitAddress','hubVisitMapUrl','hubVisitHours','hubSmartScan','hubClientManage','permProfile','permContact','permLinks','permOrder','permTheme'].forEach(id=>$(id).addEventListener('input',renderPreview));
   $('hubPlan').addEventListener('change',()=>{applyPlanRules(true);renderPreview()});
   $('hubClient').addEventListener('change',()=>{if(!$('hubTitle').value.trim())$('hubTitle').value=$('hubClient').value;if(!$('hubSlug').value.trim())$('hubSlug').value=slugify($('hubClient').value);renderPreview()});
-  $('themeGrid').onclick=e=>{const b=e.target.closest('.theme-choice');if(!b)return;document.querySelectorAll('.theme-choice').forEach(x=>x.classList.toggle('active',x===b));renderPreview()};
+  $('themeGrid').onclick=e=>{const b=e.target.closest('.theme-choice');if(!b||b.dataset.vmsGradient)return;document.querySelectorAll('.theme-choice').forEach(x=>x.classList.toggle('active',x===b));/* A picked theme replaces any saved custom colors or gradient, otherwise the saved style keeps winning. */const cur=hubFor(editingId);if(cur){cur.style={};cur.theme=b.dataset.theme||cur.theme;persist()}renderPreview()};
   $('publicPreview').onclick=e=>{const b=e.target.closest('.linkhub-public-link');if(b?.dataset.url)window.open(b.dataset.url,'_blank')};
 
   $('saveHubBtn').onclick=saveHub;$('archiveHubBtn').onclick=archiveCurrent;$('addLinkBtn').onclick=()=>openLinkModal();$('saveLinkBtn').onclick=saveLink;$('addSocialBtn').onclick=()=>openSocialModal();$('saveSocialBtn').onclick=saveSocial;

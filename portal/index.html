@@ -2039,7 +2039,7 @@ html body.vms-portal-canonical #availableServices>.note{padding:12px 14px!import
       <article class="card service-card">
         <div class="service-card-top">
           <div class="service-row">
-            <div class="service-icon">${esc(s.icon)}</div>
+            <div class="service-icon">${svcGlyph(s.icon)}</div>
             <div class="service-copy"><strong>${esc(s.name)}</strong><span>${esc(s.description)}</span></div>
           </div>
           <span class="badge ${esc(s.badge||'blue')}">${esc(s.status)}</span>
@@ -2051,7 +2051,7 @@ html body.vms-portal-canonical #availableServices>.note{padding:12px 14px!import
 
     $('catalogServiceGrid').innerHTML=state.catalog.map(s=>`
       <article class="card catalog-card">
-        <div class="service-row"><div class="service-icon">${esc(s.icon)}</div><div><h4>${esc(s.name)}</h4><span class="badge ${s.mode==='Buy Now'?'green':'blue'}" style="margin-top:6px">${esc(s.mode)}</span></div></div>
+        <div class="service-row"><div class="service-icon">${svcGlyph(s.icon)}</div><div><h4>${esc(s.name)}</h4><span class="badge ${s.mode==='Buy Now'?'green':'blue'}" style="margin-top:6px">${esc(s.mode)}</span></div></div>
         <p>${esc(s.description)}</p>
         <div class="catalog-meta"><span class="badge">${esc(s.price)}</span></div>
         <button class="btn primary" data-service-action="${esc(s.id)}" type="button">${s.mode==='Buy Now'?'Start Purchase':'Request Service'}</button>
@@ -2358,6 +2358,23 @@ html body.vms-portal-canonical #availableServices>.note{padding:12px 14px!import
   const lvMoney=n=>'$'+Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
   function lvIsRecurring(row,cat){const m=lvLow(cat&&cat.pricing_model);if(m)return m==='recurring';return /^(month|year|annual|week|quarter)/.test(lvLow(row&&row.billing_cadence))}
   function lvSection(c){const fam=c.metadata&&c.metadata.family;if(fam==='qr')return 'qrs';if(fam==='linkhub')return 'linkhub';if(/audit/i.test(String(c.id||'')+' '+String(c.name||'')))return 'audits';if(['Websites','Packages'].includes(c.category)||/website/i.test(c.name||''))return 'projects';return 'requests'}
+  /* Service tile glyphs: small line icons instead of text codes, so long codes can never overflow the tile. */
+  const SVC_GLYPH_PATHS={
+    qr:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 14h3v3h-3zM20 14v1M14 20h3M20 18v3"/>',
+    link:'<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+    web:'<rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M3 9h18M7 6.5h.01M10 6.5h.01"/>',
+    pin:'<path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
+    star:'<path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
+    check:'<rect x="5" y="4" width="14" height="17" rx="2.5"/><path d="M9 3h6v3H9zM9 13l2 2 4-4"/>',
+    box:'<path d="M3.5 7.5 12 3l8.5 4.5v9L12 21l-8.5-4.5z"/><path d="M3.5 7.5 12 12l8.5-4.5M12 12v9"/>',
+    wifi:'<path d="M5 10.5a10 10 0 0 1 14 0M8 13.5a6 6 0 0 1 8 0"/><circle cx="12" cy="17.5" r="1" fill="currentColor"/>',
+    menu:'<path d="M5 4v6a2 2 0 0 0 4 0V4M7 4v16M17 4c-2 2-2.5 5-2.5 7H17v9"/>',
+    spark:'<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM18.5 16l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/>',
+    card:'<rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="M3 10h18"/>',
+    tool:'<path d="M14.5 6.5a4 4 0 0 0-5 5L4 17l3 3 5.5-5.5a4 4 0 0 0 5-5l-2.5 2.5-2.5-.5-.5-2.5z"/>'
+  };
+  const SVC_GLYPH_MAP={QR:'qr',LH:'link',DFY:'tool',MENU:'menu',WIFI:'wifi',WEB:'web',SITE:'web',REFRESH:'web',LAUNCH:'web',LOCAL:'pin',REV:'star',GROW:'star',AUD:'check',CHK:'check',PKG:'box',START:'box',DP:'box',SUB:'card',CARE:'tool',FEE:'card',VMS:'spark'};
+  function svcGlyph(code){const key=SVC_GLYPH_MAP[String(code||'').toUpperCase()]||'spark';return `<svg class="service-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${SVC_GLYPH_PATHS[key]}</svg>`}
   function lvIcon(c){const fam=c.metadata&&c.metadata.family;if(fam==='qr')return 'QR';if(fam==='linkhub')return 'LH';if(/audit/i.test(c.name||''))return 'AUD';if(c.category==='Websites')return 'WEB';if(c.category==='Reputation')return 'REV';if(c.category==='Local Growth')return 'LOCAL';if(c.kind==='package')return 'PKG';if(c.kind==='subscription')return 'SUB';return 'VMS'}
   function lvPrice(c){const model=lvLow(c.pricing_model);if(model==='free')return 'Free';const rec=model==='recurring',n=Number(rec?c.recurring_price:c.one_time_price);if(!Number.isFinite(n)||n<=0)return 'Request pricing';return (c.starting_at?'From ':'')+lvMoney(n)+(rec?'/'+(/^(y|a)/i.test(c.cadence||'')?'yr':'mo'):'')}
   async function portalSession(){
@@ -2638,7 +2655,7 @@ html body.vms-portal-canonical #availableServices>.note{padding:12px 14px!import
     if(!service)return;
     $('serviceActionTitle').textContent=service.mode==='Buy Now'?`Purchase ${service.name}`:`Request ${service.name}`;
     $('serviceActionBody').innerHTML=`
-      <div class="service-row"><div class="service-icon">${esc(service.icon)}</div><div class="service-copy"><strong>${esc(service.name)}</strong><span>${esc(service.description)}</span></div></div>
+      <div class="service-row"><div class="service-icon">${svcGlyph(service.icon)}</div><div class="service-copy"><strong>${esc(service.name)}</strong><span>${esc(service.description)}</span></div></div>
       <div class="kv" style="margin-top:12px"><div class="kv-item"><span>HOW IT STARTS</span><strong>${esc(service.mode)}</strong></div><div class="kv-item"><span>CATALOG PRICE</span><strong>${esc(service.price)}</strong></div></div>
       <div class="note" style="margin-top:10px">${service.mode==='Buy Now'?'You will continue to secure checkout. The service appears under My Services only after payment succeeds.':'Send this to VMS for personal review. VMS can confirm the scope, create your invoice, and activate the service after payment.'}</div>`;
     $('serviceActionFoot').innerHTML=`<button class="btn" data-close="serviceActionModal" type="button">Cancel</button><button class="btn primary" id="confirmServiceActionBtn" type="button">${service.mode==='Buy Now'?'Continue to Checkout':'Add Details & Request'}</button>`;
@@ -3036,9 +3053,11 @@ html body.vms-portal-canonical #availableServices>.note{padding:12px 14px!import
   }
   $('linkHubVisitHoursEditor').addEventListener('input',updateLinkHubVisitHours);$('linkHubVisitHoursEditor').addEventListener('change',updateLinkHubVisitHours);
   document.addEventListener('vms-linkhub-style',e=>{const style=e.detail?.style;if(!style||typeof style!=='object')return;state.linkHub.theme='custom';state.linkHub.style={...style};setLinkHubColorFields();renderLinkHubPreview()});
-  $('linkHubThemeGrid').onclick=e=>{const choice=e.target.closest('[data-linkhub-theme]');if(!choice)return;state.linkHub.theme=choice.dataset.linkhubTheme;state.linkHub.style={...THEME_PRESETS[state.linkHub.theme]};setLinkHubColorFields();renderLinkHubPreview()};
+  $('linkHubThemeGrid').onclick=e=>{const choice=e.target.closest('[data-linkhub-theme]');if(!choice)return;state.linkHub.theme=choice.dataset.linkhubTheme;state.linkHub.style={...THEME_PRESETS[state.linkHub.theme]};save();setLinkHubColorFields();renderLinkHubPreview()};
+  let linkHubPrevTheme='navy';
   function syncAdvancedColor(pickerId,hexId,rgbId,key){
-    const apply=value=>{if(!validHex(value))return;const v=value.toUpperCase();state.linkHub.theme='custom';state.linkHub.style={...linkHubStyle(),[key]:v};$(pickerId).value=v;$(hexId).value=v;$(rgbId).value=hexToRgb(v);document.querySelectorAll('[data-linkhub-theme]').forEach(b=>b.classList.remove('active'));renderLinkHubPreview()};
+    linkHubPrevTheme=THEME_PRESETS[state.linkHub.theme]?state.linkHub.theme:linkHubPrevTheme;
+    const apply=value=>{if(!validHex(value))return;const v=value.toUpperCase();state.linkHub.theme='custom';{const raw={...(state.linkHub.style||{})};delete raw.gradient;delete raw.accent;if(!validHex(raw.bg))raw.bg=(THEME_PRESETS[linkHubPrevTheme]||THEME_PRESETS.navy).bg;state.linkHub.style={...THEME_PRESETS.navy,...raw,[key]:v}}save();$(pickerId).value=v;$(hexId).value=v;$(rgbId).value=hexToRgb(v);document.querySelectorAll('[data-linkhub-theme]').forEach(b=>b.classList.remove('active'));renderLinkHubPreview()};
     $(pickerId).oninput=()=>apply($(pickerId).value);$(hexId).oninput=()=>{const value=$(hexId).value.trim();if(validHex(value))apply(value)};$(rgbId).oninput=()=>{const value=rgbToHex($(rgbId).value);if(value)apply(value)};
   }
   syncAdvancedColor('linkHubBgPicker','linkHubBgHex','linkHubBgRgb','bg');syncAdvancedColor('linkHubTextPicker','linkHubTextHex','linkHubTextRgb','text');syncAdvancedColor('linkHubButtonPicker','linkHubButtonHex','linkHubButtonRgb','button');syncAdvancedColor('linkHubButtonTextPicker','linkHubButtonTextHex','linkHubButtonTextRgb','buttonText');
