@@ -10,7 +10,7 @@
   const path=(location.pathname||'/').toLowerCase();
   if(!/(^|\/)admin\//.test(path)||/\/admin\/login(?:\.html)?\/?$/.test(path))return;
 
-  const CSS_VERSION='20261003-preview-v6';
+  const CSS_VERSION='20261003-batch8';
   /* canonical menu labels (validator): Home, VMS Audit, QR Tools, Clients, Service Catalog, Billing / Subscriptions, Promotions, Projects & Requests, Files & Assets, Notifications & Activity, VMS LinkHub, Analytics, CRM / Leads, Sales Content, Automations, Security & Access.
      Shown with the shorter labels from the approved preview. */
   /* href, label, icon, group, mobile tab */
@@ -247,7 +247,9 @@
   function openPal(){const d=document.getElementById('vmsPal');if(!d.open)d.showModal();const i=document.getElementById('vmsPalQ');i.value='';palRender('');setTimeout(()=>i.focus(),30)}
 
   function install(){
-    try{const t=localStorage.getItem('vms-theme');if(t)document.documentElement.dataset.theme=t}catch(e){}
+    /* Admin is light-only for now (same as the Client Portal): many tool pages were built light-only
+       and broke under the system dark setting. The theme toggle is hidden in vms-admin-shell.css. */
+    document.documentElement.dataset.theme='light';
     ensureAssets();
     if(document.getElementById('vmsCanonicalAdminSidebar'))return;
 
@@ -290,7 +292,7 @@
 
     paintTheme();
     document.addEventListener('click',e=>{
-      const t=e.target.closest('[data-vms-theme]');if(t){e.preventDefault();toggleTheme();return}
+      const t=e.target.closest('[data-vms-theme]');if(t){e.preventDefault();return}
       if(e.target.closest('[data-vms-more]')){more.showModal();return}
       if(e.target.closest('[data-vms-close]')){more.close();return}
       if(e.target.closest('[data-vms-pal]')){openPal();return}

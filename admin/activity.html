@@ -623,6 +623,41 @@ body.vms-admin-canonical #bulkDeleteBtn.visible{
   display:inline-flex!important;
 }
 </style>
+<style id="vms-activity-table-fix">
+/* Activity table (batch 8): single-row desktop layout. Labels live only in the header; each row has one ••• menu. */
+.activity-row .m-label{display:none}
+.activity-row .mobile-actions{display:none}
+@media (min-width:761px){
+  body.vms-admin-canonical .activity-head,body.vms-admin-canonical .activity-row{display:grid!important;grid-template-columns:minmax(220px,2.4fr) minmax(90px,1fr) minmax(80px,.8fr) minmax(150px,1fr) 120px 52px!important;align-items:center!important;gap:12px!important;padding:12px 16px!important}
+  body.vms-admin-canonical.selection-mode .activity-head,body.vms-admin-canonical.selection-mode .activity-row{grid-template-columns:36px minmax(220px,2.4fr) minmax(90px,1fr) minmax(80px,.8fr) minmax(150px,1fr) 120px 52px!important}
+  body.vms-admin-canonical.selection-mode .activity-head .select-cell,body.vms-admin-canonical.selection-mode .activity-row>.select-cell{display:grid!important;place-items:center}
+  body.vms-admin-canonical .activity-head{padding-top:10px!important;padding-bottom:10px!important;background:var(--surface2)!important;border-radius:12px!important;font:600 12.5px/1 var(--body)!important;letter-spacing:.02em;color:var(--muted)!important;text-transform:none}
+  body.vms-admin-canonical .activity-head>div{font:inherit!important;color:inherit!important}
+  body.vms-admin-canonical .activity-row{min-height:0!important;border-bottom:1px solid var(--line)!important;background:transparent!important}
+  body.vms-admin-canonical .activity-row>.mobile-meta,body.vms-admin-canonical .activity-row .mobile-select-wrap,body.vms-admin-canonical .activity-row .mobile-status-dot{display:none!important}
+  body.vms-admin-canonical .activity-row .mobile-summary{display:block!important;padding:0!important;min-width:0}
+  body.vms-admin-canonical .activity-row .activity-main-wrap{display:flex!important;align-items:center;gap:12px;min-width:0}
+  body.vms-admin-canonical .activity-row .activity-copy{min-width:0}
+  body.vms-admin-canonical .activity-row .activity-copy strong{font:600 14.5px/1.35 var(--body)!important;color:var(--ink)!important}
+  body.vms-admin-canonical .activity-row .activity-copy>span{display:block;font-size:13px!important;color:var(--muted)!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  body.vms-admin-canonical .activity-row .cell>strong{font:500 14px/1.3 var(--body)!important;color:var(--ink)!important}
+  body.vms-admin-canonical .activity-row .when-line b{font-weight:600}
+  body.vms-admin-canonical .activity-row .when-line small{font-size:13px;color:var(--muted)}
+  body.vms-admin-canonical .activity-row .row-actions{display:flex!important;justify-content:flex-end!important;gap:0!important}
+  body.vms-admin-canonical .activity-row .row-actions>.action-dots{display:inline-grid!important;place-items:center;width:38px;height:38px;min-height:0!important;padding:0!important;font-size:20px!important;line-height:1;letter-spacing:0}
+  body.vms-admin-canonical .activity-row .mobile-actions{display:none!important}
+  body.vms-admin-canonical .toolbar{display:flex!important;flex-wrap:nowrap!important;align-items:center!important;gap:10px!important}
+  body.vms-admin-canonical .toolbar .search-wrap{flex:1 1 auto!important;min-width:0}
+  body.vms-admin-canonical .toolbar>.btn{flex:0 0 auto!important;width:auto!important;min-width:0}
+}
+@media (max-width:760px){
+  body.vms-admin-canonical .activity-row .action-dots{display:none!important}
+  body.vms-admin-canonical .activity-row.expanded .m-label{display:block;font-size:12px;color:var(--muted);font-weight:600;margin-bottom:2px}
+  body.vms-admin-canonical .activity-row.expanded .mobile-actions{display:grid!important;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+  body.vms-admin-canonical .activity-row.expanded .mobile-actions .btn{display:inline-flex!important;width:100%}
+  body.vms-admin-canonical .activity-row .when-line b{margin-right:4px}
+}
+</style>
 </head>
 <body>
 <div class="shell">
@@ -1154,9 +1189,9 @@ body.vms-admin-canonical #bulkDeleteBtn.visible{
         </div>
         <span class="mobile-status-dot ${statusClass(x)}" title="${esc(statusText(x))}" aria-label="${esc(statusText(x))}"></span>
       </div>
-      <div class="cell"><span>CLIENT</span><strong>${esc(x.client||'General')}</strong></div>
-      <div class="cell"><span>TYPE</span><strong>${esc(x.type)}</strong></div>
-      <div class="cell"><span>WHEN</span><strong><span class="when-stack"><b>${esc(w.date)}</b><small>${esc(w.time)}</small></span></strong></div>
+      <div class="cell cell-client"><span class="m-label">CLIENT</span><strong>${esc(x.client||'General')}</strong></div>
+      <div class="cell cell-type"><span class="m-label">TYPE</span><strong>${esc(x.type)}</strong></div>
+      <div class="cell cell-when"><span class="m-label">WHEN</span><strong class="when-line"><b>${esc(w.date)}</b> <small>${esc(w.time)}</small></strong></div>
       <div class="status-cell"><span class="badge ${statusClass(x)}">${esc(statusText(x))}</span></div>
       <div class="mobile-meta">
         <div class="mobile-expanded-status">
@@ -1166,12 +1201,14 @@ body.vms-admin-canonical #bulkDeleteBtn.visible{
         <div class="mobile-expanded-message">${esc(x.detail)}</div>
       </div>
       <div class="row-actions">
-        <button class="btn small mobile-view" data-action="view" type="button">View</button>
-        <button class="btn small mobile-read" data-action="read" type="button">${x.unread?'Mark Read':'Mark Unread'}</button>
-        ${x.needsAction?`<button class="btn small ${x.resolved?'orange':'green'} mobile-resolve" data-action="resolve" type="button">${x.resolved?'Reopen':'Resolve'}</button>`:''}
-        ${x.target?'<button class="btn small mobile-related" data-action="related" type="button">Open Related</button>':''}
-        <button class="btn small red mobile-delete" data-action="delete" type="button">Delete</button>
-        <button class="btn action-dots" data-action="menu" type="button" aria-label="Activity actions">•••</button>
+        <button class="btn action-dots" data-action="menu" type="button" aria-label="Activity actions" aria-haspopup="menu">&#8943;</button>
+        <div class="mobile-actions">
+          <button class="btn small mobile-view" data-action="view" type="button">View</button>
+          <button class="btn small mobile-read" data-action="read" type="button">${x.unread?'Mark Read':'Mark Unread'}</button>
+          ${x.needsAction?`<button class="btn small ${x.resolved?'orange':'green'} mobile-resolve" data-action="resolve" type="button">${x.resolved?'Reopen':'Resolve'}</button>`:''}
+          ${x.target?'<button class="btn small mobile-related" data-action="related" type="button">Open Related</button>':''}
+          <button class="btn small red mobile-delete" data-action="delete" type="button">Delete</button>
+        </div>
       </div>
     </div>`;
   }

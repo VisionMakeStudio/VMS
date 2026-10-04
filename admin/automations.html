@@ -13,6 +13,47 @@
 @media(max-width:540px){.stats{display:flex;overflow:auto}.stat{flex:0 0 150px}.switches{grid-template-columns:1fr}.intro-actions{display:grid;grid-template-columns:1fr 1fr;width:100%}.intro-actions .btn{width:100%}}
 </style>
 <link rel="stylesheet" href="/assets/vms-admin-shell.css">
+<style id="vms-automations-apple">
+/* Automations (batch 8): grouped Apple-Settings style rows. One compact row per rule; details open on tap. */
+body.vms-admin-canonical #rulesList{display:block!important;grid-template-columns:none!important;gap:0!important;padding:0!important}
+body.vms-admin-canonical .agroup{margin:0 0 14px;background:var(--surface,#fff);border:1px solid var(--line,#dfe7ea);border-radius:16px;overflow:hidden}
+body.vms-admin-canonical .agroup>summary{display:flex;align-items:center;gap:10px;min-height:56px;padding:0 16px;cursor:pointer;list-style:none;-webkit-tap-highlight-color:transparent}
+body.vms-admin-canonical .agroup>summary::-webkit-details-marker{display:none}
+body.vms-admin-canonical .agroup-name{flex:1;font:600 15.5px/1.2 var(--body,Inter,sans-serif);color:var(--ink);text-transform:capitalize}
+body.vms-admin-canonical .agroup-meta{font-size:13.5px;color:var(--muted)}
+body.vms-admin-canonical .achev{width:9px;height:9px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(-45deg);transition:transform .2s;flex:none;margin:0 4px 0 2px}
+body.vms-admin-canonical .agroup[open]>summary .achev,body.vms-admin-canonical .arule.open .achev{transform:rotate(45deg)}
+body.vms-admin-canonical .agroup-body{border-top:1px solid var(--line,#dfe7ea)}
+body.vms-admin-canonical .arule{border-bottom:1px solid var(--line,#dfe7ea);background:transparent}
+body.vms-admin-canonical .arule:last-child{border-bottom:0}
+body.vms-admin-canonical .arule-row{display:flex;align-items:center;gap:12px;min-height:60px;padding:8px 16px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+body.vms-admin-canonical .arule-row:hover{background:var(--surface2,#f4f7f8)}
+body.vms-admin-canonical .arule-row:focus-visible{outline:2px solid var(--blue,#669BBC);outline-offset:-2px}
+body.vms-admin-canonical .arule-copy{flex:1;min-width:0;display:grid;gap:2px}
+body.vms-admin-canonical .arule-copy strong{font:600 15px/1.3 var(--body,Inter,sans-serif);color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body.vms-admin-canonical .arule-copy span{font-size:13px;color:var(--muted);text-transform:capitalize}
+body.vms-admin-canonical .arule.off .arule-copy strong{color:var(--muted)}
+body.vms-admin-canonical .arule-detail{padding:2px 16px 14px 16px;background:var(--surface2,#f4f7f8)}
+body.vms-admin-canonical .arule-detail[hidden]{display:none}
+body.vms-admin-canonical .arule-detail p{margin:10px 0 6px;font-size:14px;line-height:1.5;color:var(--muted)}
+body.vms-admin-canonical .arule-line{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:48px;border-top:1px solid var(--line,#dfe7ea);font-size:14.5px;color:var(--ink)}
+body.vms-admin-canonical .arule-line:first-of-type{border-top:0}
+body.vms-admin-canonical .arule.off .arule-line{opacity:.5}
+body.vms-admin-canonical .aswitch{position:relative;display:inline-block;width:51px;height:31px;flex:none;cursor:pointer}
+body.vms-admin-canonical .aswitch input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer;z-index:1}
+body.vms-admin-canonical .aswitch i{position:absolute;inset:0;border-radius:99px;background:#d4dde2;transition:background .2s}
+body.vms-admin-canonical .aswitch i::after{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 2px 5px rgba(0,0,0,.25);transition:transform .2s}
+body.vms-admin-canonical .aswitch input:checked+i{background:#34a56f}
+body.vms-admin-canonical .aswitch input:checked+i::after{transform:translateX(20px)}
+body.vms-admin-canonical .aswitch input:disabled+i{opacity:.55}
+body.vms-admin-canonical .aswitch input:focus-visible+i{outline:2px solid var(--blue,#669BBC);outline-offset:2px}
+/* calmer top of page */
+body.vms-admin-canonical #view-rules>.card{background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important}
+body.vms-admin-canonical #view-rules>.card>.card-head{padding:0 2px 12px!important;border:0!important}
+body.vms-admin-canonical #view-rules>.card>.card-head h2{font:700 1.15rem/1.2 var(--display,Inter,sans-serif)!important}
+body.vms-admin-canonical #view-rules>.card>.card-head p{font-size:14px!important;color:var(--muted)!important;margin:4px 0 0!important}
+body.vms-admin-canonical #view-rules>.card>.card-head .badge{display:none!important}
+</style>
 </head>
 <body>
 <div class="shell">
@@ -45,20 +86,37 @@ function render(){renderNotice();renderStats();renderRules();renderDeliveries();
 function renderNotice(){const c=data.capabilities||{},n=g('emailNotice');if(c.emailConfigured){n.classList.add('good');g('emailNoticeTitle').textContent='Email delivery is connected';g('emailNoticeCopy').textContent='';n.classList.add('compact');g('emailBadge').className='badge green';g('emailBadge').textContent='Email Ready'}else{n.classList.remove('good');g('emailNoticeTitle').textContent='In-app automation is live; email is waiting for Resend';g('emailNoticeCopy').textContent='Rules will still create Activity Center/client in-app alerts. Email attempts are logged as skipped once and can send automatically after RESEND_API_KEY is configured.';g('emailBadge').className='badge orange';g('emailBadge').textContent='Email Pending'}}
 function renderStats(){const enabled=data.rules.filter(r=>r.enabled).length,cut=Date.now()-86400000,recent=data.deliveries.filter(d=>new Date(d.created_at).getTime()>=cut),sent=recent.filter(d=>d.status==='sent').length,problems=recent.filter(d=>['failed','skipped'].includes(d.status)).length,last=data.runs[0];g('statEnabled').textContent=enabled;g('statRuleTotal').textContent=`${data.rules.length} total rules`;g('statSent').textContent=sent;g('statProblems').textContent=problems;g('statLastRun').textContent=last?fmt(last.started_at):'Not run yet';g('statLastRunMeta').textContent=last?`${last.source} · ${last.status}`:'Hourly schedule'}
 const catTone={billing:'green',scheduling:'blue',onboarding:'orange',project:'blue',files:'blue',client:'blue',system:'gray'};
-function ruleCard(r){return `<article class="rule ${r.enabled?'':'off'}" data-rule="${esc(r.rule_key)}"><div class="rule-top"><div><strong>${esc(r.name)}</strong><p>${esc(r.description||'')}</p></div><span class="badge ${r.enabled?'green':'gray'}">${r.enabled?'On':'Off'}</span></div><div class="meta"><span class="badge" title="Trigger: ${esc(r.trigger_type)}">${esc(r.audience)}</span>${r.lead_minutes!=null?`<span class="badge">${Math.round(r.lead_minutes/60)}h lead</span>`:''}</div><div class="switches"><label class="toggle"><span>Rule</span><input type="checkbox" data-field="enabled" ${r.enabled?'checked':''}></label><label class="toggle"><span>In-app</span><input type="checkbox" data-field="in_app_enabled" ${r.in_app_enabled?'checked':''}></label><label class="toggle"><span>Email</span><input type="checkbox" data-field="email_enabled" ${r.email_enabled?'checked':''}></label></div></article>`}
+function ruleSwitch(field,on,label){return `<label class="aswitch" aria-label="${esc(label)}"><input type="checkbox" data-field="${field}" ${on?'checked':''}><i aria-hidden="true"></i></label>`}
+function ruleCard(r){
+  const key=String(r.rule_key),openSet=window.__vmsRuleExpanded||(window.__vmsRuleExpanded=new Set()),isOpen=openSet.has(key);
+  const sub=[r.audience,r.lead_minutes!=null?`${Math.round(r.lead_minutes/60)}h before`:''].filter(Boolean).join(' · ');
+  return `<article class="arule ${r.enabled?'':'off'} ${isOpen?'open':''}" data-rule="${esc(key)}">
+    <div class="arule-row" role="button" tabindex="0" aria-expanded="${isOpen?'true':'false'}">
+      <div class="arule-copy"><strong>${esc(r.name)}</strong><span>${esc(sub)}</span></div>
+      ${ruleSwitch('enabled',r.enabled,'Turn '+r.name+' on or off')}
+      <span class="achev" aria-hidden="true"></span>
+    </div>
+    <div class="arule-detail" ${isOpen?'':'hidden'}>
+      ${r.description?`<p>${esc(r.description)}</p>`:''}
+      <div class="arule-line"><span>In-app notification</span>${ruleSwitch('in_app_enabled',r.in_app_enabled,'In-app notification')}</div>
+      <div class="arule-line"><span>Email</span>${ruleSwitch('email_enabled',r.email_enabled,'Email')}</div>
+    </div>
+  </article>`}
 function renderRules(){
   const box=g('rulesList');
   if(!data.rules.length){box.innerHTML='<div class="empty"><strong>No automation rules</strong>The Phase 7 rules have not been loaded.</div>';return}
   const open=window.__vmsRuleOpen||(window.__vmsRuleOpen=new Set());
   const groups={};data.rules.forEach(r=>{const k=r.category||'other';(groups[k]=groups[k]||[]).push(r)});
   box.innerHTML=Object.entries(groups).map(([cat,rows])=>{const on=rows.filter(r=>r.enabled).length;
-    return `<details class="rule-group" data-cat="${esc(cat)}" ${open.has(cat)?'open':''}><summary><span class="badge ${catTone[cat]||'gray'}">${esc(cat)}</span><strong>${rows.length} ${rows.length===1?'rule':'rules'}</strong><em>${on} on${rows.length-on?` · ${rows.length-on} off`:''}</em></summary><div class="rule-group-body">${rows.map(ruleCard).join('')}</div></details>`}).join('');
+    return `<details class="agroup" data-cat="${esc(cat)}" ${open.has(cat)?'open':''}><summary><span class="agroup-name">${esc(cat)}</span><span class="agroup-meta">${on} of ${rows.length} on</span><span class="achev" aria-hidden="true"></span></summary><div class="agroup-body">${rows.map(ruleCard).join('')}</div></details>`}).join('');
   box.querySelectorAll('details').forEach(d=>d.addEventListener('toggle',()=>{d.open?open.add(d.dataset.cat):open.delete(d.dataset.cat)}));
 }
+function toggleRuleRow(row){const card=row.closest('[data-rule]'),set=window.__vmsRuleExpanded||(window.__vmsRuleExpanded=new Set()),key=card.dataset.rule,now=!set.has(key);now?set.add(key):set.delete(key);card.classList.toggle('open',now);row.setAttribute('aria-expanded',String(now));const d=card.querySelector('.arule-detail');if(d)d.hidden=!now}
 function statusBadge(s){const tone=s==='sent'?'green':s==='failed'?'red':s==='skipped'?'orange':'gray';return `<span class="badge ${tone}">${esc(s)}</span>`}function renderDeliveries(){const filter=g('deliveryFilter').value||'all',rows=filter==='all'?data.deliveries:data.deliveries.filter(d=>d.status===filter);g('deliveriesList').innerHTML=rows.length?rows.map(d=>`<div class="delivery-row"><div class="delivery-main"><strong>${esc(d.subject)}</strong><span>${esc(d.rule_key)} · ${esc(d.message).slice(0,95)}</span></div><div class="cell">${esc(d.audience)}</div><div class="cell">${esc(d.channel.replace('_',' '))}</div><div class="cell">${statusBadge(d.status)}${d.error?`<small>${esc(d.error)}</small>`:''}</div><div class="cell">${esc(d.recipient||d.source_type)}<small>${esc(d.source_id).slice(0,34)}</small></div><div class="cell">${fmt(d.sent_at||d.created_at)}</div></div>`).join(''):'<div class="empty"><strong>No matching deliveries</strong>Nothing has been delivered in this view yet.</div>'}
 function renderRuns(){g('runsList').innerHTML=data.runs.length?data.runs.slice(0,15).map(r=>`<div class="run-row"><div>${fmt(r.started_at)}</div><div>${esc(r.source)}</div><div>${statusBadge(r.status)}</div><div>${r.scanned_count||0}</div><div>${r.created_count||0}</div><div>${r.sent_count||0}</div><div>${r.skipped_count||0}</div><div>${r.failed_count||0}</div><div>${esc(r.error||((r.metadata?.duplicates||0)+' duplicate deliveries suppressed'))}</div></div>`).join('')+(data.runs.length>15?`<div class="empty" style="padding:12px">Showing the latest 15 of ${data.runs.length} runs.</div>`:''):'<div class="empty"><strong>No runs yet</strong>The scheduled runner will create history after its first production execution.</div>'}
 function renderManual(){const c=g('manualClient'),r=g('manualRule'),cv=c.value,rv=r.value;c.innerHTML='<option value="">Choose a client</option>'+data.clients.map(x=>`<option value="${esc(x.id)}">${esc(x.business_name||x.contact_name||x.owner_email)}</option>`).join('');r.innerHTML='<option value="">Choose an event</option>'+data.rules.filter(x=>x.trigger_type==='event'&&x.enabled).map(x=>`<option value="${esc(x.rule_key)}">${esc(x.name)}</option>`).join('');c.value=cv;r.value=rv}
 document.querySelector('.tabs').onclick=e=>{const b=e.target.closest('[data-tab]');if(!b)return;document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===`view-${b.dataset.tab}`))};
+g('rulesList').addEventListener('click',e=>{const row=e.target.closest('.arule-row');if(!row||e.target.closest('.aswitch'))return;toggleRuleRow(row)});g('rulesList').addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.classList.contains('arule-row')){e.preventDefault();toggleRuleRow(e.target)}});
 g('rulesList').onchange=async e=>{const input=e.target.closest('input[data-field]');if(!input)return;const card=input.closest('[data-rule]'),rule=card.dataset.rule,field=input.dataset.field;input.disabled=true;try{await api({action:'update_rule',rule_key:rule,[field]:input.checked});toast('Automation rule updated');await load()}catch(err){input.checked=!input.checked;toast(err.message)}finally{input.disabled=false}};
 g('deliveryFilter').onchange=renderDeliveries;g('refreshBtn').onclick=()=>load().catch(e=>toast(e.message));g('openActivityBtn').onclick=()=>location.href='activity.html';g('runNowBtn').onclick=async()=>{const b=g('runNowBtn');b.disabled=true;b.textContent='Running…';try{const r=await api({action:'run_now'});toast(`Run complete · ${r.sent||0} delivered`);await load()}catch(e){toast(e.message)}finally{b.disabled=false;b.textContent='Run Automations Now'}};
 g('manualForm').onsubmit=async e=>{e.preventDefault();const body={action:'event',client_id:g('manualClient').value,rule_key:g('manualRule').value,subject:g('manualSubject').value.trim(),message:g('manualMessage').value.trim(),needs_action:g('manualAction').checked,source_type:'admin_manual_update'};try{await api(body);toast('Client update processed');g('manualSubject').value='';g('manualMessage').value='';g('manualAction').checked=false;await load()}catch(err){toast(err.message)}};

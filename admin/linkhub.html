@@ -117,32 +117,29 @@ a{color:inherit}
 }
 </style>
 <style id="vms-linkhub-page-fix">
-/* Make linkhub edit modal feel like a real page section, not a popup */
-body.vms-admin-canonical .modal-backdrop.show.linkhub-edit-modal{
-  position:static!important;
-  background:transparent!important;
-  display:block!important;
-  padding:0!important;
-  z-index:auto!important;
-  margin-top:16px!important;
-}
-body.vms-admin-canonical .modal-backdrop.show.linkhub-edit-modal .modal{
-  width:100%!important;
-  max-height:none!important;
-  border-radius:20px!important;
-  box-shadow:var(--shadow)!important;
-  background:var(--surface)!important;
-  border:1px solid var(--line)!important;
-}
-body.vms-admin-canonical .modal-backdrop.show.linkhub-edit-modal .modal-head{
-  padding:18px 20px 12px!important;
-  border-bottom:1px solid var(--line)!important;
-  background:transparent!important;
-}
-body.vms-admin-canonical .modal-backdrop.show.linkhub-edit-modal .modal-body{
-  max-height:none!important;
-  overflow:visible!important;
-}
+/* LinkHub editor: an inline page section (no popup, backdrop or close X). While it is open it replaces the list. */
+.lh-editor{display:none;margin:0}
+.lh-editor.show{display:block}
+body:has(#manageModal.show) .content>.stats,body:has(#manageModal.show) .content>section.panel{display:none!important}
+body.vms-admin-canonical .lh-editor-card{background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);overflow:visible}
+body.vms-admin-canonical .lh-editor .modal-head{display:flex!important;align-items:flex-start!important;justify-content:space-between!important;gap:14px!important;padding:20px 22px 6px!important;border:0!important;background:transparent!important}
+body.vms-admin-canonical .lh-editor .modal-head h3{margin:0!important;font-family:var(--display)!important;font-weight:700!important;font-size:clamp(1.2rem,2.4vw,1.6rem)!important;letter-spacing:-.03em!important;line-height:1.15!important;color:var(--ink)!important}
+body.vms-admin-canonical .lh-editor .modal-head p{margin:4px 0 0!important;font-size:14px!important;color:var(--muted)!important;max-width:60ch}
+body.vms-admin-canonical .lh-editor-back{flex:none}
+body.vms-admin-canonical .lh-editor .modal-body{padding:12px 22px 22px!important;max-height:none!important;overflow:visible!important;background:transparent!important}
+body.vms-admin-canonical .lh-editor .manage-shell{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:22px!important;align-items:start}
+@media (min-width:1100px){body.vms-admin-canonical .lh-editor .manage-shell{grid-template-columns:minmax(0,1fr) 340px!important}body.vms-admin-canonical .lh-editor .manage-shell>:last-child{position:sticky;top:96px}}
+body.vms-admin-canonical .lh-editor .manage-tabs{display:flex!important;gap:4px!important;padding:4px!important;margin:0 0 16px!important;border:0!important;border-radius:14px!important;background:var(--surface2)!important;overflow-x:auto;scrollbar-width:none}
+body.vms-admin-canonical .lh-editor .manage-tabs::-webkit-scrollbar{display:none}
+body.vms-admin-canonical .lh-editor .manage-tab{flex:1 0 auto;min-height:42px!important;padding:0 14px!important;border:0!important;border-radius:10px!important;background:transparent!important;color:var(--muted)!important;font:600 14px/1 var(--body)!important;box-shadow:none!important;white-space:nowrap}
+body.vms-admin-canonical .lh-editor .manage-tab.active{background:var(--surface)!important;color:var(--ink)!important;box-shadow:0 2px 8px rgba(0,48,73,.12)!important}
+body.vms-admin-canonical .lh-editor .section-card{background:var(--surface)!important;border:1px solid var(--line)!important;border-radius:16px!important;box-shadow:none!important;margin-bottom:14px!important;overflow:visible!important}
+body.vms-admin-canonical .lh-editor .section-head{display:flex!important;align-items:baseline!important;justify-content:space-between!important;gap:10px!important;padding:14px 16px 4px!important;background:transparent!important;border:0!important}
+body.vms-admin-canonical .lh-editor .section-head span{font-size:13px!important;color:var(--muted)!important}
+body.vms-admin-canonical .lh-editor .section-body{padding:10px 16px 16px!important}
+body.vms-admin-canonical .lh-editor .phone-wrap{width:min(100%,320px)!important;margin:0 auto!important}
+body.vms-admin-canonical .lh-editor .modal-foot{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;padding:14px 22px!important;border-top:1px solid var(--line)!important;background:color-mix(in srgb,var(--surface) 92%,transparent)!important;border-radius:0 0 20px 20px;position:sticky;bottom:0;z-index:5;backdrop-filter:blur(10px)}
+@media (max-width:999px){body.vms-admin-canonical .lh-editor .modal-foot{bottom:calc(76px + env(safe-area-inset-bottom,0px))}body.vms-admin-canonical .lh-editor .modal-head{padding:16px 16px 4px!important}body.vms-admin-canonical .lh-editor .modal-body{padding:10px 14px 16px!important}}
 /* Linkhub list cards */
 body.vms-admin-canonical #linkhubList{display:grid!important;gap:10px!important}
 body.vms-admin-canonical .linkhub-item{
@@ -233,16 +230,11 @@ body.vms-admin-canonical .linkhub-item .item-actions{display:flex!important;gap:
         <div class="hub-grid" id="hubGrid"></div>
         <div class="empty" id="emptyState">No LinkHubs match this view.</div>
       </section>
-    </div>
-  </main>
-</div>
-
-<!-- MANAGE LINKHUB -->
-<div class="modal-backdrop" id="manageModal">
-  <div class="modal wide">
+    <section class="lh-editor" id="manageModal" aria-labelledby="manageTitle">
+  <div class="lh-editor-card">
     <div class="modal-head">
       <div><h3 id="manageTitle">Manage LinkHub</h3><p id="manageSub">VMS has full control. Client editing depends on the permissions you allow.</p></div>
-      <button class="close" data-close="manageModal" type="button">×</button>
+      <button class="btn lh-editor-back" data-close="manageModal" type="button">All LinkHubs</button>
     </div>
     <div class="modal-body">
       <div class="manage-shell">
@@ -409,8 +401,12 @@ body.vms-admin-canonical .linkhub-item .item-actions{display:flex!important;gap:
       <div class="modal-foot-right"><button class="btn" data-close="manageModal" type="button">Cancel</button><button class="btn primary" id="saveHubBtn" type="button">Save Changes</button></div>
     </div>
   </div>
+</section>
+    </div>
+  </main>
 </div>
 
+<!-- MANAGE LINKHUB -->
 <!-- ADD/EDIT SOCIAL -->
 <div class="modal-backdrop" id="socialModal"><div class="modal small">
   <div class="modal-head"><div><h3 id="socialModalTitle">Add Social Icon</h3><p>Shown as a branded icon below the main LinkHub buttons.</p></div><button class="close" data-close="socialModal" type="button">×</button></div>
@@ -771,7 +767,7 @@ body.vms-admin-canonical .linkhub-item .item-actions{display:flex!important;gap:
     $('hubPlan').value=h.plan||((Number(h.billing?.price)||0)>0?'Pro':'Core');const feat=h.features||{},wifi=h.wifi||feat.wifi||{},restaurant=h.restaurant||feat.restaurant||{},visit=h.visit||feat.visit||{};$('hubWifiEnabled').checked=!!wifi.enabled;$('hubWifiSsid').value=wifi.ssid||'';$('hubWifiSecurity').value=wifi.security||'WPA2';$('hubWifiPassword').value=wifi.password||'';$('hubMenuEnabled').checked=!!restaurant.enabled;$('hubRestaurantName').value=restaurant.name||h.client;$('hubRestaurantCuisine').value=restaurant.cuisine||'';$('hubRestaurantDescription').value=restaurant.description||'';$('hubRestaurantPhone').value=restaurant.phone||h.phone||'';$('hubRestaurantWebsite').value=restaurant.website||h.website||'';$('hubRestaurantAddress').value=restaurant.address||h.address||'';$('hubRestaurantMapUrl').value=restaurant.mapUrl||'';$('hubRestaurantReservationUrl').value=restaurant.reservationUrl||'';$('hubRestaurantOrderUrl').value=restaurant.orderUrl||'';$('hubRestaurantHours').value=restaurant.hours||'';$('hubRestaurantShowPrices').checked=restaurant.showPrices!==false;$('hubRestaurantShowPhotos').checked=!!restaurant.showPhotos;$('hubVisitEnabled').checked=visit.enabled!==false;$('hubVisitName').value=visit.name||h.client;$('hubVisitCategory').value=visit.category||'';$('hubVisitBio').value=visit.bio||'';$('hubVisitPhone').value=visit.phone||h.phone||'';$('hubVisitEmail').value=visit.email||h.email||'';$('hubVisitWebsite').value=visit.website||h.website||'';$('hubVisitAddress').value=visit.address||h.address||'';$('hubVisitMapUrl').value=visit.mapUrl||h.mapsUrl||'';$('hubVisitHours').value=visit.hours||'';$('hubSmartScan').value=feat.smartScan?'on':'off';$('hubClientManage').checked=feat.clientManage!==false;applyPlanRules(false);
     $('permProfile').checked=!!h.permissions?.profile;$('permContact').checked=!!h.permissions?.contact;$('permLinks').checked=!!h.permissions?.links;$('permOrder').checked=!!h.permissions?.order;$('permTheme').checked=!!h.permissions?.theme;
     $('archiveHubBtn').textContent=h.archived?'Restore':'Archive';$('archiveHubBtn').className=h.archived?'btn green':'btn red';
-    renderLinks();renderSocials();renderPreview();$('manageModal').classList.add('show');
+    renderLinks();renderSocials();renderPreview();$('manageModal').classList.add('show');window.scrollTo({top:0,behavior:'instant'});
   }
   function saveHub(){
     const h=hubFor(editingId);if(!h)return;

@@ -650,6 +650,47 @@ body.vms-admin-canonical .mini-note{
   border:1px solid var(--line)!important;
 }
 </style>
+<style id="vms-security-light">
+/* Security (batch 8): light, readable, one card level. Section cards flatten into the card; rows get clear separators. */
+body.vms-admin-canonical .hero{background:transparent!important;border:0!important;box-shadow:none!important;padding:0 0 18px!important;color:var(--ink)!important}
+body.vms-admin-canonical .hero-brand{display:flex!important;align-items:center!important;gap:16px!important}
+body.vms-admin-canonical .hero-logo{display:none!important}
+body.vms-admin-canonical .hero h1{margin:2px 0 6px!important;font:700 clamp(1.6rem,3vw,2.1rem)/1.1 var(--display)!important;letter-spacing:-.03em!important;color:var(--ink)!important}
+body.vms-admin-canonical .hero p{margin:0!important;max-width:60ch;font-size:15px!important;line-height:1.55!important;color:var(--muted)!important}
+body.vms-admin-canonical .eyebrow{display:block;margin:0 0 4px!important;font:600 12px/1 var(--body)!important;letter-spacing:.08em!important;color:var(--blue,#669BBC)!important}
+body.vms-admin-canonical .hero .stats{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:12px!important;margin-top:18px!important}
+body.vms-admin-canonical .hero .stat{background:var(--surface)!important;border:1px solid var(--line)!important;border-radius:16px!important;padding:14px 16px!important;box-shadow:none!important}
+body.vms-admin-canonical .hero .stat-label{font:500 13px/1.2 var(--body)!important;color:var(--muted)!important}
+body.vms-admin-canonical .hero .stat-value{margin-top:6px!important;font:700 1.05rem/1.25 var(--display)!important;letter-spacing:-.02em!important;color:var(--ink)!important}
+body.vms-admin-canonical .stack{display:grid!important;gap:16px!important}
+body.vms-admin-canonical .card{background:var(--surface)!important;border:1px solid var(--line)!important;border-radius:20px!important;box-shadow:none!important;overflow:visible!important}
+body.vms-admin-canonical .card-head{padding:20px 22px 6px!important;border:0!important;background:transparent!important}
+body.vms-admin-canonical .card-head h2{margin:0 0 4px!important;font:700 1.2rem/1.2 var(--display)!important;letter-spacing:-.02em!important;color:var(--ink)!important}
+body.vms-admin-canonical .card-head p{margin:0!important;font-size:14px!important;line-height:1.5!important;color:var(--muted)!important}
+body.vms-admin-canonical .card-body{padding:12px 22px 22px!important;display:grid;gap:14px}
+body.vms-admin-canonical .glass-section{background:transparent!important;border:0!important;border-top:1px solid var(--line)!important;border-radius:0!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;padding:16px 0 0!important}
+body.vms-admin-canonical .glass-section:first-child{border-top:0!important;padding-top:4px!important}
+body.vms-admin-canonical .glass-section :is(.kv-item,.info-item){background:transparent!important;border:0!important;border-bottom:1px solid var(--line)!important;border-radius:0!important;padding:12px 0!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:16px!important}
+body.vms-admin-canonical .glass-section :is(.kv-item,.info-item):last-child{border-bottom:0!important}
+body.vms-admin-canonical .glass-section .kv-item span,body.vms-admin-canonical .glass-section .info-item span{font-size:14px!important;color:var(--muted)!important}
+body.vms-admin-canonical .glass-section .kv-item strong,body.vms-admin-canonical .glass-section .info-item strong{font-size:14.5px!important;font-weight:600!important;color:var(--ink)!important;text-align:right}
+body.vms-admin-canonical .glass-section :is(.mini-note,.notice,.note){background:var(--surface2)!important;border:0!important;border-radius:12px!important;padding:12px 14px!important;font-size:13.5px!important;line-height:1.5!important;color:var(--muted)!important}
+body.vms-admin-canonical .field label{font:600 13.5px/1.2 var(--body)!important;color:var(--ink)!important}
+body.vms-admin-canonical .field input{min-height:48px!important;background:var(--surface)!important;border:1px solid var(--line2)!important;border-radius:12px!important;color:var(--ink)!important;font-size:15px!important}
+@media (max-width:760px){body.vms-admin-canonical .hero .stats{grid-template-columns:1fr!important}body.vms-admin-canonical .card-head{padding:16px 16px 4px!important}body.vms-admin-canonical .card-body{padding:10px 16px 18px!important}}
+html body.vms-admin-canonical .card .card-head{display:block!important}
+html body.vms-admin-canonical .card .card-head .eyebrow{display:none!important}
+html body.vms-admin-canonical .card .glass-section{background:transparent!important;border:0!important;border-top:1px solid var(--line)!important;border-radius:0!important;box-shadow:none!important;padding:16px 0 0!important;overflow:visible!important}
+html body.vms-admin-canonical .card .glass-section:first-child{border-top:0!important;padding-top:4px!important}
+html body.vms-admin-canonical .card .glass-section :is(.kv-item,.info-item){background:transparent!important;border:0!important;border-bottom:1px solid var(--line)!important;border-radius:0!important;box-shadow:none!important;padding:13px 0!important;min-height:0!important}
+html body.vms-admin-canonical .card .glass-section :is(.kv-item,.info-item):last-of-type{border-bottom:0!important}
+html body.vms-admin-canonical .card .glass-section :is(.mini-note,.notice,.note,.help,.hint){border:0!important;background:var(--surface2)!important;border-radius:12px!important}
+html body.vms-admin-canonical .card .meta{display:block!important;background:transparent!important;border:0!important;padding:0!important}
+html body.vms-admin-canonical .card .meta-row{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:16px!important;background:transparent!important;border:0!important;border-bottom:1px solid var(--line)!important;border-radius:0!important;box-shadow:none!important;padding:13px 0!important;min-height:0!important}
+html body.vms-admin-canonical .card .meta-row:last-child{border-bottom:0!important}
+html body.vms-admin-canonical .card .meta-label{font-size:14px!important;color:var(--muted)!important;font-weight:500!important}
+html body.vms-admin-canonical .card .meta-value{font-size:14.5px!important;color:var(--ink)!important;font-weight:600!important;text-align:right}
+</style>
 </head>
 <body>
 <main class="page">

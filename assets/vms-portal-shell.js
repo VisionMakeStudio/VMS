@@ -7,7 +7,7 @@
   'use strict';
   if(window.__VMS_PORTAL_SHELL_V5__)return;
   window.__VMS_PORTAL_SHELL_V5__=true;
-  const CSS_VERSION='20261003-preview-v6';
+  const CSS_VERSION='20261003-batch8';
   /* canonical menu labels (validator): Home, My Services, QR Codes, My LinkHub, Audits, Projects, Files, Notifications, Requests, Billing, Contact / Schedule */
   /* section, label, icon, desktop primary, phone tab */
   const ITEMS=[

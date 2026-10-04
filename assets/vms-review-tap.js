@@ -1,121 +1,75 @@
-/* VMS homepage — Interactive Review Tap stand and card product viewer.
-   Renders when the Add-ons tab is active. No external libraries. */
+/* VMS homepage — Review Stand / Review Card interactive viewer.
+   Lives in its own homepage section (#review-stand). No external libraries. */
 (()=>{
   'use strict';
   const stage=document.getElementById('rtStage');if(!stage)return;
+  const $=id=>document.getElementById(id);
   const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  let type='stand',color='white',tapping=false,tapTimer=null;
-  const qr=()=>'<svg class="rt-qr-svg" viewBox="0 0 56 56" aria-hidden="true">'+
-    '<rect width="56" height="56" fill="'+([...Array(6)].map(()=>'').join('')||'white')+'"/>' +
-    [0,7,14,21,28,35,42,49].flatMap(y=>[0,7,14,21,28,35,42,49].map(x=>{const on=(x*7+y*13+x*y)%3===0;return on?`<rect x="${x}" y="${y}" width="7" height="7" fill="${color==='black'?'#fff':'#003049'}"/>`:'';})).join('')+
-    `<rect x="0" y="0" width="21" height="21" rx="3" fill="none" stroke="${color==='black'?'#fff':'#003049'}" stroke-width="3"/>
-    <rect x="35" y="0" width="21" height="21" rx="3" fill="none" stroke="${color==='black'?'#fff':'#003049'}" stroke-width="3"/>
-    <rect x="0" y="35" width="21" height="21" rx="3" fill="none" stroke="${color==='black'?'#fff':'#003049'}" stroke-width="3"/>
-    <rect x="5" y="5" width="11" height="11" rx="2" fill="${color==='black'?'#fff':'#003049'}"/>
-    <rect x="40" y="5" width="11" height="11" rx="2" fill="${color==='black'?'#fff':'#003049'}"/>
-    <rect x="5" y="40" width="11" height="11" rx="2" fill="${color==='black'?'#fff':'#003049'}"/></svg>';
-  const badge=()=>`<div class="rt-badge" aria-hidden="true"><div class="rt-badge-inner" style="${color==='black'?'background:#111;color:#FDF0D5':''}">★</div></div>`;
-  const stars=()=>'<div class="rt-stars" aria-hidden="true">⭐⭐⭐⭐⭐</div>';
-  const tapIcon=()=>`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${color==='black'?'rgba(255,255,255,.7)':'#526a77'}" stroke-width="1.6" aria-hidden="true"><path d="M12 3C6.5 3 2 7.5 2 13s4.5 10 10 10 10-4.5 10-10M22 3l-4 4M22 7V3h-4"/></svg>`;
-  const phone=()=>`<div class="rt-phone" id="rtPhone"><div class="rt-phone-screen"><div class="rt-phone-url">g.co/l/review/★★★★★</div><div class="rt-phone-stars">⭐⭐⭐⭐⭐</div><div class="rt-phone-cta">Leave a review</div></div></div>`;
+  let type='stand',color='white',tapTimer=0;
 
-  function standHtml(){
-    const dark=color==='black';
-    const ink=dark?'rgba(255,255,255,.9)':'#112D3D';
-    const muted=dark?'rgba(255,255,255,.6)':'#526a77';
-    return `<div class="rt-stand" id="rtProduct">
-      ${phone()}
-      <div class="rt-stand-body${dark?' black':''}" id="rtBody">
-        <div class="rt-stand-title" style="color:${ink}">We'd love your feedback</div>
-        ${badge()}
-        ${stars()}
-        <div class="rt-qr-box" style="${dark?'background:#111':''}">
-          ${qr()}
-        </div>
-        <div class="rt-tap" style="color:${muted}">
-          ${tapIcon()}<span>Tap</span><span style="margin:0 2px">or</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${muted}" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M7 7h3v3H7zM14 7h3v3h-3zM7 14h3v3H7z"/></svg>
-          <span>Scan</span>
-        </div>
-        <div class="rt-stripe"></div>
-      </div>
-      <div class="rt-stand-foot" style="${dark?'background:#1a1a1a':''}"></div>
-    </div>`;
+  const qr=()=>{
+    const ink=color==='black'&&type==='stand'?'#fff':'#003049';
+    const cells=[0,7,14,21,28,35,42,49].flatMap(y=>[0,7,14,21,28,35,42,49].map(x=>{
+      const inFinder=(x<21&&y<21)||(x>=35&&y<21)||(x<21&&y>=35);
+      return !inFinder&&(x*7+y*13+x*y)%3===0?'<rect x="'+x+'" y="'+y+'" width="7" height="7" fill="'+ink+'"/>':'';
+    })).join('');
+    const finder=(x,y)=>'<rect x="'+(x+1.5)+'" y="'+(y+1.5)+'" width="18" height="18" rx="3" fill="none" stroke="'+ink+'" stroke-width="3"/><rect x="'+(x+5)+'" y="'+(y+5)+'" width="11" height="11" rx="2" fill="'+ink+'"/>';
+    return '<svg class="rt-qr-svg" viewBox="0 0 56 56" aria-hidden="true">'+cells+finder(0,0)+finder(35,0)+finder(0,35)+'</svg>';
+  };
+  const badge='<div class="rt-badge" aria-hidden="true"><div class="rt-badge-inner">G</div></div>';
+  const stars='<div class="rt-stars" aria-hidden="true">★★★★★</div>';
+  const phone='<div class="rt-phone" id="rtPhone" aria-hidden="true"><div class="rt-phone-screen"><div class="rt-phone-g">G</div><div class="rt-phone-stars">★★★★★</div><div class="rt-phone-cta">Write a review</div></div></div>';
+  const tapRow=(ink,label)=>'<div class="rt-tap" style="color:'+ink+'"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12a7 7 0 0 1 7-7M8.5 12A3.5 3.5 0 0 1 12 8.5M2 12A10 10 0 0 1 12 2"/></svg><span>'+label+'</span></div>';
+
+  function productHtml(){
+    if(type==='card'){
+      return '<div class="rt-card" id="rtProduct">'+phone+
+        '<div class="rt-stand-title" style="color:#112D3D">Review us on Google</div>'+badge+stars+
+        '<div class="rt-qr-box">'+qr()+'</div>'+tapRow('#526a77','Tap or scan')+'<div class="rt-stripe"></div></div>';
+    }
+    const dark=color==='black',ink=dark?'#FDF0D5':'#112D3D',muted=dark?'rgba(253,240,213,.7)':'#526a77';
+    return '<div class="rt-stand" id="rtProduct">'+phone+
+      '<div class="rt-stand-body'+(dark?' black':'')+'"><div class="rt-stand-title" style="color:'+ink+'">We\u2019d love your feedback</div>'+badge+stars+
+      '<div class="rt-qr-box">'+qr()+'</div>'+tapRow(muted,'Tap or scan')+'<div class="rt-stripe"></div></div>'+
+      '<div class="rt-stand-foot'+(dark?' black':'')+'"></div></div>';
   }
 
-  function cardHtml(){
-    return `<div class="rt-card" id="rtProduct">
-      ${phone()}
-      <div class="rt-stand-title" style="color:#112D3D;font-size:9px">Review us on Google</div>
-      ${badge()}
-      ${stars()}
-      <div class="rt-qr-box">
-        ${qr()}
-      </div>
-      <div class="rt-tap" style="color:#526a77">
-        ${tapIcon()}<span>Tap your phone</span>
-      </div>
-      <div class="rt-stripe"></div>
-    </div>`;
-  }
+  const COPY={
+    stand:{title:'VMS Review Stand',desc:'A counter stand your customers can tap with a phone or scan. Opens your Google review page instantly. VMS handles the link setup.',price:'$30',btn:'Order a stand',pick:'tap-scan-stand',feats:['Tap with NFC or scan the QR code','Opens your Google review page','White or black, your choice','VMS handles the link setup','Free U.S. shipping']},
+    card:{title:'VMS Review Card',desc:'A slim card your customers tap to leave a review. NFC on the front, QR code on the back.',price:'$15',btn:'Order a card',pick:'tap-scan-card',feats:['Tap with NFC or scan the QR code','Opens your Google review page','White only','VMS handles the link setup','Free U.S. shipping']}
+  };
 
   function render(){
-    stage.innerHTML=type==='stand'?standHtml():cardHtml();
-    stage.onclick=handleTap;
-    if(tapping)setTimeout(()=>{const ph=document.getElementById('rtPhone');if(ph)ph.classList.add('tapping')},50);
-    /* Update side panel */
-    const titleEl=document.getElementById('rtTitle');
-    const descEl=document.getElementById('rtDesc');
-    const priceEl=document.getElementById('rtPrice');
-    const btnEl=document.getElementById('rtOrderBtn');
-    const featsEl=document.getElementById('rtFeatures');
-    const colorRow=document.getElementById('rtColorRow');
-    if(type==='stand'){
-      if(titleEl)titleEl.textContent='VMS Review Stand — '+color.charAt(0).toUpperCase()+color.slice(1);
-      if(descEl)descEl.textContent='A counter stand your customers can tap with a phone or scan. Opens your Google review page instantly. VMS handles the link setup.';
-      if(priceEl)priceEl.textContent='$30';
-      if(btnEl){btnEl.textContent='Order a stand';btnEl.dataset.pick='tap-scan-stand'}
-      if(featsEl)featsEl.innerHTML=['Tap with NFC or scan the QR code','Opens your Google review page','White or black, your choice','VMS handles the link setup','Free U.S. shipping'].map(f=>`<li><svg><use href="#i-check"/></svg>${esc(f)}</li>`).join('');
-      if(colorRow)colorRow.style.display='';
-    } else {
-      if(titleEl)titleEl.textContent='VMS Review Card';
-      if(descEl)descEl.textContent='A slim card your customers tap to leave a review. NFC on the front, QR code on the back. White only.';
-      if(priceEl)priceEl.textContent='$15';
-      if(btnEl){btnEl.textContent='Order a card';btnEl.dataset.pick='tap-scan-card'}
-      if(featsEl)featsEl.innerHTML=['Tap NFC or scan QR on the back','Opens your Google review page','White only','VMS handles the link setup','Free U.S. shipping'].map(f=>`<li><svg><use href="#i-check"/></svg>${esc(f)}</li>`).join('');
-      if(colorRow)colorRow.style.display='none';
-    }
+    stage.innerHTML=productHtml()+'<span class="rt-hint">Tap to try it</span>';
+    const c=COPY[type];
+    if($('rtTitle'))$('rtTitle').textContent=type==='stand'?c.title+' \u00b7 '+(color==='black'?'Black':'White'):c.title;
+    if($('rtDesc'))$('rtDesc').textContent=c.desc;
+    if($('rtPrice'))$('rtPrice').textContent=c.price;
+    const btn=$('rtOrderBtn');if(btn){btn.textContent=c.btn;btn.dataset.pick=c.pick}
+    if($('rtFeatures'))$('rtFeatures').innerHTML=c.feats.map(f=>'<li><svg><use href="#i-check"/></svg>'+esc(f)+'</li>').join('');
+    const row=$('rtColorRow');if(row)row.hidden=type!=='stand';
+    document.querySelectorAll('[data-rt-type]').forEach(b=>{const on=b.dataset.rtType===type;b.classList.toggle('active',on);b.setAttribute('aria-pressed',on?'true':'false')});
+    document.querySelectorAll('[data-rt-color]').forEach(b=>{const on=b.dataset.rtColor===color;b.classList.toggle('active',on);b.setAttribute('aria-pressed',on?'true':'false')});
   }
 
-  function handleTap(){
-    if(tapping)return;
-    tapping=true;
-    const ph=document.getElementById('rtPhone');
-    if(ph){ph.classList.add('tapping');clearTimeout(tapTimer);tapTimer=setTimeout(()=>{ph.classList.remove('tapping');tapping=false},2200)}
+  function tap(){
+    const ph=$('rtPhone');if(!ph)return;
+    clearTimeout(tapTimer);ph.classList.add('tapping');
+    tapTimer=setTimeout(()=>ph.classList.remove('tapping'),2200);
   }
 
-  /* Controls */
+  stage.addEventListener('click',tap);
   document.addEventListener('click',e=>{
-    const btn=e.target.closest('[data-rt-type]');
-    if(btn){
-      type=btn.dataset.rtType;color='white';
-      document.querySelectorAll('[data-rt-type]').forEach(b=>b.classList.toggle('active',b===btn));
-      document.querySelectorAll('[data-rt-color]').forEach(b=>b.classList.toggle('active',b.dataset.rtColor==='white'));
-      tapping=false;render();return;
-    }
-    const cbtn=e.target.closest('[data-rt-color]');
-    if(cbtn&&type==='stand'){
-      color=cbtn.dataset.rtColor;
-      document.querySelectorAll('[data-rt-color]').forEach(b=>b.classList.toggle('active',b===cbtn));
-      tapping=false;render();return;
-    }
+    const t=e.target.closest('[data-rt-type]');
+    if(t){type=t.dataset.rtType;if(type==='card')color='white';render();return}
+    const c=e.target.closest('[data-rt-color]');
+    if(c&&type==='stand'){color=c.dataset.rtColor;render()}
   });
 
-  /* Show when tab becomes visible */
-  const panel=document.getElementById('pn-ad');
-  if(panel){
-    const obs=new MutationObserver(()=>{if(!panel.hidden&&!stage.children.length)render()});
-    obs.observe(panel,{attributes:true,attributeFilter:['hidden']});
-    if(!panel.hidden)render();
+  render();
+  /* One demo tap the first time the section scrolls into view. */
+  if('IntersectionObserver' in window&&!matchMedia('(prefers-reduced-motion: reduce)').matches){
+    const io=new IntersectionObserver(es=>{if(es.some(x=>x.isIntersecting)){io.disconnect();setTimeout(tap,600)}},{threshold:.5});
+    io.observe(stage);
   }
 })();

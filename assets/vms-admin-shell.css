@@ -129,3 +129,16 @@ body.vms-admin-canonical .vms-retired-admin-shell{display:none!important}
   .vms-sh-grab{display:none}
 }
 
+
+/* Batch 8: Admin is light-only for now; hide the theme switch */
+[data-vms-theme]{display:none!important}
+/* Batch 8: no flash between Admin pages.
+   This stylesheet is render-blocking in <head>, so the page already has the final shell
+   layout and colors on its very first paint, before vms-admin-shell.js runs. */
+:where(html.vms-gate-admin){background:var(--bg)!important}
+:where(html.vms-gate-admin) body{margin:0;min-height:100vh;overflow-x:hidden;background:var(--bg);color:var(--ink);font:400 15px/1.55 var(--body);padding:calc(64px + 16px + env(safe-area-inset-top,0px)) 16px calc(100px + env(safe-area-inset-bottom,0px)) 16px}
+@media (min-width:1000px){:where(html.vms-gate-admin) body{padding:calc(var(--top-h) + 28px + env(safe-area-inset-top,0px)) 32px 56px calc(var(--side-w) + 32px)}}
+:where(html.vms-gate-admin) body>:is(.app,.shell,.layout){display:block!important;min-height:0!important;background:transparent!important}
+:where(html.vms-gate-admin) body>:is(.app,.shell,.layout)>aside:first-child:not(#vmsCanonicalAdminSidebar),
+:where(html.vms-gate-admin) body>:is(.app,.shell,.layout)>:is(.main,main)>:is(header.topbar,.topbar,header.header):first-child{display:none!important}
+:where(html.vms-gate-admin) body>:is(.app,.shell,.layout)>:is(.main,main){margin:0!important;padding:0!important;background:transparent!important}
