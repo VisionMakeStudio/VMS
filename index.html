@@ -226,17 +226,6 @@ body{margin:0;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 #vmsSite .stars.lit svg:nth-child(3){transition-delay:.24s}
 #vmsSite .stars.lit svg:nth-child(4){transition-delay:.36s}
 #vmsSite .stars.lit svg:nth-child(5){transition-delay:.48s}
-#vmsSite .stars.lit svg{animation:starFloat 1.4s cubic-bezier(.2,.8,.2,1) both}
-#vmsSite .stars.lit svg:nth-child(2){animation-delay:.1s}
-#vmsSite .stars.lit svg:nth-child(3){animation-delay:.2s}
-#vmsSite .stars.lit svg:nth-child(4){animation-delay:.3s}
-#vmsSite .stars.lit svg:nth-child(5){animation-delay:.4s}
-@keyframes starFloat{0%{transform:translateY(18px) scale(.6);opacity:0}60%{transform:translateY(-6px) scale(1.12)}80%{transform:translateY(3px) scale(.96)}100%{transform:translateY(0) scale(1);opacity:1}}
-#vmsSite .stars.lit svg{animation:starFloat .7s cubic-bezier(.2,.8,.2,1) both}
-#vmsSite .stars-count{font-family:var(--display);font-weight:700;font-size:1.4rem;letter-spacing:-.03em;color:var(--navy);opacity:0;transform:translateY(10px);transition:opacity .5s .6s,transform .5s .6s}
-#vmsSite .stars.lit~.stars-count{opacity:1;transform:none}
-#vmsSite .review-line{font-size:13px;color:var(--muted);opacity:0;transition:opacity .4s .9s}
-#vmsSite .stars.lit~.review-line{opacity:1}
 #vmsSite dialog.sheet{border:0;padding:0;background:transparent;color:var(--ink);max-width:none;max-height:none;width:100%;height:100%;margin:0;overflow:hidden}
 #vmsSite dialog.sheet::backdrop{background:rgba(0,30,46,.45);backdrop-filter:blur(4px)}
 #vmsSite .sheet-card{position:absolute;left:0;right:0;bottom:0;max-height:88%;overflow:auto;background:var(--card);border:1px solid var(--line);border-bottom:0;border-radius:28px 28px 0 0;padding:14px 22px calc(26px + env(safe-area-inset-bottom,0px));box-shadow:0 -20px 60px rgba(0,48,73,.25);animation:st-sheetIn .34s cubic-bezier(.2,.9,.2,1) both}
@@ -719,93 +708,6 @@ html:not([data-theme="light"]) #vmsSite .seg,html:not([data-theme="light"]) #vms
 </style>
 <script>try{var t=localStorage.getItem('vms-theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
 <script>window.__LOGO={n:"assets/vms-logo-navy.png",c:"assets/vms-logo-cream.png"};(function(){var t='',t0=0;window.__vmsGetIntakeToken=async function(){if(t&&Date.now()-t0<3*3600e3)return t;try{var r=await fetch('/api/intake',{headers:{Accept:'application/json'},cache:'no-store'});var j=await r.json();t=j.token||'';t0=Date.now()}catch(e){}return t};window.__vmsGetIntakeToken()})();</script>
-<link rel="stylesheet" href="/assets/vms-media-showcase.css?v=20261003">
-<script src="/assets/vms-media-showcase.js?v=20261003" defer></script>
-
-
-<style id="vms-services-viz">
-/* Services viz animations */
-#vmsSite .qrbox{position:relative;overflow:hidden}
-#vmsSite .qrbox::after{content:'';position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--blue),transparent);top:10%;animation:qrScan 2.2s ease-in-out infinite;pointer-events:none;opacity:.8}
-@keyframes qrScan{0%{top:8%;opacity:0}10%{opacity:.9}90%{opacity:.9}100%{top:90%;opacity:0}}
-
-#vmsSite .mock .cta{position:relative}
-#vmsSite .mock .cta::after{content:'';position:absolute;right:-2px;top:50%;height:70%;width:2px;transform:translateY(-50%);background:var(--navy);animation:cursor 1s step-end infinite}
-@keyframes cursor{0%,100%{opacity:1}50%{opacity:0}}
-
-#vmsSite .bar i{transition:width .8s cubic-bezier(.2,.8,.2,1)}
-#vmsSite .svc[data-svc="web"]:hover .bar i:nth-child(1){width:85%!important}
-#vmsSite .svc[data-svc="web"]:hover .bar i:nth-child(2){width:65%!important}
-#vmsSite .svc[data-svc="web"]:hover .bar i:nth-child(3){width:78%!important}
-
-/* Hub/phone - line buttons animate in */
-#vmsSite .phone-mini i{transform:scaleX(.3);transition:transform .4s cubic-bezier(.2,.8,.2,1),opacity .3s}
-#vmsSite .phone-mini i:nth-child(2){transition-delay:.08s}
-#vmsSite .phone-mini i:nth-child(3){transition-delay:.16s}
-#vmsSite .phone-mini i:nth-child(4){transition-delay:.24s}
-#vmsSite .svc[data-svc="hub"]:hover .phone-mini i{transform:scaleX(1)}
-
-/* Local/pin - pulse ring */
-#vmsSite .pinviz svg{animation:pinPop 2s cubic-bezier(.2,.8,.2,1) infinite;transform-origin:50% 100%}
-@keyframes pinPop{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-10px)}}
-</style>
-<style id="vms-review-tap-css">
-#vmsSite .rt-wrap{display:grid;gap:22px;margin-top:8px}
-#vmsSite .rt-stage{position:relative;height:360px;border-radius:28px;overflow:hidden;border:1px solid var(--line);background:radial-gradient(120% 95% at 50% 8%,#ffffff 0,#e8f1f6 48%,#dbe7ee 100%);perspective:900px;perspective-origin:50% 35%;cursor:pointer;-webkit-tap-highlight-color:transparent}
-[data-theme="dark"] #vmsSite .rt-stage{background:radial-gradient(120% 95% at 50% 8%,#14506f 0,#0a3550 45%,#00263a 100%)}
-#vmsSite .rt-stage::after{content:"";position:absolute;left:50%;bottom:34px;width:220px;height:26px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(0,26,41,.28),transparent);pointer-events:none}
-#vmsSite .rt-hint{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);font-size:13px;font-weight:600;color:var(--muted);white-space:nowrap;pointer-events:none}
-#vmsSite .rt-switch{display:flex;gap:4px;padding:4px;border-radius:999px;background:var(--card);border:1px solid var(--line2);width:max-content;max-width:100%}
-#vmsSite .rt-btn{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 20px;border:0;border-radius:999px;background:transparent;color:var(--ink);font:600 15px/1 inherit;font-family:inherit;cursor:pointer;transition:background .2s,color .2s}
-#vmsSite .rt-btn span{font-weight:500;color:var(--muted)}
-#vmsSite .rt-btn.active{background:var(--pri);color:var(--prifg)}
-#vmsSite .rt-btn.active span{color:var(--prifg);opacity:.8}
-#vmsSite .rt-colors{display:flex;gap:8px;margin-top:12px}
-#vmsSite .rt-colors[hidden]{display:none}
-#vmsSite .rt-sw{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 14px 0 8px;border-radius:999px;border:1px solid var(--line2);background:transparent;color:var(--ink);font:500 14px/1 inherit;font-family:inherit;cursor:pointer}
-#vmsSite .rt-sw i{width:24px;height:24px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(0,0,0,.18)}
-#vmsSite .rt-sw.active{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
-#vmsSite .rt-side h3{margin:18px 0 6px;font-size:1.35rem;font-weight:700;letter-spacing:-.02em;color:var(--ink)}
-#vmsSite .rt-side>p{margin:0 0 12px;color:var(--muted);line-height:1.55;max-width:46ch}
-#vmsSite .rt-buy{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:16px}
-#vmsSite .rt-buy .amt{margin:0;font-size:2.2rem;font-weight:700;letter-spacing:-.04em;color:var(--ink)}
-/* product */
-.rt-stand,.rt-card{position:absolute;left:50%;top:47%;transform:translate(-50%,-50%);transform-style:preserve-3d;animation:rtTurn 14s ease-in-out infinite}
-.rt-stand{width:184px}
-.rt-stand-body{width:184px;height:244px;background:#fff;border-radius:20px;box-shadow:0 24px 50px rgba(0,26,41,.22),inset 0 0 0 1px rgba(0,0,0,.08);padding:18px 16px 22px;display:flex;flex-direction:column;align-items:center;gap:9px;position:relative;overflow:hidden}
-.rt-stand-body.black{background:#141414}
-.rt-stand-foot{width:138px;height:20px;margin:-2px auto 0;background:#e3e8eb;border-radius:0 0 14px 14px;box-shadow:0 10px 18px rgba(0,0,0,.14)}
-.rt-stand-foot.black{background:#222}
-.rt-card{width:146px;height:220px;background:#fff;border-radius:18px;box-shadow:0 24px 50px rgba(0,26,41,.22),inset 0 0 0 1px rgba(0,0,0,.08);padding:16px 14px 20px;display:flex;flex-direction:column;align-items:center;gap:8px;overflow:hidden}
-.rt-stand-title{font:700 11px/1.25 Inter,system-ui,sans-serif;text-align:center}
-.rt-stars{font-size:15px;letter-spacing:1px;color:#FBBC05;line-height:1}
-.rt-badge{width:48px;height:48px;border-radius:13px;padding:3px;background:conic-gradient(#4285F4 0 25%,#EA4335 0 50%,#FBBC05 0 75%,#34A853 0)}
-.rt-badge-inner{width:100%;height:100%;border-radius:10px;background:#fff;display:grid;place-items:center;font:800 20px/1 Inter,system-ui,sans-serif;color:#4285F4}
-.rt-stand-body.black .rt-badge-inner{background:#141414}
-.rt-qr-box{width:66px;height:66px;background:#fff;border-radius:8px;padding:5px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
-.rt-stand-body.black .rt-qr-box{background:#141414;box-shadow:inset 0 0 0 1px rgba(255,255,255,.25)}
-.rt-qr-svg{width:100%;height:100%;display:block}
-.rt-tap{display:flex;align-items:center;justify-content:center;gap:5px;margin-top:auto;font:600 9.5px/1 Inter,system-ui,sans-serif}
-.rt-stripe{position:absolute;left:0;right:0;bottom:0;height:5px;background:linear-gradient(90deg,#4285F4 25%,#EA4335 25% 50%,#FBBC05 50% 75%,#34A853 75%)}
-.rt-phone{position:absolute;left:-74px;top:58px;width:62px;height:112px;border-radius:13px;border:3px solid #1b1f2a;background:#0b0f18;box-shadow:0 14px 30px rgba(0,0,0,.35);transform:translate3d(-40px,40px,60px) rotate(-14deg);opacity:0;transition:transform .55s cubic-bezier(.2,.8,.2,1),opacity .3s;pointer-events:none}
-.rt-phone.tapping{transform:translate3d(18px,0,60px) rotate(-6deg);opacity:1}
-.rt-phone-screen{position:absolute;inset:5px;border-radius:9px;background:#fff;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;overflow:hidden}
-.rt-phone-g{font:800 11px/1 Inter,system-ui,sans-serif;color:#4285F4}
-.rt-phone-stars{font-size:8px;color:#FBBC05;letter-spacing:.5px}
-.rt-phone-cta{margin-top:auto;font:700 6.5px/1 Inter,system-ui,sans-serif;color:#fff;background:#4285F4;border-radius:5px;padding:4px 6px}
-@keyframes rtTurn{0%,100%{transform:translate(-50%,-50%) rotateY(-18deg) rotateX(4deg)}50%{transform:translate(-50%,-50%) rotateY(18deg) rotateX(4deg)}}
-@media (min-width:900px){#vmsSite .rt-wrap{grid-template-columns:1.25fr 1fr;align-items:center;gap:48px}#vmsSite .rt-stage{height:460px}.rt-stand{transform-origin:center}#vmsSite .rt-stage .rt-stand,#vmsSite .rt-stage .rt-card{scale:1.18}}
-@media (prefers-reduced-motion:reduce){.rt-stand,.rt-card{animation:none;transform:translate(-50%,-50%)}.rt-phone{transition:none}}
-
-/* A single monthly plan spans the row as one wide card instead of sitting alone on the left */
-@media (min-width:900px){
-#vmsSite .plans.pwide{grid-template-columns:1fr}
-#vmsSite .plans.pwide>.plan{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:48px;align-items:start}
-#vmsSite .plans.pwide>.plan>*{grid-column:1}
-#vmsSite .plans.pwide>.plan>.feat{grid-column:2;grid-row:1/span 4;margin-top:0;align-self:center}
-#vmsSite .plans.pwide>.plan>.btn{grid-column:2;align-self:end}
-}
-</style><script src="/assets/vms-review-tap.js?v=20261003b" defer></script>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
@@ -877,7 +779,7 @@ html:not([data-theme="light"]) #vmsSite .seg,html:not([data-theme="light"]) #vms
 <div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="Menu">
   <div class="menu-top"><span class="logos"><img class="logo logo-n" data-logo="n" alt="Vision Make Studio" width="86" height="38" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><img class="logo logo-c" data-logo="c" alt="" width="86" height="38" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></span><button class="menu-btn" id="menuClose" type="button" aria-label="Close menu"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-x"/></svg></button></div>
   <nav aria-label="Menu">
-    <a href="#services">Services</a><a href="#media">Photo and Video</a><a href="#review-stand">Review Stand</a><a href="#pricing">Pricing</a><a href="#checkup">Business Checkup</a><a href="#how">How It Works</a><a href="portal/" class="member-open">Member Portal</a>
+    <a href="#services">Services</a><a href="#media">Photo and Video</a><a href="#pricing">Pricing</a><a href="#checkup">Business Checkup</a><a href="#how">How It Works</a><a href="portal/" class="member-open">Member Portal</a>
   </nav>
   <button class="btn btn-glass theme-menu" type="button" id="siteTheme2" style="margin-top:auto">Switch to dark mode</button>
   <a class="btn btn-red" href="#checkup">Get my free checkup</a>
@@ -948,7 +850,7 @@ html:not([data-theme="light"]) #vmsSite .seg,html:not([data-theme="light"]) #vms
           <div class="svc-body"><h3>VMS LinkHub</h3><p>Your business card, links and menu in one tap.</p><div class="svc-foot"><span class="price-tag">From $5.99/mo</span><button class="more" type="button" data-open="hub">Details</button></div></div></article>
         <article class="svc" data-svc="local"><div class="viz"><div class="pinviz"><svg><use href="#i-pin"/></svg></div></div>
           <div class="svc-body"><h3>Local Presence</h3><p>Show up correctly where nearby customers look.</p><div class="svc-foot"><span class="price-tag">Setup $149</span><button class="more" type="button" data-open="local">Details</button></div></div></article>
-        <article class="svc" data-svc="reviews"><div class="viz"><div class="stars" id="starsViz"><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg></div><div class="stars-count">4.9</div><div class="review-line">47 new reviews this month</div></div>
+        <article class="svc" data-svc="reviews"><div class="viz"><div class="stars" id="starsViz"><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg></div></div>
           <div class="svc-body"><h3>Review Growth</h3><p>Make it easy for happy customers to say so.</p><div class="svc-foot"><span class="price-tag">$39.99/mo</span><button class="more" type="button" data-open="reviews">Details</button></div></div></article>
       </div>
       <div class="dots" id="railDots" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i><i></i></div>
@@ -961,10 +863,9 @@ html:not([data-theme="light"]) #vmsSite .seg,html:not([data-theme="light"]) #vms
         <h2 class="display h2">Photo, video and tours for local businesses.</h2>
         <p class="lede">Great listings and great menus start with great visuals. Book a shoot in New Jersey or New York and get media that is ready for your website, your Google profile and social.</p>
       </div>
-      <div class="mshow" id="mShow" aria-label="Interactive media preview"></div>
       <div id="mediaBody">
         <div class="seg" role="tablist" aria-label="Photo and video type"><button role="tab" id="mtab-re" aria-selected="true" aria-controls="mp-re" type="button">Real estate</button><button role="tab" id="mtab-rest" aria-selected="false" aria-controls="mp-rest" type="button" tabindex="-1">Restaurants</button></div>
-        <div class="mpanel" id="mp-re" role="tabpanel" aria-labelledby="mtab-re"><h3 class="msub">Packages</h3><div class="plans p2"><article class="plan"><h3>Listing Essentials</h3><p class="muted">The core media for a listing: photos, a floor plan and a feature walkthrough video.</p><div class="amt">$299</div><ul class="feat"><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>About 25 edited photos</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Measured floor plan</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Feature highlight walkthrough video</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Delivered as one download link</li></ul><button class="btn btn-glass" type="button" data-pick="re-essentials">Request this</button></article><article class="plan"><h3>Agent Listing Pro</h3><p class="muted">Everything in Essentials, plus an on-camera agent tour and short reels for social.</p><div class="amt">$549</div><ul class="feat"><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Everything in Listing Essentials</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Agent on-camera lifestyle tour</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>2 short vertical reels</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Delivered as one download link</li></ul><button class="btn btn-glass" type="button" data-pick="re-agent-pro">Request this</button></article></div><h3 class="msub">Add what you need</h3><div class="alist"><div class="arow"><div class="ai"><b>Listing Photography</b><span>Edited photos of the property, ready for the MLS, Zillow and social.</span></div><div class="ap">$175</div><button class="btn btn-glass btn-sm" type="button" data-pick="re-listing-photos">Request</button></div><div class="arow"><div class="ai"><b>Floor Plan</b><span>A measured 2D floor plan buyers can understand at a glance.</span></div><div class="ap">$129</div><button class="btn btn-glass btn-sm" type="button" data-pick="re-floor-plan">Request</button></div><div class="arow"><div class="ai"><b>Feature Highlight Tour</b><span>A quick walkthrough-style video that moves through the home and shows off its best features.</span></div><div class="ap">$149</div><button class="btn btn-glass btn-sm" type="button" data-pick="re-feature-tour">Request</button></div><div class="arow"><div class="ai"><b>Agent On-Camera Tour</b><span>The agent walks through the home on camera and explains every detail.</span></div><div class="ap">$299</div><button class="btn btn-glass btn-sm" type="button" data-pick="re-agent-tour">Request</button></div><div class="arow"><div class="ai"><b>Listing Reels</b><span>Three short vertical clips for Instagram, TikTok and Facebook.</span></div><div class="ap">$149</div><button class="btn btn-glass btn-sm" type="button" data-pick="re-reels">Request</button></div><div class="arow"><div class="ai"><b>360 Virtual Tour</b><span>An interactive 360 tour buyers can explore online.</span></div><div class="ap">$249</div><button class="btn btn-glass btn-sm" type="button" data-pick="re-360-tour">Request</button></div></div><h3 class="msub">Monthly plans</h3><div class="plans p2"><article class="plan"><h3>Agent Monthly</h3><p class="muted">Two listing shoots every month for busy agents.</p><div class="amt">$499<small>/month</small></div><ul class="feat"><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>2 listing shoots each month</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Photos, floor plan or walkthrough per shoot</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Priority scheduling</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Cancel any time</li></ul><button class="btn btn-glass" type="button" data-pick="re-agent-monthly">Request this</button></article><article class="plan"><h3>Brokerage Plan</h3><p class="muted">A shared pool of shoots for a brokerage, used by any agent on the team.</p><div class="amt"><small style="margin:0 6px 0 0">From</small>$2,200<small>/month</small></div><ul class="feat"><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>10 shoots each month, shared by your agents</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>One invoice for the brokerage</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Agents book from one place</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Custom plans for larger teams</li></ul><button class="btn btn-glass" type="button" data-pick="re-brokerage">Request this</button></article></div></div><div class="mpanel" id="mp-rest" role="tabpanel" aria-labelledby="mtab-rest" hidden><h3 class="msub">Packages</h3><div class="plans p3"><article class="plan"><h3>Restaurant Photo Refresh</h3><p class="muted">Food, drink and interior photos for your menu, website and Google profile.</p><div class="amt">$249</div><ul class="feat"><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>About 20 edited photos</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Food, drinks and interior</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Sized for web, Google and social</li></ul><button class="btn btn-glass" type="button" data-pick="rest-photo-refresh">Request this</button></article><article class="plan"><h3>Restaurant Social Content</h3><p class="muted">Photos plus short vertical clips made for social media.</p><div class="amt">$449</div><ul class="feat"><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>About 20 edited photos</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>4 short vertical clips</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Food, drinks and interior</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Sized for web, Google and social</li></ul><button class="btn btn-glass" type="button" data-pick="rest-social-content">Request this</button></article><article class="plan"><h3>Full Restaurant Presence</h3><p class="muted">A complete content set: photos, clips, a walkthrough and a 360 tour of the space.</p><div class="amt">$749</div><ul class="feat"><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>About 30 edited photos</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>6 short vertical clips</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Interior walkthrough video</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>360 tour of the space</li></ul><button class="btn btn-glass" type="button" data-pick="rest-full-presence">Request this</button></article></div><h3 class="msub">Monthly plans</h3><div class="plans p1 pwide"><article class="plan"><h3>Monthly Content Day</h3><p class="muted">One shoot each month so your content always feels fresh.</p><div class="amt">$399<small>/month</small></div><ul class="feat"><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>One shoot each month</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Photos and short clips</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Ready for social and Google</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Cancel any time</li></ul><button class="btn btn-glass" type="button" data-pick="rest-monthly-content">Request this</button></article></div></div>
+        <div class="mpanel" id="mp-re" role="tabpanel" aria-labelledby="mtab-re"><h3 class="msub">Packages</h3><div class="plans p2"><article class="plan"><h3>Listing Essentials</h3><p class="muted">The core media for a listing: photos, a floor plan and a feature walkthrough video.</p><div class="amt">$299</div><ul class="feat"><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>About 25 edited photos</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Measured floor plan</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Feature highlight walkthrough video</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Delivered as one download link</li></ul><button class="btn btn-glass" type="button" data-pick="re-essentials">Request this</button></article><article class="plan"><h3>Agent Listing Pro</h3><p class="muted">Everything in Essentials, plus an on-camera agent tour and short reels for social.</p><div class="amt">$549</div><ul class="feat"><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Everything in Listing Essentials</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Agent on-camera lifestyle tour</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>2 short vertical reels</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Delivered as one download link</li></ul><button class="btn btn-glass" type="button" data-pick="re-agent-pro">Request this</button></article></div><h3 class="msub">Add what you need</h3><div class="alist"><div class="arow"><div class="ai"><b>Listing Photography</b><span>Edited photos of the property, ready for the MLS, Zillow and social.</span></div><div class="ap">$175</div><button class="btn btn-glass btn-sm" type="button" data-pick="re-listing-photos">Request</button></div><div class="arow"><div class="ai"><b>Floor Plan</b><span>A measured 2D floor plan buyers can understand at a glance.</span></div><div class="ap">$129</div><button class="btn btn-glass btn-sm" type="button" data-pick="re-floor-plan">Request</button></div><div class="arow"><div class="ai"><b>Feature Highlight Tour</b><span>A quick walkthrough-style video that moves through the home and shows off its best features.</span></div><div class="ap">$149</div><button class="btn btn-glass btn-sm" type="button" data-pick="re-feature-tour">Request</button></div><div class="arow"><div class="ai"><b>Agent On-Camera Tour</b><span>The agent walks through the home on camera and explains every detail.</span></div><div class="ap">$299</div><button class="btn btn-glass btn-sm" type="button" data-pick="re-agent-tour">Request</button></div><div class="arow"><div class="ai"><b>Listing Reels</b><span>Three short vertical clips for Instagram, TikTok and Facebook.</span></div><div class="ap">$149</div><button class="btn btn-glass btn-sm" type="button" data-pick="re-reels">Request</button></div><div class="arow"><div class="ai"><b>360 Virtual Tour</b><span>An interactive 360 tour buyers can explore online.</span></div><div class="ap">$249</div><button class="btn btn-glass btn-sm" type="button" data-pick="re-360-tour">Request</button></div></div><h3 class="msub">Monthly plans</h3><div class="plans p2"><article class="plan"><h3>Agent Monthly</h3><p class="muted">Two listing shoots every month for busy agents.</p><div class="amt">$499<small>/month</small></div><ul class="feat"><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>2 listing shoots each month</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Photos, floor plan or walkthrough per shoot</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Priority scheduling</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Cancel any time</li></ul><button class="btn btn-glass" type="button" data-pick="re-agent-monthly">Request this</button></article><article class="plan"><h3>Brokerage Plan</h3><p class="muted">A shared pool of shoots for a brokerage, used by any agent on the team.</p><div class="amt"><small style="margin:0 6px 0 0">From</small>$2,200<small>/month</small></div><ul class="feat"><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>10 shoots each month, shared by your agents</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>One invoice for the brokerage</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Agents book from one place</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Custom plans for larger teams</li></ul><button class="btn btn-glass" type="button" data-pick="re-brokerage">Request this</button></article></div></div><div class="mpanel" id="mp-rest" role="tabpanel" aria-labelledby="mtab-rest" hidden><h3 class="msub">Packages</h3><div class="plans p3"><article class="plan"><h3>Restaurant Photo Refresh</h3><p class="muted">Food, drink and interior photos for your menu, website and Google profile.</p><div class="amt">$249</div><ul class="feat"><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>About 20 edited photos</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Food, drinks and interior</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Sized for web, Google and social</li></ul><button class="btn btn-glass" type="button" data-pick="rest-photo-refresh">Request this</button></article><article class="plan"><h3>Restaurant Social Content</h3><p class="muted">Photos plus short vertical clips made for social media.</p><div class="amt">$449</div><ul class="feat"><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>About 20 edited photos</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>4 short vertical clips</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Food, drinks and interior</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Sized for web, Google and social</li></ul><button class="btn btn-glass" type="button" data-pick="rest-social-content">Request this</button></article><article class="plan"><h3>Full Restaurant Presence</h3><p class="muted">A complete content set: photos, clips, a walkthrough and a 360 tour of the space.</p><div class="amt">$749</div><ul class="feat"><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>About 30 edited photos</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>6 short vertical clips</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Interior walkthrough video</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>360 tour of the space</li></ul><button class="btn btn-glass" type="button" data-pick="rest-full-presence">Request this</button></article></div><h3 class="msub">Monthly plans</h3><div class="plans p1"><article class="plan"><h3>Monthly Content Day</h3><p class="muted">One shoot each month so your content always feels fresh.</p><div class="amt">$399<small>/month</small></div><ul class="feat"><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>One shoot each month</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Photos and short clips</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Ready for social and Google</li><li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Cancel any time</li></ul><button class="btn btn-glass" type="button" data-pick="rest-monthly-content">Request this</button></article></div></div>
       </div>
       <p class="fine">Photo and video is available in New Jersey and New York. Pick what you need and send a request with your address and a preferred date. VMS confirms the booking with you personally.</p>
     </div>
@@ -1041,35 +942,6 @@ html:not([data-theme="light"]) #vmsSite .seg,html:not([data-theme="light"]) #vms
     </div>
   </section>
 
-  <section class="sec tint" id="review-stand" aria-labelledby="rtHead">
-    <div class="wrap">
-      <div class="sec-head"><h2 class="display h2" id="rtHead">One tap. One more five-star review.</h2><p class="lede">A Google review stand for the counter and a slim card for the register. Customers tap with their phone or scan the code, and your review page opens right away.</p></div>
-      <div class="rt-wrap">
-        <div class="rt-stage" id="rtStage" role="img" aria-label="Interactive 3D preview of the VMS review product. Tap it to see a phone open the review page."></div>
-        <div class="rt-side">
-          <div class="rt-switch" role="group" aria-label="Product">
-            <button type="button" class="rt-btn active" aria-pressed="true" data-rt-type="stand">Stand <span>$30</span></button>
-            <button type="button" class="rt-btn" aria-pressed="false" data-rt-type="card">Card <span>$15</span></button>
-          </div>
-          <div id="rtColorRow" class="rt-colors" role="group" aria-label="Stand color">
-            <button type="button" class="rt-sw active" aria-pressed="true" data-rt-color="white"><i style="background:#fff"></i>White</button>
-            <button type="button" class="rt-sw" aria-pressed="false" data-rt-color="black"><i style="background:#141414"></i>Black</button>
-          </div>
-          <h3 id="rtTitle">VMS Review Stand</h3>
-          <p id="rtDesc">A counter stand your customers can tap with a phone or scan. Opens your Google review page instantly. VMS handles the link setup.</p>
-          <ul class="feat" id="rtFeatures">
-            <li><svg><use href="#i-check"/></svg>Tap with NFC or scan the QR code</li>
-            <li><svg><use href="#i-check"/></svg>Opens your Google review page</li>
-            <li><svg><use href="#i-check"/></svg>White or black, your choice</li>
-            <li><svg><use href="#i-check"/></svg>VMS handles the link setup</li>
-            <li><svg><use href="#i-check"/></svg>Free U.S. shipping</li>
-          </ul>
-          <div class="rt-buy"><div class="amt" id="rtPrice">$30</div><button class="btn btn-red" type="button" data-pick="tap-scan-stand" id="rtOrderBtn">Order a stand</button></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <section class="sec" id="pricing">
     <div class="wrap">
       <div class="sec-head"><h2 class="display h2">Simple enough to understand. Flexible enough to grow.</h2><p class="lede">Choose a package, a monthly plan, or start small with LinkHub. Prices below match the VMS service catalog.</p></div>
@@ -1077,6 +949,7 @@ html:not([data-theme="light"]) #vmsSite .seg,html:not([data-theme="light"]) #vms
         <button role="tab" id="tab-pk" aria-selected="true" aria-controls="pn-pk" type="button">Packages</button>
         <button role="tab" id="tab-mo" aria-selected="false" aria-controls="pn-mo" type="button" tabindex="-1">Monthly</button>
         <button role="tab" id="tab-lh" aria-selected="false" aria-controls="pn-lh" type="button" tabindex="-1">LinkHub</button>
+        <button role="tab" id="tab-ad" aria-selected="false" aria-controls="pn-ad" type="button" tabindex="-1">Add-ons</button>
       </div>
 
       <div class="plans p3" id="pn-pk" role="tabpanel" aria-labelledby="tab-pk">
@@ -1109,6 +982,12 @@ html:not([data-theme="light"]) #vmsSite .seg,html:not([data-theme="light"]) #vms
           <button class="btn btn-red" type="button" data-pick="linkhub-pro">Get started</button></article>
       </div>
       
+      <div class="plans p1" id="pn-ad" role="tabpanel" aria-labelledby="tab-ad" hidden>
+        <article class="plan"><div class="standviz" aria-hidden="true"><svg viewBox="0 0 120 110"><rect x="20" y="8" width="80" height="84" rx="12" fill="#fff" stroke="#003049" stroke-opacity=".25"/><rect x="34" y="22" width="26" height="26" rx="4" fill="#003049"/><rect x="40" y="28" width="14" height="14" rx="2" fill="#fff"/><rect x="66" y="22" width="20" height="8" rx="3" fill="#669BBC"/><rect x="66" y="36" width="14" height="8" rx="3" fill="#669BBC" opacity=".6"/><path d="M60 66c6-8 18-8 24 0M65 72c4-5 11-5 15 0" stroke="#C1121F" stroke-width="3.5" fill="none" stroke-linecap="round"/><circle cx="72" cy="78" r="2.6" fill="#C1121F"/><rect x="46" y="92" width="28" height="9" rx="3" fill="#003049"/></svg></div>
+          <h3>VMS Tap and Scan Stand</h3><p class="muted">A counter stand customers can tap with a phone or scan. VMS sets it up to open the link you choose, such as your LinkHub, reviews or menu.</p><div class="amt">$29.99</div>
+          <ul class="feat"><li><svg><use href="#i-check"/></svg>Tap with a phone or scan the QR code</li><li><svg><use href="#i-check"/></svg>Set to any link you choose</li><li><svg><use href="#i-check"/></svg>Counter or desk stand</li><li><svg><use href="#i-check"/></svg>Free shipping in the U.S.</li></ul>
+          <button class="btn btn-red" type="button" data-pick="tap-scan-stand">Order a stand</button></article>
+      </div>
 <p class="fine">Packages and monthly bundles waive the one-time $4.99 VMS Activation Fee.</p>
     </div>
   </section>
@@ -1183,7 +1062,7 @@ html:not([data-theme="light"]) #vmsSite .seg,html:not([data-theme="light"]) #vms
   <div class="wrap">
     <div class="foot-in">
       <div><span class="logos"><img class="logo logo-n" data-logo="n" alt="Vision Make Studio" width="86" height="38" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><img class="logo logo-c" data-logo="c" alt="" width="86" height="38" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></span><p>Vision Make Studio helps businesses look better, work smarter and grow stronger through websites, visibility and smarter customer systems.</p></div>
-      <div><h4>Explore</h4><ul><li><a href="#services">Services</a></li><li><a href="#media">Photo and Video</a></li><li><a href="#review-stand">Review Stand</a></li><li><a href="#pricing">Pricing</a></li><li><a href="#checkup">Business Checkup</a></li><li><a href="#how">How It Works</a></li></ul></div>
+      <div><h4>Explore</h4><ul><li><a href="#services">Services</a></li><li><a href="#media">Photo and Video</a></li><li><a href="#pricing">Pricing</a></li><li><a href="#checkup">Business Checkup</a></li><li><a href="#how">How It Works</a></li></ul></div>
       <div><h4>Contact</h4><ul><li><a href="mailto:info@visionmakestudio.com">info@visionmakestudio.com</a></li><li><a href="portal/" class="member-open">Client Portal sign in</a></li><li><a href="privacy.html">Privacy Policy</a></li><li><a href="terms.html">Terms of Service</a></li><li><a href="refund-cancellation.html">Refund and Cancellation</a></li></ul></div>
     </div>
     <div class="legal">© 2026 Vision Make Studio. Built to help your business look better, work smarter and grow stronger.</div>
@@ -3040,7 +2919,7 @@ const MCATS=[['Real Estate Media','Real estate','re'],['Restaurant Media','Resta
 function shortPrice(s){const pre=s.startingAt?'From ':'';if(s.pricingModel==='Recurring')return pre+money2(s.recurringPrice)+'/mo';if(s.oneTimePrice!=null)return pre+money2(s.oneTimePrice);return 'Request'}
 function mCard(s){const f=(s.features||[]).slice(0,5);return '<article class="plan"><h3>'+escH(s.name)+'</h3><p class="muted">'+escH(s.description||'')+'</p><div class="amt">'+amtHtml(s)+'</div><ul class="feat">'+f.map(x=>'<li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>'+escH(x)+'</li>').join('')+'</ul><button class="btn btn-glass" type="button" data-pick="'+escH(s.id)+'">Request this</button></article>'}
 function mRow(s){return '<div class="arow"><div class="ai"><b>'+escH(s.name)+'</b><span>'+escH(s.description||'')+'</span></div><div class="ap">'+escH(shortPrice(s))+'</div><button class="btn btn-glass btn-sm" type="button" data-pick="'+escH(s.id)+'">Request</button></div>'}
-function mPanel(items,pid,tid,active){const pk=items.filter(x=>x.kind==='package'),sub=items.filter(x=>x.pricingModel==='Recurring'),one=items.filter(x=>!pk.includes(x)&&!sub.includes(x));return '<div class="mpanel" id="'+pid+'" role="tabpanel" aria-labelledby="'+tid+'"'+(active?'':' hidden')+'>'+(pk.length?'<h3 class="msub">Packages</h3><div class="plans p'+Math.min(pk.length,3)+'">'+pk.map(mCard).join('')+'</div>':'')+(one.length?'<h3 class="msub">Add what you need</h3><div class="alist">'+one.map(mRow).join('')+'</div>':'')+(sub.length?'<h3 class="msub">Monthly plans</h3><div class="plans p'+Math.min(sub.length,2)+(sub.length===1?' pwide':'')+'">'+sub.map(mCard).join('')+'</div>':'')+'</div>'}
+function mPanel(items,pid,tid,active){const pk=items.filter(x=>x.kind==='package'),sub=items.filter(x=>x.pricingModel==='Recurring'),one=items.filter(x=>!pk.includes(x)&&!sub.includes(x));return '<div class="mpanel" id="'+pid+'" role="tabpanel" aria-labelledby="'+tid+'"'+(active?'':' hidden')+'>'+(pk.length?'<h3 class="msub">Packages</h3><div class="plans p'+Math.min(pk.length,3)+'">'+pk.map(mCard).join('')+'</div>':'')+(one.length?'<h3 class="msub">Add what you need</h3><div class="alist">'+one.map(mRow).join('')+'</div>':'')+(sub.length?'<h3 class="msub">Monthly plans</h3><div class="plans p'+Math.min(sub.length,2)+'">'+sub.map(mCard).join('')+'</div>':'')+'</div>'}
 function renderMedia(list){
   const fams=MCATS.map(c=>({c:c,items:list.filter(x=>x.category===c[0])})).filter(f=>f.items.length);
   const host=$('#mediaBody');if(!host||!fams.length)return;
