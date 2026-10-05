@@ -108,3 +108,32 @@ body.vms-admin-canonical{background:var(--vsh-bg)!important;color:var(--vsh-ink)
   #vmsAdminTopActions{flex:0 0 auto;gap:6px}
   #vmsAdminTopActions .btn,#vmsAdminTopActions button:not(.vms-admin-theme-btn){white-space:nowrap!important;min-height:36px!important;padding:0 10px!important;font-size:12.5px!important}
 }
+
+/* ===== Match the approved preview shell (Oct 2026) ===== */
+:root{--vms-admin-sidebar-w:248px;--vms-admin-topbar-h:64px}
+#vmsCanonicalAdminSidebar{padding:18px 12px!important}
+#vmsCanonicalAdminSidebar .vms-admin-brand{border-bottom:0!important;padding:4px 10px 14px!important;min-height:0!important}
+#vmsCanonicalAdminSidebar .vms-admin-brand img{height:34px!important;max-width:120px!important}
+#vmsCanonicalAdminSidebar .vms-admin-brand-copy{display:none!important}
+#vmsCanonicalAdminSidebar .vms-admin-nav-label{font-size:12px!important;letter-spacing:.07em!important;padding:14px 12px 6px!important}
+#vmsCanonicalAdminSidebar .vms-admin-nav a{min-height:44px!important;padding:0 12px!important;gap:12px!important;font-size:14.5px!important;border-radius:12px!important}
+#vmsCanonicalAdminSidebar .vms-admin-nav a svg{width:20px!important;height:20px!important}
+#vmsCanonicalAdminSidebar .vms-admin-foot{margin:12px 0 0!important;padding:12px!important;border:1px solid var(--vsh-line)!important;border-radius:16px!important;background:var(--vsh-surface2)!important}
+#vmsCanonicalAdminTopbar .vms-admin-page-title small{display:none!important}
+#vmsCanonicalAdminTopbar .vms-admin-page-title strong{font-family:"Unbounded","Inter",system-ui,sans-serif!important;font-weight:700!important;font-size:1.15rem!important;letter-spacing:-.02em!important}
+@media (max-width:860px){#vmsCanonicalAdminTopbar .vms-admin-page-title strong{font-size:1rem!important}}
+#vmsCanonicalAdminSidebar .vms-admin-nav a span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+/* Top bar buttons: one consistent style on every Admin page */
+#vmsAdminTopActions{display:flex;align-items:center;gap:8px}
+#vmsAdminTopActions .btn,#vmsAdminTopActions button:not(.vms-admin-theme-btn),#vmsAdminTopActions a.btn{display:inline-flex!important;align-items:center!important;justify-content:center;gap:8px!important;min-height:40px!important;padding:0 16px!important;border-radius:12px!important;font:600 14px/1 "Inter",system-ui,sans-serif!important;background:var(--vsh-surface)!important;color:var(--vsh-ink)!important;border:1px solid var(--vsh-line2)!important;box-shadow:none!important;cursor:pointer;white-space:nowrap}
+#vmsAdminTopActions .btn.primary,#vmsAdminTopActions .btn.pri,#vmsAdminTopActions .btn.red,#vmsAdminTopActions .btn-primary{background:var(--vsh-active-bg)!important;color:var(--vsh-active-fg)!important;border-color:var(--vsh-active-bg)!important}
+#vmsAdminTopActions .btn svg,#vmsAdminTopActions button svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+
+/* ===== Page headers: one calm style on every Admin page (matches the preview) ===== */
+body.vms-admin-canonical .eyebrow:has(+ h1),body.vms-admin-canonical .eyebrow:has(+ * h1){display:none!important}
+body.vms-admin-canonical :is(.content,main) h1{font-family:"Unbounded","Inter",system-ui,sans-serif!important;font-weight:700!important;font-size:clamp(1.35rem,2.2vw,1.8rem)!important;line-height:1.15!important;letter-spacing:-.03em!important;color:var(--vsh-ink)!important;margin:0 0 4px!important}
+/* QR Tools sub-navigation: light segmented tabs instead of the old dark strip */
+body.vms-admin-canonical .subnav-wrap{background:transparent!important;border:0!important;padding:0 0 14px!important}
+body.vms-admin-canonical .subnav{display:inline-flex!important;gap:4px!important;padding:4px!important;border-radius:14px!important;background:var(--vsh-surface)!important;border:1px solid var(--vsh-line)!important;max-width:100%}
+body.vms-admin-canonical .subnav button{min-height:40px!important;padding:0 16px!important;border-radius:10px!important;border:0!important;background:transparent!important;color:var(--vsh-muted)!important;font:600 14px/1 "Inter",system-ui,sans-serif!important;text-transform:none!important;letter-spacing:0!important;white-space:nowrap}
+body.vms-admin-canonical .subnav button.active,body.vms-admin-canonical .subnav button[aria-selected="true"]{background:var(--vsh-active-bg)!important;color:var(--vsh-active-fg)!important}
