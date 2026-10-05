@@ -177,7 +177,7 @@
 
     // theme toggle button
     const themeBtn=document.createElement('button');themeBtn.className='vms-admin-theme-btn';themeBtn.type='button';
-    const effD=()=>{const t=document.documentElement.dataset.theme;return t?t==='dark':matchMedia('(prefers-color-scheme:dark)').matches};
+    const effD=()=>document.documentElement.dataset.theme==='dark';
     const paintT=()=>{
       const d=effD();
       themeBtn.innerHTML=d?svgIco('sun'):svgIco('moon');

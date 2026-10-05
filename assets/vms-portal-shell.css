@@ -64,3 +64,38 @@ body.vms-portal-canonical .vms-retired-portal-shell{display:none!important}
 [data-vms-fs="1"]{font-size:11px!important}
 [data-vms-cf="1"]{color:var(--vms-cf,inherit)!important}
 :root{--vms-cf:inherit}
+
+/* ===== Shell colors (Oct 2026 fix) =====
+   Light by default; dark only when the toggle sets data-theme="dark". */
+:root{
+  --vsh-bg:#F3F7FA;--vsh-surface:#FFFFFF;--vsh-surface2:#F1F7FA;--vsh-tint:#E8F1F6;
+  --vsh-ink:#102f40;--vsh-muted:#526a77;--vsh-line:rgba(0,48,73,.12);--vsh-line2:rgba(0,48,73,.22);
+  --vsh-active-bg:#003049;--vsh-active-fg:#FFFFFF;--vsh-top:rgba(243,247,250,.92);--vsh-bar:rgba(255,255,255,.94);
+}
+:root[data-theme="dark"]{
+  --vsh-bg:#001a29;--vsh-surface:#00263a;--vsh-surface2:#0a3550;--vsh-tint:rgba(102,155,188,.18);
+  --vsh-ink:#FDF0D5;--vsh-muted:rgba(253,240,213,.74);--vsh-line:rgba(253,240,213,.14);--vsh-line2:rgba(253,240,213,.3);
+  --vsh-active-bg:#FDF0D5;--vsh-active-fg:#003049;--vsh-top:rgba(0,26,41,.92);--vsh-bar:rgba(0,38,58,.94);
+}
+#vmsCanonicalPortalSidebar{background:var(--vsh-surface)!important;color:var(--vsh-ink)!important;border-right:1px solid var(--vsh-line)!important}
+#vmsCanonicalPortalSidebar .vp-brand{border-bottom:1px solid var(--vsh-line)}
+#vmsCanonicalPortalSidebar .vp-brand img{width:auto!important;max-width:96px!important;height:30px!important}
+#vmsCanonicalPortalSidebar .vp-brand strong{color:var(--vsh-ink)}
+#vmsCanonicalPortalSidebar .vp-brand span{color:var(--vsh-muted)}
+#vmsCanonicalPortalSidebar .vms-portal-nav button{color:var(--vsh-muted)!important;background:transparent!important;box-shadow:none!important}
+#vmsCanonicalPortalSidebar .vms-portal-nav button:hover{background:var(--vsh-surface2)!important;color:var(--vsh-ink)!important}
+#vmsCanonicalPortalSidebar .vms-portal-nav button.active,
+#vmsCanonicalPortalSidebar .vms-portal-nav button[aria-current="page"]{background:var(--vsh-active-bg)!important;color:var(--vsh-active-fg)!important;font-weight:700}
+#vmsCanonicalPortalSidebar .vp-foot{border-top:1px solid var(--vsh-line);color:var(--vsh-ink)}
+#vmsCanonicalPortalTopbar{background:var(--vsh-top)!important;color:var(--vsh-ink)!important;border-bottom:1px solid var(--vsh-line);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+#vmsCanonicalPortalTopbar .vp-title small{color:var(--vsh-muted)}
+#vmsCanonicalPortalTopbar .vp-title strong{color:var(--vsh-ink)}
+#vmsCanonicalPortalTopbar .vp-menu-btn,.vp-theme-btn{color:var(--vsh-ink);background:var(--vsh-surface);border-color:var(--vsh-line2)}
+#vmsPortalTabBar{background:var(--vsh-bar);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--vsh-line);height:auto;min-height:64px;padding:4px 4px calc(4px + env(safe-area-inset-bottom,0px))}
+#vmsPortalTabBar button{position:relative;color:var(--vsh-muted);border-radius:12px;min-height:56px}
+#vmsPortalTabBar button.active,#vmsPortalTabBar button[aria-current="page"]{color:var(--vsh-ink)}
+#vmsPortalTabBar button.active::before,#vmsPortalTabBar button[aria-current="page"]::before{content:"";position:absolute;top:2px;left:50%;width:26px;height:3px;margin-left:-13px;border-radius:9px;background:var(--vsh-active-bg)}
+:root[data-theme="dark"] #vmsCanonicalPortalSidebar .vp-brand img{filter:brightness(0) invert(.94) sepia(.2)}
+@media (max-width:800px){#vmsCanonicalPortalSidebar .vms-portal-nav{padding-bottom:20px}}
+/* Topbar starts beside the sidebar so it no longer covers the logo */
+@media (min-width:801px){#vmsCanonicalPortalTopbar{left:var(--vms-portal-sidebar-w)!important;padding-left:24px!important}}

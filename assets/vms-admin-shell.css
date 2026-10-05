@@ -62,3 +62,49 @@ body.vms-admin-canonical .vms-retired-admin-shell{display:none!important}
 [data-vms-fs="1"]{font-size:11px!important}
 [data-vms-cf="1"]{color:var(--vms-cf,inherit)!important}
 :root{--vms-cf:inherit}
+
+/* ===== Shell colors (Oct 2026 fix) =====
+   The shell styles its own chrome so every Admin page looks the same,
+   whether or not the page loads vms-suite.css. Light by default; dark only
+   when the toggle sets data-theme="dark" (no automatic OS dark mode). */
+:root{
+  --vsh-bg:#F3F7FA;--vsh-surface:#FFFFFF;--vsh-surface2:#F1F7FA;--vsh-tint:#E8F1F6;
+  --vsh-ink:#102f40;--vsh-muted:#526a77;--vsh-line:rgba(0,48,73,.12);--vsh-line2:rgba(0,48,73,.22);
+  --vsh-active-bg:#003049;--vsh-active-fg:#FFFFFF;--vsh-top:rgba(243,247,250,.92);
+}
+:root[data-theme="dark"]{
+  --vsh-bg:#001a29;--vsh-surface:#00263a;--vsh-surface2:#0a3550;--vsh-tint:rgba(102,155,188,.18);
+  --vsh-ink:#FDF0D5;--vsh-muted:rgba(253,240,213,.74);--vsh-line:rgba(253,240,213,.14);--vsh-line2:rgba(253,240,213,.3);
+  --vsh-active-bg:#FDF0D5;--vsh-active-fg:#003049;--vsh-top:rgba(0,26,41,.92);
+}
+body.vms-admin-canonical{background:var(--vsh-bg)!important;color:var(--vsh-ink)}
+#vmsCanonicalAdminSidebar{background:var(--vsh-surface)!important;color:var(--vsh-ink)!important;border-right:1px solid var(--vsh-line)!important;box-shadow:none!important}
+#vmsCanonicalAdminSidebar .vms-admin-brand{border-bottom:1px solid var(--vsh-line);background:transparent!important}
+#vmsCanonicalAdminSidebar .vms-admin-brand img{width:auto!important;max-width:96px!important;height:30px!important}
+#vmsCanonicalAdminSidebar .vms-admin-brand-copy strong{color:var(--vsh-ink)}
+#vmsCanonicalAdminSidebar .vms-admin-brand-copy span,
+#vmsCanonicalAdminSidebar .vms-admin-nav-label{color:var(--vsh-muted)!important}
+#vmsCanonicalAdminSidebar .vms-admin-nav a,
+#vmsCanonicalAdminSidebar .vms-admin-nav a:visited{color:var(--vsh-muted)!important;background:transparent!important;font-weight:600!important;box-shadow:none!important}
+#vmsCanonicalAdminSidebar .vms-admin-nav a:hover{background:var(--vsh-surface2)!important;color:var(--vsh-ink)!important}
+#vmsCanonicalAdminSidebar .vms-admin-nav a.active,
+#vmsCanonicalAdminSidebar .vms-admin-nav a[aria-current="page"]{background:var(--vsh-active-bg)!important;color:var(--vsh-active-fg)!important;font-weight:700!important}
+#vmsCanonicalAdminSidebar .vms-admin-foot{border-top:1px solid var(--vsh-line)}
+#vmsCanonicalAdminSidebar .vms-admin-external a,
+#vmsCanonicalAdminSidebar .vms-admin-external a:visited{color:var(--vsh-ink)!important;text-decoration:underline;text-underline-offset:3px}
+#vmsCanonicalAdminSidebar .vms-admin-foot small{color:var(--vsh-muted)}
+#vmsCanonicalAdminTopbar{background:var(--vsh-top)!important;color:var(--vsh-ink)!important;border-bottom:1px solid var(--vsh-line)!important;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:none!important}
+#vmsCanonicalAdminTopbar .vms-admin-page-title small{color:var(--vsh-muted)}
+#vmsCanonicalAdminTopbar .vms-admin-page-title strong{color:var(--vsh-ink)}
+#vmsCanonicalAdminTopbar .vms-admin-menu-btn,
+#vmsCanonicalAdminTopbar .vms-admin-theme-btn{color:var(--vsh-ink);background:var(--vsh-surface);border-color:var(--vsh-line2)}
+:root[data-theme="dark"] #vmsCanonicalAdminSidebar .vms-admin-brand img{filter:brightness(0) invert(.94) sepia(.2)}
+/* Topbar starts beside the sidebar so it no longer covers the logo */
+@media (min-width:861px){#vmsCanonicalAdminTopbar{left:var(--vms-admin-sidebar-w)!important;padding-left:24px!important}}
+@media (max-width:860px){
+  .vms-admin-top-left{flex:1 1 auto;min-width:0}
+  .vms-admin-page-title{min-width:0}
+  .vms-admin-page-title strong{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #vmsAdminTopActions{flex:0 0 auto;gap:6px}
+  #vmsAdminTopActions .btn,#vmsAdminTopActions button:not(.vms-admin-theme-btn){white-space:nowrap!important;min-height:36px!important;padding:0 10px!important;font-size:12.5px!important}
+}

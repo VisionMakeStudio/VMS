@@ -98,16 +98,17 @@
     if(existing&&foot)foot.appendChild(existing.cloneNode(true));
     // theme toggle
     const tBtn=document.createElement('button');tBtn.className='vp-theme-btn';tBtn.type='button';
-    const effD2=()=>{const t=document.documentElement.dataset.theme;return t?t==='dark':matchMedia('(prefers-color-scheme:dark)').matches};
+    const effD2=()=>document.documentElement.dataset.theme==='dark';
     const pT2=()=>{tBtn.innerHTML=pIco(effD2()?'sun':'moon');tBtn.setAttribute('aria-label',effD2()?'Switch to light mode':'Switch to dark mode')};
     tBtn.addEventListener('click',()=>{const n=effD2()?'light':'dark';document.documentElement.dataset.theme=n;try{localStorage.setItem('vms-theme',n)}catch(e){}pT2()});
     if(foot)foot.appendChild(tBtn);pT2();
     // phone bottom tab bar
     if(!document.getElementById('vmsPortalTabBar')){
       const tabBar=document.createElement('nav');tabBar.id='vmsPortalTabBar';tabBar.setAttribute('aria-label','Quick navigation');
+      const SHORT={home:'Home',services:'Services',qrs:'QR Codes',billing:'Billing',contact:'Schedule'};
       ITEMS.filter(x=>x[3]).forEach(([section,label,iconId])=>{
         const b=document.createElement('button');b.type='button';b.dataset.section=section;
-        b.innerHTML=pIco(iconId)+'<span>'+label+'</span>';
+        b.innerHTML=pIco(iconId)+'<span>'+(SHORT[section]||label)+'</span>';
         b.addEventListener('click',()=>activate(section));
         tabBar.appendChild(b);
       });
@@ -118,11 +119,11 @@
     top.innerHTML='<div class="vp-top-left"><button class="vp-menu-btn" type="button" aria-label="Open portal menu" aria-expanded="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="17" x2="21" y2="17"/></svg></button><div class="vp-title"><small>CLIENT PORTAL</small><strong id="vmsCanonicalPortalTitle" role="heading" aria-level="1">'+(titleSource?.textContent?.trim()||'My VMS Workspace')+'</strong></div></div><div class="vp-top-actions"></div>';
     const sourceActions=topSource?.querySelector('.topbar-actions,.top-actions,.actions');
     /* Move the real action group rather than cloning it so existing click handlers and IDs stay alive. */
-    if(sourceActions)top.querySelector('.vms-portal-top-actions').appendChild(sourceActions);
+    if(sourceActions)top.querySelector('.vp-top-actions').appendChild(sourceActions);
 
     const shade=document.createElement('div');shade.id='vmsCanonicalPortalBackdrop';
     document.body.prepend(shade);document.body.prepend(top);document.body.prepend(aside);
-    const menuBtn=top.querySelector('.vms-portal-menu-btn');
+    const menuBtn=top.querySelector('.vp-menu-btn');
     const close=()=>{aside.classList.remove('open');shade.classList.remove('show');menuBtn.setAttribute('aria-expanded','false');document.body.classList.remove('vms-portal-drawer-open')};
     const open=()=>{aside.classList.add('open');shade.classList.add('show');menuBtn.setAttribute('aria-expanded','true');document.body.classList.add('vms-portal-drawer-open')};
     menuBtn.addEventListener('click',()=>aside.classList.contains('open')?close():open());shade.addEventListener('click',close);document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
@@ -131,6 +132,8 @@
       const title=titleSource?.textContent?.trim();if(title)$('#vmsCanonicalPortalTitle').textContent=title;
       ITEMS.forEach(([section])=>{
         const src=$(`#nav [data-section="${CSS.escape(section)}"]`), dst=$(`#vmsCanonicalPortalSidebar [data-section="${CSS.escape(section)}"]`);
+        const tab=$(`#vmsPortalTabBar [data-section="${CSS.escape(section)}"]`);
+        if(tab){tab.classList.toggle('active',!!src?.classList.contains('active'));if(src?.classList.contains('active'))tab.setAttribute('aria-current','page');else tab.removeAttribute('aria-current')}
         if(!dst)return;
         dst.classList.toggle('active',!!src?.classList.contains('active'));
         dst.setAttribute('aria-current',src?.classList.contains('active')?'page':'false');

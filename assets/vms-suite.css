@@ -18,12 +18,7 @@
 html{scroll-behavior:smooth}
 body{font-family:var(--body)!important;background:var(--bg)!important;color:var(--ink)!important}
 
-/* Dark mode */
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#001a29;--surface:#00263a;--surface2:#002d44;--tint:#003555;
-  --ink:#FDF0D5;--muted:rgba(253,240,213,.72);--line:rgba(253,240,213,.12);--line2:rgba(253,240,213,.24);
-  --blue:#669BBC;--shadow:0 4px 18px rgba(0,0,0,.28);color-scheme:dark
-}}
+/* Dark mode: only when the toggle sets data-theme="dark" */
 html[data-theme="dark"]{
   --bg:#001a29;--surface:#00263a;--surface2:#002d44;--tint:#003555;
   --ink:#FDF0D5;--muted:rgba(253,240,213,.72);--line:rgba(253,240,213,.12);--line2:rgba(253,240,213,.24);
