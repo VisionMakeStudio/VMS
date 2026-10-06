@@ -17,7 +17,7 @@ const STYLES=[['classic','Classic'],['soft','Soft'],['dots','Dots'],['grad','Gra
 const COLORS=['#003049','#0B2233','#C1121F','#2F6F96','#1C6E4F','#6B3E26'];
 const SIZES=[['s','Small','2 in · 600 px',2],['m','Medium','3 in · 900 px',3],['l','Large','5 in · 1500 px',5],['xl','Poster','8 in · 2400 px',8]];
 const VMS_NAME='Vision Make Studio';
-const S={qrs:[],scans:[],clients:[],filter:'all',show:'active',q:'',sel:null,ed:null,base:'',layout:'card',size:'m',loading:true,error:'',busy:false,legacy:[]};
+const S={qrs:[],scans:[],clients:[],filter:new URLSearchParams(location.search).get('client')||'all',show:'active',q:'',sel:null,ed:null,base:'',layout:'card',size:'m',loading:true,error:'',busy:false,legacy:[]};
 
 /* ---------- helpers ---------- */
 const clientName=id=>{const c=S.clients.find(c=>String(c.id)===String(id));return c?c.business_name:''};

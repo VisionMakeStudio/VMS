@@ -3,6 +3,7 @@
   if(!/\/admin\/audit(?:\.html)?\/?$/i.test(location.pathname))return;
   if(window.__VMS_AUDIT_DESKTOP_PHASE3__)return;
   window.__VMS_AUDIT_DESKTOP_PHASE3__=true;
+  if(document.documentElement.dataset.vmsShell==='v2')return; /* Admin v2 Audit page has its own layout. */
 
   const DESKTOP='(min-width:901px)';
   const sections=[

@@ -1,4 +1,5 @@
 (()=>{
+  if(document.documentElement.dataset.vmsShell==='v2')return; /* Admin v2 Billing page owns this view. */
   if(!/\/admin\/billing(?:\.html)?$/i.test(location.pathname))return;
   const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)],esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const money=(v,c='USD')=>new Intl.NumberFormat('en-US',{style:'currency',currency:String(c||'USD').toUpperCase()}).format(Number(v)||0),date=v=>v?new Date(v).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';let D=null,tab='action';

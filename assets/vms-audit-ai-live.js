@@ -1,4 +1,5 @@
 (()=>{
+  if(document.documentElement.dataset.vmsShell==='v2')return; /* Admin v2 Audit page owns the live audit flow. */
   if(!/\/admin\/audit(?:\.html)?$/i.test(location.pathname))return;
 
   const CATS=['website','google','reviews','systems'];

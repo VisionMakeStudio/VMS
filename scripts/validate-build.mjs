@@ -81,10 +81,16 @@ if(!fs.existsSync(path.join(root,'supabase','migrations','20260820_phase9_public
 if(!fs.existsSync(path.join(root,'supabase','migrations','20260820_phase10_launch_hardening.sql')))failures.push('Phase 10 migration history missing from correct supabase/migrations path');
 
 const clientsPage=fs.readFileSync(path.join(root,'admin','clients.html'),'utf8');
-for(const needle of ['../assets/vms-catalog.js','profilePortalInviteBtn','/api/client-account','VMS_CLIENT_CLOUD_SYNC'])if(!clientsPage.includes(needle))failures.push(`Clients production bridge missing ${needle}`);
+const clientsScript=fs.existsSync(path.join(root,'assets','vms-admin-clients.js'))?fs.readFileSync(path.join(root,'assets','vms-admin-clients.js'),'utf8'):'';
+for(const needle of ['data-vms-shell="v2"','vms-catalog.js','vms-admin-clients.js'])if(!clientsPage.includes(needle))failures.push(`Clients v2 page missing ${needle}`);
+for(const needle of ['/api/admin-clients','profilePortalInviteBtn','/api/client-account','VMS_CLIENT_CLOUD_SYNC',"from('client_services')"])if(!clientsScript.includes(needle))failures.push(`Clients production bridge missing ${needle}`);
 const billingPage=fs.readFileSync(path.join(root,'admin','billing.html'),'utf8');
 for(const forbidden of ['secure-checkout://prototype','Simulate Paid','richDemoData','loadDemoData'])if(billingPage.includes(forbidden))failures.push(`Billing still contains prototype checkout behavior: ${forbidden}`);
-if(!billingPage.includes('Online Checkout · Connect Provider')||!billingPage.includes("let posPaymentPath='manual'"))failures.push('Billing must default to manual payment until a real payment provider is connected');
+const billingScript=fs.existsSync(path.join(root,'assets','vms-admin-billing.js'))?fs.readFileSync(path.join(root,'assets','vms-admin-billing.js'),'utf8'):'';
+for(const needle of ['data-vms-shell="v2"','vms-admin-billing.js'])if(!billingPage.includes(needle))failures.push(`Billing v2 page missing ${needle}`);
+/* Billing is database-first: Stripe invoices / payment requests through /api/admin-billing, plus manual (cash, Zelle, check) payments. */
+for(const needle of ['/api/admin-billing',"'create-invoice'","'send-payment-request'","'manual-payment'","'void-invoice'"])if(!billingScript.includes(needle))failures.push(`Billing production bridge missing ${needle}`);
+for(const forbidden of ['secure-checkout://prototype','Simulate Paid','richDemoData','loadDemoData'])if(billingScript.includes(forbidden))failures.push(`Billing script contains prototype checkout behavior: ${forbidden}`);
 const allProductText=[catalog,schema,clientsPage,billingPage,fs.readFileSync(path.join(root,'admin','linkhub.html'),'utf8'),fs.readFileSync(path.join(root,'portal','index.html'),'utf8')].join('\n');
 for(const forbidden of ['Smart QR monthly','setupPrice:99'])if(allProductText.includes(forbidden))failures.push(`Legacy product pricing remains: ${forbidden}`);
 

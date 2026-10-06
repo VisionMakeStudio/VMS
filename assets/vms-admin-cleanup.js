@@ -1,4 +1,5 @@
 (()=>{
+  if(document.documentElement.dataset.vmsShell==='v2')return; /* Admin v2 pages have delete built in. */
   const page=(()=>{let p=(location.pathname||'').split('/').filter(Boolean).pop()||'index.html';if(!p.includes('.'))p+='.html';return p.toLowerCase()})();
   if(!['leads.html','audit.html'].includes(page))return;
 

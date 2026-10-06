@@ -1,4 +1,5 @@
 (()=>{
+  if(document.documentElement.dataset.vmsShell==='v2')return; /* Admin v2 Clients page owns this view. */
   if(!/\/admin\/clients(?:\.html)?$/i.test(location.pathname))return;
   const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
