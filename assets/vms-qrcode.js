@@ -1325,4 +1325,12 @@ module.exports = QRCode;
     if(this._canvas && this._canvas.parentNode) this._canvas.parentNode.removeChild(this._canvas);
   };
   global.QRCode=BrowserQRCode;
+  /* Module matrix for the VMS styled renderers (QR Studio Classic/Soft/Dots/Gradient). */
+  global.VMSQRMatrix=function(text,level){
+    const lv=level==null?Levels.M:(typeof level==='string'?Levels[level]:level);
+    const core=new QRCore(-1,lv==null?Levels.M:lv);
+    core.addData(String(text||' '));core.make();
+    const n=core.getModuleCount();
+    return {n,dark:(r,c)=>core.isDark(r,c)};
+  };
 })(window);

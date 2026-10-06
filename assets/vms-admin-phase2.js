@@ -2,6 +2,7 @@
    Page-level enhancements only. Navigation/shell ownership lives in vms-admin-shell.* */
 (()=>{
   'use strict';
+  if(document.documentElement.dataset.vmsShell==='v2')return; /* rebuilt v2 tools own their shell (assets/vms-admin-v2.js) */
   const path=(location.pathname||'/').toLowerCase();
   if(!path.startsWith('/admin/')||/\/admin\/login(?:\.html)?\/?$/.test(path))return;
 

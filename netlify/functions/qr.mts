@@ -1,5 +1,5 @@
 import type {Config} from '@netlify/functions';
-import {cleanUrl,code,err,json,requireIdentity,write} from './_shared/qr.mts';
+import {cleanDestination,code,err,json,requireIdentity,write} from './_shared/qr.mts';
 
 
 /* ---------------- Client self-service QR rules ----------------
@@ -41,8 +41,8 @@ async function clientQrAction(req:Request,id:any){
   };
   const type=(v:any)=>CLIENT_QR_TYPES.has(String(v))?String(v):'website';
   if(action==='create'){
-    const destination=cleanUrl(b.destination);if(!destination)throw Object.assign(new Error('Enter a valid http/https destination.'),{status:400});
-    const want=b.mode==='dynamic'?'dynamic':'static';
+    const want=b.mode==='dynamic'&&b.qr_type!=='wifi'?'dynamic':'static';
+    const destination=cleanDestination(b.qr_type,want,b.destination);if(!destination)throw Object.assign(new Error('Enter a valid http/https destination.'),{status:400});
     const ent=await qrEntitlement(client.id);
     if(want==='dynamic'&&!ent.tracked)throw Object.assign(new Error('Your plan does not include tracked QR codes. LinkHub Pro adds scan tracking.'),{status:403});
     if(want==='static'&&!ent.static)throw Object.assign(new Error('Your account does not include QR codes yet. Add VMS Smart QR to create one.'),{status:403});
@@ -53,8 +53,8 @@ async function clientQrAction(req:Request,id:any){
   }
   if(action==='update'){
     const row=await own(String(b.id||''));
-    const destination=cleanUrl(b.destination);if(!destination)throw Object.assign(new Error('Enter a valid destination.'),{status:400});
     let mode=row.mode==='dynamic'?'dynamic':'static';
+    const destination=cleanDestination(b.qr_type||row.qr_type,mode,b.destination);if(!destination)throw Object.assign(new Error('Enter a valid destination.'),{status:400});
     if(mode==='static'&&b.mode==='dynamic'){const ent=await qrEntitlement(client.id);if(!ent.tracked)throw Object.assign(new Error('Your plan does not include tracked QR codes. LinkHub Pro adds scan tracking.'),{status:403});mode='dynamic'}
     const payload={name:String(b.name||row.name||'My QR').trim().slice(0,120),qr_type:type(b.qr_type||row.qr_type),destination,mode,cta:String(b.cta||'').trim().slice(0,120)||null,qr_color:String(b.qr_color||row.qr_color||'#003049').slice(0,9),bg_color:String(b.bg_color||row.bg_color||'#FFFFFF').slice(0,9),updated_at:new Date().toISOString()};
     const rows=await write(`qr_codes?id=eq.${enc(row.id)}`,'PATCH',payload);return Response.json({qr:rows?.[0]||null});
@@ -91,16 +91,18 @@ export default async(req:Request)=>{
     if(req.method==='POST'){
       const b=await req.json().catch(()=>({}));const action=String(b.action||'create');
       if(action==='create'){
-        const destination=cleanUrl(b.destination);if(!destination)throw Object.assign(new Error('Enter a valid http/https destination.'),{status:400});
-        const payload={client_id:b.client_id||null,code:code(),name:String(b.name||'New QR').trim().slice(0,120),business_name:String(b.business_name||'').trim().slice(0,160)||null,qr_type:String(b.qr_type||'website'),destination,mode:b.mode==='dynamic'?'dynamic':'static',status:'active',cta:String(b.cta||'').trim().slice(0,120)||null,qr_color:String(b.qr_color||'#003049'),bg_color:String(b.bg_color||'#FFFFFF'),frame_style:String(b.frame_style||'rounded'),logo_data:b.logo_data?String(b.logo_data).slice(0,300000):null,metadata:{show_vms:b.show_vms!==false,phase:5}};
+        const mode=b.mode==='dynamic'&&b.qr_type!=='wifi'?'dynamic':'static';
+        const destination=cleanDestination(b.qr_type,mode,b.destination);if(!destination)throw Object.assign(new Error('Enter a valid http/https destination.'),{status:400});
+        const payload={client_id:b.client_id||null,code:code(),name:String(b.name||'New QR').trim().slice(0,120),business_name:String(b.business_name||'').trim().slice(0,160)||null,qr_type:String(b.qr_type||'website'),destination,mode,status:'active',cta:String(b.cta||'').trim().slice(0,120)||null,qr_color:String(b.qr_color||'#003049'),bg_color:String(b.bg_color||'#FFFFFF'),frame_style:String(b.frame_style||'rounded'),logo_data:b.logo_data?String(b.logo_data).slice(0,300000):null,metadata:{show_vms:b.show_vms!==false,phase:5}};
         const rows=await write('qr_codes','POST',payload);return Response.json({qr:rows?.[0]||null});
       }
       if(action==='update'){
-        const qrId=String(b.id||'');if(!qrId)throw Object.assign(new Error('QR id required.'),{status:400});const destination=cleanUrl(b.destination);if(!destination)throw Object.assign(new Error('Enter a valid destination.'),{status:400});
-        const payload={client_id:b.client_id||null,name:String(b.name||'QR').trim().slice(0,120),business_name:String(b.business_name||'').trim().slice(0,160)||null,qr_type:String(b.qr_type||'website'),destination,mode:b.mode==='dynamic'?'dynamic':'static',cta:String(b.cta||'').trim().slice(0,120)||null,qr_color:String(b.qr_color||'#003049'),bg_color:String(b.bg_color||'#FFFFFF'),frame_style:String(b.frame_style||'rounded'),logo_data:b.logo_data?String(b.logo_data).slice(0,300000):null,metadata:{...(b.metadata||{}),show_vms:b.show_vms!==false,phase:5},updated_at:new Date().toISOString()};
+        const qrId=String(b.id||'');if(!qrId)throw Object.assign(new Error('QR id required.'),{status:400});const mode=b.mode==='dynamic'&&b.qr_type!=='wifi'?'dynamic':'static';const destination=cleanDestination(b.qr_type,mode,b.destination);if(!destination)throw Object.assign(new Error('Enter a valid destination.'),{status:400});
+        const payload={client_id:b.client_id||null,name:String(b.name||'QR').trim().slice(0,120),business_name:String(b.business_name||'').trim().slice(0,160)||null,qr_type:String(b.qr_type||'website'),destination,mode,cta:String(b.cta||'').trim().slice(0,120)||null,qr_color:String(b.qr_color||'#003049'),bg_color:String(b.bg_color||'#FFFFFF'),frame_style:String(b.frame_style||'rounded'),logo_data:b.logo_data?String(b.logo_data).slice(0,300000):null,metadata:{...(b.metadata||{}),show_vms:b.show_vms!==false,phase:5},updated_at:new Date().toISOString()};
         const rows=await write(`qr_codes?id=eq.${encodeURIComponent(qrId)}`,'PATCH',payload);return Response.json({qr:rows?.[0]||null});
       }
       if(action==='archive'){await write(`qr_codes?id=eq.${encodeURIComponent(String(b.id||''))}`,'PATCH',{status:'archived',updated_at:new Date().toISOString()});return Response.json({ok:true})}
+      if(action==='suspend'||action==='resume'){await write(`qr_codes?id=eq.${encodeURIComponent(String(b.id||''))}`,'PATCH',{status:action==='suspend'?'suspended':'active',updated_at:new Date().toISOString()});return Response.json({ok:true})}
       if(action==='restore'){await write(`qr_codes?id=eq.${encodeURIComponent(String(b.id||''))}`,'PATCH',{status:'active',updated_at:new Date().toISOString()});return Response.json({ok:true})}
       if(action==='delete'){const qrId=String(b.id||'');if(!qrId)throw Object.assign(new Error('QR id required.'),{status:400});await write(`qr_codes?id=eq.${encodeURIComponent(qrId)}`,'DELETE',undefined,'return=minimal');return Response.json({ok:true})}
       throw Object.assign(new Error('Unknown QR action.'),{status:400});

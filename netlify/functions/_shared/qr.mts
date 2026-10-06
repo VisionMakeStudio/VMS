@@ -18,6 +18,9 @@ export async function requireIdentity(req:Request){
   return {user,role,client};
 }
 export function cleanUrl(value:any){const s=String(value||'').trim();if(!s)return'';try{const u=new URL(/^https?:\/\//i.test(s)?s:`https://${s}`);if(!['http:','https:'].includes(u.protocol))return'';return u.toString()}catch{return''}}
+/* Wi-Fi join codes (static only) hold a standard WIFI: payload instead of a web address. */
+export function cleanWifi(value:any){const s=String(value||'').trim();if(!/^WIFI:/i.test(s)||s.length>512||!/S:[^;]+/.test(s))return'';return s}
+export function cleanDestination(type:any,mode:any,value:any){return String(type)==='wifi'&&mode!=='dynamic'?cleanWifi(value):cleanUrl(value)}
 export function code(){const chars='abcdefghjkmnpqrstuvwxyz23456789';let s='';const a=new Uint32Array(12);crypto.getRandomValues(a);for(const n of a)s+=chars[n%chars.length];return s}
 export function err(e:any){return Response.json({error:e?.message||'QR request failed.'},{status:Number(e?.status)||500})}
 export function device(ua:string){const s=ua.toLowerCase();if(/bot|crawl|spider|slurp|preview|facebookexternalhit|whatsapp|telegrambot|discordbot|linkedinbot/.test(s))return 'bot';if(/ipad|tablet|android(?!.*mobile)/.test(s))return 'Tablet';if(/iphone|ipod|android.*mobile|mobile/.test(s))return 'Mobile';return 'Desktop'}

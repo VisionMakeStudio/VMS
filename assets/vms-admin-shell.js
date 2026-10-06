@@ -2,6 +2,7 @@
    One shared sidebar, one shared mobile drawer, one shared topbar. */
 (()=>{
   'use strict';
+  if(document.documentElement.dataset.vmsShell==='v2')return; /* rebuilt v2 tools own their shell (assets/vms-admin-v2.js) */
   if(window.__VMS_ADMIN_SHELL_PHASE2__)return;
   window.__VMS_ADMIN_SHELL_PHASE2__=true;
 

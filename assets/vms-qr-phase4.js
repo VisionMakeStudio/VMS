@@ -4,6 +4,7 @@
   const isAdmin=path.includes('/admin/')&&(path.includes('qr')||document.getElementById('trackingToggle'));
   const isPortal=path.startsWith('/portal');
   if(!isAdmin&&!isPortal)return;
+  if(isAdmin&&document.documentElement.dataset.vmsShell==='v2')return; /* QR Studio v2 talks to /api/qr directly */
   const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>Array.from(r.querySelectorAll(s));
   let sb=null,catalog=[],clients=[],services=[],dynamicService=null,currentClient=null,allowed=false;
   const ACTIVE_SERVICE=new Set(['active','published','enabled']),ACTIVE_BILLING=new Set(['active','paid','trialing','gifted','comped']);
