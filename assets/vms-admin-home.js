@@ -50,5 +50,5 @@ actions(`<button class="btn pri sm" type="button" data-quick>${ic('plus')}<span 
 document.addEventListener('click',e=>{if(e.target.closest('[data-quick]'))sheet('Create',`<div class="list">${QUICK.map(q=>`<a class="li" href="${q[2]}"><span class="lic">${ic(q[0])}</span><span><b>${q[1]}</b></span>${ic('arrow')}</a>`).join('')}</div>`)});
 root.innerHTML='<div class="kpis">'+'<div class="skel" style="height:118px"></div>'.repeat(4)+'</div><div class="grid2"><div class="skel" style="height:340px"></div><div class="skel" style="height:340px"></div></div>';
 addEventListener('storage',()=>S.leads&&render());
-V.ready().then(load);
+V.ready().then(()=>{load();V.state().then(r=>{if(r&&r.changed&&S.leads)render()})});
 })();

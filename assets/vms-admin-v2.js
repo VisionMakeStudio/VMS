@@ -27,6 +27,12 @@ chat:'<path d="M4 5.5h16v11H9l-5 4z"/>',
 plus:'<path d="M12 5v14M5 12h14"/>',
 x:'<path d="M6 6l12 12M18 6L6 18"/>',
 grip:'<circle cx="9" cy="6" r="1.2"/><circle cx="15" cy="6" r="1.2"/><circle cx="9" cy="12" r="1.2"/><circle cx="15" cy="12" r="1.2"/><circle cx="9" cy="18" r="1.2"/><circle cx="15" cy="18" r="1.2"/>',
+filter:'<path d="M4 5h16l-6 8v6l-4-2v-4z"/>',
+download:'<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>',
+edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>',
+key:'<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M16 7l3 3M14 9l2 2"/>',
+shield:'<path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/>',
+device:'<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>',
 eye:'<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
 eyeoff:'<path d="M3 3l18 18M10.6 5.1A9.7 9.7 0 0112 5c6.4 0 10 7 10 7a17 17 0 01-3.2 4.1M6.6 6.6C3.8 8.4 2 12 2 12s3.6 7 10 7a9.6 9.6 0 004.4-1.1"/>',
 trash:'<path d="M4 7h16M10 11v6M14 11v6M5.5 7l1 13h11l1-13M9 7V4h6v3"/>',
@@ -85,6 +91,8 @@ async function session(){try{const sb=window.VMSAuth&&await VMSAuth.client();if(
 async function api(path,opts){opts=opts||{};const s=await session();if(!s||!s.access_token)throw new Error('Your Admin session has expired. Please sign in again.');
   const r=await fetch(path,{method:opts.method||'GET',headers:Object.assign({Authorization:'Bearer '+s.access_token},opts.body?{'Content-Type':'application/json'}:{}),body:opts.body?JSON.stringify(opts.body):undefined});
   const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||'Request failed ('+r.status+').');return d}
+/* Cloud workspace state (vms-state.js): hydrate shared Admin tool data once, without a page reload. */
+let stateP=null;function state(){if(stateP)return stateP;stateP=(async()=>{if(!window.VMSState||location.protocol==='file:')return {changed:false};try{const s=await session();if(!s||!s.user)return {changed:false};return await VMSState.start({scope:'admin',user:s.user,reload:false})}catch(e){return {changed:false}}})();return stateP}
 function ready(){return new Promise(res=>{const tick=()=>{if(!root.classList.contains('vms-auth-pending')&&window.VMSAuth)return res();setTimeout(tick,60)};tick()})}
 
 function more(){sheet('All tools','<div class="stack">'+NAV.map(g=>'<div><p class="v2-gl">'+g[0]+'</p><div class="list">'+g[1].map(n=>'<a class="li" href="'+n[3]+'"'+(n[0]===cur?' aria-current="page"':'')+'><span class="lic">'+ic(n[2])+'</span><span><b>'+n[1]+'</b></span>'+ic('arrow')+'</a>').join('')+'</div></div>').join('')+
@@ -121,6 +129,6 @@ function kpi(l,v,d,dl,pts,href){const tag=href?'a':'div';return `<${tag} class="
 function actions(html){const a=document.getElementById('v2Act');if(a)a.innerHTML=html||'';else document.addEventListener('DOMContentLoaded',()=>actions(html),{once:true})}
 function confirmSheet(title,body,yes,danger){return new Promise(res=>{sheet(title,`<p class="muted">${body}</p><div class="row" style="margin-top:16px"><button class="btn ${danger?'acc':'pri'}" type="button" data-cy>${esc(yes||'Confirm')}</button><button class="btn gh" type="button" data-cn>Cancel</button></div>`,b=>b.onclick=e=>{if(e.target.closest('[data-cy]')){closeSheet();res(true)}if(e.target.closest('[data-cn]')){closeSheet();res(false)}});const d=document.getElementById('v2Sheet');d.addEventListener('close',()=>res(false),{once:true})})}
 function sel(id,opts,val){return opts.map(o=>{const v=Array.isArray(o)?o[0]:o,l=Array.isArray(o)?o[1]:o;return `<option value="${esc(v)}"${String(v)===String(val)?' selected':''}>${esc(l)}</option>`}).join('')}
-window.VMSv2={ic,esc,toast,sheet,closeSheet,api,ready,session,setTheme,money,num,ago,date,spark,kpi,actions,confirmSheet,sel};
+window.VMSv2={ic,esc,toast,sheet,closeSheet,api,ready,session,state,setTheme,money,num,ago,date,spark,kpi,actions,confirmSheet,sel};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
 })();
