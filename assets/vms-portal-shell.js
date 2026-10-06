@@ -2,6 +2,7 @@
 (()=>{
   'use strict';
   if(window.__VMS_PORTAL_SHELL_V3__)return;
+  if(document.documentElement.dataset.vmsShell==='portal-v2')return; /* Client Portal v2 (assets/vms-portal.js) owns this page. */
   window.__VMS_PORTAL_SHELL_V3__=true;
   /* canonical menu labels: Home, My Services, QR Codes, My LinkHub, Audits, Projects, Files, Notifications, Requests, Billing, Contact / Schedule; canonical root: /assets/vms-portal-shell.css */
   const ITEMS=[
@@ -162,6 +163,7 @@
    Fixes are applied with data attributes + CSS variables, so hover/active
    styles written by each page still win. */
 (function(){
+  if(document.documentElement.dataset.vmsShell==='portal-v2')return; /* v2 tokens already meet contrast */
   if(window.__vmsReadability)return;window.__vmsReadability=true;
   const MIN=11, SKIP='script,style,noscript,svg,canvas,textarea,[data-vms-keep]';
   const done=new WeakSet();

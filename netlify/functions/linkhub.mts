@@ -181,47 +181,67 @@ function pageUrl(req: Request, slug: string) {
   return `${u.origin}/link/${encodeURIComponent(slug)}`;
 }
 
-function formatHours(hours: any) {
-  if (!hours) return "";
-  if (typeof hours === "string") return esc(hours);
-  if (!Array.isArray(hours)) return "";
-  return hours.map((row: any) => {
-    const day = esc(row?.day || row?.label || "");
-    const value = row?.closed ? "Closed" : [row?.open, row?.close].filter(Boolean).map(esc).join(" – ");
-    return day && value ? `<div class="hour"><span>${day}</span><b>${value}</b></div>` : "";
-  }).join("");
+const LH_IC: Record<string, string> = {
+  phone:'<path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2z"/>',
+  mail:'<rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5"/>',
+  pin:'<path d="M12 21s-7-6.2-7-11.5a7 7 0 0114 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
+  globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/>',
+  wifi:'<path d="M2.5 9a14 14 0 0119 0M5.5 12.5a9.5 9.5 0 0113 0M8.7 16a5 5 0 016.6 0"/><circle cx="12" cy="19.5" r="1"/>',
+  menu:'<path d="M7 3v8M5 3v5a2 2 0 004 0V3M7 11v10M16 3c-1.7 0-3 2.2-3 5.5S14.3 13 16 13v8"/>',
+  copy:'<rect x="8.5" y="8.5" width="12" height="12" rx="2"/><path d="M15.5 8.5V5a1.5 1.5 0 00-1.5-1.5H5A1.5 1.5 0 003.5 5v9A1.5 1.5 0 005 15.5h3.5"/>',
+  eye:'<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>'
+};
+function lhIc(n: string) {
+  return `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${LH_IC[n] || ""}</svg>`;
 }
 
 function renderPublic(data: any, slug: string) {
   const style = data?.style || {};
+  const named = ["cream", "navy", "red", "sky"];
+  const theme = named.includes(String(data?.theme)) ? String(data.theme) : "";
   const gradient = style?.gradient;
   const gradientA = safeHex(gradient?.a, "");
   const gradientB = safeHex(gradient?.b, "");
   const gradientDir = /^(?:45|90|145|180)deg$/.test(String(gradient?.dir || "")) ? String(gradient.dir) : "145deg";
-  const pageColor = gradientA && gradientB ? gradientA : safeHex(style.bg, "#003049");
-  const bg = gradientA && gradientB ? `linear-gradient(${gradientDir},${gradientA},${gradientB})` : pageColor;
-  const text = safeHex(style.text, "#FFFFFF");
-  const button = safeHex(style.button, "#FFFFFF");
-  const buttonText = safeHex(style.buttonText, "#003049");
+  const btnShape = ["round", "pill", "out"].includes(String(style?.btn)) ? String(style.btn) : "round";
+  const themeBg: Record<string, string> = { cream: "#F6F3EC", navy: "#003049", red: "#2A0A0D", sky: "#E3EFF6" };
+  let pageColor = "#003049";
+  let customVars = "";
+  if (theme) {
+    pageColor = themeBg[theme];
+  } else {
+    // Custom colors (and older pages saved before themes existed)
+    const bgc = safeHex(style.bg, "#003049");
+    const text = safeHex(style.text, "#FFFFFF");
+    const button = safeHex(style.button, "#FFFFFF");
+    const buttonText = safeHex(style.buttonText, "#003049");
+    pageColor = gradientA && gradientB ? gradientA : bgc;
+    const bg = gradientA && gradientB ? `linear-gradient(${gradientDir},${gradientA},${gradientB})` : bgc;
+    customVars = `--lac:${text};--lbg:${bgc};--lpage:${bg};--lbtn:${button};--lbtnfg:${buttonText};--lin:${text};--lmu:color-mix(in srgb,${text} 72%,transparent);--lsur:color-mix(in srgb,${text} 12%,transparent);`;
+  }
+  const cls = `lh${theme && theme !== "cream" ? ` t-${theme}` : ""} b-${btnShape}`;
+
   const name = esc(data?.businessName || data?.restaurant?.name || "VMS LinkHub");
   const title = esc(data?.title || "");
   const bio = esc(data?.bio || "");
   const photo = String(data?.photoData || "");
   const photoSafe = /^(data:image\/(?:png|jpeg|jpg|webp);base64,|https?:\/\/)/i.test(photo) ? photo : "";
+  const initials = esc(String(data?.businessName || "VMS").replace(/[^\p{L}\p{N}\s]/gu, " ").trim().split(/\s+/).slice(0, 2).map((p: string) => p[0] || "").join("").toUpperCase() || "VM");
+  const ext = (href: string) => /^https?:/i.test(href) ? ' target="_blank" rel="noopener"' : "";
 
-  const contacts: string[] = [];
-  if (data?.phone) contacts.push(`<a data-track-kind="contact" data-track-label="Call" href="tel:${esc(String(data.phone).replace(/^tel:/i, ""))}">Call</a>`);
-  if (data?.email) contacts.push(`<a data-track-kind="contact" data-track-label="Email" href="mailto:${esc(String(data.email).replace(/^mailto:/i, ""))}">Email</a>`);
-  const website = safeHttp(data?.website);
-  if (website) contacts.push(`<a data-track-kind="contact" data-track-label="Website" href="${esc(website)}" target="_blank" rel="noopener">Website</a>`);
+  const acts: string[] = [];
+  if (data?.phone) acts.push(`<a data-track-kind="contact" data-track-label="Call" href="tel:${esc(String(data.phone).replace(/^tel:/i, ""))}" aria-label="Call" title="Call">${lhIc("phone")}</a>`);
+  if (data?.email) acts.push(`<a data-track-kind="contact" data-track-label="Email" href="mailto:${esc(String(data.email).replace(/^mailto:/i, ""))}" aria-label="Email" title="Email">${lhIc("mail")}</a>`);
   const maps = safeHttp(data?.mapUrl || data?.visit?.mapsUrl || data?.restaurant?.mapsUrl);
-  if (maps) contacts.push(`<a data-track-kind="contact" data-track-label="Directions" href="${esc(maps)}" target="_blank" rel="noopener">Directions</a>`);
+  if (maps) acts.push(`<a data-track-kind="contact" data-track-label="Directions" href="${esc(maps)}" target="_blank" rel="noopener" aria-label="Directions" title="Directions">${lhIc("pin")}</a>`);
+  const website = safeHttp(data?.website);
+  if (website) acts.push(`<a data-track-kind="contact" data-track-label="Website" href="${esc(website)}" target="_blank" rel="noopener" aria-label="Website" title="Website">${lhIc("globe")}</a>`);
 
   const links = (Array.isArray(data?.links) ? data.links : [])
     .filter((x: any) => x?.visible !== false && x?.label)
     .map((x: any) => {
       const href = safeHttp(x.url);
-      return href ? `<a class="main-link" data-track-kind="link" data-track-label="${esc(x.label)}" href="${esc(href)}" target="_blank" rel="noopener">${esc(x.label)}</a>` : "";
+      return href ? `<a class="lb" data-track-kind="link" data-track-label="${esc(x.label)}" href="${esc(href)}" target="_blank" rel="noopener">${esc(x.label)}</a>` : "";
     }).join("");
 
   const socials = (Array.isArray(data?.socials) ? data.socials : [])
@@ -229,59 +249,57 @@ function renderPublic(data: any, slug: string) {
     .map((x: any) => {
       const href = socialHref(x.platform, x.url);
       if (!href) return "";
-      return `<a class="social" data-track-kind="social" data-track-label="${esc(x.label || x.platform)}" href="${esc(href)}" ${/^https?:/i.test(href) ? 'target="_blank" rel="noopener"' : ""} aria-label="${esc(x.label || x.platform)}" title="${esc(x.label || x.platform)}">${iconSvg(x.platform)}</a>`;
+      const label = esc(x.label || x.platform);
+      return `<a data-track-kind="social" data-track-label="${label}" href="${esc(href)}"${ext(href)} aria-label="${label}" title="${label}">${iconSvg(x.platform)}</a>`;
     }).join("");
 
-  const wifi = data?.wifi || {};
-  const wifiHtml = wifi?.enabled ? `
-    <details class="feature">
-      <summary data-track-kind="feature" data-track-label="Wi-Fi">Wi‑Fi <span>›</span></summary>
-      <div class="feature-body">
-        <div class="feature-kicker">NETWORK</div>
-        <b class="feature-title">${esc(wifi.ssid || "Wi‑Fi Network")}</b>
-        ${wifi.security ? `<p>${esc(wifi.security)}</p>` : ""}
-        ${wifi.password ? `<div class="password-row"><input id="wifiPass" type="password" readonly value="${esc(wifi.password)}"><button type="button" id="toggleWifi">Show</button><button type="button" id="copyWifi">Copy</button></div>` : ""}
-        <small>Open Wi‑Fi settings on your device, choose this network, then enter the password.</small>
-      </div>
-    </details>` : "";
+  const back = `<button type="button" class="back" data-lhs="main">← Back</button>`;
+  const feats: string[] = [];
+  const screens: string[] = [];
 
   const restaurant = data?.restaurant || {};
-  const sections = (Array.isArray(restaurant.sections) ? restaurant.sections : []).filter((x: any) => x?.visible !== false);
-  const menuHtml = restaurant?.enabled ? `
-    <details class="feature">
-      <summary data-track-kind="feature" data-track-label="Restaurant Menu">${esc(restaurant.name || "Restaurant Menu")} <span>›</span></summary>
-      <div class="feature-body restaurant">
-        <b class="feature-title">${esc(restaurant.name || name)}</b>
-        ${restaurant.cuisine ? `<p>${esc(restaurant.cuisine)}</p>` : ""}
-        ${restaurant.description ? `<p>${esc(restaurant.description)}</p>` : ""}
-        ${sections.map((section: any) => `
-          <section class="menu-section">
-            <h3>${esc(section.name || "Menu")}</h3>
-            ${(Array.isArray(section.items) ? section.items : []).filter((item: any) => item?.visible !== false).map((item: any) => `
-              <div class="menu-item">
-                <div><b>${esc(item.name || "Item")}</b>${item.description ? `<small>${esc(item.description)}</small>` : ""}</div>
-                ${restaurant.showPrices !== false && item.price !== "" && item.price != null && Number.isFinite(Number(item.price)) ? `<strong>$${Number(item.price).toFixed(2)}</strong>` : item.priceLabel ? `<strong>${esc(item.priceLabel)}</strong>` : ""}
-              </div>`).join("")}
-          </section>`).join("")}
-      </div>
-    </details>` : "";
+  if (restaurant?.enabled) {
+    const sections = (Array.isArray(restaurant.sections) ? restaurant.sections : []).filter((x: any) => x?.visible !== false);
+    feats.push(`<button type="button" data-lhs="menu" data-track-kind="feature" data-track-label="Menu">${lhIc("menu")}Menu</button>`);
+    screens.push(`<section class="lhv" data-screen="menu" hidden>${back}<div class="scrn"><b>${esc(restaurant.name || "Menu")}</b>
+      ${restaurant.cuisine ? `<p class="sub">${esc(restaurant.cuisine)}</p>` : ""}${restaurant.description ? `<p class="sub">${esc(restaurant.description)}</p>` : ""}
+      ${sections.map((section: any) => `<p class="sec">${esc(section.name || "Menu")}</p>` +
+        (Array.isArray(section.items) ? section.items : []).filter((item: any) => item?.visible !== false).map((item: any) => {
+          const price = restaurant.showPrices !== false && item.price !== "" && item.price != null && Number.isFinite(Number(item.price))
+            ? `$${Number(item.price).toFixed(2)}` : item.priceLabel ? esc(item.priceLabel) : "";
+          return `<div class="mi"><span><span class="nm">${esc(item.name || "Item")}</span>${item.description ? `<small>${esc(item.description)}</small>` : ""}</span>${price ? `<strong>${price}</strong>` : ""}</div>`;
+        }).join("")).join("") || `<p class="sub">The menu is coming soon.</p>`}
+    </div></section>`);
+  }
+
+  const wifi = data?.wifi || {};
+  if (wifi?.enabled) {
+    feats.push(`<button type="button" data-lhs="wifi" data-track-kind="feature" data-track-label="Wi-Fi">${lhIc("wifi")}Wi‑Fi</button>`);
+    screens.push(`<section class="lhv" data-screen="wifi" hidden>${back}<div class="scrn"><b>Free Wi‑Fi</b>
+      <div class="mi"><span>Network</span><strong>${esc(wifi.ssid || "Wi‑Fi Network")}</strong></div>
+      ${wifi.security ? `<div class="mi"><span>Security</span><span>${esc(wifi.security)}</span></div>` : ""}
+      ${wifi.password ? `<div class="mi"><span>Password</span><input id="wifiPass" type="password" readonly value="${esc(wifi.password)}" aria-label="Wi-Fi password"></div>
+      <div class="two"><button type="button" class="lb sm" id="toggleWifi">${lhIc("eye")}<span>Show</span></button><button type="button" class="lb sm" id="copyWifi">${lhIc("copy")}<span>Copy</span></button></div>` : ""}
+      <p class="sub">Open Wi‑Fi settings on your phone, pick this network, then enter the password.</p>
+    </div></section>`);
+  }
 
   const visit = data?.visit || {};
-  const visitMap = safeHttp(visit.mapsUrl || data?.mapUrl);
-  const visitHtml = visit?.enabled ? `
-    <details class="feature">
-      <summary data-track-kind="feature" data-track-label="Visit Us">Visit Us <span>›</span></summary>
-      <div class="feature-body">
-        <b class="feature-title">${esc(visit.name || data?.businessName || "Visit Us")}</b>
-        ${visit.category ? `<p>${esc(visit.category)}</p>` : ""}
-        ${visit.bio ? `<p>${esc(visit.bio)}</p>` : ""}
-        ${visit.address ? `<p>${esc(visit.address)}</p>` : ""}
-        ${formatHours(visit.hours)}
-        ${visitMap ? `<a class="mini-link" data-track-kind="feature" data-track-label="Visit Us directions" href="${esc(visitMap)}" target="_blank" rel="noopener">Open in Maps</a>` : ""}
-      </div>
-    </details>` : "";
-
-  const initials = esc(String(data?.businessName || "VMS").trim().split(/\s+/).slice(0, 2).map((p: string) => p[0] || "").join("").toUpperCase() || "VM");
+  if (visit?.enabled) {
+    const visitMap = safeHttp(visit.mapsUrl || data?.mapUrl);
+    const hours = Array.isArray(visit.hours) ? visit.hours.map((row: any) => {
+      const day = esc(String(row?.day || row?.label || "").slice(0, 3));
+      const value = row?.closed ? "Closed" : [row?.open, row?.close].filter(Boolean).map(esc).join("–");
+      return day && value ? `<div class="mi"><span>${day}</span><span>${value}</span></div>` : "";
+    }).join("") : typeof visit.hours === "string" && visit.hours ? `<div class="mi"><span>Hours</span><span>${esc(visit.hours)}</span></div>` : "";
+    feats.push(`<button type="button" data-lhs="visit" data-track-kind="feature" data-track-label="Visit Us">${lhIc("pin")}Visit us</button>`);
+    screens.push(`<section class="lhv" data-screen="visit" hidden>${back}<div class="scrn"><b>${esc(visit.name || "Visit us")}</b>
+      ${visit.category ? `<p class="sub">${esc(visit.category)}</p>` : ""}${visit.bio ? `<p class="sub">${esc(visit.bio)}</p>` : ""}
+      ${visit.address ? `<div class="mi"><span>Address</span><span class="r">${esc(visit.address)}</span></div>` : ""}
+      ${hours}
+      ${visitMap ? `<a class="lb" data-track-kind="feature" data-track-label="Visit Us directions" href="${esc(visitMap)}" target="_blank" rel="noopener">Get directions</a>` : ""}
+    </div></section>`);
+  }
 
   return `<!doctype html>
 <html lang="en">
@@ -290,23 +308,75 @@ function renderPublic(data: any, slug: string) {
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="${pageColor}">
 <title>${name} — VMS LinkHub</title>
+${bio ? `<meta name="description" content="${bio}">` : ""}
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Unbounded:wght@600;700&display=swap">
 <style>
-:root{--bg:${bg};--pageBg:${pageColor};--text:${text};--button:${button};--buttonText:${buttonText}}
-*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}html{background:var(--pageBg)}body{position:relative;isolation:isolate;min-height:100vh;min-height:100svh;min-height:100dvh;background:var(--bg);color:var(--text);padding:max(24px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) max(44px,calc(env(safe-area-inset-bottom) + 24px)) max(14px,env(safe-area-inset-left));overscroll-behavior-y:none}body:before{content:"";position:fixed;inset:0;z-index:-1;background:var(--bg);pointer-events:none}.page{width:min(620px,100%);margin:0 auto}.profile{text-align:center;padding:18px 8px}.avatar{width:96px;height:96px;border-radius:50%;margin:0 auto 14px;background:rgba(255,255,255,.16);display:grid;place-items:center;overflow:hidden;font-weight:950;font-size:25px}.avatar img{width:100%;height:100%;object-fit:cover}.profile h1{font-size:25px;margin:0}.profile .title{font-size:12px;opacity:.84;margin:7px 0 0}.profile .bio{font-size:11px;line-height:1.55;opacity:.78;margin:8px auto 0;max-width:480px}.contacts,.socials{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:13px 0}.contacts a{color:var(--text);text-decoration:none;border:1px solid rgba(255,255,255,.26);border-radius:999px;padding:8px 12px;font-size:10px;font-weight:850}.links{display:grid;gap:10px;margin:18px 0}.main-link{display:flex;min-height:54px;align-items:center;justify-content:center;text-align:center;padding:10px 14px;border-radius:14px;background:var(--button);color:var(--buttonText);text-decoration:none;font-size:12px;font-weight:900;box-shadow:0 8px 22px rgba(0,0,0,.08)}.social{width:43px;height:43px;display:grid;place-items:center;border-radius:50%;background:rgba(255,255,255,.10);color:var(--text);border:1px solid rgba(255,255,255,.20);text-decoration:none}.social svg{width:20px;height:20px}.features{display:grid;gap:9px;margin-top:16px}.feature{border:1px solid rgba(255,255,255,.20);border-radius:14px;background:rgba(255,255,255,.08);overflow:hidden}.feature summary{cursor:pointer;padding:15px;font-size:11px;font-weight:900;list-style:none;display:flex;justify-content:space-between}.feature summary::-webkit-details-marker{display:none}.feature-body{padding:0 14px 15px;display:grid;gap:8px;font-size:10px;line-height:1.5}.feature-kicker{font-size:8px;font-weight:900;opacity:.62}.feature-title{font-size:13px}.feature-body p,.feature-body small{opacity:.79;margin:0}.password-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:7px}.password-row input{min-width:0;border:0;border-radius:9px;padding:10px;background:rgba(255,255,255,.13);color:var(--text)}.password-row button,.mini-link{border:0;border-radius:9px;background:var(--button);color:var(--buttonText);padding:9px 10px;font-size:9px;font-weight:900;text-decoration:none;text-align:center}.menu-section{padding-top:10px;border-top:1px solid rgba(255,255,255,.14)}.menu-section h3{margin:0 0 5px}.menu-item{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.10)}.menu-item>div{display:grid;gap:2px}.hour{display:flex;justify-content:space-between;gap:14px;border-bottom:1px solid rgba(255,255,255,.10);padding:6px 0}.powered{text-align:center;font-size:9px;opacity:.56;margin-top:26px}.powered a{color:inherit}.empty{text-align:center;font-size:11px;opacity:.68;padding:10px}
-@media(max-width:520px){body{padding-top:max(12px,env(safe-area-inset-top))}.avatar{width:88px;height:88px}.profile h1{font-size:22px}.password-row{grid-template-columns:1fr 1fr}.password-row input{grid-column:1/-1}}
+*,*::before,*::after{box-sizing:border-box}
+:root{--display:"Unbounded","Arial Black",system-ui,sans-serif;--body:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+html,body{margin:0;min-height:100%}
+html{background:${pageColor};-webkit-text-size-adjust:100%}
+body{font:400 15px/1.55 var(--body);-webkit-font-smoothing:antialiased;overscroll-behavior-y:none}
+h1,p{margin:0}
+img,svg{display:block;max-width:100%}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent;background:none;border:0;padding:0}
+.ico{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.lh{--lbg:#F6F3EC;--lsur:#FFFFFF;--lbtn:#003049;--lbtnfg:#FDF0D5;--lin:#0B2233;--lmu:#586A74;--lac:#C1121F;--lpage:var(--lbg);min-height:100vh;min-height:100dvh;background:var(--lpage);color:var(--lin);font-family:var(--body);padding:max(40px,calc(env(safe-area-inset-top) + 24px)) max(18px,env(safe-area-inset-right)) max(30px,calc(env(safe-area-inset-bottom) + 20px)) max(18px,env(safe-area-inset-left))}
+.lh.t-navy{--lbg:#003049;--lsur:#0A3A55;--lbtn:#FDF0D5;--lbtnfg:#003049;--lin:#FDF0D5;--lmu:rgba(253,240,213,.72);--lac:#FFB48A}
+.lh.t-red{--lbg:#2A0A0D;--lsur:#3B1216;--lbtn:#C1121F;--lbtnfg:#fff;--lin:#FDF0D5;--lmu:rgba(253,240,213,.72);--lac:#FFB48A}
+.lh.t-sky{--lbg:#E3EFF6;--lsur:#fff;--lbtn:#2F6F96;--lbtnfg:#fff;--lin:#0B2233;--lmu:#46606E;--lac:#003049}
+.lhv{width:min(480px,100%);margin:0 auto;display:grid;gap:14px;align-content:start}
+.lhv[hidden]{display:none}
+.lha{width:96px;height:96px;border-radius:30px;margin:0 auto;display:grid;place-items:center;overflow:hidden;font-family:var(--display);font-weight:700;font-size:1.8rem;color:var(--lbtnfg);background:var(--lbtn);box-shadow:0 10px 30px rgba(0,0,0,.18)}
+.lha img{width:100%;height:100%;object-fit:cover}
+.lh h1{font-family:var(--display);font-weight:700;font-size:1.45rem;letter-spacing:-.03em;line-height:1.2;text-align:center;margin-top:2px}
+.bio{text-align:center;color:var(--lmu);font-size:14.5px;margin-top:-6px}
+.bio.t{font-weight:600}
+.acts{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.acts a{width:48px;height:48px;border-radius:15px;background:var(--lsur);color:var(--lin);display:grid;place-items:center;box-shadow:0 4px 14px rgba(0,0,0,.08);text-decoration:none}
+.feats{display:grid;gap:8px}
+.feats button{display:grid;justify-items:center;gap:5px;padding:13px 4px;border-radius:15px;background:var(--lsur);color:var(--lin);font-size:13px;font-weight:600}
+.lb{text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;min-height:54px;padding:0 18px;border-radius:16px;background:var(--lbtn);color:var(--lbtnfg);font-weight:600;font-size:15.5px;text-align:center;transition:transform .15s;box-shadow:0 6px 18px rgba(0,0,0,.08)}
+.lb:active{transform:scale(.98)}
+.lb.sm{min-height:46px;font-size:14px;padding:0 12px}
+.lh.b-out .lb{background:transparent;color:var(--lin);border:2px solid var(--lbtn);box-shadow:none}
+.lh.b-pill .lb{border-radius:99px}
+.soc{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin-top:4px}
+.soc a{color:var(--lmu);display:grid;place-items:center;width:40px;height:40px;text-decoration:none}
+.soc a:hover{color:var(--lin)}
+.soc svg{width:22px;height:22px}
+.made{text-align:center;font-size:12px;color:var(--lmu);margin-top:10px}
+.made a{color:inherit}
+.empty{text-align:center;color:var(--lmu);font-size:14px}
+.scrn{background:var(--lsur);border-radius:18px;padding:18px;display:grid;gap:10px}
+.scrn>b{font-family:var(--display);font-weight:700;font-size:1.1rem}
+.sub{color:var(--lmu);font-size:14px}
+.sec{font-weight:700;font-size:14px;margin-top:8px}
+.mi{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:14.5px;padding:9px 0;border-bottom:1px solid color-mix(in srgb,var(--lin) 12%,transparent)}
+.mi:last-child{border:0}
+.mi>span:first-child{display:grid;gap:2px;min-width:0}
+.mi small{color:var(--lmu);font-size:12.5px}
+.mi strong{font-weight:700;white-space:nowrap}
+.mi .r{text-align:right}
+.mi input{min-width:0;width:12ch;text-align:right;border:0;background:transparent;font-weight:700;padding:0}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.back{justify-self:start;font-size:14px;font-weight:600;color:var(--lac);min-height:40px}
+:focus-visible{outline:2px solid var(--lac);outline-offset:2px}
 </style>
 </head>
 <body>
-<main class="page">
-<section class="profile">
-<div class="avatar">${photoSafe ? `<img src="${esc(photoSafe)}" alt="${name}">` : initials}</div>
-<h1>${name}</h1>${title ? `<p class="title">${title}</p>` : ""}${bio ? `<p class="bio">${bio}</p>` : ""}
-${contacts.length ? `<div class="contacts">${contacts.join("")}</div>` : ""}
+<main class="${cls}"${customVars ? ` style="${customVars}"` : ""}>
+<section class="lhv" data-screen="main">
+<div class="lha">${photoSafe ? `<img src="${esc(photoSafe)}" alt="${name}">` : initials}</div>
+<h1>${name}</h1>${title ? `<p class="bio t">${title}</p>` : ""}${bio ? `<p class="bio">${bio}</p>` : ""}
+${acts.length ? `<div class="acts">${acts.join("")}</div>` : ""}
+${feats.length ? `<div class="feats" style="grid-template-columns:repeat(${feats.length},1fr)">${feats.join("")}</div>` : ""}
+${links || `<p class="empty">More links coming soon.</p>`}
+${socials ? `<div class="soc">${socials}</div>` : ""}
+<div class="made">Made with <a href="https://visionmakestudio.com" target="_blank" rel="noopener">VMS LinkHub</a></div>
 </section>
-<div class="links">${links || `<div class="empty">More links coming soon.</div>`}</div>
-${socials ? `<div class="socials">${socials}</div>` : ""}
-<div class="features">${wifiHtml}${menuHtml}${visitHtml}</div>
-<div class="powered">VMS LinkHub · Smart Business Card by <a href="https://visionmakestudio.com" target="_blank" rel="noopener">Vision Make Studio</a></div>
+${screens.join("\n")}
 </main>
 <script>
 const LINKHUB_SLUG=${JSON.stringify(slug)};
@@ -317,9 +387,12 @@ function trackLinkHub(type,kind='',label=''){
 }
 try{const key='vms_lh_view_'+LINKHUB_SLUG,last=Number(sessionStorage.getItem(key)||0);if(Date.now()-last>1800000){sessionStorage.setItem(key,String(Date.now()));trackLinkHub('view')}}catch{trackLinkHub('view')}
 document.querySelectorAll('[data-track-kind]').forEach(link=>link.addEventListener('click',()=>trackLinkHub('click',link.dataset.trackKind||'',link.dataset.trackLabel||link.textContent||''),{capture:true}));
+function showScreen(s){document.querySelectorAll('.lhv').forEach(v=>{v.hidden=v.dataset.screen!==s});window.scrollTo(0,0)}
+document.querySelectorAll('[data-lhs]').forEach(b=>b.addEventListener('click',()=>{const s=b.dataset.lhs;showScreen(s);if(s==='main'){if(history.state&&history.state.lh)history.back()}else history.pushState({lh:s},'')}));
+window.addEventListener('popstate',e=>showScreen(e.state&&e.state.lh||'main'));
 const pass=document.getElementById('wifiPass');
-document.getElementById('toggleWifi')?.addEventListener('click',e=>{if(!pass)return;const show=pass.type==='password';pass.type=show?'text':'password';e.currentTarget.textContent=show?'Hide':'Show'});
-document.getElementById('copyWifi')?.addEventListener('click',async e=>{if(!pass)return;try{await navigator.clipboard.writeText(pass.value);e.currentTarget.textContent='Copied';setTimeout(()=>e.currentTarget.textContent='Copy',1200)}catch{}});
+document.getElementById('toggleWifi')?.addEventListener('click',e=>{if(!pass)return;const show=pass.type==='password';pass.type=show?'text':'password';e.currentTarget.querySelector('span').textContent=show?'Hide':'Show'});
+document.getElementById('copyWifi')?.addEventListener('click',async e=>{if(!pass)return;const l=e.currentTarget.querySelector('span');try{await navigator.clipboard.writeText(pass.value);l.textContent='Copied';setTimeout(()=>l.textContent='Copy',1400)}catch{pass.type='text';pass.select()}});
 </script>
 </body></html>`;
 }

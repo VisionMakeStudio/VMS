@@ -1,56 +1,13 @@
 <!doctype html>
 <html lang="en">
 <head>
-<script>if(location.protocol!=='file:')document.documentElement.classList.add('vms-auth-pending');</script>
-<style>html.vms-auth-pending body{overflow:hidden!important}html.vms-auth-pending body>*{visibility:hidden!important}html.vms-auth-pending body::before{content:'Opening your secure VMS Portal…';position:fixed;inset:0;z-index:999999;display:grid;place-items:center;background:#003049;color:#fff;font:800 14px Inter,Arial,sans-serif;visibility:visible!important}</style>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>VMS Client Portal — Notification Settings</title>
-<style>
-:root{--navy:#003049;--blue:#669BBC;--orange:#EB5E28;--red:#C1121F;--green:#2b8c69;--ink:#173443;--muted:#71858f;--line:#dce6ea;--bg:#f4f6f8;--cream:#FDF0D5}
-*{box-sizing:border-box}body{margin:0;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at 88% -10%,rgba(102,155,188,.16),transparent 30%),var(--bg);color:var(--ink)}button,input{font:inherit}button{cursor:pointer}a{text-decoration:none;color:inherit}
-.top{min-height:68px;background:rgba(255,255,255,.92);border-bottom:1px solid #dfe7ea;backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:space-between;padding:10px max(14px,calc((100vw - 980px)/2));position:sticky;top:0;z-index:10}.top img{width:80px;max-height:44px;object-fit:contain}.top-actions{display:flex;gap:6px}.btn{display:inline-flex;align-items:center;justify-content:center;border:1px solid #d8e3e7;background:#fff;color:var(--navy);border-radius:11px;padding:9px 12px;font-size:10px;font-weight:850}.btn.primary{background:var(--navy);border-color:var(--navy);color:#fff}.btn:disabled{opacity:.55;cursor:wait}
-.wrap{max-width:980px;margin:auto;padding:24px 15px 50px}.hero{background:linear-gradient(145deg,var(--navy),#0b4058);color:#fff;border-radius:22px;padding:24px;box-shadow:0 18px 45px rgba(0,48,73,.12)}.hero small{font-size:9px;color:#9bc3d7;font-weight:900;letter-spacing:.12em}.hero h1{font-size:30px;letter-spacing:-.04em;margin:6px 0 8px}.hero p{color:rgba(255,255,255,.74);font-size:11.5px;line-height:1.55;margin:0;max-width:760px}
-.notice{margin-top:13px;border:1px solid #ead8b9;background:#fff9ed;color:#765d1d;border-radius:14px;padding:12px 14px}.notice.good{border-color:#cde7d9;background:#f2faf6;color:#2d7057}.notice strong{display:block;font-size:10px}.notice span{display:block;font-size:9px;line-height:1.45;margin-top:4px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-top:13px}.card{background:#fff;border:1px solid rgba(0,48,73,.09);border-radius:18px;box-shadow:0 10px 30px rgba(0,48,73,.05);overflow:hidden}.head{padding:14px 16px;border-bottom:1px solid #e8eef0}.head strong{font-size:14px;color:var(--navy)}.head span{display:block;margin-top:4px;color:var(--muted);font-size:9px;line-height:1.45}.body{padding:12px 16px}.pref{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:12px 0;border-bottom:1px solid #edf2f4}.pref:last-child{border-bottom:0}.pref strong{display:block;color:#35515f;font-size:10.5px}.pref span{display:block;color:#83959e;font-size:8.5px;line-height:1.45;margin-top:4px}.switch{position:relative;flex:0 0 auto;width:42px;height:24px}.switch input{position:absolute;opacity:0}.slider{position:absolute;inset:0;background:#ccd8dd;border-radius:999px;transition:.18s}.slider:before{content:"";position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,48,73,.2);transition:.18s}.switch input:checked+.slider{background:var(--navy)}.switch input:checked+.slider:before{transform:translateX(18px)}
-.actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}.footer-note{font-size:8.5px;line-height:1.55;color:#81949d;margin-top:11px}.toast{position:fixed;left:50%;bottom:20px;transform:translate(-50%,15px);opacity:0;background:var(--navy);color:#fff;border-radius:11px;padding:10px 13px;font-size:9px;font-weight:850;z-index:100;transition:.18s}.toast.show{opacity:1;transform:translate(-50%,0)}
-@media(max-width:700px){.wrap{padding-top:15px}.hero{padding:20px 17px}.hero h1{font-size:25px}.grid{grid-template-columns:1fr}.top-actions .btn:first-child{display:none}.pref{padding:14px 0}.switch{width:46px;height:26px}.slider:before{width:20px;height:20px}.switch input:checked+.slider:before{transform:translateX(20px)}}
-</style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>VMS Client Portal</title>
+<script>location.replace('/portal/#notif');</script>
 </head>
-<body>
-<header class="top"><img src="../assets/vms-logo.png" alt="Vision Make Studio"><div class="top-actions"><a class="btn" href="schedule.html">Scheduling</a><a class="btn" href="./">Portal Home</a></div></header>
-<main class="wrap">
-<section class="hero"><small>CLIENT PORTAL · NOTIFICATIONS</small><h1 id="title">Notification settings.</h1><p>Choose how Vision Make Studio keeps you updated about billing, appointments, onboarding, projects, files, and account activity.</p></section>
-<div class="notice" id="emailNotice"><strong id="emailTitle">Checking email delivery…</strong><span id="emailCopy">Your preferences are loading.</span></div>
-<div class="grid">
-<section class="card"><div class="head"><strong>Delivery Channels</strong><span>Control where VMS notifications can reach you.</span></div><div class="body">
-<div class="pref"><div><strong>Email notifications</strong><span>Receive branded VMS email reminders and updates.</span></div><label class="switch"><input id="email_enabled" type="checkbox"><span class="slider"></span></label></div>
-<div class="pref"><div><strong>In-portal notifications</strong><span>Show updates inside your VMS Portal and Activity history.</span></div><label class="switch"><input id="in_app_enabled" type="checkbox"><span class="slider"></span></label></div>
-</div></section>
-<section class="card"><div class="head"><strong>Notification Categories</strong><span>Turn entire categories on or off for your account.</span></div><div class="body">
-<div class="pref"><div><strong>Billing & payments</strong><span>Invoices, overdue balances, payment failures, and renewals.</span></div><label class="switch"><input id="billing" type="checkbox"><span class="slider"></span></label></div>
-<div class="pref"><div><strong>Scheduling</strong><span>Appointments, booking decisions, reschedules, and cancellations.</span></div><label class="switch"><input id="scheduling" type="checkbox"><span class="slider"></span></label></div>
-<div class="pref"><div><strong>Onboarding</strong><span>Welcome messages and required setup tasks.</span></div><label class="switch"><input id="onboarding" type="checkbox"><span class="slider"></span></label></div>
-<div class="pref"><div><strong>Projects</strong><span>Project status changes and ready-for-review updates.</span></div><label class="switch"><input id="project" type="checkbox"><span class="slider"></span></label></div>
-<div class="pref"><div><strong>Files & assets</strong><span>Delivered files, uploads, and asset-ready notifications.</span></div><label class="switch"><input id="files" type="checkbox"><span class="slider"></span></label></div>
-<div class="pref"><div><strong>Account & service updates</strong><span>General VMS service and account notices.</span></div><label class="switch"><input id="client" type="checkbox"><span class="slider"></span></label></div>
-</div></section>
-</div>
-<div class="actions"><button class="btn" id="resetBtn" type="button">Reset Changes</button><button class="btn primary" id="saveBtn" type="button">Save Preferences</button></div>
-<p class="footer-note">These settings apply to automated VMS messages. Messages that are required to complete a service, respond to a request, or protect your account may still appear when necessary.</p>
-</main><div class="toast" id="toast"></div>
-<script src="../assets/config.js"></script><script src="../assets/vms-core.js"></script>
-<script>
-(()=>{'use strict';
-const ids=['email_enabled','in_app_enabled','billing','scheduling','onboarding','project','files','client'],g=id=>document.getElementById(id);let saved=null;
-function toast(m){g('toast').textContent=m;g('toast').classList.add('show');clearTimeout(window.__prefToast);window.__prefToast=setTimeout(()=>g('toast').classList.remove('show'),2200)}
-async function token(){const sb=await VMSAuth.client(),{data:{session}}=await sb.auth.getSession();if(!session?.access_token)throw new Error('Please sign in again.');return session.access_token}
-async function api(body=null){const t=await token(),r=await fetch('/api/notification-preferences',{method:body?'POST':'GET',headers:{Authorization:`Bearer ${t}`,...(body?{'Content-Type':'application/json'}:{})},body:body?JSON.stringify(body):undefined}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||'Notification settings request failed.');return d}
-function apply(p){ids.forEach(id=>g(id).checked=p[id]!==false);saved={...p}}
-function renderCapability(c){const n=g('emailNotice');if(c?.emailConfigured){n.classList.add('good');g('emailTitle').textContent='Email delivery is connected';g('emailCopy').textContent='Your email preferences take effect immediately for VMS automated messages.'}else{n.classList.remove('good');g('emailTitle').textContent='Your email preferences will be saved now';g('emailCopy').textContent='VMS email delivery is not activated yet. Your choices will automatically apply as soon as the email provider is connected.'}}
-async function load(){const d=await api();if(d.client?.business_name)g('title').textContent=`${d.client.business_name} notification settings.`;apply(d.preferences||{});renderCapability(d.capabilities||{})}
-g('saveBtn').onclick=async()=>{const b=g('saveBtn'),payload={};ids.forEach(id=>payload[id]=g(id).checked);b.disabled=true;b.textContent='Saving…';try{const d=await api(payload);apply(d.preferences||payload);renderCapability(d.capabilities||{});toast('Notification preferences saved')}catch(e){toast(e.message)}finally{b.disabled=false;b.textContent='Save Preferences'}};
-g('resetBtn').onclick=()=>{if(saved)apply(saved)};
-(async()=>{if(location.protocol!=='file:'){const u=await VMSAuth.requireSession('client');if(!u)return}await load().catch(e=>toast(e.message))})();
-})();
-</script>
-</body></html>
+<body style="background:#00121C;color:#FDF0D5;font-family:system-ui,sans-serif">
+<p style="padding:24px">Opening your portal… <a href="/portal/#notif" style="color:#FDF0D5">Continue</a></p>
+</body>
+</html>

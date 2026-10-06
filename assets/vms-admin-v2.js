@@ -4,7 +4,8 @@
 (()=>{
 'use strict';
 const root=document.documentElement;
-if(root.dataset.vmsShell!=='v2'||window.VMSv2)return;
+if(!['v2','portal-v2'].includes(root.dataset.vmsShell)||window.VMSv2)return;
+const PORTAL=root.dataset.vmsShell==='portal-v2';
 const IC={
 home:'<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>',
 users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 010 7"/><path d="M18 14.6c1.9.7 3.2 2.5 3.6 5.4"/>',
@@ -89,11 +90,11 @@ function sheet(titleText,html,bind){const d=document.getElementById('v2Sheet');d
 function closeSheet(){const d=document.getElementById('v2Sheet');if(d&&d.open)d.close()}
 
 async function session(){try{const sb=window.VMSAuth&&await VMSAuth.client();if(!sb)return null;const {data}=await sb.auth.getSession();return data&&data.session||null}catch(e){return null}}
-async function api(path,opts){opts=opts||{};const s=await session();if(!s||!s.access_token)throw new Error('Your Admin session has expired. Please sign in again.');
+async function api(path,opts){opts=opts||{};const s=await session();if(!s||!s.access_token)throw new Error(PORTAL?'Your session has expired. Please sign in again.':'Your Admin session has expired. Please sign in again.');
   const r=await fetch(path,{method:opts.method||'GET',headers:Object.assign({Authorization:'Bearer '+s.access_token},opts.body?{'Content-Type':'application/json'}:{}),body:opts.body?JSON.stringify(opts.body):undefined});
   const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||'Request failed ('+r.status+').');return d}
 /* Cloud workspace state (vms-state.js): hydrate shared Admin tool data once, without a page reload. */
-let stateP=null;function state(){if(stateP)return stateP;stateP=(async()=>{if(!window.VMSState||location.protocol==='file:')return {changed:false};try{const s=await session();if(!s||!s.user)return {changed:false};return await VMSState.start({scope:'admin',user:s.user,reload:false})}catch(e){return {changed:false}}})();return stateP}
+let stateP=null;function state(){if(PORTAL)return Promise.resolve({changed:false});if(stateP)return stateP;stateP=(async()=>{if(!window.VMSState||location.protocol==='file:')return {changed:false};try{const s=await session();if(!s||!s.user)return {changed:false};return await VMSState.start({scope:'admin',user:s.user,reload:false})}catch(e){return {changed:false}}})();return stateP}
 function ready(){return new Promise(res=>{const tick=()=>{if(!root.classList.contains('vms-auth-pending')&&window.VMSAuth)return res();setTimeout(tick,60)};tick()})}
 
 function more(){sheet('All tools','<div class="stack">'+NAV.map(g=>'<div><p class="v2-gl">'+g[0]+'</p><div class="list">'+g[1].map(n=>'<a class="li" href="'+n[3]+'"'+(n[0]===cur?' aria-current="page"':'')+'><span class="lic">'+ic(n[2])+'</span><span><b>'+n[1]+'</b></span>'+ic('arrow')+'</a>').join('')+'</div></div>').join('')+
@@ -102,9 +103,33 @@ function more(){sheet('All tools','<div class="stack">'+NAV.map(g=>'<div><p clas
 function search(){sheet('Go to',`<input class="inp" id="v2Q" placeholder="Search tools" autocomplete="off"><div class="list" id="v2QL" style="margin-top:10px"></div>`,b=>{const q=b.querySelector('#v2Q'),l=b.querySelector('#v2QL');
   const draw=()=>{const v=q.value.trim().toLowerCase();l.innerHTML=Object.values(ALL).filter(n=>!v||n[1].toLowerCase().includes(v)).map(n=>'<a class="li" href="'+n[3]+'"><span class="lic">'+ic(n[2])+'</span><span><b>'+n[1]+'</b></span>'+ic('arrow')+'</a>').join('')||'<div class="empty">No tool matches.</div>'};
   q.oninput=draw;draw();setTimeout(()=>q.focus(),60)})}
-async function signOut(){try{await window.VMSAuth?.signOut?.()}catch(e){}location.href='/admin/login.html'}
+async function signOut(){try{await window.VMSAuth?.signOut?.()}catch(e){}location.href=PORTAL?'/':'/admin/login.html'}
+
+
+/* ── Client Portal chrome (<html data-vms-shell="portal-v2">): navy top bar, desktop nav, phone tab bar + More. ── */
+const PNAV=[['home','Home','home'],['services','Services','star'],['qr','QR Codes','qr'],['linkhub','LinkHub','link'],['billing','Billing','card'],['schedule','Schedule','cal']];
+const PMORE=[['billing','Billing','card'],['schedule','Schedule','cal'],['files','Files','folder'],['requests','Requests','inbox'],['audits','Audits','audit'],['notif','Notifications','bell']];
+const PTABS=[['home','Home','home'],['services','Services','star'],['qr','QR','qr'],['linkhub','LinkHub','link']];
+const PTITLE={home:'Home',services:'My services',qr:'QR Codes',linkhub:'LinkHub',billing:'Billing',schedule:'Schedule',files:'Files',requests:'Requests',audits:'Audits',notif:'Notifications'};
+function portalMore(){sheet('More','<div class="list">'+PMORE.map(n=>'<a class="li" href="#'+n[0]+'"><span class="lic">'+ic(n[2])+'</span><span><b>'+n[1]+'</b></span>'+ic('arrow')+'</a>').join('')+'</div><div class="row" style="margin-top:14px"><button type="button" class="btn gh sm" data-x="theme">'+ic('sun')+'Light / dark</button><span class="sp"></span><button type="button" class="btn ghost sm" data-x="out">'+ic('out')+'Sign out</button></div>',
+  b=>b.onclick=e=>{if(e.target.closest('a.li'))return closeSheet();const x=e.target.closest('[data-x]');if(!x)return;if(x.dataset.x==='theme')setTheme();if(x.dataset.x==='out')signOut()})}
+function portalNav(v){const t=document.getElementById('v2PT');if(t)t.textContent=PTITLE[v]||'Portal';document.title=(PTITLE[v]||'Portal')+' · VMS Client Portal';
+  document.querySelectorAll('[data-pv]').forEach(b=>{const k=b.dataset.pv,on=k===v||(k==='more'&&!PTABS.some(x=>x[0]===v)&&b.closest('.tabbar'))||(k==='more'&&!b.closest('.tabbar')&&!PNAV.some(x=>x[0]===v));on?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current')})}
+function portalWho(name){const w=document.getElementById('v2Who'),a=document.getElementById('v2Av');if(w)w.textContent=name;if(a)a.textContent=String(name||'').replace(/[^A-Za-z0-9 ]+/g,' ').trim().split(/\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase()||'VM'}
+function mountPortal(){
+  if(document.getElementById('v2PTop'))return;
+  document.body.insertAdjacentHTML('afterbegin','<svg width="0" height="0" style="position:absolute" aria-hidden="true">'+Object.entries(IC).map(([k,v])=>'<symbol id="i-'+k+'" viewBox="0 0 24 24">'+v+'</symbol>').join('')+'</svg>');
+  const main=document.getElementById('v2Main');main.classList.add('view','pview');
+  main.insertAdjacentHTML('beforebegin','<header class="ptop" id="v2PTop"><a class="plogo" href="#home"><img src="/assets/vms-logo-cream.png" alt="Vision Make Studio"></a><span class="ptitle" id="v2PT">Home</span><nav aria-label="Portal">'+PNAV.map(n=>'<a href="#'+n[0]+'" data-pv="'+n[0]+'">'+n[1]+'</a>').join('')+'<button type="button" data-pv="more" data-pmore>More</button></nav><button type="button" class="ib pib" id="v2Theme"></button><div class="who"><span class="av sm" id="v2Av">VM</span><span id="v2Who">Your business</span></div></header>');
+  document.body.insertAdjacentHTML('beforeend','<nav class="tabbar portab" aria-label="Portal">'+PTABS.map(t=>'<a href="#'+t[0]+'" data-pv="'+t[0]+'">'+ic(t[2])+t[1]+'</a>').join('')+'<button type="button" data-pv="more" data-pmore>'+ic('more')+'More</button></nav>'+
+    '<dialog class="sheet" id="v2Sheet" aria-labelledby="v2ShT"><div class="shc"><div class="grab"></div><div class="hd"><h3 id="v2ShT"></h3><button type="button" class="ib" data-close aria-label="Close">'+ic('x')+'</button></div><div id="v2ShB"></div></div></dialog><div class="toast" id="v2Toast" role="status" aria-live="polite"></div>');
+  document.addEventListener('click',e=>{const t=e.target;if(t.closest('[data-pmore]'))return portalMore();if(t.closest('#v2Theme'))return setTheme();if(t.closest('[data-out]'))return signOut();if(t.closest('#v2Sheet [data-close]'))return closeSheet();
+    const d=document.getElementById('v2Sheet');if(t===d)closeSheet()});
+  paintTheme();
+}
 
 function mount(){
+  if(PORTAL)return mountPortal();
   if(document.getElementById('v2Side'))return;
   document.body.insertAdjacentHTML('afterbegin','<svg width="0" height="0" style="position:absolute" aria-hidden="true">'+Object.entries(IC).map(([k,v])=>'<symbol id="i-'+k+'" viewBox="0 0 24 24">'+v+'</symbol>').join('')+'</svg>');
   const main=document.getElementById('v2Main');
@@ -130,6 +155,6 @@ function kpi(l,v,d,dl,pts,href){const tag=href?'a':'div';return `<${tag} class="
 function actions(html){const a=document.getElementById('v2Act');if(a)a.innerHTML=html||'';else document.addEventListener('DOMContentLoaded',()=>actions(html),{once:true})}
 function confirmSheet(title,body,yes,danger){return new Promise(res=>{sheet(title,`<p class="muted">${body}</p><div class="row" style="margin-top:16px"><button class="btn ${danger?'acc':'pri'}" type="button" data-cy>${esc(yes||'Confirm')}</button><button class="btn gh" type="button" data-cn>Cancel</button></div>`,b=>b.onclick=e=>{if(e.target.closest('[data-cy]')){closeSheet();res(true)}if(e.target.closest('[data-cn]')){closeSheet();res(false)}});const d=document.getElementById('v2Sheet');d.addEventListener('close',()=>res(false),{once:true})})}
 function sel(id,opts,val){return opts.map(o=>{const v=Array.isArray(o)?o[0]:o,l=Array.isArray(o)?o[1]:o;return `<option value="${esc(v)}"${String(v)===String(val)?' selected':''}>${esc(l)}</option>`}).join('')}
-window.VMSv2={ic,esc,toast,sheet,closeSheet,api,ready,session,state,setTheme,money,num,ago,date,spark,kpi,actions,confirmSheet,sel};
+window.VMSv2={ic,esc,toast,sheet,closeSheet,api,ready,session,state,portalNav,portalWho,signOut,setTheme,money,num,ago,date,spark,kpi,actions,confirmSheet,sel};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
 })();

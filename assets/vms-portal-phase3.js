@@ -3,6 +3,7 @@
   'use strict';
 
   const root=document.documentElement;
+  if(document.documentElement.dataset.vmsShell==='portal-v2')return; /* Client Portal v2 (assets/vms-portal.js) owns this page. */
   root.classList.add('vms-phase3-portal');
 
   const STORAGE_KEY='vms_portal_active_section_v1';

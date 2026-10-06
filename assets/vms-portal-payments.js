@@ -1,5 +1,6 @@
 (()=>{
   if(!location.pathname.toLowerCase().startsWith('/portal'))return;
+  if(document.documentElement.dataset.vmsShell==='portal-v2')return; /* Client Portal v2 (assets/vms-portal.js) owns this page. */
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const money=v=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(Number(v)||0);
   const date=v=>{if(!v)return 'current paid period';try{return new Date(v).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}catch{return 'current paid period'}};

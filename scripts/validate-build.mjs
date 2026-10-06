@@ -108,13 +108,13 @@ if(adminLinkHubSource.includes("$('hubWifiEnabled').checked=true")||adminLinkHub
 const linkHubPhase4=fs.readFileSync(path.join(root,'assets','vms-linkhub-phase4.js'),'utf8');
 for(const needle of ['vms-linkhub-style','pendingStyle=null'])if(!linkHubPhase4.includes(needle))failures.push(`LinkHub appearance state repair missing ${needle}`);
 if(linkHubPhase4.includes("attributes:true,attributeFilter:['class','style']"))failures.push('LinkHub observer still resets the Admin modal while scrolling');
-if(!portalSource.includes('save();renderLinkHub();renderActivity();renderNotifications()'))failures.push('Portal LinkHub publish still performs an unsafe full-page redraw');
-for(const needle of ['client-linkhub-workspace','data-client-linkhub-tab="profile"','data-client-linkhub-tab="appearance"','setClientLinkHubPane','closeClientLinkHubWorkspace','toggleClientLinkHubPreviewBtn','setClientLinkHubMobilePreview','mobile-preview-open'])if(!portalSource.includes(needle))failures.push(`Client LinkHub floating workspace missing ${needle}`);
-if(!portalSource.includes('linkhub-phone-island'))failures.push('Client LinkHub iPhone shell marker is missing');
+/* Batch 5 (Oct 2026): Client Portal is v2 and reuses the LinkHub Studio and QR Studio in portal mode. */
+for(const needle of ['data-vms-shell="portal-v2"','/assets/vms-portal.js','/assets/vms-linkhub-studio.js','/assets/vms-qr-studio.js','id="lhRoot"','id="qsRoot"'])if(!portalSource.includes(needle))failures.push(`Client Portal v2 missing ${needle}`);
 const finalPolish=fs.readFileSync(path.join(root,'assets','vms-final-polish.css'),'utf8');
 for(const needle of ['aspect-ratio:9/19.5','linkhub-phone-island','outline:3px solid #6f7a80'])if(!finalPolish.includes(needle))failures.push(`Shared LinkHub iPhone shell repair missing ${needle}`);
 if(!linkhubFunction.includes('linear-gradient(${gradientDir},${gradientA},${gradientB})'))failures.push('Public LinkHub gradient renderer is missing');
-for(const needle of ['const pageColor = gradientA && gradientB ? gradientA','--pageBg:${pageColor}','min-height:100dvh','env(safe-area-inset-bottom)','body:before'])if(!linkhubFunction.includes(needle))failures.push(`Public LinkHub full-viewport background repair missing ${needle}`);
+/* Batch 6 (Oct 2026): public LinkHub uses the v2 .lh design with full-viewport page colour. */
+for(const needle of ['pageColor = gradientA && gradientB ? gradientA','html{background:${pageColor}','min-height:100dvh','env(safe-area-inset-bottom)','class="${cls}"','data-lhs="main"','trackLinkHub'])if(!linkhubFunction.includes(needle))failures.push(`Public LinkHub v2 page missing ${needle}`);
 if(linkhubFunction.includes('<meta name="theme-color" content="${bg}"'))failures.push('Public LinkHub is sending an invalid gradient as the mobile browser theme color');
 const legacyPublicLinkhub=fs.readFileSync(path.join(root,'netlify','functions','public-linkhub.mts'),'utf8');
 for(const needle of ['themeColor=hasGradient','--page-bg:${themeColor}','min-height:100dvh','env(safe-area-inset-bottom)','body:before'])if(!legacyPublicLinkhub.includes(needle))failures.push(`Fallback public LinkHub full-viewport repair missing ${needle}`);

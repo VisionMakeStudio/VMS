@@ -4,7 +4,8 @@
   const isAdmin=/\/admin\/(?:linkhub(?:\.html)?|vms-linkhub(?:\.html)?)$/.test(path)||path.includes('/admin/linkhub');
   const isPortal=path.startsWith('/portal');
   if(!isAdmin&&!isPortal)return;
-  if(isAdmin&&document.documentElement.dataset.vmsShell==='v2')return; /* LinkHub Studio v2 reads/writes linkhub_pages directly */
+  if(isAdmin&&document.documentElement.dataset.vmsShell==='v2')return;
+  if(document.documentElement.dataset.vmsShell==='portal-v2')return; /* Client Portal v2 (assets/vms-portal.js) owns this page. */ /* LinkHub Studio v2 reads/writes linkhub_pages directly */
   const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const slugify=v=>String(v||'').trim().toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,80);
