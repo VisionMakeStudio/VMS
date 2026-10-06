@@ -75,13 +75,16 @@
 </div></section>
 
 <section class="sec" id="stand" hidden><div class="wrap stand-w">
-  <div class="stand-stage" id="standStage" aria-label="3D view of the VMS Tap and Scan Stand. Drag to turn it." role="img">
-    <div class="st-scene"><div class="st3d" id="st3d">
-      <div class="st-base"><i class="f"></i><i class="b"></i><i class="l"></i><i class="r"></i><i class="t"></i></div>
-      <div class="st-plate"><i class="f"><span class="st-face"><span class="st-nfc"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-wifi"/></svg></span><b>Tap or scan</b><span class="st-qr" id="stQr"></span><em>Leave us a review</em><small>Your business</small></span></i><i class="b"></i><i class="l"></i><i class="r"></i><i class="t"></i></div>
-    </div><div class="st-shadow"></div></div>
-    <div class="tip"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-drag"/></svg>Drag to turn it</div>
-    <div class="st-colors" role="group" aria-label="Stand color"><button type="button" data-stc="white" aria-pressed="true"><i></i>White</button><button type="button" data-stc="black" aria-pressed="false"><i></i>Black</button></div>
+  <div class="stand-stage" id="standStage" data-color="black">
+    <div class="st-glow" aria-hidden="true"></div>
+    <div class="st-tilt" id="stTilt">
+      <img class="st-img st-black" src="assets/media/stand-black.webp" alt="VMS Tap and Scan Stand in black, with a Google review QR code and NFC tap area" width="832" height="900" loading="lazy" decoding="async" draggable="false">
+      <img class="st-img st-white" src="assets/media/stand-white.webp" alt="VMS Tap and Scan Stand in white" width="748" height="900" loading="lazy" decoding="async" draggable="false">
+      <img class="st-card" id="stCardImg" src="assets/media/review-card.webp" alt="VMS Review Tap Card, a white wallet-size card" width="606" height="900" loading="lazy" decoding="async" draggable="false" hidden>
+    </div>
+    <div class="st-shadow" aria-hidden="true"></div>
+    <div class="tip"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-drag"/></svg>Move to tilt</div>
+    <div class="st-colors" role="group" aria-label="Stand color"><button type="button" data-stc="black" aria-pressed="true"><i></i>Black</button><button type="button" data-stc="white" aria-pressed="false"><i></i>White</button></div>
   </div>
   <div class="stand-info" id="standInfo"></div>
 </div></section>
@@ -119,7 +122,7 @@
           <button class="pill" type="button" data-id="smart-qr" aria-pressed="false">Smart QR</button>
           <button class="pill" type="button" data-id="linkhub-pro" aria-pressed="false">LinkHub</button>
           <button class="pill" type="button" data-id="media-general" aria-pressed="false">Photo and video</button>
-          <button class="pill" type="button" data-id="tap-scan-stand" aria-pressed="false">Tap and scan stand</button>
+          <button class="pill" type="button" data-id="tap-scan-stand" aria-pressed="false">Tap and scan stand</button><button class="pill" type="button" data-id="review-tap-card" aria-pressed="false">Review tap card</button>
           <button class="pill" type="button" data-id="not-sure" aria-pressed="false">Not sure yet</button>
         </div></div>
       <div class="shoot" id="shoot" hidden><span class="l" style="font-size:13px;font-weight:600">Shoot details</span>
@@ -337,20 +340,24 @@ function showPrice(id){const g=PGROUPS.find(g=>BY[id]&&g[2](BY[id]));if(g){const
 
 
 /* ---------- Tap & Scan products (own section; price and details from the catalog) ---------- */
-function renderStand(){const items=CAT.filter(isPhysical),sec=$('#stand');if(!sec)return;if(!items.length){sec.hidden=true;return}sec.hidden=false;
-  $('#standInfo').innerHTML='<span class="eyebrow">Tap &amp; scan</span><h2 class="h-lg" style="margin-top:12px">One tap to your reviews, menu or LinkHub.</h2>'+
-   '<p class="lead" style="margin-top:12px">Customers tap the stand with their phone or scan the code. VMS sets it up to open the link you choose.</p>'+
-   items.map(s=>'<article class="stand-card" data-id="'+esc(s.id)+'"><div class="row"><b class="pr-n">'+esc(s.name)+'</b><span class="sp"></span><div class="amt">'+amt(s)+'</div></div><p class="pr-d">'+esc(s.description||'')+'</p><ul>'+(s.features||[]).slice(0,5).map(x=>'<li>'+ic('check')+'<span>'+esc(x)+'</span></li>').join('')+'</ul><button class="btn acc block" type="button" data-stand-pick="'+esc(s.id)+'">Order '+(/card/i.test(s.name)?'a card':'a stand')+'</button></article>').join('')}
-(function(){const st=$('#standStage');if(!st)return;const q=$('#stQr');if(q)q.innerHTML=Array.from({length:121},(_,i)=>{const x=i%11,y=(i/11)|0,f=(a,b)=>x>=a&&x<a+3&&y>=b&&y<b+3,fin=f(0,0)||f(8,0)||f(0,8),gap=(x===3&&y<4)||(y===3&&x<4)||(x===7&&y<4)||(y===3&&x>6)||(x===3&&y>6)||(y===7&&x<4),on=fin||(!gap&&((x*7+y*13+x*y)%5<2));return '<i'+(on?' class="on"':'')+'></i>'}).join('');
-  const el=$('#st3d'),rm=matchMedia('(prefers-reduced-motion: reduce)').matches;let ry=-28,rx=-6,drag=null,idle=0,vis=false;
-  const paint=()=>el.style.transform='rotateX('+rx+'deg) rotateY('+ry+'deg)';paint();
-  st.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;drag={x:e.clientX,y:e.clientY,ry,rx};st.setPointerCapture(e.pointerId);st.classList.add('grab')});
-  st.addEventListener('pointermove',e=>{if(!drag)return;ry=drag.ry+(e.clientX-drag.x)*.5;rx=Math.max(-24,Math.min(10,drag.rx-(e.clientY-drag.y)*.25));paint()});
-  const up=()=>{if(drag){drag=null;idle=performance.now()+3500;st.classList.remove('grab')}};st.addEventListener('pointerup',up);st.addEventListener('pointercancel',up);
-  new IntersectionObserver(es=>{vis=es[0].isIntersecting},{threshold:.2}).observe(st);
-  if(!rm)(function spin(now){requestAnimationFrame(spin);if(!vis||drag||document.hidden||now<idle)return;ry+=.18;paint()})(performance.now());
-  st.addEventListener('click',e=>{const b=e.target.closest('[data-stc]');if(!b)return;st.dataset.color=b.dataset.stc;$$('#standStage [data-stc]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)))});
-  document.addEventListener('click',e=>{const b=e.target.closest('[data-stand-pick]');if(b)requestChips([b.dataset.standPick])});})();
+function renderStand(){const items=CAT.filter(isPhysical).sort((a,b)=>(a.displayOrder||0)-(b.displayOrder||0)),sec=$('#stand');if(!sec)return;if(!items.length){sec.hidden=true;return}sec.hidden=false;
+  const ci=$('#stCardImg');if(ci)ci.hidden=!items.some(s=>s.metadata&&s.metadata.family==='review-card');
+  $('#standInfo').innerHTML='<span class="eyebrow">Tap &amp; scan</span><h2 class="h-lg" style="margin-top:12px">More reviews with one tap.</h2>'+
+   '<p class="lead" style="margin-top:12px">Customers tap with their phone or scan the code and land right on your review page. VMS sets everything up for you.</p>'+
+   items.map(s=>{const fam=s.metadata&&s.metadata.family,cols=(s.metadata&&s.metadata.colors)||[];return '<article class="stand-card" data-id="'+esc(s.id)+'" data-fam="'+esc(fam||'')+'"><div class="row"><b class="pr-n">'+esc(s.name)+'</b><span class="sp"></span><div class="amt">'+amt(s)+'</div></div><p class="pr-d">'+esc(s.description||'')+'</p>'+
+    (cols.length>1?'<div class="st-pick" role="group" aria-label="Color">'+cols.map(c=>'<button type="button" data-stc="'+esc(c)+'" aria-pressed="'+(c===($('#standStage').dataset.color||'black'))+'"><i class="sw-'+esc(c)+'"></i>'+esc(c[0].toUpperCase()+c.slice(1))+'</button>').join('')+'</div>':cols.length===1?'<p class="st-only"><i class="sw-'+esc(cols[0])+'"></i>'+esc(cols[0][0].toUpperCase()+cols[0].slice(1))+' only</p>':'')+
+    '<ul>'+(s.features||[]).slice(0,4).map(x=>'<li>'+ic('check')+'<span>'+esc(x)+'</span></li>').join('')+'</ul><button class="btn '+(fam==='review-card'?'gh':'acc')+' block" type="button" data-stand-pick="'+esc(s.id)+'">Order '+(fam==='review-card'?'a card':'a stand')+'</button></article>'}).join('')}
+function setStandColor(c){const st=$('#standStage');if(!st)return;st.dataset.color=c;$$('[data-stc]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.stc===c)))}
+(function(){const st=$('#standStage'),tilt=$('#stTilt');if(!st||!tilt)return;const rm=matchMedia('(prefers-reduced-motion: reduce)').matches;let tx=0,ty=0,cx=0,cy=0,vis=false,user=0;
+  const move=(x,y)=>{const r=st.getBoundingClientRect();tx=((x-r.left)/r.width-.5)*22;ty=-((y-r.top)/r.height-.5)*16;user=performance.now()+2500};
+  st.addEventListener('pointermove',e=>move(e.clientX,e.clientY));st.addEventListener('pointerdown',e=>move(e.clientX,e.clientY));
+  st.addEventListener('pointerleave',()=>{user=0});
+  new IntersectionObserver(es=>{vis=es[0].isIntersecting},{threshold:.15}).observe(st);
+  (function loop(now){requestAnimationFrame(loop);if(!vis||document.hidden)return;if(!rm&&now>user){tx=Math.sin(now/2200)*12;ty=Math.sin(now/3100)*4}
+    cx+=(tx-cx)*.08;cy+=(ty-cy)*.08;tilt.style.transform='rotateY('+cx.toFixed(2)+'deg) rotateX('+cy.toFixed(2)+'deg)'})(performance.now());
+  document.addEventListener('click',e=>{const c=e.target.closest('[data-stc]');if(c){setStandColor(c.dataset.stc);return}
+    const b=e.target.closest('[data-stand-pick]');if(b)requestChips([b.dataset.standPick])})})();
+
 /* ---------- Photo & Video (real 3D + catalog packages) ---------- */
 let house=null,food=null,mkind=null,mediaSeen=false,stageIO=null;
 function mediaCol(items,part){
@@ -466,7 +473,7 @@ lead.addEventListener('submit',async e=>{
   formErr.textContent='';
   const sel=$$('#chips .pill[aria-pressed="true"]'),btn=$('#leadSend'),mEl=$('#methods [aria-pressed="true"]');
   const note=handoff.classList.contains('show')?'\n\n['+handoff.textContent+']':'';
-  const payload={businessName:biz.value.trim(),contactName:$('#f-name').value.trim(),email:email.value.trim(),phone:$('#f-phone').value.trim(),website:$('#f-site').value.trim(),goal:sel.length?sel.map(c=>c.textContent.trim()).join(', '):'Not sure, review everything',contactMethod:mEl?mEl.dataset.m:'Email',message:($('#f-msg').value.trim()+note+shootText()).trim(),contactTime:shootDate(),serviceIds:Array.from(new Set(sel.map(c=>c.dataset.id).concat(Array.from(picked)).filter(x=>x!=='not-sure'&&x!=='media-general'))),companyWebsite:$('#f-hp').value,type:'business-checkup',source:'public-website'};
+  const payload={businessName:biz.value.trim(),contactName:$('#f-name').value.trim(),email:email.value.trim(),phone:$('#f-phone').value.trim(),website:$('#f-site').value.trim(),goal:sel.length?sel.map(c=>c.textContent.trim()).join(', '):'Not sure, review everything',contactMethod:mEl?mEl.dataset.m:'Email',message:($('#f-msg').value.trim()+note+shootText()+(sel.some(c=>c.dataset.id==='tap-scan-stand')?'\n\nStand color: '+(($('#standStage')&&$('#standStage').dataset.color)||'black'):'')).trim(),contactTime:shootDate(),serviceIds:Array.from(new Set(sel.map(c=>c.dataset.id).concat(Array.from(picked)).filter(x=>x!=='not-sure'&&x!=='media-general'))),companyWebsite:$('#f-hp').value,type:'business-checkup',source:'public-website'};
   btn.disabled=true;const label=btn.innerHTML;btn.textContent='Sending...';
   try{
     payload.intakeToken=await window.__vmsGetIntakeToken();

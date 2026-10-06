@@ -53,7 +53,12 @@
     {
       id:'tap-scan-stand',name:'VMS Tap and Scan Stand',kind:'addon',category:'QR & Growth',icon:'QR',status:'Published',featured:false,displayOrder:45,
       description:'A countertop stand with a QR code and an NFC tap tag. VMS sets it up to open the link you choose, such as your LinkHub, reviews or menu.',pricingModel:'One-Time',oneTimePrice:29.99,recurringPrice:null,cadence:null,startingAt:false,salesMode:'Request First',websiteVisible:true,portalVisible:true,promoEligible:false,
-      features:['Tap with a phone or scan the QR code','Set to any link you choose, and changeable later with a tracked code','Counter or desk stand','Free shipping in the U.S.'],included:[],metadata:{family:'stand',physical:true,freeShipping:true}
+      features:['Tap with a phone or scan the QR code','Comes in white or black','Set to any link you choose, and changeable later with a tracked code','Free shipping in the U.S.'],included:[],metadata:{family:'stand',physical:true,freeShipping:true,colors:['white','black']}
+    },
+    {
+      id:'review-tap-card',name:'VMS Review Tap Card',kind:'addon',category:'QR & Growth',icon:'QR',status:'Published',featured:false,displayOrder:46,
+      description:'A wallet-size NFC card customers tap with their phone to leave you a Google review. Great for the register, tables or your team.',pricingModel:'One-Time',oneTimePrice:15,recurringPrice:null,cadence:null,startingAt:false,salesMode:'Request First',websiteVisible:true,portalVisible:true,promoEligible:false,
+      features:['Wallet-size card, white','Tap with a phone or scan to leave a review','VMS sets it to your Google review link','Free shipping in the U.S.'],included:[],metadata:{family:'review-card',physical:true,freeShipping:true,colors:['white']}
     },
     {
       id:"re-essentials",name:"Listing Essentials",kind:"package",category:"Real Estate Media",icon:'Media',status:'Published',featured:false,displayOrder:60,
