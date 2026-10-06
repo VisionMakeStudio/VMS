@@ -8,7 +8,7 @@ const dist=path.join(root,'dist');
 fs.rmSync(dist,{recursive:true,force:true});
 fs.mkdirSync(dist,{recursive:true});
 
-for(const item of ['index.html','services.html','get-started.html','audit-report.html','privacy.html','terms.html','refund-cancellation.html','404.html','robots.txt','sitemap.xml','config.js','assets','admin','portal']){
+for(const item of ['index.html','services.html','get-started.html','audit-report.html','privacy.html','terms.html','refund-cancellation.html','404.html','robots.txt','sitemap.xml','llms.txt','config.js','assets','admin','portal']){
   const src=path.join(root,item),dst=path.join(dist,item);
   if(!fs.existsSync(src))throw new Error(`Required publish input is missing: ${item}`);
   fs.cpSync(src,dst,{recursive:true});

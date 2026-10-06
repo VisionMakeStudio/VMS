@@ -13,6 +13,7 @@ function existsLocal(base,raw){
   let ref=String(raw||'').trim();
   if(!ref||ref.startsWith('#')||/^(https?:|mailto:|tel:|data:|blob:|javascript:)/i.test(ref)||ref.includes('${'))return true;
   ref=ref.split('#')[0].split('?')[0];if(!ref)return true;
+  if(/^\/(?:services|link)\/[a-z0-9-]+\/?$/i.test(ref))return true; /* served by Netlify functions */
   const target=ref.startsWith('/')?path.join(root,ref):path.resolve(path.dirname(base),ref);
   try{if(fs.existsSync(target)){if(fs.statSync(target).isDirectory())return fs.existsSync(path.join(target,'index.html'));return true}}catch{}
   return false;

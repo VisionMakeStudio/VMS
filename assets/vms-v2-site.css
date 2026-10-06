@@ -415,3 +415,4 @@ body.site{padding-top:0;--wpad:clamp(18px,5vw,64px)}
 .stand-card li{display:flex;gap:8px}.stand-card li .ico{width:17px;height:17px;color:var(--ok);margin-top:2px;flex:none}
 @media(max-width:600px){.stand-stage{height:420px}.st-tilt{inset:40px 16px 84px}.st-card{height:34%;right:-3%;bottom:-2%}}
 @media (prefers-reduced-motion:reduce){.st-card{animation:none}}
+.fareas{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.5}
