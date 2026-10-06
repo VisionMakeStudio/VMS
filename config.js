@@ -35,6 +35,7 @@ window.VMS_CONFIG = {
 /* VMS LinkHub Live · publish/share/social-icons layer · 2026-08-19 */
 (()=>{
   if(!location.pathname.toLowerCase().startsWith('/portal'))return;
+  if(document.documentElement.dataset.vmsShell==='portal-v2')return; /* Client Portal v2 (assets/vms-portal.js) owns this page. */
 
   const API='/api/linkhub';
   const PORTAL_STORAGE='vms_client_portal_v4';
@@ -427,6 +428,7 @@ window.VMS_CONFIG = {
 (()=>{
   const path=String(location.pathname||'').toLowerCase();
   if(!(path==='/portal'||path==='/portal/'||path.startsWith('/portal/')))return;
+  if(document.documentElement.dataset.vmsShell==='portal-v2')return; /* Client Portal v2 (assets/vms-portal.js) owns this page. */
 
   const PORTAL_KEY='vms_client_portal_v4';
   const TEST_EMAIL='info@visionmakestudio.com';
@@ -651,6 +653,7 @@ window.VMS_CONFIG = {
 (()=>{
   const path=String(location.pathname||'').toLowerCase();
   if(!(path==='/portal'||path==='/portal/'||path.startsWith('/portal/')))return;
+  if(document.documentElement.dataset.vmsShell==='portal-v2')return; /* Client Portal v2 (assets/vms-portal.js) owns this page. */
 
   const TEST_EMAIL='info@visionmakestudio.com';
   const lower=v=>String(v||'').trim().toLowerCase();
@@ -939,6 +942,7 @@ window.VMS_CONFIG = {
 (()=>{
   const path=String(location.pathname||'').toLowerCase();
   if(!(path==='/portal'||path==='/portal/'||path.startsWith('/portal/')))return;
+  if(document.documentElement.dataset.vmsShell==='portal-v2')return; /* Client Portal v2 (assets/vms-portal.js) owns this page. */
   if(document.getElementById('vms-client-portal-phase2-ui'))return;
 
   const style=document.createElement('style');
@@ -1355,6 +1359,7 @@ window.VMS_CONFIG = {
 (()=>{
   const path=String(location.pathname||'').toLowerCase();
   if(!(path==='/portal'||path==='/portal/'||path.startsWith('/portal/')))return;
+  if(document.documentElement.dataset.vmsShell==='portal-v2')return; /* Client Portal v2 (assets/vms-portal.js) owns this page. */
   if(window.__VMS_PHASE3_BILLING__)return;window.__VMS_PHASE3_BILLING__=true;
 
   let pendingBuyKey='';
