@@ -1,223 +1,25 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark" data-vms-shell="v2" data-vms-page="leads">
 <head>
-<script>if(location.protocol!=='file:')document.documentElement.classList.add('vms-auth-pending');</script>
-
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>VMS Admin — CRM / Leads</title>
-<style>
-:root{--navy:#003049;--navy2:#00263a;--cream:#FDF0D5;--blue:#669BBC;--red:#C1121F;--orange:#EB5E28;--green:#2b8c69;--amber:#bd7a15;--ink:#173443;--muted:#71858f;--line:#dce6ea;--bg:#f4f6f8;--card:#fff;--shadow:0 12px 34px rgba(0,48,73,.06)}
-*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}button,input,select,textarea{font:inherit}button{cursor:pointer}a{color:inherit;text-decoration:none}.shell{display:grid;grid-template-columns:244px minmax(0,1fr);min-height:100vh}.side{background:linear-gradient(180deg,var(--navy),var(--navy2));color:#fff;padding:18px 14px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column}.brand{display:flex;align-items:center;gap:11px;padding:7px 10px 18px;border-bottom:1px solid rgba(255,255,255,.12)}.brand img{width:86px;max-height:48px;object-fit:contain}.brand-copy strong{display:block;font-size:11px}.brand-copy span{display:block;color:#9fb9c5;font-size:8px;font-weight:850;letter-spacing:.12em;margin-top:4px}.nav{display:grid;gap:5px;margin-top:15px}.nav a{padding:11px 12px;border-radius:11px;color:#d6e5eb;font-size:12px;font-weight:750}.nav a:hover{background:rgba(255,255,255,.07)}.nav a.active{background:rgba(255,255,255,.1);color:#fff;box-shadow:inset 3px 0 var(--orange)}.side-foot{margin-top:auto;padding:16px 10px 4px;border-top:1px solid rgba(255,255,255,.1);font-size:9px;color:#99b3bf}.main{min-width:0}.topbar{min-height:72px;background:rgba(255,255,255,.9);backdrop-filter:blur(18px);border-bottom:1px solid rgba(0,48,73,.09);display:flex;align-items:center;justify-content:space-between;padding:11px 26px;position:sticky;top:0;z-index:20}.topbar-title{display:flex;align-items:center;gap:10px}.title-copy small{display:block;color:#81939c;font-size:9px;font-weight:900;letter-spacing:.1em}.title-copy strong{display:block;font-size:22px;letter-spacing:-.03em;margin-top:3px}.top-actions{display:flex;gap:8px}.btn{min-height:40px;border:1px solid #d7e2e7;background:#fff;color:var(--navy);border-radius:11px;padding:8px 13px;font-size:11px;font-weight:800}.btn:hover{background:#f8fbfc}.btn.primary{background:var(--navy);border-color:var(--navy);color:#fff}.btn.green{background:var(--green);border-color:var(--green);color:#fff}.btn.red{color:var(--red);border-color:#efc8cd;background:#fff}.btn.small{min-height:34px;padding:7px 10px;font-size:10px}.mobile-menu{display:none;width:42px;padding:0;font-size:18px}.content{max-width:1500px;margin:auto;padding:24px 26px 50px}.intro{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:16px}.eyebrow{font-size:9px;color:var(--blue);font-weight:900;letter-spacing:.12em}.intro h1{margin:5px 0 7px;font-size:30px;letter-spacing:-.04em;color:var(--navy)}.intro p{margin:0;max-width:780px;color:var(--muted);font-size:11.5px;line-height:1.55}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;margin-bottom:14px}.stat{background:#fff;border:1px solid rgba(0,48,73,.09);border-radius:17px;padding:15px 16px;box-shadow:var(--shadow)}.stat span{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:#7e9099;font-weight:850}.stat strong{display:block;font-size:27px;margin-top:7px;letter-spacing:-.04em}.stat small{display:block;color:#8a9aa2;font-size:9px;margin-top:5px}.stat.attn strong{color:var(--red)}.toolbar{display:grid;grid-template-columns:minmax(220px,1fr) 170px 170px auto;gap:8px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:16px;padding:11px;margin-bottom:13px}.toolbar input,.toolbar select,.field input,.field select,.field textarea{width:100%;min-height:42px;border:1px solid #d9e4e8;border-radius:10px;background:#fbfcfc;padding:9px 11px;color:var(--ink);font-size:11px;outline:none}.field textarea{min-height:86px;resize:vertical}.toolbar input:focus,.toolbar select:focus,.field input:focus,.field select:focus,.field textarea:focus{border-color:#9fc1d2;box-shadow:0 0 0 3px rgba(102,155,188,.11)}.crm{display:grid;grid-template-columns:minmax(0,.88fr) minmax(420px,1.12fr);gap:14px;align-items:start}.card{background:#fff;border:1px solid rgba(0,48,73,.09);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}.card-head{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:15px 17px;border-bottom:1px solid #e7edef}.card-head h2,.card-head h3{margin:0;font-size:15px;color:var(--navy)}.card-head p{margin:4px 0 0;color:var(--muted);font-size:9.5px}.card-body{padding:15px 17px}.lead-list{display:grid}.lead-row{width:100%;border:0;border-bottom:1px solid #edf2f4;background:#fff;text-align:left;padding:13px 15px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:11px;align-items:center}.lead-row:last-child{border-bottom:0}.lead-row:hover{background:#fbfdfd}.lead-row.active{background:#f0f7fa;box-shadow:inset 4px 0 var(--blue)}.lead-main strong{display:block;color:var(--navy);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lead-main span{display:block;color:#7f919a;font-size:9px;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lead-meta{display:flex;gap:5px;align-items:center;margin-top:7px;flex-wrap:wrap}.badge{display:inline-flex;align-items:center;border-radius:999px;padding:5px 7px;font-size:8px;font-weight:850;white-space:nowrap;background:#eef3f5;color:#667d88}.badge.new{background:#eef5f8;color:#56798b}.badge.contacted{background:#fff7e7;color:#946616}.badge.qualified{background:#eeeafa;color:#69519a}.badge.won{background:#eaf8f2;color:#26795c}.badge.lost{background:#f3f4f5;color:#7b858b}.badge.due{background:#fbeff0;color:#b13a43}.lead-side{text-align:right}.lead-side strong{font-size:16px;color:var(--navy)}.lead-side span{display:block;color:#8a9aa2;font-size:8px;margin-top:4px}.empty{padding:34px 18px;text-align:center;color:#7d9099;font-size:10.5px;line-height:1.55}.empty strong{display:block;color:var(--navy);font-size:14px;margin-bottom:5px}.detail-empty{min-height:520px;display:grid;place-items:center}.detail-wrap{display:none}.detail-wrap.active{display:block}.lead-header{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:14px}.lead-identity h2{font-size:22px;margin:0;color:var(--navy);letter-spacing:-.03em}.lead-identity p{margin:5px 0 0;color:var(--muted);font-size:10.5px}.contact-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.contact-actions a{display:inline-flex;align-items:center;min-height:34px;border:1px solid #d9e4e8;border-radius:10px;padding:7px 10px;font-size:9px;font-weight:850;color:var(--navy)}.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{display:grid;gap:6px}.field.full{grid-column:1/-1}.field label{font-size:9px;color:#687f8a;font-weight:850}.context-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:13px 0}.context{border:1px solid #e2e9ec;background:#fbfcfc;border-radius:12px;padding:10px;min-width:0}.context span{display:block;color:#84969f;font-size:8px;font-weight:850}.context strong{display:block;margin-top:5px;font-size:10px;color:#405b68;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.save-row{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}.sections{display:grid;gap:12px;margin-top:14px}.subcard{border:1px solid #e1e9ec;border-radius:15px;overflow:hidden}.subhead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 13px;background:#fafcfc;border-bottom:1px solid #e8eef0}.subhead strong{font-size:11px;color:var(--navy)}.subhead span{font-size:8.5px;color:#83959e}.subbody{padding:12px}.service-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.service-opt{border:1px solid #dfe7ea;border-radius:11px;padding:9px;display:flex;align-items:flex-start;gap:8px;background:#fff}.service-opt input{margin-top:2px}.service-opt strong{display:block;font-size:9.5px;color:#375563}.service-opt span{display:block;color:#83959e;font-size:8px;margin-top:3px;line-height:1.35}.note-compose{display:grid;grid-template-columns:1fr auto;gap:7px}.note-compose textarea{min-height:64px;border:1px solid #d9e4e8;border-radius:10px;padding:9px 10px;font-size:11px;resize:vertical}.timeline{display:grid;margin-top:10px}.timeline-item{display:grid;grid-template-columns:10px minmax(0,1fr) auto;gap:9px;padding:10px 0;border-top:1px solid #edf2f4}.timeline-item:first-child{border-top:0}.dot{width:8px;height:8px;border-radius:50%;background:var(--blue);margin-top:4px}.timeline-item.note .dot{background:var(--orange)}.timeline-item strong{display:block;font-size:9.5px;color:#405b68}.timeline-item span{display:block;font-size:8.5px;color:#7f919a;margin-top:3px;line-height:1.4}.timeline-item time{font-size:8px;color:#94a2a9;white-space:nowrap}.convert-box{border:1px solid #cfe6dc;background:#f2faf7;border-radius:14px;padding:12px;display:flex;align-items:center;justify-content:space-between;gap:12px}.convert-box strong{display:block;color:#23684f;font-size:11px}.convert-box span{display:block;color:#66837a;font-size:8.5px;margin-top:4px}.onboarding{display:none}.onboarding.active{display:block}.progress{height:8px;border-radius:999px;background:#eaf0f2;overflow:hidden;margin:8px 0 12px}.progress span{display:block;height:100%;background:var(--green);width:0;transition:.2s}.task-list{display:grid;gap:7px}.task{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:9px;align-items:center;border:1px solid #e1e8eb;border-radius:11px;padding:9px 10px}.task input{width:17px;height:17px}.task strong{font-size:9.5px;color:#3e5966}.task span{display:block;color:#83959e;font-size:8px;margin-top:2px}.task.done{background:#f3faf7;border-color:#d4e9df}.task.waived{opacity:.7}.portal-row{display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid #e7edef;margin-top:11px;padding-top:11px}.portal-row strong{font-size:10px;color:var(--navy)}.portal-row span{display:block;font-size:8px;color:#83959e;margin-top:3px}.toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,20px);opacity:0;z-index:200;background:var(--navy);color:#fff;border-radius:12px;padding:11px 14px;font-size:10px;font-weight:800;transition:.2s}.toast.show{opacity:1;transform:translate(-50%,0)}.drawer-backdrop{display:none;position:fixed;inset:0;background:rgba(7,35,48,.38);z-index:80}
-@media(max-width:1050px){.crm{grid-template-columns:1fr}.detail-empty{min-height:220px}.service-grid{grid-template-columns:1fr 1fr}}
-@media(max-width:900px){.shell{grid-template-columns:1fr}.side{display:none}.mobile-menu{display:inline-grid;place-items:center}.topbar{padding:10px 13px;min-height:66px}.title-copy strong{font-size:18px}.content{padding:15px 13px 35px}.intro{align-items:flex-start;flex-direction:column}.stats{display:flex;overflow-x:auto;scrollbar-width:none}.stat{flex:0 0 155px}.toolbar{grid-template-columns:1fr 1fr}.toolbar input{grid-column:1/-1}.contact-actions{justify-content:flex-start}.lead-header{flex-direction:column}.detail-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.context-grid{grid-template-columns:1fr 1fr}.service-grid{grid-template-columns:1fr}.field input,.field select,.field textarea,.toolbar input,.toolbar select,.note-compose textarea{font-size:16px}}
-@media(max-width:540px){.toolbar{grid-template-columns:1fr}.toolbar input{grid-column:auto}.context-grid{grid-template-columns:1fr}.note-compose{grid-template-columns:1fr}.save-row,.convert-box,.portal-row{align-items:stretch;flex-direction:column}.save-row .btn,.convert-box .btn,.portal-row .btn{width:100%}}
-</style>
+<meta name="robots" content="noindex,nofollow">
+<title>CRM / Leads · VMS Admin</title>
+<script>(function(){var t='dark';try{t=localStorage.getItem('vms-theme')||'dark'}catch(e){}document.documentElement.dataset.theme=t==='light'?'light':'dark'})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Unbounded:wght@600;700;800&display=swap">
+<link rel="icon" href="/assets/vms-logo-navy.png">
+<!-- The legacy canonical shell files stay linked for the build guards; they stand down on v2 pages. -->
 <link rel="stylesheet" href="/assets/vms-admin-shell.css">
-<style id="vms-leads-preview">
-/* Leads — approved preview layout */
-.sr-only,.lp-hidden{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);border:0;white-space:nowrap}
-.lp-ico{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
-.lp-tools{display:grid;gap:10px;margin:0 0 14px}
-.lp-search{display:flex;align-items:center;gap:10px;min-height:46px;padding:0 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line2);color:var(--muted)}
-.lp-search:focus-within{border-color:var(--ink);box-shadow:0 0 0 4px rgba(102,155,188,.3)}
-body.vms-admin-canonical .lp-search #searchInput{border:0!important;box-shadow:none!important;padding:0!important;min-height:44px!important;background:transparent!important}
-.lp-pills{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px 0}.lp-pills::-webkit-scrollbar{display:none}
-.lp-pill{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:99px;background:var(--surface);border:1px solid var(--line2);color:var(--ink);font:600 14.5px/1 var(--body);white-space:nowrap;cursor:pointer;transition:all .18s}
-.lp-pill em{font-style:normal;font-size:13px;opacity:.7}
-.lp-pill[aria-pressed="true"]{background:var(--pri);color:var(--prifg);border-color:var(--pri)}
-.lp-pill.due[aria-pressed="false"] em{color:var(--badfg);opacity:1}
-body.vms-admin-canonical .crm{display:grid!important;gap:14px;grid-template-columns:1fr!important;align-items:start}
-.lp-meta{margin:0 0 8px;font-size:13px;color:var(--muted)}
-body.vms-admin-canonical .lead-list{display:grid;gap:10px;background:transparent!important;border:0!important}
-body.vms-admin-canonical .lead-row{display:grid!important;grid-template-columns:auto minmax(0,1fr) auto!important;gap:12px!important;align-items:center;width:100%;text-align:left;padding:14px!important;border-radius:18px!important;background:var(--surface)!important;border:1px solid var(--line)!important;box-shadow:none!important;cursor:pointer;transition:border-color .18s,transform .15s,box-shadow .18s}
-body.vms-admin-canonical .lead-row:hover{border-color:var(--line2)!important}
-body.vms-admin-canonical .lead-row.active{border-color:var(--ink)!important;box-shadow:0 0 0 1px var(--ink)!important;background:var(--surface)!important}
-body.vms-admin-canonical .lead-row .lp-av{color:#fff!important;font-size:15px!important}
-.lp-av{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(140deg,var(--navy),var(--blue));color:#fff;font:700 15px/1 var(--body)}
-body.vms-admin-canonical .lead-main{min-width:0}
-body.vms-admin-canonical .lead-main>strong{display:block;font:600 15px/1.3 var(--body)!important;color:var(--ink)!important}
-body.vms-admin-canonical .lead-main>span{display:block;color:var(--muted)!important;font-size:13.5px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-body.vms-admin-canonical .lead-meta{display:none!important}
-body.vms-admin-canonical .lead-side{display:grid;justify-items:end;gap:4px;font-size:13px;color:var(--muted)}
-body.vms-admin-canonical .lead-side>strong{display:none}
-body.vms-admin-canonical .lead-side>span{font-size:13px!important;color:var(--muted)!important}
-.lp-detail{position:relative;padding:18px!important}
-.lp-close{display:none}
-body.vms-admin-canonical .lead-header{display:grid;gap:12px;margin-bottom:14px}
-body.vms-admin-canonical .lead-identity h2{font-family:var(--display)!important;font-size:1.1rem!important;letter-spacing:-.02em!important;margin:0!important;color:var(--ink)!important}
-body.vms-admin-canonical .lead-identity p{margin:4px 0 0!important;color:var(--muted)!important;font-size:13.5px!important}
-body.vms-admin-canonical .contact-actions{justify-content:flex-start!important;display:flex;gap:8px;flex-wrap:wrap}
-body.vms-admin-canonical .contact-actions a{display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border-radius:10px;border:1px solid var(--line2);background:var(--surface);color:var(--ink)!important;font:600 14px/1 var(--body);text-decoration:none}
-body.vms-admin-canonical .contact-actions a:hover{border-color:var(--ink)}
-body.vms-admin-canonical .context-grid{display:grid;grid-template-columns:1fr;gap:0;margin-bottom:16px}
-body.vms-admin-canonical .context-grid .context{display:flex!important;justify-content:space-between;gap:12px;padding:11px 0!important;background:transparent!important;border:0!important;border-bottom:1px solid var(--line)!important;border-radius:0!important}
-body.vms-admin-canonical .context span{color:var(--muted);font-size:14.5px}
-body.vms-admin-canonical .context strong{font-weight:600;font-size:14.5px;text-align:right}
-body.vms-admin-canonical .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-body.vms-admin-canonical .detail-grid .full{grid-column:1/-1}
-body.vms-admin-canonical .save-row{margin:14px 0 4px}
-body.vms-admin-canonical .sections{display:grid;gap:14px;margin-top:14px}
-body.vms-admin-canonical .subhead strong{font-family:var(--display);font-size:.98rem;letter-spacing:-.02em}
-body.vms-admin-canonical .subhead span{display:block;font-size:13.5px;color:var(--muted);margin-top:2px}
-body.vms-admin-canonical .convert-box{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:16px;border-radius:16px;background:var(--tint);border:0}
-body.vms-admin-canonical .convert-box strong{display:block;font-weight:600}
-body.vms-admin-canonical .convert-box span{display:block;font-size:13.5px;color:var(--muted)}
-body.vms-admin-canonical .note-compose{display:grid;gap:10px}
-@media (min-width:1000px){
-  body.vms-admin-canonical .crm{grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr)!important;gap:18px}
-  .lp-detail{position:sticky!important;top:calc(68px + 24px);max-height:calc(100vh - 116px);overflow:auto!important}
-  body.vms-admin-canonical .lead-row:hover{transform:translateY(-1px);box-shadow:var(--shadow)!important}
-}
-@media (max-width:999px){
-  .lp-detail{position:fixed!important;left:0;right:0;bottom:0;top:auto;z-index:2147482600;max-height:90vh;overflow:auto!important;border-radius:26px 26px 0 0!important;padding:24px 20px calc(24px + env(safe-area-inset-bottom,0px))!important;box-shadow:0 -20px 60px rgba(0,0,0,.35)!important;transform:translateY(100vh);visibility:hidden;transition:transform .32s cubic-bezier(.2,.9,.2,1),visibility 0s linear .32s}
-  body.lp-open .lp-detail{transform:none;visibility:visible;transition:transform .32s cubic-bezier(.2,.9,.2,1)}
-  body.lp-open::after{content:"";position:fixed;inset:0;z-index:2147482550;background:rgba(0,26,41,.5)}
-  .lp-close{display:grid;place-items:center;position:absolute;top:14px;right:14px;width:44px;height:44px;border-radius:50%;background:var(--surface2);border:1px solid var(--line);color:var(--ink);cursor:pointer;z-index:2}
-  body.vms-admin-canonical .lead-header{padding-right:52px}
-  body.vms-admin-canonical .detail-grid{grid-template-columns:1fr}
-  body.vms-admin-canonical #detailEmpty{display:none!important}
-}
-</style>
-<script id="vms-leads-preview-js">
-(()=>{
-  const byId=id=>document.getElementById(id);
-  const STAGES=[['all','All'],['new','New'],['contacted','Contacted'],['qualified','Qualified'],['won','Won'],['lost','Lost']];
-  const ini=n=>String(n||'?').split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase();
-  const isPhone=()=>matchMedia('(max-width:999px)').matches;
-  function counts(){
-    const rows=[...document.querySelectorAll('#leadList .lead-row')];
-    const total=Number((byId('listMeta').textContent.match(/of (\d+)/)||[])[1]);
-    return {total:isNaN(total)?rows.length:total};
-  }
-  function pills(){
-    const sf=byId('stageFilter').value,af=byId('attentionFilter').value;
-    const n={new:+byId('statNew').textContent||0,qualified:+byId('statQualified').textContent||0,won:+byId('statWon').textContent||0,due:+byId('statAttention').textContent||0};
-    const c=counts();
-    byId('stagePills').innerHTML=STAGES.map(([v,l])=>'<button class="lp-pill" type="button" data-stage="'+v+'" aria-pressed="'+(af==='all'&&sf===v)+'">'+l+(v==='all'?' <em>'+c.total+'</em>':n[v]!=null?' <em>'+n[v]+'</em>':'')+'</button>').join('')+
-      '<button class="lp-pill due" type="button" data-due aria-pressed="'+(af==='attention')+'">Follow-up due <em>'+n.due+'</em></button>';
-  }
-  function decorate(){
-    document.querySelectorAll('#leadList .lead-row').forEach(r=>{
-      if(r.querySelector('.lp-av'))return;
-      const name=r.querySelector('.lead-main>strong')?.textContent||'';
-      const av=document.createElement('span');av.className='lp-av';av.setAttribute('aria-hidden','true');av.textContent=ini(name);r.prepend(av);
-      const side=r.querySelector('.lead-side');const badge=r.querySelector('.lead-meta .badge');
-      if(side&&badge){const b=badge.cloneNode(true);side.prepend(b)}
-    });
-    pills();
-  }
-  function setFilter(stage,due){
-    byId('stageFilter').value=stage;byId('attentionFilter').value=due?'attention':'all';
-    byId('stageFilter').dispatchEvent(new Event('change'));byId('attentionFilter').dispatchEvent(new Event('change'));pills();
-  }
-  function closeSheet(){document.body.classList.remove('lp-open')}
-  document.addEventListener('DOMContentLoaded',()=>{
-    const q=new URLSearchParams(location.search);const st=q.get('stage');
-    if(st&&STAGES.some(([v])=>v===st))byId('stageFilter').value=st;
-    byId('stagePills').addEventListener('click',e=>{const b=e.target.closest('.lp-pill');if(!b)return;if(b.hasAttribute('data-due'))setFilter('all',byId('attentionFilter').value!=='attention');else setFilter(b.dataset.stage,false)});
-    byId('leadList').addEventListener('click',e=>{if(e.target.closest('[data-lead]')&&isPhone())setTimeout(()=>{document.body.classList.add('lp-open');byId('leadDetail').scrollTop=0},0)});
-    byId('leadDetailClose').addEventListener('click',closeSheet);
-    document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet()});
-    document.addEventListener('click',e=>{if(document.body.classList.contains('lp-open')&&!e.target.closest('#leadDetail')&&!e.target.closest('[data-lead]'))closeSheet()});
-    const want=q.get('lead');
-    new MutationObserver(()=>{decorate();if(want&&!decorate.done){const b=document.querySelector('[data-lead="'+CSS.escape(want)+'"]');if(b){decorate.done=true;b.click()}}}).observe(byId('leadList'),{childList:true});
-    pills();
-  });
-})();
-</script>
+<link rel="stylesheet" href="/assets/vms-admin-v2.css?v=20261005-b4">
 </head>
-<body>
-<div class="shell">
-<aside class="side vms-admin-sidebar" id="sidebar">
-  <div class="brand vms-admin-brand"><img src="../assets/vms-logo.png" alt="Vision Make Studio"><div class="brand-copy"><strong>Vision Make Studio</strong><span>VMS ADMIN</span></div></div>
-  <nav class="nav vms-admin-nav">
-    <a href="index.html">Home</a><a href="audit.html">VMS Audit</a><a href="qr.html">QR Tools</a><a href="clients.html">Clients</a><a class="active" href="leads.html">CRM / Leads</a><a href="service-catalog.html">Service Catalog</a><a href="billing.html">Billing / Subscriptions</a><a href="promotions.html">Promotions</a><a href="projects.html">Projects & Requests</a><a href="files.html">Files & Assets</a><a href="activity.html">Notifications & Activity</a><a href="linkhub.html">VMS LinkHub</a>
-  </nav>
-  <div class="side-foot">Lead → Client → Onboarding</div>
-</aside>
-<main class="main">
-<header class="topbar">
-  <div class="topbar-title"><button class="btn mobile-menu" id="mobileMenuBtn" type="button" aria-label="Open admin menu" aria-expanded="false">☰</button><div class="title-copy"><small>VMS ADMIN · PHASE 5</small><strong>CRM / Leads</strong></div></div>
-  <div class="top-actions"><button class="btn" id="refreshBtn">Refresh</button><a class="btn primary" href="clients.html">Clients</a></div>
-</header>
-<section class="content">
-  <div class="lp-tools">
-    <label class="lp-search"><span class="sr-only">Search leads</span><svg class="lp-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16zM21 21l-4.3-4.3"/></svg><input id="searchInput" type="search" placeholder="Search leads"></label>
-    <div class="lp-pills" role="group" aria-label="Filter by stage" id="stagePills"></div>
-    <div class="lp-hidden" aria-hidden="true"><select id="stageFilter" tabindex="-1"><option value="all">All stages</option><option value="new">New</option><option value="contacted">Contacted</option><option value="qualified">Qualified</option><option value="won">Won</option><option value="lost">Lost</option></select><select id="attentionFilter" tabindex="-1"><option value="all">All follow-ups</option><option value="attention">Needs Attention</option><option value="upcoming">Upcoming follow-up</option><option value="none">No follow-up set</option></select><button id="clearFilterBtn" type="button" tabindex="-1">Clear</button><span id="statNew">0</span><span id="statAttention">0</span><span id="statQualified">0</span><span id="statWon">0</span></div>
-  </div>
-  <div class="crm">
-    <section class="lp-list" aria-label="Leads"><p id="listMeta" class="lp-meta">Loading leads…</p><div id="leadList" class="lead-list"></div></section>
-    <section class="card lp-detail" id="leadDetail" aria-label="Lead details">
-      <button class="lp-close" id="leadDetailClose" type="button" aria-label="Close lead"><svg class="lp-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-      <div id="detailEmpty" class="detail-empty"><div class="empty"><strong>Pick a lead</strong>Its details, notes and next step show here.</div></div>
-      <div id="detailWrap" class="detail-wrap"><div class="card-body">
-        <div class="lead-header"><div class="lead-identity"><h2 id="leadBusiness">—</h2><p id="leadContact">—</p></div><div class="contact-actions"><a id="emailLink" href="#">Email</a><a id="phoneLink" href="#">Call</a><a id="websiteLink" href="#" target="_blank" rel="noopener">Website</a></div></div>
-        <div class="context-grid"><div class="context"><span>Source</span><strong id="leadSource">—</strong></div><div class="context"><span>Submitted</span><strong id="leadCreated">—</strong></div><div class="context"><span>Goal</span><strong id="leadGoal">—</strong></div></div>
-        <div class="detail-grid">
-          <div class="field"><label for="leadStage">Pipeline stage</label><select id="leadStage"><option value="new">New</option><option value="contacted">Contacted</option><option value="qualified">Qualified</option><option value="won">Won</option><option value="lost">Lost</option></select></div>
-          <div class="field"><label for="leadScore">Lead score (0–100)</label><input id="leadScore" type="number" min="0" max="100" step="1"></div>
-          <div class="field"><label for="contactMethod">Preferred contact method</label><select id="contactMethod"><option value="">Not specified</option><option>Email</option><option>Phone</option><option>Text</option><option>WhatsApp</option></select></div>
-          <div class="field"><label for="contactTime">Preferred contact time</label><input id="contactTime" type="text" maxlength="120" placeholder="e.g. Weekdays after 4 PM"></div>
-          <div class="field"><label for="followUp">Next follow-up</label><input id="followUp" type="datetime-local"></div>
-          <div class="field"><label for="lostReason">Lost reason</label><input id="lostReason" type="text" maxlength="1200" placeholder="Shown when stage is Lost"></div>
-          <div class="field full"><label for="internalSummary">Internal summary</label><textarea id="internalSummary" maxlength="4000" placeholder="What matters about this opportunity, decision-maker, budget, priorities, next step…"></textarea></div>
-          <div class="field full"><label>Original inquiry</label><textarea id="originalMessage" readonly></textarea></div>
-        </div>
-        <div class="save-row"><button class="btn primary" id="saveLeadBtn">Save changes</button></div>
-        <div class="sections">
-          <div class="subcard"><div class="subhead"><div><strong>Interested in</strong></div></div><div class="subbody"><div id="serviceGrid" class="service-grid"></div></div></div>
-          <div class="subcard"><div class="subhead"><div><strong>Notes</strong></div></div><div class="subbody"><div class="note-compose"><textarea id="noteInput" maxlength="5000" placeholder="Add a private note…"></textarea><button class="btn" id="addNoteBtn">Add note</button></div><div id="timeline" class="timeline"></div></div></div>
-          <div id="convertSection" class="convert-box"><div><strong>Ready to become a client?</strong><span>Their selected services and contact details carry over.</span></div><button class="btn green" id="convertBtn">Mark as won</button></div>
-          <div id="onboardingSection" class="subcard onboarding"><div class="subhead"><div><strong>Onboarding</strong><span id="onboardingMeta">In progress</span></div><a class="btn small" id="openClientBtn" href="clients.html">Open client</a></div><div class="subbody"><div class="progress"><span id="onboardingProgress"></span></div><div id="taskList" class="task-list"></div><div class="portal-row"><div><strong>Portal welcome / invitation</strong><span id="inviteStatus">Not sent yet.</span></div><button class="btn primary" id="inviteBtn">Send portal invite</button></div></div></div>
-        </div>
-      </div></div>
-    </section>
-  </div>
-</section>
+<body data-title="CRM / Leads">
+<main id="v2Main">
+  <div class="ph"><div><h1 id="pgTitle">CRM / Leads</h1><p id="pgSub">Every checkup, form and referral in one pipeline.</p></div><div class="row" id="pgHeadAct"></div></div>
+  <div id="pgRoot" aria-live="polite"></div>
 </main>
-</div>
-<div class="toast" id="toast"></div>
-<script src="../assets/config.js"></script>
-<script src="../assets/vms-core.js"></script>
-<script>
-(()=>{'use strict';
-const byId=id=>document.getElementById(id);let state={leads:[],notes:[],activities:[],catalog:[],onboarding:[],tasks:[]},selectedId=null,timer;
-const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const fmtDate=v=>{if(!v)return'—';const d=new Date(v);return Number.isNaN(d.getTime())?'—':d.toLocaleString([],{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'})};
-const localInput=v=>{if(!v)return'';const d=new Date(v);if(Number.isNaN(d.getTime()))return'';const z=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}`};
-function toast(m){const e=byId('toast');e.textContent=m;e.classList.add('show');clearTimeout(timer);timer=setTimeout(()=>e.classList.remove('show'),3000)}
-async function token(){const sb=await VMSAuth.client();const{data:{session}}=await sb.auth.getSession();if(!session?.access_token)throw new Error('Please sign in again.');return session.access_token}
-async function api(method='GET',body){const t=await token(),r=await fetch('/api/leads',{method,headers:{Authorization:`Bearer ${t}`,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`CRM request failed (${r.status}).`);return d}
-function isAttention(l){if(!l.follow_up_at||['won','lost'].includes(String(l.status||'new').toLowerCase()))return false;return new Date(l.follow_up_at).getTime()<Date.now()}
-function isUpcoming(l){if(!l.follow_up_at||['won','lost'].includes(String(l.status||'new').toLowerCase()))return false;return new Date(l.follow_up_at).getTime()>=Date.now()}
-function stage(l){const s=String(l.status||'new').toLowerCase();return ['new','contacted','qualified','won','lost'].includes(s)?s:'new'}
-function selected(){return state.leads.find(x=>x.id===selectedId)||null}
-function selectedOnboarding(l){return l?.converted_client_id?state.onboarding.find(x=>x.client_id===l.converted_client_id):null}
-function selectedTasks(l){return l?.converted_client_id?state.tasks.filter(x=>x.client_id===l.converted_client_id):[]}
-function renderStats(){byId('statNew').textContent=state.leads.filter(l=>stage(l)==='new').length;byId('statAttention').textContent=state.leads.filter(isAttention).length;byId('statQualified').textContent=state.leads.filter(l=>stage(l)==='qualified').length;byId('statWon').textContent=state.leads.filter(l=>stage(l)==='won'||l.converted_client_id).length}
-function filtered(){const q=byId('searchInput').value.trim().toLowerCase(),sf=byId('stageFilter').value,af=byId('attentionFilter').value;return state.leads.filter(l=>{const hay=[l.business_name,l.contact_name,l.email,l.phone,l.website,l.goal].join(' ').toLowerCase();if(q&&!hay.includes(q))return false;if(sf!=='all'&&stage(l)!==sf)return false;if(af==='attention'&&!isAttention(l))return false;if(af==='upcoming'&&!isUpcoming(l))return false;if(af==='none'&&l.follow_up_at)return false;return true})}
-function renderList(){const rows=filtered(),e=byId('leadList');byId('listMeta').textContent=`${rows.length} of ${state.leads.length} leads`;if(!rows.length){e.innerHTML='<div class="empty"><strong>No matching leads</strong>New website inquiries will appear here automatically.</div>';return}e.innerHTML=rows.map(l=>{const s=stage(l),due=isAttention(l),contact=l.contact_name||l.email||'No contact name';return `<button class="lead-row ${l.id===selectedId?'active':''}" data-lead="${esc(l.id)}"><div class="lead-main"><strong>${esc(l.business_name||'Unnamed business')}</strong><span>${esc(contact)}${l.email?` · ${esc(l.email)}`:''}</span><div class="lead-meta"><span class="badge ${s}">${esc(s.replace(/^./,c=>c.toUpperCase()))}</span>${due?'<span class="badge due">Needs Attention</span>':''}${l.source?`<span class="badge">${esc(l.source)}</span>`:''}</div></div><div class="lead-side"><strong>${Number(l.lead_score||50)}</strong><span>${l.follow_up_at?fmtDate(l.follow_up_at):'No follow-up'}</span></div></button>`}).join('')}
-function renderServices(l){const picked=new Set(Array.isArray(l?.service_ids)?l.service_ids:[]),rows=state.catalog.filter(x=>String(x.status||'').toLowerCase()==='published');byId('serviceGrid').innerHTML=rows.length?rows.map(s=>{const price=s.recurring_price!=null?`$${Number(s.recurring_price).toFixed(2)}${s.cadence?' / '+s.cadence:''}`:s.one_time_price!=null?`$${Number(s.one_time_price).toFixed(2)}`:s.pricing_model||'Quote';return `<label class="service-opt"><input type="checkbox" data-service-id="${esc(s.id)}" ${picked.has(s.id)?'checked':''}><span><strong>${esc(s.name)}</strong><span>${esc(s.category||'Service')} · ${esc(price)}</span></span></label>`}).join(''):'<div class="empty">No published catalog services found.</div>'}
-function renderTimeline(l){const notes=state.notes.filter(x=>x.lead_id===l.id).map(x=>({kind:'note',title:'Internal note',detail:x.note,when:x.created_at})),acts=state.activities.filter(x=>x.lead_id===l.id).map(x=>({kind:'activity',title:x.title,detail:x.detail,when:x.created_at}));const all=[...notes,...acts].sort((a,b)=>new Date(b.when)-new Date(a.when));byId('timeline').innerHTML=all.length?all.map(x=>`<div class="timeline-item ${x.kind==='note'?'note':''}"><span class="dot"></span><div><strong>${esc(x.title)}</strong><span>${esc(x.detail||'')}</span></div><time>${fmtDate(x.when)}</time></div>`).join(''):'<div class="empty">No notes or activity yet.</div>'}
-function renderOnboarding(l){const sec=byId('onboardingSection'),conv=byId('convertSection');if(!l.converted_client_id){sec.classList.remove('active');conv.style.display='flex';return}conv.style.display='none';sec.classList.add('active');const ob=selectedOnboarding(l),tasks=selectedTasks(l),done=tasks.filter(t=>t.status==='complete'||t.status==='waived').length,pct=tasks.length?Math.round(done/tasks.length*100):0;byId('onboardingProgress').style.width=pct+'%';byId('onboardingMeta').textContent=`${pct}% complete · ${ob?.status?String(ob.status).replace(/_/g,' '):'in progress'}`;byId('inviteStatus').textContent=ob?.portal_invited_at?`Sent ${fmtDate(ob.portal_invited_at)}`:'Not sent yet.';byId('inviteBtn').textContent=ob?.portal_invited_at?'Send Again':'Send Portal Invite';byId('taskList').innerHTML=tasks.length?tasks.map(t=>`<label class="task ${t.status==='complete'?'done':t.status==='waived'?'waived':''}"><input type="checkbox" data-task-id="${esc(t.id)}" ${t.status==='complete'?'checked':''}><span><strong>${esc(t.title)}</strong><span>${t.status==='complete'?'Completed':t.status==='waived'?'Waived':'Pending'}</span></span><button type="button" class="btn small" data-waive="${esc(t.id)}">${t.status==='waived'?'Restore':'Waive'}</button></label>`).join(''):'<div class="empty">No onboarding tasks yet.</div>'}
-function renderDetail(){const l=selected();if(!l){byId('detailEmpty').style.display='grid';byId('detailWrap').classList.remove('active');return}byId('detailEmpty').style.display='none';byId('detailWrap').classList.add('active');byId('leadBusiness').textContent=l.business_name||'Unnamed business';byId('leadContact').textContent=[l.contact_name,l.email,l.phone].filter(Boolean).join(' · ')||'No contact details';byId('leadSource').textContent=l.source||'Unknown';byId('leadCreated').textContent=fmtDate(l.created_at);byId('leadGoal').textContent=l.goal||'Not specified';byId('emailLink').href=l.email?`mailto:${encodeURIComponent(l.email)}`:'#';byId('phoneLink').href=l.phone?`tel:${String(l.phone).replace(/[^+0-9]/g,'')}`:'#';let w=String(l.website||'').trim();if(w&&!/^https?:\/\//i.test(w))w='https://'+w;byId('websiteLink').href=w||'#';byId('leadStage').value=stage(l);byId('leadScore').value=Number(l.lead_score||50);byId('contactMethod').value=l.contact_method||'';byId('contactTime').value=l.contact_time||'';byId('followUp').value=localInput(l.follow_up_at);byId('lostReason').value=l.lost_reason||'';byId('internalSummary').value=l.internal_summary||'';byId('originalMessage').value=[l.message,l.website?`Website: ${l.website}`:''].filter(Boolean).join('\n\n');renderServices(l);renderTimeline(l);renderOnboarding(l)}
-function render(){renderStats();renderList();renderDetail()}
-async function load(keep=true){try{const d=await api();state={leads:d.leads||[],notes:d.notes||[],activities:d.activities||[],catalog:d.catalog||[],onboarding:d.onboarding||[],tasks:d.tasks||[]};if(!keep||!state.leads.some(x=>x.id===selectedId))selectedId=state.leads[0]?.id||null;render()}catch(e){toast(e.message)}}
-function selectedServiceIds(){return [...document.querySelectorAll('[data-service-id]:checked')].map(x=>x.dataset.serviceId)}
-async function saveLead(){const l=selected();if(!l)return;try{byId('saveLeadBtn').disabled=true;await api('POST',{action:'update',id:l.id,status:byId('leadStage').value,lead_score:byId('leadScore').value,contact_method:byId('contactMethod').value,contact_time:byId('contactTime').value,follow_up_at:byId('followUp').value?new Date(byId('followUp').value).toISOString():null,lost_reason:byId('lostReason').value,internal_summary:byId('internalSummary').value,service_ids:selectedServiceIds()});toast('Lead saved');await load(true)}catch(e){toast(e.message)}finally{byId('saveLeadBtn').disabled=false}}
-async function addNote(){const l=selected(),note=byId('noteInput').value.trim();if(!l||!note)return;try{byId('addNoteBtn').disabled=true;await api('POST',{action:'note',id:l.id,note});byId('noteInput').value='';toast('Note added');await load(true)}catch(e){toast(e.message)}finally{byId('addNoteBtn').disabled=false}}
-async function convert(){const l=selected();if(!l)return;if(!confirm(`Convert ${l.business_name||'this lead'} to a VMS client?`))return;try{byId('convertBtn').disabled=true;await api('POST',{action:'convert',id:l.id,service_ids:selectedServiceIds()});toast('Lead converted to client');await load(true)}catch(e){toast(e.message)}finally{byId('convertBtn').disabled=false}}
-async function taskChange(id,status){try{await api('POST',{action:'onboarding-task',task_id:id,status});await load(true)}catch(e){toast(e.message)}}
-async function invite(){const l=selected();if(!l?.converted_client_id)return;try{byId('inviteBtn').disabled=true;const d=await api('POST',{action:'invite',id:l.id});toast(d.message||'Portal invitation sent');await load(true)}catch(e){toast(e.message)}finally{byId('inviteBtn').disabled=false}}
-byId('leadList').addEventListener('click',e=>{const b=e.target.closest('[data-lead]');if(!b)return;selectedId=b.dataset.lead;render()});
-['searchInput','stageFilter','attentionFilter'].forEach(id=>byId(id).addEventListener(id==='searchInput'?'input':'change',renderList));
-byId('clearFilterBtn').onclick=()=>{byId('searchInput').value='';byId('stageFilter').value='all';byId('attentionFilter').value='all';renderList()};byId('refreshBtn').onclick=()=>load(true);byId('saveLeadBtn').onclick=saveLead;byId('addNoteBtn').onclick=addNote;byId('convertBtn').onclick=convert;byId('inviteBtn').onclick=invite;
-byId('taskList').addEventListener('change',e=>{const c=e.target.closest('[data-task-id]');if(c)taskChange(c.dataset.taskId,c.checked?'complete':'pending')});byId('taskList').addEventListener('click',e=>{const b=e.target.closest('[data-waive]');if(!b)return;e.preventDefault();const t=state.tasks.find(x=>x.id===b.dataset.waive);taskChange(b.dataset.waive,t?.status==='waived'?'pending':'waived')});
-document.addEventListener('DOMContentLoaded',async()=>{try{await VMSAuth.requireSession('admin');document.documentElement.classList.remove('vms-auth-pending');await load(false)}catch(e){console.error(e)}});
-})();
-</script>
+<script src="/assets/vms-admin-v2.js?v=20261005-b4"></script>
+<script src="/assets/vms-admin-leads.js?v=20261005-b4"></script>
 <script src="/assets/vms-admin-shell.js"></script>
 </body>
 </html>
