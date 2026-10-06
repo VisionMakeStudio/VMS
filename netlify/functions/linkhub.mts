@@ -442,7 +442,7 @@ export default async (req: Request, _context: Context) => {
         });
       }
       return new Response(renderPublic(page.published_data || {}, slug), {
-        headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=60, stale-while-revalidate=300" }
+        headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store, max-age=0", "Netlify-CDN-Cache-Control": "no-store" }
       });
     }
 

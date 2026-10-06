@@ -365,4 +365,11 @@ injectRepair('portal/index.html','../assets/vms-qr-phase4.js?v=20260827-qr-delet
   }
 }
 
+/* Fix batch 7: the v2 Admin and Portal have their own light/dark themes. Ask colour extensions
+   (Dark Reader and similar) not to recolour them, and say which schemes the page supports. */
+for(const area of ['admin','portal']){const dir=path.join(dist,area);if(!fs.existsSync(dir))continue;
+  for(const entry of fs.readdirSync(dir,{withFileTypes:true})){if(!entry.isFile()||!entry.name.endsWith('.html'))continue;const f=path.join(dir,entry.name);let h=fs.readFileSync(f,'utf8');
+    if(!/data-vms-shell="(?:v2|portal-v2)"/.test(h)||h.includes('name="darkreader-lock"'))continue;
+    h=h.replace(/<head>/i,'<head><meta name="darkreader-lock"><meta name="color-scheme" content="dark light">');fs.writeFileSync(f,h)}}
+
 console.log(`VMS Phase 6 publish directory created and integration guards passed: ${dist}`);

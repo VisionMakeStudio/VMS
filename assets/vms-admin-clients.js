@@ -16,7 +16,8 @@ const bTone=s=>({active:'ok',paid:'ok',awaiting_payment:'warn',pending:'warn',op
 const label=s=>String(s||'').replace(/_/g,' ').replace(/^./,m=>m.toUpperCase());
 const initials=n=>String(n||'').replace(/[^A-Za-z0-9 ]+/g,' ').trim().split(/\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase()||'CL';
 const logo=c=>{const u=c.metadata&&(c.metadata.logo||c.metadata.logoUrl);return u&&/^(https?:|data:image\/)/i.test(u)?`<span class="flogo"><img src="${esc(u)}" alt=""></span>`:`<span class="flogo">${esc(initials(c.business_name))}</span>`};
-const monthly=c=>(c.services||[]).filter(s=>lower(s.billing_status)==='active'&&s.agreed_price!=null&&s.billing_cadence).reduce((n,s)=>n+(lower(s.billing_cadence).startsWith('ann')?Number(s.agreed_price)/12:Number(s.agreed_price)),0);
+const cadOf=s=>{const v=String(s&&s.billing_cadence||'').toLowerCase();if(!v||/one|once|single|lifetime|none|fixed/.test(v))return 'one';if(/ann|year|yr/.test(v))return 'yr';if(/quart/.test(v))return 'q';if(/week/.test(v))return 'wk';return 'mo'};
+const monthly=c=>(c.services||[]).filter(s=>lower(s.billing_status)==='active'&&s.agreed_price!=null&&cadOf(s)!=='one').reduce((n,s)=>{const k=cadOf(s),v=Number(s.agreed_price)||0;return n+(k==='yr'?v/12:k==='q'?v/3:k==='wk'?v*52/12:v)},0);
 const paid=c=>(c.payments||[]).filter(p=>lower(p.status)==='paid'||lower(p.status)==='succeeded').reduce((n,p)=>n+Number(p.amount||0),0)||(c.invoices||[]).filter(i=>lower(i.status)==='paid').reduce((n,i)=>n+Number(i.amount_paid||0),0);
 const find=id=>S.rows.find(x=>x.id===id);
 async function post(body){return api('/api/admin-clients',{method:'POST',body})}
@@ -34,7 +35,7 @@ function render(){
 
 /* ── detail ── */
 function detail(id){const c=find(id);if(!c)return;const tasks=c.onboarding_tasks||[],done=tasks.filter(t=>['complete','waived'].includes(lower(t.status))).length,m=monthly(c),jobs=(c.jobs||[]).filter(j=>!['canceled'].includes(lower(j.status))).slice(0,4);
-  const svc=(c.services||[]).map(s=>`<div class="li svc"><span class="lic ${bTone(s.billing_status)}">${ic('tag')}</span><span style="min-width:0"><b>${esc(s.service_name)}</b><span class="s">${s.agreed_price!=null?esc(money(s.agreed_price)):'No price'}${s.billing_cadence?' · '+esc(s.billing_cadence):' · one time'}</span></span>
+  const svc=(c.services||[]).map(s=>`<div class="li svc"><span class="lic ${bTone(s.billing_status)}">${ic('tag')}</span><span style="min-width:0"><b>${esc(s.service_name)}</b><span class="s">${s.agreed_price!=null?esc(money(s.agreed_price)):'No price'}${({one:' · one time',yr:' · yearly',q:' · quarterly',wk:' · weekly',mo:' · monthly'})[cadOf(s)]}</span></span>
     <span class="end"><select class="sel sm" data-svc="${esc(s.id)}" aria-label="Billing status for ${esc(s.service_name)}">${sel('',[...new Set([lower(s.billing_status),'awaiting_payment','active','past_due','paused','canceled'])].map(v=>[v,label(v)]),lower(s.billing_status))}</select>${['awaiting_payment','pending','canceled'].includes(lower(s.billing_status))?`<button class="ib sm" type="button" data-rmsvc="${esc(s.id)}" aria-label="Remove ${esc(s.service_name)}">${ic('trash')}</button>`:''}</span></div>`).join('');
   sheet(c.business_name,`<div class="det-h">${logo(c)}<div style="min-width:0"><h3>${esc(c.business_name)}</h3><span class="s">${esc(c.owner_email)}</span></div></div>
    <div class="row" style="gap:6px;flex-wrap:wrap"><span class="chip ${tone(c.display_status)}">${esc(c.display_status)}</span>${c.onboarding?`<span class="chip">Onboarding · ${esc(label(c.onboarding.status))}</span>`:''}</div>

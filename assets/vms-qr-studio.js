@@ -177,8 +177,8 @@ function visible(){const q=S.q.trim().toLowerCase();return S.qrs.filter(r=>{if(S
   return!q||[r.name,r.business_name,r.destination,r.qr_type,clientName(r.client_id)].join(' ').toLowerCase().includes(q)})}
 function edit(e){S.ed=e;S.base=snap(e);S.sel=e.id||null}
 function select(id,quiet){const r=S.qrs.find(q=>q.id===id);if(!r)return;edit(fromRow(r));if(!quiet)render()}
-function guard(next){if(!dirty())return next();sheet('Save your changes?','<p class="muted" style="margin-bottom:14px">“'+esc(S.ed.name||'This QR')+'” has changes that are not saved yet.</p><div class="row"><button class="btn pri" type="button" data-g="save">'+ic('check')+'Save</button><button class="btn gh" type="button" data-g="drop">Discard changes</button></div>',
-  b=>b.onclick=async ev=>{const t=ev.target.closest('[data-g]');if(!t)return;closeSheet();if(t.dataset.g==='save'){if(await save())next()}else{S.base=snap(S.ed);next()}})}
+function guard(next){if(!dirty())return next();sheet('Save your changes?','<p class="muted" style="margin-bottom:14px">“'+esc(S.ed.name||'This QR')+'” has changes that are not saved yet.</p><div class="row" style="justify-content:flex-end"><button class="btn pri" type="button" data-g="save">'+ic('check')+'Save</button><button class="btn gh" type="button" data-g="drop">Discard changes</button></div>',
+  b=>b.onclick=async ev=>{const t=ev.target.closest('[data-g]');if(!t)return;closeSheet();if(t.dataset.g==='save'){if(await save())next()}else{S.base=snap(S.ed);next()}},{size:'sm'})}
 
 function payload(e){const dest=e.qr_type==='wifi'?wifiString(e.wifi):normUrl(e.destination);const cl=S.clients.find(c=>String(c.id)===String(e.client_id));
   return {name:(e.name||'').trim()||TNAME[e.qr_type]+' QR',client_id:e.client_id||null,business_name:(e.business_name||'').trim()||(cl?cl.business_name:VMS_NAME),qr_type:e.qr_type,destination:dest,mode:e.qr_type==='wifi'?'static':e.mode,cta:(e.cta||'').trim(),

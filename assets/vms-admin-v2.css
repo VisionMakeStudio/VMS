@@ -686,3 +686,20 @@ input.sw:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
 html[data-vms-shell],html[data-vms-shell] body{background:var(--bg)}
 html.vms-auth-pending[data-vms-shell="portal-v2"] body::before,html.vms-auth-pending[data-vms-shell="portal-v2"] body::after{background:var(--bg)!important;border-color:var(--line)!important}
 html[data-vms-shell="portal-v2"] .pview>.ph[hidden]{display:none!important}
+/* ===== Fix batch 7: small centred dialog + portal More dropdown ===== */
+@media(min-width:1000px){
+ dialog.sheet.sm .shc{top:50%;left:50%;right:auto;bottom:auto;width:min(440px,calc(100vw - 48px));max-height:80vh;border-radius:22px;padding:22px 24px 22px;transform:translate(-50%,-50%);animation:smin .22s cubic-bezier(.2,.9,.2,1) both;box-shadow:var(--shadow-lg)}
+ @keyframes smin{from{opacity:0;transform:translate(-50%,-46%) scale(.97)}to{opacity:1;transform:translate(-50%,-50%)}}
+ dialog.sheet.sm .shc .hd{margin-bottom:8px}
+ dialog.sheet.sm .shc .row{justify-content:flex-end}
+}
+.pmenu{position:absolute;top:calc(100% + 8px);z-index:60;width:248px;padding:8px;border-radius:18px;background:var(--surface);color:var(--ink);border:1px solid var(--line);box-shadow:var(--shadow-lg);animation:pmin .16s ease-out both}
+.pmenu[hidden]{display:none}
+@keyframes pmin{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.pmenu a,.pmenu button{display:flex;align-items:center;gap:12px;width:100%;min-height:44px;padding:0 12px;border-radius:12px;text-decoration:none;color:var(--ink);font-weight:600;font-size:14.5px;text-align:left}
+.pmenu a:hover,.pmenu button:hover,.pmenu a:focus-visible,.pmenu button:focus-visible{background:var(--surface2);outline:none}
+.pmenu .ico{width:19px;height:19px;color:var(--muted)}
+.pmenu .pm-foot{margin-top:6px;padding-top:6px;border-top:1px solid var(--line)}
+.ptop [data-pmore][aria-expanded="true"]{background:rgba(253,240,213,.14)}
+/* Portal light mode: neutral charcoal instead of navy for primary buttons (owner request) */
+html[data-vms-shell="portal-v2"]:not([data-theme="dark"]){--pri:#2E363B;--prifg:#FFFFFF}

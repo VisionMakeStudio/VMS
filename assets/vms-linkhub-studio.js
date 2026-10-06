@@ -60,8 +60,8 @@ async function pick(id,quiet){S.cid=id;S.screen='main';S.row=pageOf(id);const c=
   S.h=S.row?normalize(S.row.draft_data&&Object.keys(S.row.draft_data).length?S.row.draft_data:S.row.published_data,c):null;if(S.h&&!S.h.slug)S.h.slug=S.row.slug;S.base=S.h?snap(S.h):'';
   if(id&&!S.svc[id]){try{const s=await sb();const r=await s.from('client_services').select('service_key,catalog_service_id,service_status,billing_status').eq('client_id',id);S.svc[id]=r.data||[]}catch{S.svc[id]=[]}}
   if(!quiet)render()}
-function guard(next){if(!dirty())return next();sheet('Save your changes?','<p class="muted" style="margin-bottom:14px">This LinkHub has edits that are not saved yet.</p><div class="row"><button class="btn pri" type="button" data-g="save">'+ic('check')+'Save draft</button><button class="btn gh" type="button" data-g="drop">Discard changes</button></div>',
-  b=>b.onclick=async ev=>{const t=ev.target.closest('[data-g]');if(!t)return;closeSheet();if(t.dataset.g==='save'){if(await save(false))next()}else{S.base=S.h?snap(S.h):'';next()}})}
+function guard(next){if(!dirty())return next();sheet('Save your changes?','<p class="muted" style="margin-bottom:14px">This LinkHub has edits that are not saved yet.</p><div class="row" style="justify-content:flex-end"><button class="btn pri" type="button" data-g="save">'+ic('check')+'Save draft</button><button class="btn gh" type="button" data-g="drop">Discard changes</button></div>',
+  b=>b.onclick=async ev=>{const t=ev.target.closest('[data-g]');if(!t)return;closeSheet();if(t.dataset.g==='save'){if(await save(false))next()}else{S.base=S.h?snap(S.h):'';next()}},{size:'sm'})}
 async function slugFree(slug){const s=await sb();const r=await s.from('linkhub_pages').select('client_id').eq('slug',slug).limit(1);return !(r.data||[]).some(x=>x.client_id!==S.cid)}
 async function save(publish){const h=S.h,c=client();if(!h||!c||S.busy)return false;
   h.slug=slugify(h.slug||h.businessName||c.business_name);if(!h.slug){toast('Add a page address first.','error');return false}
