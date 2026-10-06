@@ -95,9 +95,9 @@ for(const needle of ['/api/linkhub-event','linkhub_view','linkhub_click','activi
 const portalSource=fs.readFileSync(path.join(root,'portal','index.html'),'utf8');
 if(/id="linkHubViews">1,284|id="linkHubClicks">63/.test(portalSource))failures.push('Portal LinkHub still exposes placeholder analytics totals');
 const adminLinkHubSource=fs.readFileSync(path.join(root,'admin','linkhub.html'),'utf8');
-for(const needle of ['<summary>Actions</summary>','linkhub-phone-screen public-page','linkhub-phone-island','row-actions-menu'])if(!adminLinkHubSource.includes(needle))failures.push(`Admin LinkHub parity repair missing ${needle}`);
-if(adminLinkHubSource.includes('data-link-action="up" type="button"')&&!adminLinkHubSource.includes('Move up</button>'))failures.push('Admin LinkHub still exposes separate row action buttons');
-for(const needle of ['id="publishQr"','../assets/vms-qrcode.js','vms-linkhub-admin-cloud'])if(!adminLinkHubSource.includes(needle))failures.push(`Admin LinkHub live-state repair missing ${needle}`);
+/* Batch 3 (Oct 2026): Admin LinkHub is the v2 LinkHub Studio, which publishes straight to linkhub_pages. */
+for(const needle of ['data-vms-shell="v2"','/assets/vms-linkhub-studio.js','/assets/vms-qrcode.js','/assets/vms-admin-v2.js','id="lhRoot"'])if(!adminLinkHubSource.includes(needle))failures.push(`Admin LinkHub Studio v2 missing ${needle}`);
+{const studio=fs.readFileSync(path.join(root,'assets','vms-linkhub-studio.js'),'utf8');for(const needle of ["from('linkhub_pages')","published_data","client_services","linkhub-wifi","linkhub-menu","setPointerCapture"])if(!studio.includes(needle))failures.push(`LinkHub Studio publishing/entitlement logic missing ${needle}`)}
 if(adminLinkHubSource.includes("$('hubWifiEnabled').checked=true")||adminLinkHubSource.includes("$('hubMenuEnabled').checked=true"))failures.push('Admin LinkHub plan rules still force optional public features on');
 const linkHubPhase4=fs.readFileSync(path.join(root,'assets','vms-linkhub-phase4.js'),'utf8');
 for(const needle of ['vms-linkhub-style','pendingStyle=null'])if(!linkHubPhase4.includes(needle))failures.push(`LinkHub appearance state repair missing ${needle}`);
