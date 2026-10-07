@@ -106,7 +106,7 @@ ${testimonials.length?`<section class="sec"><div class="wrap"><h2 class="h-lg">W
  <div><b>Tools</b><a href="/services/smart-qr">Smart QR codes</a><a href="/services/linkhub-core">LinkHub</a><a href="/services/tap-scan-stand">Tap &amp; scan stand</a><a href="/#checkup">Free checkup</a></div>
  <div><b>Contact</b><a href="mailto:info@visionmakestudio.com">info@visionmakestudio.com</a><span>Serving the Tri-State Area</span></div>
 </div><div class="wrap fbot"><span>© ${new Date().getFullYear()} Vision Make Studio</span><span><a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a></span></div></footer>
-</body></html>`;
+<script src="/assets/vms-consent.js" defer></script></body></html>`;
 }
 
 export default async(req:Request)=>{
