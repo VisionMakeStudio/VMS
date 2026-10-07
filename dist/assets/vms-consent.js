@@ -2,7 +2,7 @@
    Analytics loads ONLY after the visitor taps Accept. Until GA_ID is filled in,
    nothing loads and no banner is shown. */
 (function(){
-  var GA_ID='';                       // <-- paste your GA4 Measurement ID here, e.g. 'G-ABC123XYZ9'
+  var GA_ID='G-2795NW34Q7';            // Google Analytics 4 Measurement ID for visionmakestudio.com
   var KEY='vms-consent-v1';
   if(!GA_ID)return;
   if(/^\/(admin|portal|api)\//.test(location.pathname))return;
